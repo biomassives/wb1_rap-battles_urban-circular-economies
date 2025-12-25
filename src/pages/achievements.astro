@@ -1,0 +1,776 @@
+---
+/**
+ * achievements.astro
+ * Achievements Gallery - All Badges & Progress Tracking
+ * 
+ * Features:
+ * - Complete achievements catalog
+ * - Filter by category and status
+ * - Progress tracking for each achievement
+ * - Rarity tiers and rewards display
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Achievements" 
+  description="Explore all achievements and track your progress"
+  activeSection="achievements"
+>
+
+  <!-- ============================================ -->
+  <!-- ACHIEVEMENTS HERO -->
+  <!-- ============================================ -->
+  <section class="achievements-hero">
+    <div class="container mx-auto">
+      <h1 class="hero-title">🏆 Achievements</h1>
+      <p class="hero-subtitle">
+        Unlock badges by completing challenges across music, environmental science, and community impact
+      </p>
+      
+      <!-- User Progress Summary -->
+      <div id="user-achievement-summary" class="achievement-summary" style="display: none;">
+        <div class="summary-stat">
+          <div class="stat-number" id="achievements-earned">0</div>
+          <div class="stat-label">Earned</div>
+        </div>
+        <div class="summary-divider">/</div>
+        <div class="summary-stat">
+          <div class="stat-number" id="achievements-total">50</div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="summary-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="achievement-progress" style="width: 0%"></div>
+          </div>
+          <span class="progress-percentage" id="achievement-percentage">0%</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- FILTERS & SEARCH -->
+  <!-- ============================================ -->
+  <section class="achievements-filters-section">
+    <div class="container mx-auto">
+      
+      <div class="achievements-filters">
+        
+        <!-- Category Filters -->
+        <div class="filter-chips">
+          <button class="filter-chip active" data-category="all">
+            All Achievements
+          </button>
+          <button class="filter-chip" data-category="musical">
+            🎵 Musical
+          </button>
+          <button class="filter-chip" data-category="environmental">
+            🌱 Environmental
+          </button>
+          <button class="filter-chip" data-category="community">
+            👥 Community
+          </button>
+          <button class="filter-chip" data-category="battles">
+            ⚔️ Battles
+          </button>
+          <button class="filter-chip" data-category="kakuma">
+            🏕️ Kakuma
+          </button>
+        </div>
+
+        <!-- Status & Rarity Filters -->
+        <div class="filter-group-row">
+          <div class="filter-group">
+            <label>Status:</label>
+            <select id="status-filter" class="form-select">
+              <option value="all">All</option>
+              <option value="earned">Earned</option>
+              <option value="locked">Locked</option>
+              <option value="in-progress">In Progress</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Rarity:</label>
+            <select id="rarity-filter" class="form-select">
+              <option value="all">All Rarities</option>
+              <option value="common">Common</option>
+              <option value="uncommon">Uncommon</option>
+              <option value="rare">Rare</option>
+              <option value="legendary">Legendary</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Sort:</label>
+            <select id="sort-filter" class="form-select">
+              <option value="category">By Category</option>
+              <option value="rarity">By Rarity</option>
+              <option value="recent">Recently Earned</option>
+              <option value="progress">By Progress</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- ACHIEVEMENTS GRID -->
+  <!-- ============================================ -->
+  <section class="achievements-grid-section">
+    <div class="container mx-auto">
+      
+      <div id="achievements-grid" class="achievements-grid">
+        
+        <!-- Achievement cards loaded via JavaScript -->
+        <!--
+        Template for achievement card:
+        
+        <div class="achievement-card [earned|locked|in-progress] [rarity-class]">
+          <div class="achievement-header">
+            <div class="achievement-badge-large">🏆</div>
+            <div class="achievement-rarity-badge [rarity]">Rare</div>
+          </div>
+          
+          <div class="achievement-content">
+            <h3 class="achievement-name">First Verse</h3>
+            <p class="achievement-description">
+              Write your first 16 bars of rap lyrics
+            </p>
+            
+            <div class="achievement-category">
+              <span class="category-icon">🎵</span>
+              <span class="category-name">Musical</span>
+            </div>
+            
+            <div class="achievement-reward">
+              <span class="reward-label">Reward:</span>
+              <span class="reward-value">+50 XP</span>
+            </div>
+            
+            <div class="achievement-progress-bar">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%"></div>
+              </div>
+              <span class="progress-text">3 / 4 requirements</span>
+            </div>
+            
+            <div class="achievement-earned-date" style="display: none;">
+              Earned on Jan 15, 2025
+            </div>
+          </div>
+          
+          <div class="achievement-requirements" style="display: none;">
+            <h4>Requirements:</h4>
+            <ul class="requirements-list">
+              <li class="requirement done">✓ Create an account</li>
+              <li class="requirement done">✓ Connect wallet</li>
+              <li class="requirement done">✓ Complete profile</li>
+              <li class="requirement pending">○ Write 16 bars</li>
+            </ul>
+          </div>
+        </div>
+        -->
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- ACHIEVEMENT DETAIL MODAL -->
+  <!-- ============================================ -->
+  <div id="achievement-detail-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content achievement-detail">
+      
+      <div class="modal-header">
+        <h3 id="modal-achievement-name">Achievement Name</h3>
+        <button class="btn-close" onclick="closeAchievementDetail()">×</button>
+      </div>
+
+      <div class="achievement-detail-body">
+        
+        <!-- Badge Display -->
+        <div class="detail-badge-section">
+          <div class="detail-badge-large" id="modal-achievement-badge">🏆</div>
+          <div class="detail-rarity" id="modal-achievement-rarity">Rare</div>
+        </div>
+
+        <!-- Description -->
+        <p class="detail-description" id="modal-achievement-description">
+          <!-- Loaded dynamically -->
+        </p>
+
+        <!-- Category -->
+        <div class="detail-category">
+          <span class="category-icon" id="modal-category-icon">🎵</span>
+          <span class="category-name" id="modal-category-name">Musical</span>
+        </div>
+
+        <!-- Rewards -->
+        <div class="detail-rewards">
+          <h4>Rewards:</h4>
+          <div class="rewards-list">
+            <div class="reward-item">
+              <span class="reward-icon">⭐</span>
+              <span class="reward-text" id="modal-xp-reward">+50 XP</span>
+            </div>
+            <!-- Additional rewards loaded dynamically -->
+          </div>
+        </div>
+
+        <!-- Requirements Checklist -->
+        <div class="detail-requirements">
+          <h4>Requirements:</h4>
+          <ul class="requirements-checklist" id="modal-requirements-list">
+            <!-- Requirements loaded dynamically -->
+          </ul>
+        </div>
+
+        <!-- Progress Tracking -->
+        <div class="detail-progress">
+          <div class="progress-bar-large">
+            <div class="progress-fill" id="modal-progress-fill" style="width: 0%"></div>
+          </div>
+          <div class="progress-stats">
+            <span id="modal-progress-text">0 / 4 complete</span>
+            <span id="modal-progress-percentage">0%</span>
+          </div>
+        </div>
+
+        <!-- Earned Info (if earned) -->
+        <div class="detail-earned-info" id="modal-earned-info" style="display: none;">
+          <div class="earned-checkmark">✓</div>
+          <div class="earned-text">
+            <strong>Achievement Unlocked!</strong>
+            <div class="earned-date" id="modal-earned-date"></div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="detail-actions">
+          <button class="btn-secondary" onclick="closeAchievementDetail()">
+            Close
+          </button>
+          <button class="btn-primary" id="modal-action-btn" style="display: none;">
+            Start Challenge
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- RARITY TIERS INFO -->
+  <!-- ============================================ -->
+  <section class="rarity-tiers-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Achievement Rarity Tiers</h2>
+      
+      <div class="rarity-tiers-grid">
+        
+        <div class="rarity-tier common">
+          <div class="tier-icon">⚪</div>
+          <h3 class="tier-name">Common</h3>
+          <div class="tier-count" id="common-count">0</div>
+          <p class="tier-description">
+            Basic achievements for getting started and learning fundamentals
+          </p>
+          <div class="tier-xp">10-50 XP each</div>
+        </div>
+
+        <div class="rarity-tier uncommon">
+          <div class="tier-icon">🟢</div>
+          <h3 class="tier-name">Uncommon</h3>
+          <div class="tier-count" id="uncommon-count">0</div>
+          <p class="tier-description">
+            Notable accomplishments requiring skill and dedication
+          </p>
+          <div class="tier-xp">75-150 XP each</div>
+        </div>
+
+        <div class="rarity-tier rare">
+          <div class="tier-icon">🔵</div>
+          <h3 class="tier-name">Rare</h3>
+          <div class="tier-count" id="rare-count">0</div>
+          <p class="tier-description">
+            Impressive achievements demonstrating mastery
+          </p>
+          <div class="tier-xp">200-500 XP each</div>
+        </div>
+
+        <div class="rarity-tier legendary">
+          <div class="tier-icon">🟡</div>
+          <h3 class="tier-name">Legendary</h3>
+          <div class="tier-count" id="legendary-count">0</div>
+          <p class="tier-description">
+            Elite status earned by the most dedicated contributors
+          </p>
+          <div class="tier-xp">750-1000 XP each</div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  /**
+   * Achievements Manager
+   */
+  class AchievementsManager {
+    constructor() {
+      this.achievements = [];
+      this.filteredAchievements = [];
+      this.userAchievements = [];
+    }
+
+    async initialize() {
+      await this.loadAchievements();
+      
+      const walletAddress = window.walletManager?.connectedWallet;
+      if (walletAddress) {
+        await this.loadUserAchievements(walletAddress);
+      }
+      
+      this.setupFilters();
+      this.renderAchievements();
+      this.updateSummary();
+      this.updateRarityCounts();
+    }
+
+    async loadAchievements() {
+      try {
+        const response = await fetch('/api/gamification/achievements');
+        const data = await response.json();
+        
+        if (data.success) {
+          this.achievements = data.achievements;
+          this.filteredAchievements = [...this.achievements];
+        }
+      } catch (error) {
+        console.error('Failed to load achievements:', error);
+        // Load sample data for demonstration
+        this.achievements = this.generateSampleAchievements();
+        this.filteredAchievements = [...this.achievements];
+      }
+    }
+
+    async loadUserAchievements(walletAddress) {
+      try {
+        const response = await fetch(
+          `/api/gamification/user-achievements?walletAddress=${walletAddress}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+          this.userAchievements = data.achievements;
+        }
+      } catch (error) {
+        console.error('Failed to load user achievements:', error);
+      }
+    }
+
+    generateSampleAchievements() {
+      return [
+        {
+          id: 1,
+          name: 'First Verse',
+          category: 'musical',
+          description: 'Write your first 16 bars of rap lyrics',
+          badge_icon: '🎤',
+          xp_reward: 50,
+          rarity: 'common',
+          requirements: JSON.stringify(['Write 16 bars of lyrics']),
+          progress: 0
+        },
+        {
+          id: 2,
+          name: 'Beat Master',
+          category: 'musical',
+          description: 'Create 10 original beats',
+          badge_icon: '🎵',
+          xp_reward: 200,
+          rarity: 'uncommon',
+          requirements: JSON.stringify(['Create 10 beats']),
+          progress: 0
+        },
+        {
+          id: 3,
+          name: 'Green Thumb',
+          category: 'environmental',
+          description: 'Start your first garden project',
+          badge_icon: '🌱',
+          xp_reward: 100,
+          rarity: 'common',
+          requirements: JSON.stringify(['Complete gardening course', 'Submit garden plan']),
+          progress: 0
+        },
+        {
+          id: 4,
+          name: 'Kakuma Champion',
+          category: 'kakuma',
+          description: 'Support 25 Kakuma refugee youth',
+          badge_icon: '🌟',
+          xp_reward: 500,
+          rarity: 'rare',
+          requirements: JSON.stringify(['Impact 25 youth through various activities']),
+          progress: 0
+        },
+        {
+          id: 5,
+          name: 'Legend Status',
+          category: 'community',
+          description: 'Reach level 100',
+          badge_icon: '👑',
+          xp_reward: 1000,
+          rarity: 'legendary',
+          requirements: JSON.stringify(['Reach level 100']),
+          progress: 0
+        }
+      ];
+    }
+
+    setupFilters() {
+      // Category filter chips
+      document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          this.applyFilters();
+        });
+      });
+
+      // Dropdown filters
+      ['status-filter', 'rarity-filter', 'sort-filter'].forEach(id => {
+        document.getElementById(id)?.addEventListener('change', () => {
+          this.applyFilters();
+        });
+      });
+    }
+
+    applyFilters() {
+      const category = document.querySelector('.filter-chip.active')?.dataset.category || 'all';
+      const status = document.getElementById('status-filter')?.value || 'all';
+      const rarity = document.getElementById('rarity-filter')?.value || 'all';
+      const sort = document.getElementById('sort-filter')?.value || 'category';
+
+      // Filter
+      this.filteredAchievements = this.achievements.filter(achievement => {
+        const matchesCategory = category === 'all' || achievement.category === category;
+        const matchesRarity = rarity === 'all' || achievement.rarity === rarity;
+        
+        const isEarned = this.isAchievementEarned(achievement.id);
+        const isInProgress = achievement.progress > 0 && !isEarned;
+        const isLocked = !isEarned && !isInProgress;
+        
+        const matchesStatus = status === 'all' || 
+                             (status === 'earned' && isEarned) ||
+                             (status === 'locked' && isLocked) ||
+                             (status === 'in-progress' && isInProgress);
+
+        return matchesCategory && matchesRarity && matchesStatus;
+      });
+
+      // Sort
+      this.filteredAchievements.sort((a, b) => {
+        switch(sort) {
+          case 'category':
+            return a.category.localeCompare(b.category);
+          case 'rarity':
+            const rarityOrder = { legendary: 0, rare: 1, uncommon: 2, common: 3 };
+            return rarityOrder[a.rarity] - rarityOrder[b.rarity];
+          case 'recent':
+            // Sort by earned date (most recent first)
+            const aEarned = this.getEarnedDate(a.id);
+            const bEarned = this.getEarnedDate(b.id);
+            if (!aEarned) return 1;
+            if (!bEarned) return -1;
+            return new Date(bEarned) - new Date(aEarned);
+          case 'progress':
+            return (b.progress || 0) - (a.progress || 0);
+          default:
+            return 0;
+        }
+      });
+
+      this.renderAchievements();
+    }
+
+    renderAchievements() {
+      const container = document.getElementById('achievements-grid');
+      
+      if (this.filteredAchievements.length === 0) {
+        container.innerHTML = '<p class="empty-state">No achievements match your filters</p>';
+        return;
+      }
+
+      container.innerHTML = this.filteredAchievements.map(achievement => 
+        this.createAchievementCard(achievement)
+      ).join('');
+    }
+
+    createAchievementCard(achievement) {
+      const isEarned = this.isAchievementEarned(achievement.id);
+      const progress = achievement.progress || 0;
+      const status = isEarned ? 'earned' : (progress > 0 ? 'in-progress' : 'locked');
+      const earnedDate = this.getEarnedDate(achievement.id);
+
+      return `
+        <div class="achievement-card ${status} ${achievement.rarity}" 
+             onclick="showAchievementDetail(${achievement.id})">
+          <div class="achievement-header">
+            <div class="achievement-badge-large">${achievement.badge_icon}</div>
+            <div class="achievement-rarity-badge ${achievement.rarity}">
+              ${this.capitalizeFirst(achievement.rarity)}
+            </div>
+          </div>
+          
+          <div class="achievement-content">
+            <h3 class="achievement-name">${achievement.name}</h3>
+            <p class="achievement-description">${achievement.description}</p>
+            
+            <div class="achievement-category">
+              <span class="category-icon">${this.getCategoryIcon(achievement.category)}</span>
+              <span class="category-name">${this.capitalizeFirst(achievement.category)}</span>
+            </div>
+            
+            <div class="achievement-reward">
+              <span class="reward-label">Reward:</span>
+              <span class="reward-value">+${achievement.xp_reward} XP</span>
+            </div>
+            
+            ${!isEarned ? `
+              <div class="achievement-progress-bar">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+                <span class="progress-text">${progress}% complete</span>
+              </div>
+            ` : `
+              <div class="achievement-earned-date">
+                ✓ Earned ${this.formatDate(earnedDate)}
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    updateSummary() {
+      const earnedCount = this.userAchievements.length;
+      const totalCount = this.achievements.length;
+      const percentage = totalCount > 0 ? (earnedCount / totalCount) * 100 : 0;
+
+      const summary = document.getElementById('user-achievement-summary');
+      if (summary) {
+        document.getElementById('achievements-earned').textContent = earnedCount;
+        document.getElementById('achievements-total').textContent = totalCount;
+        document.getElementById('achievement-progress').style.width = `${percentage}%`;
+        document.getElementById('achievement-percentage').textContent = `${Math.round(percentage)}%`;
+        summary.style.display = 'flex';
+      }
+    }
+
+    updateRarityCounts() {
+      const rarities = { common: 0, uncommon: 0, rare: 0, legendary: 0 };
+      
+      this.achievements.forEach(achievement => {
+        if (this.isAchievementEarned(achievement.id)) {
+          rarities[achievement.rarity]++;
+        }
+      });
+
+      Object.keys(rarities).forEach(rarity => {
+        const element = document.getElementById(`${rarity}-count`);
+        if (element) {
+          element.textContent = rarities[rarity];
+        }
+      });
+    }
+
+    isAchievementEarned(achievementId) {
+      return this.userAchievements.some(ua => ua.achievement_id === achievementId);
+    }
+
+    getEarnedDate(achievementId) {
+      const earned = this.userAchievements.find(ua => ua.achievement_id === achievementId);
+      return earned?.earned_at || null;
+    }
+
+    getCategoryIcon(category) {
+      const icons = {
+        musical: '🎵',
+        environmental: '🌱',
+        community: '👥',
+        battles: '⚔️',
+        kakuma: '🏕️'
+      };
+      return icons[category] || '🏆';
+    }
+
+    capitalizeFirst(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+  }
+
+  window.achievementsManager = new AchievementsManager();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.achievementsManager.initialize();
+    }, 500);
+  });
+
+  // Global functions
+  function showAchievementDetail(achievementId) {
+    // TODO: Implement achievement detail modal
+    document.getElementById('achievement-detail-modal').style.display = 'flex';
+  }
+
+  function closeAchievementDetail() {
+    document.getElementById('achievement-detail-modal').style.display = 'none';
+  }
+</script>
+
+<style>
+  .achievements-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .achievement-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    margin-top: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .achievement-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .achievement-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .achievement-card.locked {
+    opacity: 0.6;
+  }
+
+  .achievement-card.locked .achievement-badge-large {
+    filter: grayscale(100%);
+  }
+
+  .achievement-card.earned {
+    border: 2px solid var(--color-success);
+  }
+
+  .achievement-badge-large {
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .achievement-rarity-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .achievement-rarity-badge.common {
+    background: var(--color-gray-400);
+    color: white;
+  }
+
+  .achievement-rarity-badge.uncommon {
+    background: var(--color-success);
+    color: white;
+  }
+
+  .achievement-rarity-badge.rare {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .achievement-rarity-badge.legendary {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #333;
+  }
+
+  .rarity-tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .rarity-tier {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+  }
+
+  .tier-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .tier-count {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 1rem 0;
+  }
+
+  /* More styles... */
+</style>

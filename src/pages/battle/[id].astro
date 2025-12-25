@@ -1,0 +1,919 @@
+---
+/**
+ * battle/[id].astro
+ * BATTLE DETAIL PAGE
+ * 
+ * PLANNING NOTES & DECISIONS NEEDED
+ * ================================
+ * 
+ * PURPOSE:
+ * - Display rap battle details and progress
+ * - Show participant submissions
+ * - Enable voting and judging
+ * - Track battle results
+ * 
+ * KEY DECISIONS TO MAKE:
+ * 
+ * 1. BATTLE STATUS LIFECYCLE
+ *    Q: What are all possible battle states?
+ *    States:
+ *    A) OPEN - Created, waiting for opponent acceptance
+ *    B) ACCEPTED - Opponent accepted, waiting for submissions
+ *    C) IN_PROGRESS - Submissions happening (round by round)
+ *    D) JUDGING - All submissions in, voting/judging phase
+ *    E) COMPLETED - Winner declared
+ *    F) CANCELLED - Battle cancelled (timeout or mutual cancellation)
+ *    DECISION: Confirm these states or modify _______________
+ * 
+ * 2. SUBMISSION RULES
+ *    Q: How do submissions work per round?
+ *    Options:
+ *    A) Simultaneous: Both submit, then both revealed
+ *    B) Turn-based: Challenger first, opponent responds
+ *    C) Hybrid: First round simultaneous, then alternating
+ *    DECISION: _______________
+ *    
+ *    Q: What can be submitted?
+ *    - Text only (bars/lyrics)
+ *    - Audio recording
+ *    - Video performance
+ *    - All of the above
+ *    DECISION: _______________
+ * 
+ * 3. JUDGING SYSTEM
+ *    Q: How is winner determined?
+ *    Default split:
+ *    - 40% Peer voting (community)
+ *    - 30% Expert panel (verified judges)
+ *    - 30% AI mentor scoring
+ *    
+ *    Q: What criteria to judge on?
+ *    - Flow (rhythm, delivery)
+ *    - Wordplay (creativity, puns)
+ *    - Content (message, storytelling)
+ *    - Technical skill (rhyme schemes, complexity)
+ *    - Originality
+ *    DECISION: All 5 criteria or subset? _______________
+ *    
+ *    Q: When does judging happen?
+ *    - After each round (round winners)
+ *    - End of all rounds (overall winner)
+ *    - Both (round scores contribute to final)
+ *    DECISION: _______________
+ * 
+ * 4. VOTING MECHANICS
+ *    Q: Who can vote?
+ *    Options:
+ *    A) Anyone with wallet
+ *    B) Only NFT holders
+ *    C) Users with Level 5+
+ *    D) Users who have completed battles themselves
+ *    DECISION: _______________
+ *    
+ *    Q: Voting rewards/incentives?
+ *    - Award XP for voting (+10 XP)
+ *    - Bonus XP if vote matches winning side
+ *    - Penalty for bad-faith voting (always vote same person)
+ *    DECISION: _______________
+ *    
+ *    Q: Anti-manipulation measures?
+ *    - Wallet connection required
+ *    - One vote per wallet
+ *    - Voting history tracked
+ *    - Suspicious patterns flagged
+ *    - NFT stake required to vote?
+ *    DECISION: _______________
+ * 
+ * 5. STAKES & REWARDS
+ *    Q: What happens to staked amounts?
+ *    Options:
+ *    A) Winner takes all
+ *    B) 80% winner, 20% platform/Kakuma
+ *    C) Split by round wins
+ *    DECISION: _______________
+ *    
+ *    Q: XP rewards structure?
+ *    - Winner: 150 XP
+ *    - Loser: 50 XP (participation)
+ *    - Bonus for clean sweep
+ *    - Bonus for close battle
+ *    DECISION: Base XP ___ Winner ___ Loser ___
+ * 
+ * 6. TIME LIMITS
+ *    Q: How are deadlines enforced?
+ *    - Round submission deadline (24/48/72 hours)
+ *    - Auto-forfeit if no submission
+ *    - Extension requests allowed?
+ *    - Voting period length
+ *    DECISION: _______________
+ * 
+ * 7. SPECTATOR EXPERIENCE
+ *    Q: Can non-participants interact?
+ *    - Watch live submissions
+ *    - Comment on battle
+ *    - React with emojis
+ *    - Share on social media
+ *    - Create highlight reels
+ *    DECISION: Which features? _______________
+ * 
+ * 8. BATTLE CATEGORIES/THEMES
+ *    Q: How specific are battle themes?
+ *    Categories:
+ *    - Conscious Bars (social/political)
+ *    - Wordplay Wizard (puns, metaphors)
+ *    - Flow Master (rhythm, delivery)
+ *    - Storyteller (narrative)
+ *    - Kakuma Chronicles (refugee experience)
+ *    - Freestyle (any topic)
+ *    
+ *    Q: Enforce theme compliance?
+ *    - Judge relevance to theme
+ *    - Penalty for off-topic
+ *    - Or just suggestion?
+ *    DECISION: _______________
+ * 
+ * EVENT FLOWS:
+ * 
+ * Flow 1: Accept Battle Challenge
+ * User views open challenge → Clicks accept → Confirms stake → 
+ * Battle status → ACCEPTED → Both receive notification → 
+ * Round 1 begins → Deadline set
+ * 
+ * Flow 2: Submit Bars
+ * User writes lyrics → Preview → Submit for round → 
+ * Lyrics stored (hidden until reveal) → Wait for opponent → 
+ * Both submitted → Auto-reveal → Voting begins
+ * 
+ * Flow 3: Vote on Battle
+ * Voter views submissions → Rate each on 5 criteria → 
+ * Submit vote → Vote counted → Update vote tally → 
+ * Award voter XP → If voting period ends → Calculate winner
+ * 
+ * Flow 4: Battle Completion
+ * Voting ends → Tally all votes (peer + expert + AI) → 
+ * Declare winner → Transfer stake to winner → 
+ * Award XP to both → Check for achievements → 
+ * Update battle records → Send notifications
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const { id } = Astro.params;
+
+// TODO: Fetch battle data from API
+const battleData = {
+  id: id,
+  challenger: {
+    username: "mc_thunder",
+    walletAddress: "ABC...123",
+    level: 15
+  },
+  opponent: {
+    username: "lyrical_storm",
+    walletAddress: "XYZ...789",
+    level: 18
+  },
+  category: "wordplay",
+  status: "IN_PROGRESS", // OPEN, ACCEPTED, IN_PROGRESS, JUDGING, COMPLETED, CANCELLED
+  format: {
+    rounds: 3,
+    barsPerRound: 16,
+    timeLimit: 48 // hours per round
+  },
+  stake: {
+    amount: 0.5,
+    currency: "SOL"
+  },
+  currentRound: 1,
+  submissions: [
+    // Round 1
+    {
+      round: 1,
+      challenger: {
+        bars: null, // Hidden until both submit
+        submittedAt: null
+      },
+      opponent: {
+        bars: null,
+        submittedAt: null
+      },
+      votingOpen: false,
+      votingEndsAt: null,
+      scores: {
+        challenger: 0,
+        opponent: 0
+      }
+    }
+  ],
+  createdAt: new Date().toISOString(),
+  expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+  spectators: 42,
+  totalVotes: 0
+};
+
+const battleExists = battleData !== null;
+const isParticipant = false; // TODO: Check if current user is challenger or opponent
+const canVote = true; // TODO: Check voting eligibility
+---
+
+<BaseLayout 
+  title={`Battle: ${battleData.challenger.username} vs ${battleData.opponent.username}`}
+  description="Watch this epic rap battle unfold"
+  activeSection="music"
+>
+
+  {!battleExists && (
+    <section class="battle-not-found">
+      <div class="container mx-auto">
+        <div class="not-found-content">
+          <div class="not-found-icon">⚔️❌</div>
+          <h1>Battle Not Found</h1>
+          <p>This battle doesn't exist or has been removed.</p>
+          <a href="/music" class="btn-primary">Browse Battles</a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {battleExists && (
+    <>
+      <!-- ============================================ -->
+      <!-- BATTLE HEADER -->
+      <!-- ============================================ -->
+      <section class="battle-header">
+        <div class="container mx-auto">
+          
+          <!-- Status Banner -->
+          <div class={`battle-status-banner status-${battleData.status.toLowerCase()}`}>
+            <span class="status-icon">
+              {battleData.status === 'OPEN' && '🔔'}
+              {battleData.status === 'ACCEPTED' && '✓'}
+              {battleData.status === 'IN_PROGRESS' && '⚔️'}
+              {battleData.status === 'JUDGING' && '⚖️'}
+              {battleData.status === 'COMPLETED' && '🏆'}
+              {battleData.status === 'CANCELLED' && '🚫'}
+            </span>
+            <span class="status-text">
+              {battleData.status === 'OPEN' && 'Waiting for Opponent'}
+              {battleData.status === 'ACCEPTED' && 'Battle Accepted - Get Ready!'}
+              {battleData.status === 'IN_PROGRESS' && `Round ${battleData.currentRound} of ${battleData.format.rounds}`}
+              {battleData.status === 'JUDGING' && 'Voting in Progress'}
+              {battleData.status === 'COMPLETED' && 'Battle Complete'}
+              {battleData.status === 'CANCELLED' && 'Battle Cancelled'}
+            </span>
+          </div>
+
+          <!-- Battle Info -->
+          <div class="battle-info-grid">
+            
+            <!-- Challenger -->
+            <div class="participant-card challenger">
+              <div class="participant-badge">Challenger</div>
+              <a href={`/user/${battleData.challenger.username}`} class="participant-link">
+                <div class="participant-avatar">
+                  {battleData.challenger.username.slice(0, 2).toUpperCase()}
+                </div>
+                <h2 class="participant-name">{battleData.challenger.username}</h2>
+                <div class="participant-level">Level {battleData.challenger.level}</div>
+              </a>
+              
+              {/* Round status for challenger */}
+              <div class="submission-status">
+                {/* TODO: Show submission status per round */}
+                <div class="status-indicator pending">
+                  Round {battleData.currentRound} pending
+                </div>
+              </div>
+            </div>
+
+            <!-- VS Badge -->
+            <div class="vs-badge-container">
+              <div class="vs-badge">
+                <div class="vs-text">VS</div>
+                <div class="battle-category">{battleData.category}</div>
+                <div class="battle-stake">
+                  {battleData.stake.amount} {battleData.stake.currency}
+                </div>
+              </div>
+              
+              <!-- Spectators count -->
+              <div class="spectators-count">
+                <span class="spectator-icon">👁️</span>
+                <span class="spectator-text">{battleData.spectators} watching</span>
+              </div>
+            </div>
+
+            <!-- Opponent -->
+            <div class="participant-card opponent">
+              <div class="participant-badge">Opponent</div>
+              {battleData.opponent ? (
+                <a href={`/user/${battleData.opponent.username}`} class="participant-link">
+                  <div class="participant-avatar">
+                    {battleData.opponent.username.slice(0, 2).toUpperCase()}
+                  </div>
+                  <h2 class="participant-name">{battleData.opponent.username}</h2>
+                  <div class="participant-level">Level {battleData.opponent.level}</div>
+                </a>
+              ) : (
+                <div class="waiting-opponent">
+                  <div class="waiting-icon">⏳</div>
+                  <div class="waiting-text">Waiting for acceptance...</div>
+                  {!isParticipant && (
+                    <button class="btn-primary">Accept Challenge</button>
+                  )}
+                </div>
+              )}
+              
+              {battleData.opponent && (
+                <div class="submission-status">
+                  <div class="status-indicator pending">
+                    Round {battleData.currentRound} pending
+                  </div>
+                </div>
+              )}
+            </div>
+
+          </div>
+
+          <!-- Battle Details -->
+          <div class="battle-details-bar">
+            <div class="detail-item">
+              <span class="detail-icon">📊</span>
+              <span class="detail-label">Format:</span>
+              <span class="detail-value">{battleData.format.rounds} Rounds × {battleData.format.barsPerRound} Bars</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">⏱️</span>
+              <span class="detail-label">Time Limit:</span>
+              <span class="detail-value">{battleData.format.timeLimit}h per round</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">🗳️</span>
+              <span class="detail-label">Votes:</span>
+              <span class="detail-value">{battleData.totalVotes}</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================ -->
+      <!-- BATTLE ROUNDS -->
+      <!-- ============================================ -->
+      <section class="battle-rounds-section">
+        <div class="container mx-auto">
+          
+          <h2 class="section-title">Battle Rounds</h2>
+
+          <div class="rounds-container">
+            
+            {/* Loop through all rounds */}
+            {Array.from({ length: battleData.format.rounds }, (_, i) => i + 1).map(roundNum => {
+              const round = battleData.submissions.find(s => s.round === roundNum);
+              const isCurrentRound = roundNum === battleData.currentRound;
+              const isPastRound = roundNum < battleData.currentRound;
+              const isFutureRound = roundNum > battleData.currentRound;
+
+              return (
+                <div class={`round-card ${isCurrentRound ? 'active' : ''} ${isPastRound ? 'completed' : ''} ${isFutureRound ? 'locked' : ''}`}>
+                  
+                  <div class="round-header">
+                    <h3 class="round-title">
+                      Round {roundNum}
+                      {isCurrentRound && <span class="current-badge">Current</span>}
+                      {isPastRound && <span class="completed-badge">✓</span>}
+                      {isFutureRound && <span class="locked-badge">🔒</span>}
+                    </h3>
+                    
+                    {isCurrentRound && round && (
+                      <div class="round-timer">
+                        <span class="timer-icon">⏱️</span>
+                        <span class="timer-text" id={`round-${roundNum}-timer`}>
+                          {/* TODO: Calculate time remaining */}
+                          Deadline: 23h 45m
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Round submissions */}
+                  {!isFutureRound && round && (
+                    <div class="round-submissions">
+                      
+                      {/* Challenger submission */}
+                      <div class="submission-box challenger-submission">
+                        <div class="submission-header">
+                          <span class="submitter-name">{battleData.challenger.username}</span>
+                          {round.challenger.submittedAt ? (
+                            <span class="submitted-badge">✓ Submitted</span>
+                          ) : (
+                            <span class="pending-badge">Pending</span>
+                          )}
+                        </div>
+                        
+                        {/* Show bars if both submitted or if judging/completed */}
+                        {(round.challenger.bars && (round.opponent.bars || isPastRound)) ? (
+                          <div class="bars-content">
+                            <pre class="bars-text">{round.challenger.bars}</pre>
+                            
+                            {/* Scoring if judging/completed */}
+                            {round.votingOpen || isPastRound ? (
+                              <div class="submission-score">
+                                <div class="score-number">{round.scores.challenger}</div>
+                                <div class="score-label">Score</div>
+                              </div>
+                            ) : null}
+                          </div>
+                        ) : (
+                          <div class="bars-placeholder">
+                            {round.challenger.submittedAt 
+                              ? '🔒 Submission hidden until opponent submits' 
+                              : '⏳ Waiting for submission...'}
+                          </div>
+                        )}
+
+                        {/* Submit button for participant */}
+                        {isParticipant && isCurrentRound && !round.challenger.submittedAt && (
+                          <button class="btn-primary" onclick="openSubmitModal()">
+                            Submit Your Bars
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Opponent submission */}
+                      <div class="submission-box opponent-submission">
+                        <div class="submission-header">
+                          <span class="submitter-name">{battleData.opponent.username}</span>
+                          {round.opponent.submittedAt ? (
+                            <span class="submitted-badge">✓ Submitted</span>
+                          ) : (
+                            <span class="pending-badge">Pending</span>
+                          )}
+                        </div>
+                        
+                        {(round.opponent.bars && (round.challenger.bars || isPastRound)) ? (
+                          <div class="bars-content">
+                            <pre class="bars-text">{round.opponent.bars}</pre>
+                            
+                            {round.votingOpen || isPastRound ? (
+                              <div class="submission-score">
+                                <div class="score-number">{round.scores.opponent}</div>
+                                <div class="score-label">Score</div>
+                              </div>
+                            ) : null}
+                          </div>
+                        ) : (
+                          <div class="bars-placeholder">
+                            {round.opponent.submittedAt 
+                              ? '🔒 Submission hidden until challenger submits' 
+                              : '⏳ Waiting for submission...'}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Voting section if both submitted */}
+                      {round.votingOpen && canVote && (
+                        <div class="voting-section">
+                          <h4 class="voting-title">Cast Your Vote</h4>
+                          <p class="voting-description">
+                            Rate each submission on the criteria below
+                          </p>
+                          
+                          <form id={`vote-form-round-${roundNum}`} class="vote-form">
+                            {/* 
+                            DECISION POINT: Voting criteria
+                            - Flow (1-10)
+                            - Wordplay (1-10)
+                            - Content (1-10)
+                            - Technical Skill (1-10)
+                            - Originality (1-10)
+                            OR
+                            - Simple winner pick
+                            */}
+                            
+                            <div class="vote-choice">
+                              <label class="vote-option">
+                                <input type="radio" name={`round-${roundNum}-vote`} value="challenger" required />
+                                <span class="vote-label">
+                                  <strong>{battleData.challenger.username}</strong> wins this round
+                                </span>
+                              </label>
+                              <label class="vote-option">
+                                <input type="radio" name={`round-${roundNum}-vote`} value="opponent" required />
+                                <span class="vote-label">
+                                  <strong>{battleData.opponent.username}</strong> wins this round
+                                </span>
+                              </label>
+                            </div>
+
+                            <button type="submit" class="btn-primary">
+                              Submit Vote (+10 XP)
+                            </button>
+                          </form>
+                        </div>
+                      )}
+
+                    </div>
+                  )}
+
+                </div>
+              );
+            })}
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================ -->
+      <!-- BATTLE RESULTS (if completed) -->
+      <!-- ============================================ -->
+      {battleData.status === 'COMPLETED' && (
+        <section class="battle-results-section">
+          <div class="container mx-auto">
+            
+            <div class="results-announcement">
+              <h2 class="results-title">🏆 Battle Results</h2>
+              
+              <div class="winner-card">
+                <div class="winner-badge">Winner</div>
+                <div class="winner-avatar">
+                  {/* TODO: Display winner */}
+                  MC
+                </div>
+                <h3 class="winner-name">Winner Username</h3>
+                <div class="winner-stats">
+                  <div class="win-stat">
+                    <div class="stat-value">2-1</div>
+                    <div class="stat-label">Round Score</div>
+                  </div>
+                  <div class="win-stat">
+                    <div class="stat-value">+{battleData.stake.amount} {battleData.stake.currency}</div>
+                    <div class="stat-label">Winnings</div>
+                  </div>
+                  <div class="win-stat">
+                    <div class="stat-value">+150 XP</div>
+                    <div class="stat-label">Experience</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Scoring breakdown */}
+              <div class="scoring-breakdown">
+                <h3 class="breakdown-title">Scoring Breakdown</h3>
+                <div class="breakdown-grid">
+                  <div class="breakdown-item">
+                    <div class="breakdown-label">Peer Voting (40%)</div>
+                    <div class="breakdown-bar">
+                      {/* TODO: Visual bar */}
+                      <div class="breakdown-score">Challenger: 65% | Opponent: 35%</div>
+                    </div>
+                  </div>
+                  <div class="breakdown-item">
+                    <div class="breakdown-label">Expert Panel (30%)</div>
+                    <div class="breakdown-bar">
+                      <div class="breakdown-score">Challenger: 70% | Opponent: 30%</div>
+                    </div>
+                  </div>
+                  <div class="breakdown-item">
+                    <div class="breakdown-label">AI Mentor (30%)</div>
+                    <div class="breakdown-bar">
+                      <div class="breakdown-score">Challenger: 60% | Opponent: 40%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+      )}
+
+      <!-- ============================================ -->
+      <!-- COMMENTS & REACTIONS -->
+      <!-- ============================================ -->
+      <section class="battle-comments-section">
+        <div class="container mx-auto">
+          
+          <h2 class="section-title">Comments & Reactions</h2>
+          
+          {/* Quick reactions */}
+          <div class="quick-reactions">
+            <button class="reaction-btn">🔥 <span>Fire</span> <strong>24</strong></button>
+            <button class="reaction-btn">💀 <span>Destroyed</span> <strong>18</strong></button>
+            <button class="reaction-btn">👑 <span>King</span> <strong>15</strong></button>
+            <button class="reaction-btn">🎯 <span>Bars</span> <strong>32</strong></button>
+          </div>
+
+          {/* Comments */}
+          <div class="comments-container">
+            <p class="empty-state">No comments yet. Be the first!</p>
+            {/* TODO: Implement comments */}
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================ -->
+      <!-- SUBMIT BARS MODAL -->
+      <!-- ============================================ -->
+      <div id="submit-bars-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content large">
+          <div class="modal-header">
+            <h3>Submit Your Bars - Round {battleData.currentRound}</h3>
+            <button class="btn-close" onclick="closeSubmitModal()">×</button>
+          </div>
+
+          <div class="submit-modal-body">
+            <form id="submit-bars-form">
+              
+              <div class="form-group">
+                <label class="form-label">
+                  Your {battleData.format.barsPerRound} Bars *
+                </label>
+                <textarea 
+                  id="bars-textarea"
+                  name="bars"
+                  class="form-textarea"
+                  rows="12"
+                  placeholder="Drop your bars here...
+(Hit enter for new line)"
+                  required
+                ></textarea>
+                <div class="bars-counter">
+                  <span id="line-count">0</span> / {battleData.format.barsPerRound} lines
+                </div>
+              </div>
+
+              {/* Optional: Audio upload */}
+              <div class="form-group">
+                <label class="form-label">
+                  Audio Recording (Optional)
+                </label>
+                <input 
+                  type="file" 
+                  id="audio-upload"
+                  accept="audio/*"
+                  class="form-input"
+                />
+                <span class="form-hint">
+                  Upload an audio recording of your performance (optional)
+                </span>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeSubmitModal()">
+                  Cancel
+                </button>
+                <button type="submit" class="btn-primary">
+                  Submit Bars
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
+  )}
+
+</BaseLayout>
+
+<script>
+  /**
+   * Battle Detail Manager
+   * 
+   * TODO: Implementation
+   * - Real-time updates (WebSocket for live submissions)
+   * - Countdown timers for deadlines
+   * - Vote submission and tallying
+   * - Bars submission with validation
+   * - Audio upload and playback
+   * - Notification system for battle events
+   */
+
+  class BattleDetailManager {
+    constructor() {
+      this.battleId = null;
+      this.isParticipant = false;
+      this.currentRound = 1;
+    }
+
+    async initialize() {
+      const pathParts = window.location.pathname.split('/');
+      this.battleId = pathParts[pathParts.length - 1];
+
+      await this.loadBattleData();
+      this.setupTimers();
+      this.setupForms();
+    }
+
+    async loadBattleData() {
+      // TODO: Fetch from API
+      console.log('Loading battle:', this.battleId);
+    }
+
+    setupTimers() {
+      // TODO: Implement countdown timers
+      // Update every second
+    }
+
+    setupForms() {
+      // Submit bars form
+      document.getElementById('submit-bars-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.submitBars();
+      });
+
+      // Line counter for bars textarea
+      document.getElementById('bars-textarea')?.addEventListener('input', (e) => {
+        const lines = e.target.value.split('\n').filter(line => line.trim());
+        document.getElementById('line-count').textContent = lines.length;
+      });
+
+      // Vote forms
+      document.querySelectorAll('.vote-form').forEach(form => {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.submitVote(form);
+        });
+      });
+    }
+
+    async submitBars() {
+      const bars = document.getElementById('bars-textarea').value;
+      const audioFile = document.getElementById('audio-upload').files[0];
+
+      // TODO: Validate bars count
+      // TODO: Upload audio if present
+      // TODO: Submit to API
+
+      console.log('Submitting bars:', { bars, hasAudio: !!audioFile });
+    }
+
+    async submitVote(form) {
+      const formData = new FormData(form);
+      // TODO: Submit vote to API
+      console.log('Submitting vote');
+    }
+  }
+
+  function openSubmitModal() {
+    document.getElementById('submit-bars-modal').style.display = 'flex';
+  }
+
+  function closeSubmitModal() {
+    document.getElementById('submit-bars-modal').style.display = 'none';
+  }
+
+  window.battleDetailManager = new BattleDetailManager();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    window.battleDetailManager.initialize();
+  });
+</script>
+
+<style>
+  .battle-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 0;
+  }
+
+  .battle-status-banner {
+    text-align: center;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .battle-info-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .participant-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+
+  .participant-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: white;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 1rem auto;
+  }
+
+  .vs-badge-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .vs-badge {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .vs-text {
+    font-size: 2.5rem;
+    font-weight: 900;
+  }
+
+  .battle-category {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+  }
+
+  .round-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .round-card.active {
+    border: 3px solid var(--color-primary);
+  }
+
+  .round-card.locked {
+    opacity: 0.6;
+  }
+
+  .round-submissions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .submission-box {
+    background: var(--color-gray-50);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .bars-text {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    background: white;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--color-primary);
+  }
+
+  .voting-section {
+    grid-column: 1 / -1;
+    background: var(--color-primary-light);
+    padding: 2rem;
+    border-radius: var(--radius-md);
+    margin-top: 2rem;
+  }
+
+  .vote-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border: 2px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+
+  .vote-option:hover {
+    border-color: var(--color-primary);
+  }
+
+  /* More styles... */
+</style>

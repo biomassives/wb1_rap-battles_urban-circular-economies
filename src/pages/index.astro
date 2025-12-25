@@ -1,16 +1,30 @@
 ---
-
+/**
+ * index.astro - Home/Collection Page
+ * See full version in outputs/astro-files/index-full.astro
+ * This is a simplified version for initial deployment
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Hobby Farm Collection" activeSection="home">
+  <section class="collection-hero">
+    <div class="container mx-auto">
+      <h1 class="hero-title">Hobby Farm NFT Collection</h1>
+      <p class="hero-tagline">Meet your animal mentors. Learn music, environmental science, and support Kakuma youth.</p>
+      <div class="hero-actions">
+        <button class="btn-primary large" id="hero-connect">Get Started</button>
+        <a href="#collection" class="btn-secondary large">View Collection</a>
+      </div>
+    </div>
+  </section>
+  
+  <section id="collection" class="collection-section">
+    <div class="container mx-auto">
+      <h2 class="section-title">55 NFT Animals</h2>
+      <div id="nft-grid" class="nft-grid">
+        <!-- NFTs loaded via JavaScript -->
+      </div>
+    </div>
+  </section>
+</BaseLayout>

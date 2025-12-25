@@ -1,0 +1,1137 @@
+---
+/**
+ * [id].astro - Individual NFT Detail Page
+ * Dynamic route for viewing NFT details, utilities, and claiming/purchasing
+ * 
+ * Features:
+ * - NFT image and metadata display
+ * - Utility benefits breakdown
+ * - Claim form (if available)
+ * - Purchase/offer forms
+ * - Owner information
+ * - Transfer history
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Get NFT ID from URL params
+const { id } = Astro.params;
+---
+
+<BaseLayout 
+  title={`NFT #${id}`}
+  description="View NFT details and utilities"
+  activeSection="home"
+>
+
+  <!-- ============================================ -->
+  <!-- NFT DETAIL HERO -->
+  <!-- ============================================ -->
+  <section class="nft-detail-hero">
+    <div class="container mx-auto">
+      
+      <div class="nft-detail-grid">
+        
+        <!-- Left: NFT Image -->
+        <div class="nft-image-section">
+          <div class="nft-image-container-large">
+            <!-- Placeholder for NFT image -->
+            <div class="nft-placeholder" id="nft-image-display">
+              <div class="nft-emoji-large" id="nft-emoji">🐓</div>
+              <div class="nft-id-large">#{id}</div>
+            </div>
+          </div>
+
+          <!-- Image Actions -->
+          <div class="image-actions">
+            <button class="btn-secondary" onclick="downloadImage()">
+              💾 Download
+            </button>
+            <button class="btn-secondary" onclick="shareNFT()">
+              🔗 Share
+            </button>
+            <button class="btn-secondary" onclick="viewOnExplorer()">
+              🔍 View on Explorer
+            </button>
+          </div>
+
+          <!-- Current Theme Indicator -->
+          <div class="current-theme-badge">
+            <span class="theme-icon">🌅</span>
+            <span class="theme-name" id="current-theme">Meadow Morning</span>
+          </div>
+        </div>
+
+        <!-- Right: NFT Information -->
+        <div class="nft-info-section">
+          
+          <!-- Title & Rarity -->
+          <div class="nft-header">
+            <h1 class="nft-title" id="nft-name">Loading...</h1>
+            <div class="nft-rarity-badge" id="nft-rarity-badge">Common</div>
+          </div>
+
+          <!-- Animal Type -->
+          <div class="nft-animal-type-display">
+            <span class="animal-emoji" id="animal-emoji">🐓</span>
+            <span class="animal-name" id="animal-name">Chicken</span>
+            <span class="animal-description">Foundation Mentor</span>
+          </div>
+
+          <!-- Owner Information -->
+          <div class="nft-owner-section" id="owner-section">
+            <div class="owner-label">Owned by</div>
+            <div class="owner-info" id="owner-info">
+              <!-- 
+              If owned by current user:
+              <div class="owner-badge you">You</div>
+              
+              If owned by someone else:
+              <a href="/user/[address]" class="owner-link">
+                <div class="owner-avatar">MC</div>
+                <div class="owner-name">MCThunder</div>
+              </a>
+              
+              If unclaimed:
+              <div class="owner-badge available">Available to Claim</div>
+              -->
+            </div>
+          </div>
+
+          <!-- Price/Status -->
+          <div class="nft-price-section" id="price-section">
+            <!-- Will show price if for sale, or "Not for sale" if owned -->
+          </div>
+
+          <!-- Primary Action Buttons -->
+          <div class="nft-primary-actions" id="primary-actions">
+            <!-- 
+            Buttons shown based on status:
+            - If available: "Claim NFT" button
+            - If owned by user: "List for Sale" button
+            - If for sale: "Buy Now" button
+            - If owned by other: "Make Offer" button
+            -->
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="nft-quick-stats">
+            <div class="quick-stat">
+              <div class="stat-label">Mentor Level</div>
+              <div class="stat-value" id="mentor-level">Foundation</div>
+            </div>
+            <div class="quick-stat">
+              <div class="stat-label">XP Boost</div>
+              <div class="stat-value" id="xp-boost">+10%</div>
+            </div>
+            <div class="quick-stat">
+              <div class="stat-label">Sessions/Month</div>
+              <div class="stat-value" id="mentor-sessions">1</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- NFT UTILITIES & BENEFITS -->
+  <!-- ============================================ -->
+  <section class="nft-utilities-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Holder Benefits & Utilities</h2>
+
+      <div class="utilities-grid">
+        
+        <!-- Educational Access -->
+        <div class="utility-card">
+          <div class="utility-icon">📚</div>
+          <h3 class="utility-title">Educational Access</h3>
+          <ul class="utility-benefits-list" id="education-benefits">
+            <!-- Loaded based on NFT tier -->
+          </ul>
+        </div>
+
+        <!-- Mentor Sessions -->
+        <div class="utility-card">
+          <div class="utility-icon">🎤</div>
+          <h3 class="utility-title">Mentor Sessions</h3>
+          <ul class="utility-benefits-list" id="mentor-benefits">
+            <!-- Loaded based on NFT tier -->
+          </ul>
+        </div>
+
+        <!-- XP Boosts -->
+        <div class="utility-card">
+          <div class="utility-icon">⚡</div>
+          <h3 class="utility-title">XP & Progression</h3>
+          <ul class="utility-benefits-list" id="xp-benefits">
+            <!-- Loaded based on NFT tier -->
+          </ul>
+        </div>
+
+        <!-- Platform Benefits -->
+        <div class="utility-card">
+          <div class="utility-icon">🎵</div>
+          <h3 class="utility-title">Platform Features</h3>
+          <ul class="utility-benefits-list" id="platform-benefits">
+            <!-- Loaded based on NFT tier -->
+          </ul>
+        </div>
+
+        <!-- Community & Governance -->
+        <div class="utility-card">
+          <div class="utility-icon">👥</div>
+          <h3 class="utility-title">Community & Governance</h3>
+          <ul class="utility-benefits-list" id="community-benefits">
+            <!-- Loaded based on NFT tier -->
+          </ul>
+        </div>
+
+        <!-- Revenue Share (Legendary only) -->
+        <div class="utility-card legendary-only" id="revenue-share-card" style="display: none;">
+          <div class="utility-icon">💰</div>
+          <h3 class="utility-title">Revenue Share</h3>
+          <ul class="utility-benefits-list" id="revenue-benefits">
+            <!-- Only for legendary holders -->
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- NFT METADATA & ATTRIBUTES -->
+  <!-- ============================================ -->
+  <section class="nft-metadata-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Metadata & Attributes</h2>
+
+      <div class="metadata-grid">
+        
+        <!-- Basic Metadata -->
+        <div class="metadata-card">
+          <h3 class="metadata-title">Details</h3>
+          <div class="metadata-list">
+            <div class="metadata-row">
+              <span class="metadata-label">Token ID</span>
+              <span class="metadata-value">#{id}</span>
+            </div>
+            <div class="metadata-row">
+              <span class="metadata-label">Type</span>
+              <span class="metadata-value" id="nft-type">Chicken</span>
+            </div>
+            <div class="metadata-row">
+              <span class="metadata-label">Rarity</span>
+              <span class="metadata-value" id="nft-rarity">Common</span>
+            </div>
+            <div class="metadata-row">
+              <span class="metadata-label">Supply</span>
+              <span class="metadata-value">1 of <span id="total-supply">40</span></span>
+            </div>
+            <div class="metadata-row">
+              <span class="metadata-label">Collection</span>
+              <span class="metadata-value">Hobby Farm</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blockchain Info -->
+        <div class="metadata-card">
+          <h3 class="metadata-title">Blockchain</h3>
+          <div class="metadata-list">
+            <div class="metadata-row">
+              <span class="metadata-label">Blockchain</span>
+              <span class="metadata-value">Solana</span>
+            </div>
+            <div class="metadata-row">
+              <span class="metadata-label">Token Standard</span>
+              <span class="metadata-value">SPL Token</span>
+            </div>
+            <div class="metadata-row">
+              <span class="metadata-label">Contract Address</span>
+              <span class="metadata-value copy-text" onclick="copyToClipboard('contract-address')">
+                <span id="contract-address">HobbyFarm...</span>
+                📋
+              </span>
+            </div>
+            <div class="metadata-row">
+              <span class="metadata-label">Mint Address</span>
+              <span class="metadata-value copy-text" onclick="copyToClipboard('mint-address')">
+                <span id="mint-address">Loading...</span>
+                📋
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Special Attributes -->
+        <div class="metadata-card">
+          <h3 class="metadata-title">Attributes</h3>
+          <div class="attributes-list" id="attributes-list">
+            <!-- 
+            Dynamic attributes loaded here:
+            
+            <div class="attribute-badge">
+              <span class="attribute-trait">Background</span>
+              <span class="attribute-value">Meadow</span>
+            </div>
+            -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- TRANSFER HISTORY -->
+  <!-- ============================================ -->
+  <section class="transfer-history-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Transfer History</h2>
+
+      <div class="history-table-container">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Price</th>
+              <th>Date</th>
+              <th>Transaction</th>
+            </tr>
+          </thead>
+          <tbody id="transfer-history-tbody">
+            <!-- 
+            Transfer history loaded here
+            
+            <tr>
+              <td><span class="event-badge mint">Minted</span></td>
+              <td>—</td>
+              <td><a href="/user/[address]">UserName</a></td>
+              <td>—</td>
+              <td>Jan 1, 2025</td>
+              <td><a href="https://explorer.solana.com/tx/..." target="_blank">View →</a></td>
+            </tr>
+            -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- CLAIM NFT MODAL -->
+  <!-- ============================================ -->
+  <div id="claim-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h3>Claim NFT #{id}</h3>
+        <button class="btn-close" onclick="closeClaimModal()">×</button>
+      </div>
+
+      <div class="claim-modal-body">
+        
+        <!-- NFT Preview -->
+        <div class="claim-nft-preview">
+          <div class="claim-nft-image" id="claim-nft-preview"></div>
+          <h4 id="claim-nft-name">Chicken #1</h4>
+        </div>
+
+        <!-- Claim Requirements -->
+        <div class="claim-requirements">
+          <h4>Requirements:</h4>
+          <ul class="requirements-list">
+            <li class="requirement met">
+              ✓ Connected wallet
+            </li>
+            <li class="requirement met">
+              ✓ Account verified
+            </li>
+            <li class="requirement pending" id="claim-requirement-xp">
+              <!-- Dynamic: Based on NFT tier -->
+              ○ Reach Level 1 (You're Level 1)
+            </li>
+          </ul>
+        </div>
+
+        <!-- Claim Info -->
+        <div class="claim-info">
+          <p>
+            <strong>Free to claim!</strong> This NFT is available to all platform members.
+            Once claimed, you'll receive all holder benefits immediately.
+          </p>
+        </div>
+
+        <!-- Claim Form -->
+        <form id="claim-form" onsubmit="event.preventDefault(); claimNFT();">
+          
+          <!-- Accept Terms -->
+          <div class="form-group">
+            <label class="form-checkbox">
+              <input type="checkbox" id="accept-terms" required />
+              I understand NFT benefits and platform terms
+            </label>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="closeClaimModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">
+              🎁 Claim NFT
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Gas Fee Notice -->
+        <p class="claim-notice">
+          ⛽ Small gas fee required for blockchain transaction (~0.001 SOL)
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- BUY NFT MODAL -->
+  <!-- ============================================ -->
+  <div id="buy-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h3>Buy NFT #{id}</h3>
+        <button class="btn-close" onclick="closeBuyModal()">×</button>
+      </div>
+
+      <div class="buy-modal-body">
+        
+        <!-- NFT Preview -->
+        <div class="buy-nft-preview">
+          <div class="buy-nft-image" id="buy-nft-preview"></div>
+          <h4 id="buy-nft-name">Chicken #1</h4>
+        </div>
+
+        <!-- Price Breakdown -->
+        <div class="price-breakdown">
+          <div class="price-row">
+            <span class="price-label">Listing Price</span>
+            <span class="price-value" id="listing-price">5 SOL</span>
+          </div>
+          <div class="price-row">
+            <span class="price-label">Platform Fee (2.5%)</span>
+            <span class="price-value" id="platform-fee">0.125 SOL</span>
+          </div>
+          <div class="price-row">
+            <span class="price-label">Creator Royalty (5%)</span>
+            <span class="price-value" id="creator-royalty">0.25 SOL</span>
+          </div>
+          <div class="price-row total">
+            <span class="price-label">Total</span>
+            <span class="price-value" id="total-price">5.375 SOL</span>
+          </div>
+        </div>
+
+        <!-- Wallet Balance Check -->
+        <div class="wallet-balance-check">
+          <div class="balance-row">
+            <span class="balance-label">Your Balance</span>
+            <span class="balance-value" id="user-balance">10 SOL</span>
+          </div>
+          <div class="balance-status" id="balance-status">
+            ✓ Sufficient balance
+          </div>
+        </div>
+
+        <!-- Buy Form -->
+        <form id="buy-form" onsubmit="event.preventDefault(); buyNFT();">
+          
+          <!-- Accept Terms -->
+          <div class="form-group">
+            <label class="form-checkbox">
+              <input type="checkbox" id="accept-buy-terms" required />
+              I understand this purchase is final and non-refundable
+            </label>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="closeBuyModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary" id="buy-now-btn">
+              💎 Buy Now
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Purchase Notice -->
+        <p class="buy-notice">
+          🔒 Secure transaction via Solana blockchain. Benefits activate immediately after purchase.
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MAKE OFFER MODAL -->
+  <!-- ============================================ -->
+  <div id="offer-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h3>Make an Offer</h3>
+        <button class="btn-close" onclick="closeOfferModal()">×</button>
+      </div>
+
+      <div class="offer-modal-body">
+        
+        <!-- Current Owner Info -->
+        <div class="current-owner-info">
+          <p>Making offer to: <strong id="offer-owner-name">Owner</strong></p>
+        </div>
+
+        <!-- Offer Form -->
+        <form id="offer-form" onsubmit="event.preventDefault(); submitOffer();">
+          
+          <!-- Offer Amount -->
+          <div class="form-group">
+            <label for="offer-amount" class="form-label">
+              Offer Amount *
+            </label>
+            <div class="amount-input-group">
+              <input 
+                type="number" 
+                id="offer-amount" 
+                name="offerAmount"
+                class="form-input"
+                placeholder="0.0"
+                min="0.1"
+                step="0.1"
+                required
+              />
+              <div class="currency-badge">SOL</div>
+            </div>
+            <span class="form-hint">
+              Minimum offer: 0.1 SOL
+            </span>
+          </div>
+
+          <!-- Floor Price Reference -->
+          <div class="floor-price-reference">
+            <div class="reference-row">
+              <span>Floor Price:</span>
+              <span id="floor-price-display">2.5 SOL</span>
+            </div>
+            <div class="reference-row">
+              <span>Last Sale:</span>
+              <span id="last-sale-price">3.2 SOL</span>
+            </div>
+          </div>
+
+          <!-- Offer Expiration -->
+          <div class="form-group">
+            <label for="offer-expiration" class="form-label">
+              Offer Expiration
+            </label>
+            <select id="offer-expiration" name="expiration" class="form-select">
+              <option value="1">1 day</option>
+              <option value="3">3 days</option>
+              <option value="7" selected>7 days</option>
+              <option value="30">30 days</option>
+            </select>
+          </div>
+
+          <!-- Optional Message -->
+          <div class="form-group">
+            <label for="offer-message" class="form-label">
+              Message to Owner (Optional)
+            </label>
+            <textarea 
+              id="offer-message" 
+              name="message"
+              class="form-textarea"
+              rows="3"
+              placeholder="Share why you want this NFT..."
+              maxlength="500"
+            ></textarea>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="closeOfferModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">
+              📨 Submit Offer
+            </button>
+          </div>
+
+        </form>
+
+        <p class="offer-notice">
+          💡 Offer will be held in escrow until accepted or expired
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- LIST FOR SALE MODAL (Owner Only) -->
+  <!-- ============================================ -->
+  <div id="list-sale-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h3>List NFT for Sale</h3>
+        <button class="btn-close" onclick="closeListSaleModal()">×</button>
+      </div>
+
+      <div class="list-sale-modal-body">
+        
+        <!-- Listing Form -->
+        <form id="list-sale-form" onsubmit="event.preventDefault(); listForSale();">
+          
+          <!-- Listing Price -->
+          <div class="form-group">
+            <label for="listing-price-input" class="form-label">
+              Listing Price *
+            </label>
+            <div class="amount-input-group">
+              <input 
+                type="number" 
+                id="listing-price-input" 
+                name="listingPrice"
+                class="form-input"
+                placeholder="0.0"
+                min="0.1"
+                step="0.1"
+                required
+              />
+              <div class="currency-badge">SOL</div>
+            </div>
+            <div class="form-actions-row">
+              <span class="form-hint">Minimum: 0.1 SOL</span>
+              <button type="button" class="btn-text" onclick="setFloorPrice()">
+                Use Floor Price
+              </button>
+            </div>
+          </div>
+
+          <!-- Fee Breakdown Preview -->
+          <div class="fee-breakdown">
+            <h4>Fee Breakdown:</h4>
+            <div class="fee-row">
+              <span>Your Listing</span>
+              <span id="your-listing">0 SOL</span>
+            </div>
+            <div class="fee-row">
+              <span>Platform Fee (2.5%)</span>
+              <span id="platform-fee-estimate">0 SOL</span>
+            </div>
+            <div class="fee-row">
+              <span>Creator Royalty (5%)</span>
+              <span id="creator-royalty-estimate">0 SOL</span>
+            </div>
+            <div class="fee-row total">
+              <span>You'll Receive</span>
+              <span id="seller-receive">0 SOL</span>
+            </div>
+          </div>
+
+          <!-- Listing Duration -->
+          <div class="form-group">
+            <label for="listing-duration" class="form-label">
+              Listing Duration
+            </label>
+            <select id="listing-duration" name="duration" class="form-select">
+              <option value="7">7 days</option>
+              <option value="14">14 days</option>
+              <option value="30" selected>30 days</option>
+              <option value="90">90 days</option>
+              <option value="0">No expiration</option>
+            </select>
+          </div>
+
+          <!-- Reserve for Specific Buyer (Optional) -->
+          <div class="form-group">
+            <label class="form-checkbox">
+              <input type="checkbox" id="reserve-buyer-toggle" />
+              Reserve for specific buyer
+            </label>
+            
+            <div id="reserve-buyer-section" style="display: none;">
+              <input 
+                type="text" 
+                id="reserve-buyer-address" 
+                name="reservedFor"
+                class="form-input"
+                placeholder="Enter wallet address"
+              />
+              <span class="form-hint">
+                Only this address can purchase the NFT
+              </span>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="closeListSaleModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">
+              📋 List for Sale
+            </button>
+          </div>
+
+        </form>
+
+        <p class="listing-notice">
+          ⚠️ Once listed, you won't be able to use NFT benefits until unlisted or sold
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+
+</BaseLayout>
+
+<script>
+  /**
+   * NFT Detail Page Manager
+   */
+  class NFTDetailManager {
+    constructor(nftId) {
+      this.nftId = nftId;
+      this.nftData = null;
+      this.ownerData = null;
+    }
+
+    async initialize() {
+      await this.loadNFTData();
+      this.renderNFTDetails();
+      this.setupActionButtons();
+      this.loadTransferHistory();
+    }
+
+    async loadNFTData() {
+      try {
+        const response = await fetch(`/api/nft/get?id=${this.nftId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          this.nftData = data.nft;
+          this.ownerData = data.owner;
+        }
+      } catch (error) {
+        console.error('Failed to load NFT data:', error);
+        // Use sample data for demonstration
+        this.nftData = this.generateSampleNFT();
+      }
+    }
+
+    generateSampleNFT() {
+      const types = {
+        chicken: { rarity: 'common', emoji: '🐓', mentor: 'Foundation', xpBoost: 10, sessions: 1 },
+        cat: { rarity: 'uncommon', emoji: '🐱', mentor: 'Intermediate', xpBoost: 25, sessions: 2 },
+        goat: { rarity: 'uncommon', emoji: '🐐', mentor: 'Intermediate', xpBoost: 25, sessions: 2 },
+        pigeon: { rarity: 'uncommon', emoji: '🕊️', mentor: 'Advanced', xpBoost: 25, sessions: 2 },
+        dog: { rarity: 'legendary', emoji: '🐕', mentor: 'Master', xpBoost: 50, sessions: 999 },
+        rabbit: { rarity: 'legendary', emoji: '🐰', mentor: 'Master', xpBoost: 50, sessions: 999 }
+      };
+
+      // Determine type based on ID
+      let type = 'chicken';
+      if (this.nftId > 40 && this.nftId <= 45) type = 'cat';
+      else if (this.nftId > 45 && this.nftId <= 49) type = 'goat';
+      else if (this.nftId > 49 && this.nftId <= 53) type = 'pigeon';
+      else if (this.nftId == 54) type = 'dog';
+      else if (this.nftId == 55) type = 'rabbit';
+
+      const typeData = types[type];
+      
+      return {
+        id: this.nftId,
+        name: `${this.capitalizeFirst(type)} #${this.nftId}`,
+        type: type,
+        ...typeData,
+        isOwned: false,
+        isListed: false
+      };
+    }
+
+    renderNFTDetails() {
+      if (!this.nftData) return;
+
+      // Update basic info
+      document.getElementById('nft-name').textContent = this.nftData.name;
+      document.getElementById('nft-emoji').textContent = this.nftData.emoji;
+      document.getElementById('animal-emoji').textContent = this.nftData.emoji;
+      document.getElementById('animal-name').textContent = this.capitalizeFirst(this.nftData.type);
+      
+      // Update rarity badge
+      const rarityBadge = document.getElementById('nft-rarity-badge');
+      rarityBadge.textContent = this.capitalizeFirst(this.nftData.rarity);
+      rarityBadge.className = `nft-rarity-badge ${this.nftData.rarity}`;
+
+      // Update stats
+      document.getElementById('mentor-level').textContent = this.nftData.mentor;
+      document.getElementById('xp-boost').textContent = `+${this.nftData.xpBoost}%`;
+      document.getElementById('mentor-sessions').textContent = 
+        this.nftData.sessions === 999 ? 'Unlimited' : this.nftData.sessions;
+
+      // Update metadata
+      document.getElementById('nft-type').textContent = this.capitalizeFirst(this.nftData.type);
+      document.getElementById('nft-rarity').textContent = this.capitalizeFirst(this.nftData.rarity);
+
+      // Render utilities
+      this.renderUtilities();
+    }
+
+    renderUtilities() {
+      // TODO: Render utility benefits based on NFT tier
+      const education = document.getElementById('education-benefits');
+      const mentor = document.getElementById('mentor-benefits');
+      const xp = document.getElementById('xp-benefits');
+      const platform = document.getElementById('platform-benefits');
+      const community = document.getElementById('community-benefits');
+
+      // Example benefits rendering
+      education.innerHTML = '<li>Access to Foundation courses</li>';
+      mentor.innerHTML = `<li>${this.nftData.sessions} mentor session(s) per month</li>`;
+      xp.innerHTML = `<li>+${this.nftData.xpBoost}% XP on all activities</li>`;
+      platform.innerHTML = '<li>Priority support</li>';
+      community.innerHTML = '<li>Community chat access</li>';
+    }
+
+    setupActionButtons() {
+      const actionsContainer = document.getElementById('primary-actions');
+      const walletAddress = window.walletManager?.connectedWallet;
+
+      if (!walletAddress) {
+        actionsContainer.innerHTML = `
+          <button class="btn-primary large" onclick="document.getElementById('connect-wallet-btn').click()">
+            Connect Wallet to Claim
+          </button>
+        `;
+        return;
+      }
+
+      // Check ownership and listing status
+      if (this.nftData.isOwned) {
+        if (this.nftData.isListed) {
+          actionsContainer.innerHTML = `
+            <button class="btn-secondary large" onclick="unlistNFT()">
+              📋 Unlist from Sale
+            </button>
+          `;
+        } else {
+          actionsContainer.innerHTML = `
+            <button class="btn-primary large" onclick="showListSaleModal()">
+              💰 List for Sale
+            </button>
+          `;
+        }
+      } else if (this.nftData.isListed) {
+        actionsContainer.innerHTML = `
+          <button class="btn-primary large" onclick="showBuyModal()">
+            💎 Buy Now - ${this.nftData.price} SOL
+          </button>
+          <button class="btn-secondary large" onclick="showOfferModal()">
+            📨 Make Offer
+          </button>
+        `;
+      } else {
+        actionsContainer.innerHTML = `
+          <button class="btn-primary large" onclick="showClaimModal()">
+            🎁 Claim NFT
+          </button>
+        `;
+      }
+    }
+
+    async loadTransferHistory() {
+      // TODO: Load transfer history from blockchain
+      const tbody = document.getElementById('transfer-history-tbody');
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No transfer history yet</td></tr>';
+    }
+
+    capitalizeFirst(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+  }
+
+  // Initialize page
+  const nftId = window.location.pathname.split('/').pop();
+  window.nftDetailManager = new NFTDetailManager(nftId);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.nftDetailManager.initialize();
+    }, 500);
+  });
+
+  // Modal functions
+  function showClaimModal() {
+    document.getElementById('claim-modal').style.display = 'flex';
+  }
+
+  function closeClaimModal() {
+    document.getElementById('claim-modal').style.display = 'none';
+  }
+
+  function showBuyModal() {
+    document.getElementById('buy-modal').style.display = 'flex';
+  }
+
+  function closeBuyModal() {
+    document.getElementById('buy-modal').style.display = 'none';
+  }
+
+  function showOfferModal() {
+    document.getElementById('offer-modal').style.display = 'flex';
+  }
+
+  function closeOfferModal() {
+    document.getElementById('offer-modal').style.display = 'none';
+  }
+
+  function showListSaleModal() {
+    document.getElementById('list-sale-modal').style.display = 'flex';
+  }
+
+  function closeListSaleModal() {
+    document.getElementById('list-sale-modal').style.display = 'none';
+  }
+
+  // Action functions
+  async function claimNFT() {
+    const walletAddress = window.walletManager?.connectedWallet;
+    if (!walletAddress) return;
+
+    try {
+      // TODO: Implement NFT claiming via Solana
+      const response = await fetch('/api/nft/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress,
+          nftId: window.nftDetailManager.nftId
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        closeClaimModal();
+        alert('NFT claimed successfully! Benefits are now active.');
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Claim failed:', error);
+      alert('Failed to claim NFT. Please try again.');
+    }
+  }
+
+  async function buyNFT() {
+    // TODO: Implement NFT purchase
+    console.log('Buy NFT');
+  }
+
+  async function submitOffer() {
+    // TODO: Implement offer submission
+    console.log('Submit offer');
+  }
+
+  async function listForSale() {
+    // TODO: Implement listing for sale
+    console.log('List for sale');
+  }
+
+  async function unlistNFT() {
+    if (confirm('Remove this NFT from sale?')) {
+      // TODO: Implement unlisting
+      console.log('Unlist NFT');
+    }
+  }
+
+  // Utility functions
+  function downloadImage() {
+    // TODO: Implement image download
+    console.log('Download image');
+  }
+
+  function shareNFT() {
+    // TODO: Implement sharing
+    console.log('Share NFT');
+  }
+
+  function viewOnExplorer() {
+    // TODO: Open Solana explorer
+    window.open('https://explorer.solana.com/', '_blank');
+  }
+
+  function copyToClipboard(elementId) {
+    const text = document.getElementById(elementId).textContent;
+    navigator.clipboard.writeText(text);
+    alert('Copied to clipboard!');
+  }
+
+  function setFloorPrice() {
+    // TODO: Set floor price in listing form
+    document.getElementById('listing-price-input').value = '2.5';
+  }
+
+  // Reserve buyer toggle
+  document.getElementById('reserve-buyer-toggle')?.addEventListener('change', (e) => {
+    document.getElementById('reserve-buyer-section').style.display = 
+      e.target.checked ? 'block' : 'none';
+  });
+
+  // Update listing price calculations
+  document.getElementById('listing-price-input')?.addEventListener('input', (e) => {
+    const price = parseFloat(e.target.value) || 0;
+    const platformFee = price * 0.025;
+    const royalty = price * 0.05;
+    const sellerReceives = price - platformFee - royalty;
+
+    document.getElementById('your-listing').textContent = `${price.toFixed(3)} SOL`;
+    document.getElementById('platform-fee-estimate').textContent = `${platformFee.toFixed(3)} SOL`;
+    document.getElementById('creator-royalty-estimate').textContent = `${royalty.toFixed(3)} SOL`;
+    document.getElementById('seller-receive').textContent = `${sellerReceives.toFixed(3)} SOL`;
+  });
+</script>
+
+<style>
+  .nft-detail-hero {
+    padding: 3rem 0;
+  }
+
+  .nft-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+
+  .nft-image-container-large {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-200) 100%);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .nft-emoji-large {
+    font-size: 12rem;
+  }
+
+  .nft-id-large {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--color-gray-600);
+    margin-top: 2rem;
+  }
+
+  .image-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .utilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .utility-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .utility-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .utility-benefits-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .utility-benefits-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  .utility-benefits-list li:last-child {
+    border-bottom: none;
+  }
+
+  .utility-benefits-list li:before {
+    content: "✓ ";
+    color: var(--color-success);
+    font-weight: 700;
+    margin-right: 0.5rem;
+  }
+
+  .metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .metadata-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .metadata-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  .copy-text {
+    cursor: pointer;
+    color: var(--color-primary);
+  }
+
+  .copy-text:hover {
+    text-decoration: underline;
+  }
+
+  /* More styles... */
+</style>

@@ -1,0 +1,936 @@
+---
+/**
+ * music.astro
+ * Music Studio - Track Creation, Rap Battles & Collaborations
+ * 
+ * Features:
+ * - Track upload form (audio, metadata, lyrics)
+ * - Rap battle arena (create/join battles)
+ * - Collaboration board (find partners, start projects)
+ * - User's music library
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Music Studio" 
+  description="Create tracks, battle opponents, and collaborate with artists worldwide"
+  activeSection="music"
+  includeMusicPlayer={true}
+>
+
+  <!-- ============================================ -->
+  <!-- STUDIO NAVIGATION TABS -->
+  <!-- ============================================ -->
+  <section class="studio-header">
+    <div class="container mx-auto">
+      <div class="studio-nav-tabs">
+        <button class="studio-tab active" data-tab="create">
+          <span class="tab-icon">🎤</span>
+          <span class="tab-label">Create Track</span>
+        </button>
+        <button class="studio-tab" data-tab="battles">
+          <span class="tab-icon">⚔️</span>
+          <span class="tab-label">Rap Battles</span>
+          <span class="tab-badge" id="battle-invites">0</span>
+        </button>
+        <button class="studio-tab" data-tab="collabs">
+          <span class="tab-icon">🤝</span>
+          <span class="tab-label">Collaborations</span>
+          <span class="tab-badge" id="collab-requests">0</span>
+        </button>
+        <button class="studio-tab" data-tab="library">
+          <span class="tab-icon">📚</span>
+          <span class="tab-label">My Library</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- TAB 1: CREATE TRACK -->
+  <!-- ============================================ -->
+  <section id="tab-create" class="studio-tab-content active">
+    <div class="container mx-auto">
+      
+      <div class="create-track-layout">
+        
+        <!-- Left: Upload Form -->
+        <div class="track-form-container">
+          <h2 class="section-title">Upload New Track</h2>
+          <p class="section-subtitle">Share your music with the community (+100 XP)</p>
+
+          <form id="track-upload-form" class="track-form">
+            
+            <!-- Track Title -->
+            <div class="form-group">
+              <label for="track-title" class="form-label">
+                Track Title *
+              </label>
+              <input 
+                type="text" 
+                id="track-title" 
+                name="title"
+                class="form-input" 
+                placeholder="My Awesome Track"
+                required
+                maxlength="200"
+              />
+              <span class="form-hint">Maximum 200 characters</span>
+            </div>
+
+            <!-- Genre Selection -->
+            <div class="form-group">
+              <label for="track-genre" class="form-label">
+                Genre *
+              </label>
+              <select id="track-genre" name="genre" class="form-select" required>
+                <option value="">Select genre...</option>
+                <option value="rap">Rap</option>
+                <option value="hip-hop">Hip-Hop</option>
+                <option value="reggae">Reggae</option>
+                <option value="dancehall">Dancehall</option>
+                <option value="conscious">Conscious</option>
+                <option value="fusion">Fusion</option>
+                <option value="afrobeat">Afrobeat</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <!-- Audio File Upload -->
+            <div class="form-group">
+              <label for="audio-file" class="form-label">
+                Audio File *
+              </label>
+              <div class="file-upload-area" id="audio-upload-area">
+                <input 
+                  type="file" 
+                  id="audio-file" 
+                  name="audioFile"
+                  accept="audio/mp3,audio/wav,audio/m4a,audio/mpeg"
+                  required
+                  hidden
+                />
+                <div class="file-upload-content">
+                  <div class="upload-icon">🎵</div>
+                  <p class="upload-text">
+                    <strong>Click to upload</strong> or drag and drop
+                  </p>
+                  <p class="upload-hint">
+                    MP3, WAV, or M4A (max 20MB)
+                  </p>
+                </div>
+                <div class="file-selected" id="audio-file-selected" style="display: none;">
+                  <span class="file-icon">🎵</span>
+                  <span class="file-name" id="audio-file-name"></span>
+                  <span class="file-size" id="audio-file-size"></span>
+                  <button type="button" class="btn-remove" onclick="removeAudioFile()">×</button>
+                </div>
+              </div>
+              <!-- 
+              TODO: Add audio preview player here
+              Once file is uploaded, show waveform and play button
+              -->
+            </div>
+
+            <!-- Cover Art Upload (Optional) -->
+            <div class="form-group">
+              <label for="cover-art" class="form-label">
+                Cover Art (Optional)
+              </label>
+              <div class="file-upload-area small" id="cover-upload-area">
+                <input 
+                  type="file" 
+                  id="cover-art" 
+                  name="coverArt"
+                  accept="image/jpeg,image/png,image/webp"
+                  hidden
+                />
+                <div class="file-upload-content">
+                  <div class="upload-icon">🖼️</div>
+                  <p class="upload-text">Upload cover art</p>
+                  <p class="upload-hint">JPG, PNG, or WebP (max 5MB)</p>
+                </div>
+                <div class="cover-preview" id="cover-preview" style="display: none;">
+                  <img id="cover-preview-img" src="" alt="Cover" />
+                  <button type="button" class="btn-remove" onclick="removeCoverArt()">×</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lyrics -->
+            <div class="form-group">
+              <label for="track-lyrics" class="form-label">
+                Lyrics (Optional)
+              </label>
+              <textarea 
+                id="track-lyrics" 
+                name="lyrics"
+                class="form-textarea" 
+                rows="10"
+                placeholder="[Verse 1]
+Your lyrics here...
+
+[Chorus]
+..."
+              ></textarea>
+              <div class="form-actions-row">
+                <span class="form-hint">Add your lyrics for listeners to follow along</span>
+                <button type="button" class="btn-text" onclick="importLyrics()">
+                  Import from file
+                </button>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+              <label for="track-description" class="form-label">
+                Description (Optional)
+              </label>
+              <textarea 
+                id="track-description" 
+                name="description"
+                class="form-textarea" 
+                rows="4"
+                placeholder="Tell listeners about this track - the story, the inspiration, the message..."
+                maxlength="1000"
+              ></textarea>
+              <span class="form-hint">Maximum 1000 characters</span>
+            </div>
+
+            <!-- Collaboration Options -->
+            <div class="form-group">
+              <div class="form-checkbox">
+                <input 
+                  type="checkbox" 
+                  id="is-collaboration" 
+                  name="isCollaboration"
+                />
+                <label for="is-collaboration">
+                  This is a collaboration
+                </label>
+              </div>
+            </div>
+
+            <!-- Collaborators Section (shown if collaboration checked) -->
+            <div id="collaborators-section" class="collaborators-section" style="display: none;">
+              <label class="form-label">Collaborators</label>
+              <div id="collaborators-list" class="collaborators-list">
+                <!-- Collaborators will be added here -->
+              </div>
+              <button 
+                type="button" 
+                class="btn-secondary small" 
+                onclick="window.trackFormManager?.addCollaborator()"
+              >
+                + Add Collaborator
+              </button>
+              <p class="form-hint">
+                Add wallet addresses of collaborators. They'll receive credit and can share royalties.
+              </p>
+            </div>
+
+            <!-- NFT Minting Option -->
+            <div class="form-group">
+              <div class="nft-option-card">
+                <div class="nft-option-header">
+                  <div class="form-checkbox">
+                    <input 
+                      type="checkbox" 
+                      id="mint-as-nft" 
+                      name="mintAsNft"
+                    />
+                    <label for="mint-as-nft">
+                      <strong>Mint as NFT</strong>
+                    </label>
+                  </div>
+                  <span class="badge premium">Premium</span>
+                </div>
+                <p class="nft-option-description">
+                  Create limited edition NFTs of your track. Set royalties, editions, and pricing.
+                </p>
+                <!-- 
+                TODO: Expand to show NFT configuration when checked:
+                - Number of editions
+                - Price per edition
+                - Royalty percentage
+                - NFT metadata
+                -->
+              </div>
+            </div>
+
+            <!-- Release Options -->
+            <div class="form-group">
+              <label class="form-label">Release Options</label>
+              <div class="radio-group">
+                <div class="form-radio">
+                  <input 
+                    type="radio" 
+                    id="release-now" 
+                    name="releaseOption" 
+                    value="now"
+                    checked
+                  />
+                  <label for="release-now">Publish now</label>
+                </div>
+                <div class="form-radio">
+                  <input 
+                    type="radio" 
+                    id="release-draft" 
+                    name="releaseOption" 
+                    value="draft"
+                  />
+                  <label for="release-draft">Save as draft</label>
+                </div>
+                <div class="form-radio">
+                  <input 
+                    type="radio" 
+                    id="release-scheduled" 
+                    name="releaseOption" 
+                    value="scheduled"
+                  />
+                  <label for="release-scheduled">Schedule release</label>
+                </div>
+              </div>
+              <!-- 
+              TODO: Show date/time picker when "scheduled" selected
+              -->
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" onclick="resetForm()">
+                Cancel
+              </button>
+              <button type="submit" class="btn-primary" id="upload-track-btn">
+                <span class="btn-icon">🚀</span>
+                <span>Upload Track (+100 XP)</span>
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Right: Tips & Preview -->
+        <aside class="track-tips-sidebar">
+          
+          <!-- Upload Tips -->
+          <div class="tips-card">
+            <h3 class="tips-title">📝 Upload Tips</h3>
+            <ul class="tips-list">
+              <li>
+                <strong>Audio Quality:</strong> Use high-quality audio files (320kbps MP3 or WAV recommended)
+              </li>
+              <li>
+                <strong>Cover Art:</strong> Square images (1:1 ratio) work best. Minimum 1000×1000px.
+              </li>
+              <li>
+                <strong>Lyrics:</strong> Include lyrics to help listeners connect with your message
+              </li>
+              <li>
+                <strong>Tags:</strong> Use relevant genre tags to help people discover your music
+              </li>
+              <li>
+                <strong>Collaboration:</strong> Credit all contributors to share XP and royalties fairly
+              </li>
+            </ul>
+          </div>
+
+          <!-- XP Rewards -->
+          <div class="rewards-card">
+            <h3 class="rewards-title">⭐ XP Rewards</h3>
+            <div class="reward-item">
+              <span class="reward-action">Upload track</span>
+              <span class="reward-xp">+100 XP</span>
+            </div>
+            <div class="reward-item">
+              <span class="reward-action">First track</span>
+              <span class="reward-xp">+50 XP (bonus)</span>
+            </div>
+            <div class="reward-item">
+              <span class="reward-action">Include lyrics</span>
+              <span class="reward-xp">+25 XP (bonus)</span>
+            </div>
+            <div class="reward-item">
+              <span class="reward-action">Collaboration</span>
+              <span class="reward-xp">+50 XP (bonus)</span>
+            </div>
+          </div>
+
+          <!-- Recent Uploads (Community) -->
+          <div class="recent-uploads-card">
+            <h3 class="recent-title">🎵 Recent Uploads</h3>
+            <div id="recent-uploads-list" class="recent-uploads-list">
+              <!-- Recent tracks from community -->
+            </div>
+          </div>
+
+        </aside>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- TAB 2: RAP BATTLES -->
+  <!-- ============================================ -->
+  <section id="tab-battles" class="studio-tab-content" style="display: none;">
+    <div class="container mx-auto">
+      
+      <div class="battles-layout">
+
+        <!-- Battle Arena Header -->
+        <div class="battles-header">
+          <div class="battles-header-content">
+            <h2 class="section-title">Rap Battle Arena</h2>
+            <p class="section-subtitle">Challenge opponents and prove your skills</p>
+          </div>
+          <button class="btn-primary" onclick="window.battleManager?.showCreateBattleForm()">
+            <span class="btn-icon">⚔️</span>
+            Create Challenge
+          </button>
+        </div>
+
+        <!-- Battle Filters -->
+        <div class="battles-filters">
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All Battles</button>
+            <button class="filter-tab" data-filter="open">Open Challenges</button>
+            <button class="filter-tab" data-filter="my-battles">My Battles</button>
+            <button class="filter-tab" data-filter="live">Live Now</button>
+            <button class="filter-tab" data-filter="completed">Completed</button>
+          </div>
+          
+          <div class="filter-options">
+            <select class="filter-select" id="battle-category-filter">
+              <option value="all">All Categories</option>
+              <option value="conscious">Conscious Bars</option>
+              <option value="wordplay">Wordplay Wizard</option>
+              <option value="flow">Flow Master</option>
+              <option value="storytelling">Storyteller</option>
+              <option value="kakuma">Kakuma Chronicles</option>
+            </select>
+            
+            <select class="filter-select" id="battle-stake-filter">
+              <option value="all">All Stakes</option>
+              <option value="free">Free (0 stake)</option>
+              <option value="low">Low (1-50 XP)</option>
+              <option value="medium">Medium (51-200 XP)</option>
+              <option value="high">High (200+ XP)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Battles Grid -->
+        <div id="battles-grid" class="battles-grid">
+          <!--
+          Battle cards will be loaded here via JS
+          
+          Template:
+          <div class="battle-card [status]">
+            <div class="battle-header">
+              <div class="battle-category">🎯 Wordplay Wizard</div>
+              <div class="battle-status">Open</div>
+            </div>
+            
+            <div class="battle-participants">
+              <div class="participant challenger">
+                <div class="participant-avatar">MC</div>
+                <div class="participant-info">
+                  <div class="participant-name">MC Thunder</div>
+                  <div class="participant-level">Level 25</div>
+                </div>
+              </div>
+              
+              <div class="battle-vs">VS</div>
+              
+              <div class="participant opponent">
+                <div class="participant-placeholder">?</div>
+                <div class="participant-info">
+                  <div class="participant-name">Open Challenge</div>
+                  <div class="participant-action">Accept challenge</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="battle-details">
+              <div class="detail-row">
+                <span class="detail-label">Rounds:</span>
+                <span class="detail-value">3 × 16 bars</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Stake:</span>
+                <span class="detail-value">100 XP</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Deadline:</span>
+                <span class="detail-value">48 hours</span>
+              </div>
+            </div>
+            
+            <div class="battle-actions">
+              <button class="btn-primary">Accept Challenge (+150 XP if win)</button>
+            </div>
+          </div>
+          -->
+        </div>
+
+        <!-- Create Battle Form (Modal) -->
+        <div id="create-battle-modal" class="modal-overlay" style="display: none;">
+          <div class="modal-content large">
+            
+            <div class="modal-header">
+              <h3>Create Rap Battle Challenge</h3>
+              <button class="btn-close" onclick="window.battleManager?.closeCreateBattleForm()">×</button>
+            </div>
+
+            <form id="create-battle-form" class="battle-form">
+              
+              <!-- Opponent Selection -->
+              <div class="form-group">
+                <label class="form-label">Opponent</label>
+                <div class="radio-group">
+                  <div class="form-radio">
+                    <input 
+                      type="radio" 
+                      id="opponent-open" 
+                      name="opponentType" 
+                      value="open"
+                      checked
+                    />
+                    <label for="opponent-open">
+                      <strong>Open Challenge</strong> - Anyone can accept
+                    </label>
+                  </div>
+                  <div class="form-radio">
+                    <input 
+                      type="radio" 
+                      id="opponent-specific" 
+                      name="opponentType" 
+                      value="specific"
+                    />
+                    <label for="opponent-specific">
+                      <strong>Challenge Specific User</strong>
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Shown when "specific" selected -->
+                <div id="specific-opponent-section" style="display: none;">
+                  <input 
+                    type="text" 
+                    id="opponent-wallet" 
+                    class="form-input"
+                    placeholder="Enter opponent's wallet address or username"
+                  />
+                </div>
+              </div>
+
+              <!-- Battle Category -->
+              <div class="form-group">
+                <label for="battle-category" class="form-label">Battle Category *</label>
+                <select id="battle-category" name="category" class="form-select" required>
+                  <option value="">Select category...</option>
+                  <option value="conscious">🎯 Conscious Bars - Social/Environmental themes</option>
+                  <option value="wordplay">🧩 Wordplay Wizard - Technical skill focus</option>
+                  <option value="flow">🌊 Flow Master - Rhythm and delivery</option>
+                  <option value="storytelling">📖 Storyteller - Narrative rap</option>
+                  <option value="kakuma">🏕️ Kakuma Chronicles - Refugee experience</option>
+                  <option value="freestyle">🎲 Freestyle - Anything goes</option>
+                </select>
+              </div>
+
+              <!-- Battle Format -->
+              <div class="form-group">
+                <label class="form-label">Battle Format</label>
+                <div class="format-grid">
+                  <div class="form-row">
+                    <label for="battle-rounds">Rounds:</label>
+                    <select id="battle-rounds" name="rounds" class="form-select small">
+                      <option value="1">1 Round</option>
+                      <option value="2">2 Rounds</option>
+                      <option value="3" selected>3 Rounds</option>
+                      <option value="5">5 Rounds</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-row">
+                    <label for="battle-bars">Bars per round:</label>
+                    <select id="battle-bars" name="barsPerRound" class="form-select small">
+                      <option value="8">8 bars</option>
+                      <option value="16" selected>16 bars</option>
+                      <option value="32">32 bars</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-row">
+                    <label for="battle-time">Time limit:</label>
+                    <select id="battle-time" name="timeLimit" class="form-select small">
+                      <option value="24">24 hours</option>
+                      <option value="48" selected>48 hours</option>
+                      <option value="72">72 hours</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stake Amount -->
+              <div class="form-group">
+                <label for="battle-stake" class="form-label">Stake (Optional)</label>
+                <div class="stake-input-group">
+                  <input 
+                    type="number" 
+                    id="battle-stake" 
+                    name="stake"
+                    class="form-input"
+                    placeholder="0"
+                    min="0"
+                    max="1000"
+                  />
+                  <div class="stake-currency">
+                    <select id="stake-currency" name="stakeCurrency" class="form-select">
+                      <option value="XP">XP</option>
+                      <option value="SOL">SOL</option>
+                    </select>
+                  </div>
+                </div>
+                <p class="form-hint">
+                  Winner takes all. Leave at 0 for friendly battle.
+                </p>
+              </div>
+
+              <!-- Battle Theme (Optional) -->
+              <div class="form-group">
+                <label for="battle-theme" class="form-label">Battle Theme (Optional)</label>
+                <input 
+                  type="text" 
+                  id="battle-theme" 
+                  name="theme"
+                  class="form-input"
+                  placeholder="e.g., Climate Change, Perseverance, Street Life..."
+                />
+                <p class="form-hint">
+                  Set a specific topic for participants to address
+                </p>
+              </div>
+
+              <!-- Judging Options -->
+              <div class="form-group">
+                <label class="form-label">Judging Method</label>
+                <div class="judging-info">
+                  <p>Battles are judged by combination of:</p>
+                  <ul>
+                    <li>Peer voting (40%)</li>
+                    <li>Expert panel (30%)</li>
+                    <li>Animal Mentor AI (30%)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button 
+                  type="button" 
+                  class="btn-secondary"
+                  onclick="window.battleManager?.closeCreateBattleForm()"
+                >
+                  Cancel
+                </button>
+                <button type="submit" class="btn-primary">
+                  <span class="btn-icon">⚔️</span>
+                  Create Challenge
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- TAB 3: COLLABORATIONS -->
+  <!-- ============================================ -->
+  <section id="tab-collabs" class="studio-tab-content" style="display: none;">
+    <div class="container mx-auto">
+      
+      <!-- Collaboration Board Header -->
+      <div class="collabs-header">
+        <div>
+          <h2 class="section-title">Collaboration Board</h2>
+          <p class="section-subtitle">Find partners and create together</p>
+        </div>
+        <button class="btn-primary" onclick="window.collabManager?.showCreateCollabForm()">
+          <span class="btn-icon">🤝</span>
+          Start Collaboration
+        </button>
+      </div>
+
+      <!-- Collaboration Filters -->
+      <div class="collabs-filters">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="need-producer">Need Producer</button>
+        <button class="filter-chip" data-filter="need-vocals">Need Vocals</button>
+        <button class="filter-chip" data-filter="need-lyrics">Need Lyrics</button>
+        <button class="filter-chip" data-filter="reggae">Reggae</button>
+        <button class="filter-chip" data-filter="cross-camp">Cross-Camp</button>
+      </div>
+
+      <!-- Collaborations Grid -->
+      <div id="collabs-grid" class="collabs-grid">
+        <!--
+        Collaboration cards loaded here
+        
+        Template:
+        <div class="collab-card">
+          <div class="collab-header">
+            <div class="collab-genre">🌴 Reggae</div>
+            <div class="collab-status">Looking for partners</div>
+          </div>
+          
+          <h3 class="collab-title">Unity Anthem Project</h3>
+          <p class="collab-description">
+            Creating a reggae anthem about global unity. Need vocalist and producer.
+          </p>
+          
+          <div class="collab-creator">
+            <div class="creator-avatar">MC</div>
+            <div class="creator-info">
+              <div class="creator-name">MC Peace</div>
+              <div class="creator-level">Level 30 • 🏕️ Kakuma</div>
+            </div>
+          </div>
+          
+          <div class="collab-roles">
+            <div class="role-tag filled">Lyrics ✓</div>
+            <div class="role-tag open">Producer needed</div>
+            <div class="role-tag open">Vocals needed</div>
+          </div>
+          
+          <div class="collab-actions">
+            <button class="btn-primary">Request to Join</button>
+            <button class="btn-secondary">View Details</button>
+          </div>
+        </div>
+        -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- TAB 4: MY LIBRARY -->
+  <!-- ============================================ -->
+  <section id="tab-library" class="studio-tab-content" style="display: none;">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">My Music Library</h2>
+
+      <!-- Library Stats -->
+      <div class="library-stats">
+        <div class="lib-stat">
+          <div class="lib-stat-value" id="lib-total-tracks">0</div>
+          <div class="lib-stat-label">Total Tracks</div>
+        </div>
+        <div class="lib-stat">
+          <div class="lib-stat-value" id="lib-total-plays">0</div>
+          <div class="lib-stat-label">Total Plays</div>
+        </div>
+        <div class="lib-stat">
+          <div class="lib-stat-value" id="lib-total-likes">0</div>
+          <div class="lib-stat-label">Total Likes</div>
+        </div>
+      </div>
+
+      <!-- Library Filters -->
+      <div class="library-filters">
+        <div class="filter-group">
+          <label>Sort by:</label>
+          <select id="library-sort" class="form-select">
+            <option value="recent">Most Recent</option>
+            <option value="popular">Most Popular</option>
+            <option value="plays">Most Played</option>
+            <option value="title">Title (A-Z)</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label>Show:</label>
+          <select id="library-filter" class="form-select">
+            <option value="all">All Tracks</option>
+            <option value="published">Published</option>
+            <option value="drafts">Drafts</option>
+            <option value="collabs">Collaborations</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tracks List -->
+      <div id="library-tracks" class="library-tracks">
+        <!--
+        Track rows loaded here
+        
+        Template:
+        <div class="library-track-row">
+          <div class="track-play-btn">▶</div>
+          <div class="track-cover">
+            <img src="/cover.jpg" alt="Cover" />
+          </div>
+          <div class="track-info">
+            <div class="track-title">My Track Name</div>
+            <div class="track-meta">
+              Rap • Published Jan 1, 2025
+            </div>
+          </div>
+          <div class="track-stats">
+            <span class="stat">👁️ 234 plays</span>
+            <span class="stat">❤️ 45 likes</span>
+          </div>
+          <div class="track-actions">
+            <button class="btn-icon" title="Edit">✏️</button>
+            <button class="btn-icon" title="Share">🔗</button>
+            <button class="btn-icon" title="More">⋯</button>
+          </div>
+        </div>
+        -->
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  // Tab switching logic
+  document.querySelectorAll('.studio-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabName = tab.dataset.tab;
+      
+      // Update active tab
+      document.querySelectorAll('.studio-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      // Show corresponding content
+      document.querySelectorAll('.studio-tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(`tab-${tabName}`).style.display = 'block';
+    });
+  });
+
+  // Track upload form handler
+  class TrackFormManager {
+    constructor() {
+      this.formData = new FormData();
+    }
+
+    async handleSubmit(event) {
+      event.preventDefault();
+      
+      // TODO: Implement track upload logic
+      // 1. Upload audio file to IPFS/S3/Blob
+      // 2. Upload cover art (if provided)
+      // 3. Create track record in database
+      // 4. Award XP
+      // 5. Show success message
+      
+      console.log('Track upload submitted');
+    }
+
+    addCollaborator() {
+      // TODO: Show dialog to add collaborator wallet address
+      console.log('Add collaborator');
+    }
+  }
+
+  window.trackFormManager = new TrackFormManager();
+
+  // Initialize form listeners
+  document.getElementById('track-upload-form')?.addEventListener('submit', (e) => {
+    window.trackFormManager.handleSubmit(e);
+  });
+
+  // File upload areas
+  document.getElementById('audio-upload-area')?.addEventListener('click', () => {
+    document.getElementById('audio-file').click();
+  });
+
+  document.getElementById('cover-upload-area')?.addEventListener('click', () => {
+    document.getElementById('cover-art').click();
+  });
+
+  // Show collaborators section when checkbox checked
+  document.getElementById('is-collaboration')?.addEventListener('change', (e) => {
+    document.getElementById('collaborators-section').style.display = 
+      e.target.checked ? 'block' : 'none';
+  });
+</script>
+
+<style>
+  /* Music studio specific styles */
+  .studio-header {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+  }
+
+  .studio-nav-tabs {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+  }
+
+  .studio-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 0.5rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .studio-tab.active {
+    background: white;
+    color: #f5576c;
+  }
+
+  .create-track-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+
+  .track-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .file-upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .file-upload-area:hover {
+    border-color: #f5576c;
+    background: #fef3f4;
+  }
+
+  /* More styles... */
+</style>

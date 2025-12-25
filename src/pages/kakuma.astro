@@ -1,0 +1,759 @@
+---
+/**
+ * kakuma.astro
+ * Kakuma Refugee Camp Impact Dashboard
+ * 
+ * Features:
+ * - View active Kakuma projects
+ * - Track your impact on youth
+ * - Make donations/support projects
+ * - See success stories
+ * - Connect with Kakuma youth
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Kakuma Impact" 
+  description="Support Kakuma refugee camp youth through education, music, and sustainable projects"
+  activeSection="kakuma"
+>
+
+  <!-- ============================================ -->
+  <!-- KAKUMA IMPACT HERO -->
+  <!-- ============================================ -->
+  <section class="kakuma-hero">
+    <div class="container mx-auto">
+      <div class="hero-content-grid">
+        
+        <!-- Left: Mission Statement -->
+        <div class="hero-mission">
+          <h1 class="hero-title">Supporting Kakuma Youth</h1>
+          <p class="hero-description">
+            Empowering refugee youth in Kakuma camp through music education, 
+            environmental training, and income opportunities. Together, we're 
+            building futures and breaking barriers.
+          </p>
+          
+          <div class="hero-location">
+            <span class="location-icon">📍</span>
+            <span class="location-text">Kakuma Refugee Camp, Kenya</span>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn-primary large" onclick="scrollToProjects()">
+              View Projects
+            </button>
+            <button class="btn-secondary large" onclick="showDonateModal()">
+              Make Donation
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Impact Stats -->
+        <div class="impact-stats-card">
+          <h3 class="stats-title">Our Collective Impact</h3>
+          
+          <div class="impact-stat-row highlight">
+            <div class="impact-stat">
+              <div class="stat-number" id="total-youth-impacted">0</div>
+              <div class="stat-label">Youth Impacted</div>
+            </div>
+            <div class="impact-stat">
+              <div class="stat-number" id="total-value-generated">$0</div>
+              <div class="stat-label">Value Generated</div>
+            </div>
+          </div>
+
+          <div class="impact-stat-row">
+            <div class="impact-stat">
+              <div class="stat-number" id="active-projects">0</div>
+              <div class="stat-label">Active Projects</div>
+            </div>
+            <div class="impact-stat">
+              <div class="stat-number" id="total-contributors">0</div>
+              <div class="stat-label">Contributors</div>
+            </div>
+          </div>
+
+          <div class="impact-stat-row">
+            <div class="impact-stat">
+              <div class="stat-number" id="skills-taught">0</div>
+              <div class="stat-label">Skills Taught</div>
+            </div>
+            <div class="impact-stat">
+              <div class="stat-number" id="jobs-created">0</div>
+              <div class="stat-label">Jobs Created</div>
+            </div>
+          </div>
+
+          <div class="revenue-allocation">
+            <h4>Revenue Allocation to Kakuma:</h4>
+            <div class="allocation-item">
+              <span>Platform Revenue</span>
+              <strong>20%</strong>
+            </div>
+            <div class="allocation-item">
+              <span>NFT Sales</span>
+              <strong>30%</strong>
+            </div>
+            <div class="allocation-item">
+              <span>Battle Prizes</span>
+              <strong>50%</strong>
+            </div>
+            <div class="allocation-item">
+              <span>Data Collection Fees</span>
+              <strong>100%</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- YOUR KAKUMA IMPACT -->
+  <!-- ============================================ -->
+  <section class="your-impact-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Your Personal Impact</h2>
+
+      <div class="your-impact-grid">
+        
+        <!-- Impact Summary Card -->
+        <div class="your-impact-card">
+          <div class="card-icon">🌟</div>
+          <h3 class="card-title">Youth You've Supported</h3>
+          <div class="card-value" id="your-youth-impacted">0</div>
+          <p class="card-description">
+            Direct and indirect impact through your activities on the platform
+          </p>
+        </div>
+
+        <!-- Activities Card -->
+        <div class="your-impact-card">
+          <div class="card-icon">📊</div>
+          <h3 class="card-title">Impact Actions</h3>
+          <div class="card-value" id="your-impact-actions">0</div>
+          <p class="card-description">
+            Total actions that generated support for Kakuma youth
+          </p>
+        </div>
+
+        <!-- Value Generated Card -->
+        <div class="your-impact-card">
+          <div class="card-icon">💰</div>
+          <h3 class="card-title">Value Generated</h3>
+          <div class="card-value" id="your-value-generated">$0</div>
+          <p class="card-description">
+            Economic value created for Kakuma through your participation
+          </p>
+        </div>
+
+        <!-- Projects Supported Card -->
+        <div class="your-impact-card">
+          <div class="card-icon">🎯</div>
+          <h3 class="card-title">Projects Supported</h3>
+          <div class="card-value" id="your-projects-supported">0</div>
+          <p class="card-description">
+            Number of Kakuma projects you've contributed to
+          </p>
+        </div>
+
+      </div>
+
+      <!-- How You're Helping -->
+      <div class="helping-breakdown">
+        <h3 class="subsection-title">How You're Helping</h3>
+        <div id="impact-breakdown-list" class="impact-breakdown-list">
+          <!--
+          Impact items loaded here
+          
+          Template:
+          <div class="impact-item">
+            <div class="impact-icon">🎵</div>
+            <div class="impact-content">
+              <h4 class="impact-title">Music Uploads</h4>
+              <p class="impact-description">
+                30% of royalties from your 3 published tracks support Kakuma music education
+              </p>
+            </div>
+            <div class="impact-value">
+              <span class="value-number">$45</span>
+              <span class="value-label">contributed</span>
+            </div>
+          </div>
+          -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- ACTIVE KAKUMA PROJECTS -->
+  <!-- ============================================ -->
+  <section id="projects-section" class="kakuma-projects-section">
+    <div class="container mx-auto">
+      
+      <div class="section-header">
+        <h2 class="section-title">Active Kakuma Projects</h2>
+        <p class="section-subtitle">
+          Support ongoing initiatives that create direct impact
+        </p>
+      </div>
+
+      <!-- Project Filters -->
+      <div class="project-filters">
+        <button class="filter-chip active" data-filter="all">All Projects</button>
+        <button class="filter-chip" data-filter="education">🎓 Education</button>
+        <button class="filter-chip" data-filter="agriculture">🌾 Agriculture</button>
+        <button class="filter-chip" data-filter="energy">☀️ Energy</button>
+        <button class="filter-chip" data-filter="water">💧 Water</button>
+        <button class="filter-chip" data-filter="music">🎵 Music & Arts</button>
+      </div>
+
+      <!-- Projects Grid -->
+      <div id="kakuma-projects-grid" class="kakuma-projects-grid">
+        
+        <!-- Example Project Card -->
+        <!--
+        <div class="kakuma-project-card [status-class]">
+          <div class="project-image">
+            <img src="/project-image.jpg" alt="Project" />
+            <div class="project-category-tag">🌾 Agriculture</div>
+          </div>
+          
+          <div class="project-content">
+            <h3 class="project-title">Permaculture Garden Initiative</h3>
+            <p class="project-description">
+              Establishing sustainable food gardens in Kakuma 1 and 2 to improve 
+              nutrition and teach permaculture skills to youth
+            </p>
+            
+            <div class="project-location">
+              <span class="location-icon">📍</span>
+              Kakuma 1 & 2
+            </div>
+            
+            <div class="project-impact">
+              <div class="impact-metric">
+                <span class="metric-label">Target Beneficiaries:</span>
+                <span class="metric-value">200 youth</span>
+              </div>
+              <div class="impact-metric">
+                <span class="metric-label">Current Reach:</span>
+                <span class="metric-value">87 youth (44%)</span>
+              </div>
+            </div>
+            
+            <div class="project-funding">
+              <div class="funding-progress">
+                <div class="funding-bar">
+                  <div class="funding-fill" style="width: 65%"></div>
+                </div>
+                <div class="funding-labels">
+                  <span class="funding-raised">$6,500 raised</span>
+                  <span class="funding-goal">of $10,000</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="project-status">
+              <span class="status-badge active">Active</span>
+              <span class="timeline">3 months remaining</span>
+            </div>
+          </div>
+          
+          <div class="project-actions">
+            <button class="btn-primary" onclick="supportProject('project-id')">
+              Support Project
+            </button>
+            <button class="btn-secondary" onclick="viewProjectDetails('project-id')">
+              View Details
+            </button>
+          </div>
+        </div>
+        -->
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SUCCESS STORIES -->
+  <!-- ============================================ -->
+  <section class="success-stories-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Success Stories</h2>
+      <p class="section-subtitle">
+        Meet the youth whose lives have been transformed
+      </p>
+
+      <div id="success-stories-grid" class="success-stories-grid">
+        
+        <!-- Example Story Card -->
+        <!--
+        <div class="story-card">
+          <div class="story-image">
+            <img src="/youth-photo.jpg" alt="Youth" />
+          </div>
+          
+          <div class="story-content">
+            <h3 class="story-name">Ahmed M.</h3>
+            <div class="story-location">Kakuma 2, Kenya</div>
+            
+            <div class="story-quote">
+              "Learning music production changed my life. Now I teach others 
+              and earn income from my tracks. Thank you WorldBridger One!"
+            </div>
+            
+            <div class="story-achievements">
+              <span class="achievement-tag">🎵 Producer</span>
+              <span class="achievement-tag">🎓 Certified</span>
+              <span class="achievement-tag">💰 Earning</span>
+            </div>
+            
+            <div class="story-stats">
+              <div class="story-stat">
+                <strong>12</strong> tracks produced
+              </div>
+              <div class="story-stat">
+                <strong>$450</strong> earned
+              </div>
+              <div class="story-stat">
+                <strong>8</strong> students taught
+              </div>
+            </div>
+          </div>
+        </div>
+        -->
+
+      </div>
+
+      <div class="stories-cta">
+        <button class="btn-secondary large" onclick="loadMoreStories()">
+          Load More Stories
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- HOW TO GET INVOLVED -->
+  <!-- ============================================ -->
+  <section class="get-involved-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">How You Can Help</h2>
+
+      <div class="involvement-grid">
+        
+        <div class="involvement-card">
+          <div class="involvement-icon">🎵</div>
+          <h3 class="involvement-title">Create Music</h3>
+          <p class="involvement-description">
+            Upload tracks, battle, collaborate. 30% of your music revenue 
+            supports Kakuma youth programs.
+          </p>
+          <a href="/music" class="involvement-link">Go to Studio →</a>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">🌱</div>
+          <h3 class="involvement-title">Share Knowledge</h3>
+          <p class="involvement-description">
+            Complete courses and share learnings. Teach environmental 
+            practices to youth in the camp.
+          </p>
+          <a href="/learning" class="involvement-link">Browse Courses →</a>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">🤝</div>
+          <h3 class="involvement-title">Mentor Youth</h3>
+          <p class="involvement-description">
+            Connect directly with Kakuma youth. Share skills, provide 
+            guidance, and build lasting connections.
+          </p>
+          <button class="involvement-link" onclick="showMentorSignup()">
+            Become Mentor →
+          </button>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">💰</div>
+          <h3 class="involvement-title">Direct Support</h3>
+          <p class="involvement-description">
+            Make direct donations to specific projects. 100% goes to the 
+            project you choose.
+          </p>
+          <button class="involvement-link" onclick="showDonateModal()">
+            Make Donation →
+          </button>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">📊</div>
+          <h3 class="involvement-title">Citizen Science</h3>
+          <p class="involvement-description">
+            Submit environmental observations. Data collection fees go 
+            directly to youth contributors.
+          </p>
+          <a href="/learning#projects" class="involvement-link">Submit Data →</a>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">🌐</div>
+          <h3 class="involvement-title">Spread the Word</h3>
+          <p class="involvement-description">
+            Share projects, success stories, and opportunities. Help us 
+            reach more supporters.
+          </p>
+          <button class="involvement-link" onclick="shareKakuma()">
+            Share Now →
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- DONATION MODAL -->
+  <!-- ============================================ -->
+  <div id="donate-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h3>Support Kakuma Projects</h3>
+        <button class="btn-close" onclick="closeDonateModal()">×</button>
+      </div>
+
+      <form id="donate-form" class="donate-form">
+        
+        <!-- Project Selection -->
+        <div class="form-group">
+          <label class="form-label">Select Project *</label>
+          <select id="donate-project" class="form-select" required>
+            <option value="">Choose a project...</option>
+            <option value="general">General Fund (All Projects)</option>
+            <!-- Projects loaded dynamically -->
+          </select>
+        </div>
+
+        <!-- Amount -->
+        <div class="form-group">
+          <label class="form-label">Donation Amount *</label>
+          
+          <!-- Quick amounts -->
+          <div class="quick-amounts">
+            <button type="button" class="quick-amount" data-amount="10">$10</button>
+            <button type="button" class="quick-amount" data-amount="25">$25</button>
+            <button type="button" class="quick-amount" data-amount="50">$50</button>
+            <button type="button" class="quick-amount" data-amount="100">$100</button>
+            <button type="button" class="quick-amount" data-amount="custom">Custom</button>
+          </div>
+          
+          <!-- Custom amount input -->
+          <div class="amount-input-group">
+            <span class="currency-symbol">$</span>
+            <input 
+              type="number" 
+              id="donate-amount" 
+              class="form-input"
+              placeholder="0.00"
+              min="1"
+              step="0.01"
+              required
+            />
+            <select id="donate-currency" class="form-select currency-select">
+              <option value="USD">USD</option>
+              <option value="SOL">SOL</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Recurring Option -->
+        <div class="form-group">
+          <div class="form-checkbox">
+            <input type="checkbox" id="donate-recurring" />
+            <label for="donate-recurring">
+              Make this a recurring monthly donation
+            </label>
+          </div>
+        </div>
+
+        <!-- Impact Preview -->
+        <div class="impact-preview">
+          <h4>Your Impact:</h4>
+          <div id="impact-preview-text" class="impact-preview-text">
+            <!-- Generated based on amount -->
+          </div>
+        </div>
+
+        <!-- Optional Message -->
+        <div class="form-group">
+          <label for="donate-message" class="form-label">
+            Message (Optional)
+          </label>
+          <textarea 
+            id="donate-message" 
+            class="form-textarea"
+            rows="3"
+            placeholder="Add a message of encouragement for the youth..."
+          ></textarea>
+        </div>
+
+        <!-- Anonymous Option -->
+        <div class="form-group">
+          <div class="form-checkbox">
+            <input type="checkbox" id="donate-anonymous" />
+            <label for="donate-anonymous">
+              Donate anonymously
+            </label>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn-secondary"
+            onclick="closeDonateModal()"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary">
+            <span class="btn-icon">💝</span>
+            Complete Donation
+          </button>
+        </div>
+
+        <p class="form-note">
+          100% of your donation goes directly to the selected project. 
+          No platform fees.
+        </p>
+
+      </form>
+
+    </div>
+  </div>
+
+</BaseLayout>
+
+<script>
+  /**
+   * Kakuma Impact Manager
+   */
+  class KakumaImpactManager {
+    constructor() {
+      this.projects = [];
+      this.userImpact = null;
+      this.globalStats = null;
+    }
+
+    async initialize() {
+      await this.loadGlobalStats();
+      await this.loadKakumaProjects();
+      
+      const walletAddress = window.walletManager?.connectedWallet;
+      if (walletAddress) {
+        await this.loadUserImpact(walletAddress);
+      }
+      
+      this.renderAll();
+    }
+
+    async loadGlobalStats() {
+      try {
+        const response = await fetch('/api/kakuma/global-stats');
+        const data = await response.json();
+        
+        if (data.success) {
+          this.globalStats = data.stats;
+        }
+      } catch (error) {
+        console.error('Failed to load global stats:', error);
+      }
+    }
+
+    async loadKakumaProjects() {
+      try {
+        const response = await fetch('/api/kakuma/get-projects');
+        const data = await response.json();
+        
+        if (data.success) {
+          this.projects = data.projects;
+        }
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+      }
+    }
+
+    async loadUserImpact(walletAddress) {
+      try {
+        const response = await fetch(
+          `/api/kakuma/user-impact?walletAddress=${walletAddress}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+          this.userImpact = data.impact;
+        }
+      } catch (error) {
+        console.error('Failed to load user impact:', error);
+      }
+    }
+
+    renderAll() {
+      this.renderGlobalStats();
+      this.renderUserImpact();
+      this.renderProjects();
+    }
+
+    renderGlobalStats() {
+      if (!this.globalStats) return;
+
+      document.getElementById('total-youth-impacted').textContent = 
+        this.globalStats.totalYouth || 0;
+      document.getElementById('total-value-generated').textContent = 
+        `$${this.globalStats.totalValue || 0}`;
+      document.getElementById('active-projects').textContent = 
+        this.globalStats.activeProjects || 0;
+      document.getElementById('total-contributors').textContent = 
+        this.globalStats.contributors || 0;
+      document.getElementById('skills-taught').textContent = 
+        this.globalStats.skillsTaught || 0;
+      document.getElementById('jobs-created').textContent = 
+        this.globalStats.jobsCreated || 0;
+    }
+
+    renderUserImpact() {
+      if (!this.userImpact) return;
+
+      document.getElementById('your-youth-impacted').textContent = 
+        this.userImpact.youthImpacted || 0;
+      document.getElementById('your-impact-actions').textContent = 
+        this.userImpact.totalActions || 0;
+      document.getElementById('your-value-generated').textContent = 
+        `$${this.userImpact.valueGenerated || 0}`;
+      document.getElementById('your-projects-supported').textContent = 
+        this.userImpact.projectsSupported || 0;
+    }
+
+    renderProjects() {
+      const container = document.getElementById('kakuma-projects-grid');
+      
+      if (!this.projects || this.projects.length === 0) {
+        container.innerHTML = '<p class="empty-state">No active projects</p>';
+        return;
+      }
+
+      // TODO: Render project cards
+      container.innerHTML = '<p class="loading">Loading projects...</p>';
+    }
+  }
+
+  window.kakumaImpactManager = new KakumaImpactManager();
+
+  // Initialize when ready
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.kakumaImpactManager.initialize();
+    }, 500);
+  });
+
+  // Modal functions
+  function showDonateModal() {
+    document.getElementById('donate-modal').style.display = 'flex';
+  }
+
+  function closeDonateModal() {
+    document.getElementById('donate-modal').style.display = 'none';
+  }
+
+  function scrollToProjects() {
+    document.getElementById('projects-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Quick amount buttons
+  document.querySelectorAll('.quick-amount').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const amount = btn.dataset.amount;
+      if (amount === 'custom') {
+        document.getElementById('donate-amount').focus();
+      } else {
+        document.getElementById('donate-amount').value = amount;
+      }
+    });
+  });
+</script>
+
+<style>
+  .kakuma-hero {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 4rem 0;
+  }
+
+  .hero-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .impact-stats-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 1rem;
+  }
+
+  .your-impact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .your-impact-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .kakuma-projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .involvement-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .involvement-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  /* More styles... */
+</style>

@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "hobby-farm-nft.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/hobby-farm-nft.html"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    }
+  ],
+  "env": {
+    "POSTGRES_URL": "@postgres_url",
+    "POSTGRES_PRISMA_URL": "@postgres_prisma_url",
+    "POSTGRES_URL_NON_POOLING": "@postgres_url_non_pooling",
+    "POSTGRES_USER": "@postgres_user",
+    "POSTGRES_HOST": "@postgres_host",
+    "POSTGRES_PASSWORD": "@postgres_password",
+    "POSTGRES_DATABASE": "@postgres_database"
+  },
+  "regions": ["iad1"]
+}

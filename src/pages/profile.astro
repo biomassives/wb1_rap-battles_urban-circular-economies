@@ -1,0 +1,1019 @@
+---
+/**
+ * profile.astro
+ * User Profile Settings & Customization
+ * 
+ * Features:
+ * - Edit profile information
+ * - Manage NFT collection
+ * - Customize preferences
+ * - View mentor history
+ * - Export data
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Profile Settings" 
+  description="Manage your account, preferences, and NFT collection"
+  activeSection="profile"
+>
+
+  <div class="profile-container">
+    <div class="container mx-auto">
+      
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="profile-avatar-section">
+          <div class="profile-avatar-large" id="profile-avatar">
+            <div class="avatar-placeholder">
+              <span id="avatar-initials">MU</span>
+            </div>
+            <button class="avatar-edit-btn" onclick="openAvatarUpload()">
+              <span>📷</span>
+            </button>
+            <!-- 
+            TODO: Avatar upload functionality
+            - Click to upload image
+            - Crop and resize
+            - Save to storage (IPFS/S3)
+            - Update profile
+            -->
+          </div>
+          
+          <div class="profile-header-info">
+            <h1 class="profile-username" id="profile-username-display">Loading...</h1>
+            <div class="profile-wallet-address" id="profile-wallet-display">
+              <!-- Wallet address will be displayed here -->
+            </div>
+            <div class="profile-level-badge">
+              <span class="level-icon">⭐</span>
+              <span>Level <span id="profile-level">1</span></span>
+              <span class="life-stage" id="profile-life-stage">Egg Stage</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-quick-stats">
+          <div class="quick-stat">
+            <div class="stat-value" id="profile-total-xp">0</div>
+            <div class="stat-label">Total XP</div>
+          </div>
+          <div class="quick-stat">
+            <div class="stat-value" id="profile-owned-nfts">0</div>
+            <div class="stat-label">NFTs Owned</div>
+          </div>
+          <div class="quick-stat">
+            <div class="stat-value" id="profile-member-since">Jan 2025</div>
+            <div class="stat-label">Member Since</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Tabs -->
+      <div class="profile-tabs">
+        <button class="profile-tab active" data-tab="info">
+          <span class="tab-icon">👤</span>
+          <span>Profile Info</span>
+        </button>
+        <button class="profile-tab" data-tab="preferences">
+          <span class="tab-icon">⚙️</span>
+          <span>Preferences</span>
+        </button>
+        <button class="profile-tab" data-tab="nfts">
+          <span class="tab-icon">🖼️</span>
+          <span>My NFTs</span>
+        </button>
+        <button class="profile-tab" data-tab="mentor-history">
+          <span class="tab-icon">📜</span>
+          <span>Mentor History</span>
+        </button>
+        <button class="profile-tab" data-tab="privacy">
+          <span class="tab-icon">🔒</span>
+          <span>Privacy & Data</span>
+        </button>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB 1: PROFILE INFO -->
+      <!-- ============================================ -->
+      <div id="tab-info" class="profile-tab-content active">
+        
+        <h2 class="tab-title">Profile Information</h2>
+        <p class="tab-description">Update your public profile information</p>
+
+        <form id="profile-info-form" class="profile-form">
+          
+          <!-- Username -->
+          <div class="form-group">
+            <label for="username" class="form-label">
+              Username *
+            </label>
+            <input 
+              type="text" 
+              id="username" 
+              name="username"
+              class="form-input" 
+              placeholder="Your username"
+              maxlength="50"
+              required
+            />
+            <span class="form-hint">
+              This is your public display name. 3-50 characters.
+            </span>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email" class="form-label">
+              Email (Optional)
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email"
+              class="form-input" 
+              placeholder="your.email@example.com"
+            />
+            <span class="form-hint">
+              Used for notifications and account recovery. Never shared publicly.
+            </span>
+          </div>
+
+          <!-- Bio -->
+          <div class="form-group">
+            <label for="bio" class="form-label">
+              Bio
+            </label>
+            <textarea 
+              id="bio" 
+              name="bio"
+              class="form-textarea" 
+              rows="4"
+              placeholder="Tell the community about yourself..."
+              maxlength="500"
+            ></textarea>
+            <div class="form-actions-row">
+              <span class="form-hint" id="bio-counter">0 / 500 characters</span>
+            </div>
+          </div>
+
+          <!-- Location (Optional) -->
+          <div class="form-group">
+            <label for="location" class="form-label">
+              Location (Optional)
+            </label>
+            <input 
+              type="text" 
+              id="location" 
+              name="location"
+              class="form-input" 
+              placeholder="e.g., Nairobi, Kenya"
+            />
+            <span class="form-hint">
+              Share your location to connect with nearby users
+            </span>
+          </div>
+
+          <!-- Favorite Animals (Multi-select) -->
+          <div class="form-group">
+            <label class="form-label">
+              Favorite Farm Animals
+            </label>
+            <div class="checkbox-grid">
+              <label class="form-checkbox">
+                <input type="checkbox" name="favoriteAnimals" value="chicken" />
+                <span>🐓 Chicken</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="favoriteAnimals" value="cat" />
+                <span>🐱 Cat</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="favoriteAnimals" value="goat" />
+                <span>🐐 Goat</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="favoriteAnimals" value="pigeon" />
+                <span>🕊️ Pigeon</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="favoriteAnimals" value="dog" />
+                <span>🐕 Dog</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="favoriteAnimals" value="rabbit" />
+                <span>🐰 Rabbit</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Social Links -->
+          <div class="form-group">
+            <label class="form-label">Social Links (Optional)</label>
+            
+            <div class="social-inputs">
+              <div class="social-input-group">
+                <span class="social-icon">🐦</span>
+                <input 
+                  type="text" 
+                  name="twitter"
+                  class="form-input" 
+                  placeholder="Twitter username"
+                />
+              </div>
+              
+              <div class="social-input-group">
+                <span class="social-icon">💬</span>
+                <input 
+                  type="text" 
+                  name="discord"
+                  class="form-input" 
+                  placeholder="Discord username#1234"
+                />
+              </div>
+              
+              <div class="social-input-group">
+                <span class="social-icon">🌐</span>
+                <input 
+                  type="url" 
+                  name="website"
+                  class="form-input" 
+                  placeholder="https://yourwebsite.com"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="resetProfileForm()">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">
+              Save Profile
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB 2: PREFERENCES -->
+      <!-- ============================================ -->
+      <div id="tab-preferences" class="profile-tab-content" style="display: none;">
+        
+        <h2 class="tab-title">Preferences</h2>
+        <p class="tab-description">Customize your platform experience</p>
+
+        <form id="preferences-form" class="profile-form">
+          
+          <!-- Theme Preference -->
+          <div class="form-group">
+            <label class="form-label">Theme Preference</label>
+            <div class="radio-group">
+              <label class="form-radio">
+                <input type="radio" name="themeMode" value="auto" checked />
+                <span>
+                  <strong>Auto (Time-based)</strong><br/>
+                  Theme changes based on time of day
+                </span>
+              </label>
+              <label class="form-radio">
+                <input type="radio" name="themeMode" value="light" />
+                <span>
+                  <strong>Always Light</strong><br/>
+                  Use light theme all day
+                </span>
+              </label>
+              <label class="form-radio">
+                <input type="radio" name="themeMode" value="dark" />
+                <span>
+                  <strong>Always Dark</strong><br/>
+                  Use dark theme all day
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Notification Settings -->
+          <div class="form-group">
+            <label class="form-label">Notifications</label>
+            
+            <div class="notification-settings">
+              <div class="notification-category">
+                <h4>🎵 Music Activity</h4>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifyNewComments" checked />
+                  <span>Comments on my tracks</span>
+                </label>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifyBattleInvites" checked />
+                  <span>Battle invitations</span>
+                </label>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifyCollabRequests" checked />
+                  <span>Collaboration requests</span>
+                </label>
+              </div>
+
+              <div class="notification-category">
+                <h4>🏆 Achievements & Progress</h4>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifyAchievements" checked />
+                  <span>Achievement unlocks</span>
+                </label>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifyLevelUp" checked />
+                  <span>Level ups</span>
+                </label>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifyMilestones" checked />
+                  <span>Milestones reached</span>
+                </label>
+              </div>
+
+              <div class="notification-category">
+                <h4>🌍 Learning & Projects</h4>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifyCourseUpdates" />
+                  <span>New course releases</span>
+                </label>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifyProjectUpdates" />
+                  <span>Project updates</span>
+                </label>
+              </div>
+
+              <div class="notification-category">
+                <h4>🏕️ Kakuma Updates</h4>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifyKakumaImpact" checked />
+                  <span>Impact reports</span>
+                </label>
+                <label class="form-checkbox">
+                  <input type="checkbox" name="notifySuccessStories" />
+                  <span>Success stories</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Digest -->
+          <div class="form-group">
+            <label class="form-label">Email Digest</label>
+            <select id="email-digest" name="emailDigest" class="form-select">
+              <option value="never">Never send emails</option>
+              <option value="daily">Daily summary</option>
+              <option value="weekly" selected>Weekly summary</option>
+              <option value="monthly">Monthly summary</option>
+            </select>
+          </div>
+
+          <!-- Language Preference -->
+          <div class="form-group">
+            <label for="language" class="form-label">
+              Language
+            </label>
+            <select id="language" name="language" class="form-select">
+              <option value="en" selected>English</option>
+              <option value="sw">Swahili</option>
+              <option value="ar">Arabic</option>
+              <option value="fr">French</option>
+              <!-- TODO: Add more languages -->
+            </select>
+            <span class="form-hint">
+              Some features may not be available in all languages yet
+            </span>
+          </div>
+
+          <!-- Accessibility Options -->
+          <div class="form-group">
+            <label class="form-label">Accessibility</label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="reduceMotion" />
+              <span>Reduce motion and animations</span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="highContrast" />
+              <span>High contrast mode</span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="largerText" />
+              <span>Larger text size</span>
+            </label>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="resetPreferencesForm()">
+              Reset to Defaults
+            </button>
+            <button type="submit" class="btn-primary">
+              Save Preferences
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB 3: MY NFTs -->
+      <!-- ============================================ -->
+      <div id="tab-nfts" class="profile-tab-content" style="display: none;">
+        
+        <h2 class="tab-title">My NFT Collection</h2>
+        <p class="tab-description">NFTs you own from the Hobby Farm collection</p>
+
+        <div class="nft-collection-stats">
+          <div class="collection-stat">
+            <span class="stat-label">Total Owned:</span>
+            <span class="stat-value" id="nfts-owned-count">0 / 55</span>
+          </div>
+          <div class="collection-stat">
+            <span class="stat-label">Collection Progress:</span>
+            <div class="progress-bar">
+              <div class="progress-fill" id="collection-progress" style="width: 0%"></div>
+            </div>
+            <span class="stat-value" id="collection-percentage">0%</span>
+          </div>
+        </div>
+
+        <!-- Owned NFTs Grid -->
+        <div id="owned-nfts-grid" class="owned-nfts-grid">
+          <!--
+          TODO: Load user's owned NFTs from database
+          Display NFT cards with:
+          - NFT image/emoji
+          - Name and rarity
+          - When acquired
+          - Special abilities unlocked
+          - Option to set as profile picture
+          
+          If no NFTs owned, show message with link to collection
+          -->
+          <div class="empty-state">
+            <div class="empty-icon">🖼️</div>
+            <h3>No NFTs Yet</h3>
+            <p>You don't own any Hobby Farm NFTs yet.</p>
+            <a href="/" class="btn-primary">Browse Collection</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB 4: MENTOR HISTORY -->
+      <!-- ============================================ -->
+      <div id="tab-mentor-history" class="profile-tab-content" style="display: none;">
+        
+        <h2 class="tab-title">Mentor Journey</h2>
+        <p class="tab-description">Your progression through different animal mentors</p>
+
+        <!-- Current Mentor -->
+        <div class="current-mentor-card">
+          <div class="mentor-badge">Current Mentor</div>
+          <div class="mentor-content">
+            <div class="mentor-emoji" id="current-mentor-emoji">🐓</div>
+            <div class="mentor-info">
+              <h3 id="current-mentor-name">Chicken Mentor</h3>
+              <p id="current-mentor-since">Mentoring since: Jan 1, 2025</p>
+              <div class="mentor-stats">
+                <div class="mentor-stat">
+                  <span class="stat-label">Sessions:</span>
+                  <span class="stat-value" id="mentor-sessions-count">0</span>
+                </div>
+                <div class="mentor-stat">
+                  <span class="stat-label">Lessons Learned:</span>
+                  <span class="stat-value" id="mentor-lessons-count">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mentor History Timeline -->
+        <div class="mentor-timeline">
+          <h3>Your Mentor History</h3>
+          <div id="mentor-timeline-list" class="timeline-list">
+            <!--
+            TODO: Load mentor history from database
+            Display timeline showing:
+            - When each mentor was assigned
+            - How long mentorship lasted
+            - Key achievements during that time
+            - Wisdom learned
+            
+            Timeline item template:
+            <div class="timeline-item">
+              <div class="timeline-date">Jan 1, 2025</div>
+              <div class="timeline-icon">🐓</div>
+              <div class="timeline-content">
+                <h4>Started with Chicken Mentor</h4>
+                <p>Began your journey learning foundations and community building</p>
+                <div class="timeline-achievements">
+                  <span class="achievement-mini">First Verse</span>
+                  <span class="achievement-mini">Green Thumb</span>
+                </div>
+              </div>
+            </div>
+            -->
+          </div>
+        </div>
+
+        <!-- Change Mentor (if eligible) -->
+        <div class="change-mentor-section">
+          <h3>Ready for a New Mentor?</h3>
+          <p>You can choose Cat or Goat mentor at level 11</p>
+          <button class="btn-primary" disabled>
+            Unlock at Level 11
+          </button>
+          <!--
+          TODO: Enable when user reaches level 11
+          Show modal with Cat vs Goat choice
+          Update user's current_animal_mentor in database
+          Award XP for making choice
+          -->
+        </div>
+
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB 5: PRIVACY & DATA -->
+      <!-- ============================================ -->
+      <div id="tab-privacy" class="profile-tab-content" style="display: none;">
+        
+        <h2 class="tab-title">Privacy & Data</h2>
+        <p class="tab-description">Manage your privacy settings and data</p>
+
+        <!-- Privacy Settings -->
+        <div class="privacy-section">
+          <h3>Privacy Settings</h3>
+          
+          <div class="privacy-options">
+            <div class="privacy-option">
+              <div class="privacy-option-header">
+                <h4>Profile Visibility</h4>
+              </div>
+              <select class="form-select" name="profileVisibility">
+                <option value="public">Public - Anyone can view</option>
+                <option value="community">Community - Only registered users</option>
+                <option value="private">Private - Only me</option>
+              </select>
+            </div>
+
+            <div class="privacy-option">
+              <div class="privacy-option-header">
+                <h4>Activity Visibility</h4>
+              </div>
+              <label class="form-checkbox">
+                <input type="checkbox" name="showActivity" checked />
+                <span>Show my recent activity on profile</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="showStats" checked />
+                <span>Show my stats publicly</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="showNFTs" checked />
+                <span>Show my NFT collection</span>
+              </label>
+            </div>
+
+            <div class="privacy-option">
+              <div class="privacy-option-header">
+                <h4>Discoverability</h4>
+              </div>
+              <label class="form-checkbox">
+                <input type="checkbox" name="allowSearch" checked />
+                <span>Allow others to find me by username</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="showOnLeaderboard" checked />
+                <span>Show me on leaderboards</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="data-section">
+          <h3>Data Management</h3>
+          
+          <div class="data-actions">
+            <div class="data-action-card">
+              <div class="data-action-icon">📥</div>
+              <h4>Export Your Data</h4>
+              <p>Download all your data in JSON format</p>
+              <button class="btn-secondary" onclick="exportUserData()">
+                Export Data
+              </button>
+              <!--
+              TODO: Implement data export
+              - Gather all user data from database
+              - Generate JSON file
+              - Include: profile, tracks, battles, observations, achievements
+              - Trigger download
+              -->
+            </div>
+
+            <div class="data-action-card">
+              <div class="data-action-icon">🗑️</div>
+              <h4>Delete Account</h4>
+              <p>Permanently delete your account and all data</p>
+              <button class="btn-secondary danger" onclick="confirmDeleteAccount()">
+                Delete Account
+              </button>
+              <!--
+              TODO: Implement account deletion
+              - Show confirmation modal with warnings
+              - Require password/wallet signature
+              - Delete all user data
+              - Disconnect wallet
+              - Redirect to homepage
+              -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Connected Apps -->
+        <div class="connected-apps-section">
+          <h3>Connected Apps & Permissions</h3>
+          <p class="section-hint">Manage apps that have access to your account</p>
+          
+          <div id="connected-apps-list" class="connected-apps-list">
+            <!-- List of connected apps will be shown here -->
+            <div class="empty-state-small">
+              No connected apps
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</BaseLayout>
+
+<script>
+  /**
+   * Profile Page Manager
+   */
+  class ProfilePageManager {
+    constructor() {
+      this.userData = null;
+    }
+
+    async initialize() {
+      const walletAddress = window.walletManager?.connectedWallet;
+      if (!walletAddress) {
+        window.location.href = '/';
+        return;
+      }
+
+      await this.loadUserProfile(walletAddress);
+      this.populateFormss();
+      this.setupEventListeners();
+    }
+
+    async loadUserProfile(walletAddress) {
+      try {
+        const response = await fetch(
+          `/api/profile/get?walletAddress=${walletAddress}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+          this.userData = data.profile;
+          this.updateProfileDisplay();
+        }
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+      }
+    }
+
+    updateProfileDisplay() {
+      if (!this.userData) return;
+
+      // Update header
+      document.getElementById('profile-username-display').textContent = 
+        this.userData.username || 'Set your username';
+      document.getElementById('profile-wallet-display').textContent = 
+        this.formatWalletAddress(this.userData.wallet_address);
+      
+      // Update avatar initials
+      if (this.userData.username) {
+        const initials = this.userData.username.substring(0, 2).toUpperCase();
+        document.getElementById('avatar-initials').textContent = initials;
+      }
+
+      // TODO: Update other profile fields
+    }
+
+    populateForms() {
+      if (!this.userData) return;
+
+      // Populate profile info form
+      document.getElementById('username').value = this.userData.username || '';
+      document.getElementById('email').value = this.userData.email || '';
+      document.getElementById('bio').value = this.userData.bio || '';
+      
+      // TODO: Populate other form fields
+    }
+
+    setupEventListeners() {
+      // Profile info form
+      document.getElementById('profile-info-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await this.saveProfileInfo();
+      });
+
+      // Preferences form
+      document.getElementById('preferences-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await this.savePreferences();
+      });
+
+      // Bio character counter
+      document.getElementById('bio').addEventListener('input', (e) => {
+        document.getElementById('bio-counter').textContent = 
+          `${e.target.value.length} / 500 characters`;
+      });
+
+      // Tab switching
+      document.querySelectorAll('.profile-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabName = tab.dataset.tab;
+          this.switchTab(tabName);
+        });
+      });
+    }
+
+    async saveProfileInfo() {
+      const walletAddress = window.walletManager?.connectedWallet;
+      const formData = {
+        walletAddress,
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        bio: document.getElementById('bio').value,
+        location: document.getElementById('location').value,
+        // TODO: Gather all form fields
+      };
+
+      try {
+        const response = await fetch('/api/profile/upsert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          this.showSuccess('Profile updated successfully!');
+          await window.progressManager?.awardXP(25, 'profile_updated', 'Updated profile information');
+        }
+      } catch (error) {
+        console.error('Failed to save profile:', error);
+        this.showError('Failed to save profile. Please try again.');
+      }
+    }
+
+    async savePreferences() {
+      // TODO: Implement preferences saving
+      console.log('Save preferences');
+    }
+
+    switchTab(tabName) {
+      // Update active tab
+      document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+      
+      // Show corresponding content
+      document.querySelectorAll('.profile-tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(`tab-${tabName}`).style.display = 'block';
+    }
+
+    formatWalletAddress(address) {
+      if (!address) return '';
+      return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+    }
+
+    showSuccess(message) {
+      // TODO: Show success toast
+      alert(message);
+    }
+
+    showError(message) {
+      // TODO: Show error toast
+      alert(message);
+    }
+  }
+
+  window.profilePageManager = new ProfilePageManager();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.profilePageManager.initialize();
+    }, 500);
+  });
+
+  // Helper functions
+  function openAvatarUpload() {
+    // TODO: Implement avatar upload
+    console.log('Open avatar upload');
+  }
+
+  function resetProfileForm() {
+    window.profilePageManager.populateForms();
+  }
+
+  function resetPreferencesForm() {
+    document.getElementById('preferences-form').reset();
+  }
+
+  function exportUserData() {
+    // TODO: Implement data export
+    console.log('Export user data');
+  }
+
+  function confirmDeleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      // TODO: Implement account deletion
+      console.log('Delete account');
+    }
+  }
+</script>
+
+<style>
+  .profile-container {
+    padding: 2rem 0;
+  }
+
+  .profile-header {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .profile-avatar-section {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .profile-avatar-large {
+    position: relative;
+    width: 120px;
+    height: 120px;
+  }
+
+  .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .avatar-edit-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--color-gray-300);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+
+  .profile-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--color-gray-200);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+
+  .profile-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+  }
+
+  .profile-tab.active {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .profile-form {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .social-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .social-input-group {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .social-icon {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .notification-category {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+  }
+
+  .notification-category h4 {
+    margin-bottom: 1rem;
+    color: var(--color-gray-800);
+  }
+
+  .privacy-options,
+  .data-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .data-action-card {
+    padding: 2rem;
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+
+  .data-action-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .btn-secondary.danger {
+    border-color: var(--color-error);
+    color: var(--color-error);
+  }
+
+  .btn-secondary.danger:hover {
+    background: var(--color-error);
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .profile-header {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .checkbox-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

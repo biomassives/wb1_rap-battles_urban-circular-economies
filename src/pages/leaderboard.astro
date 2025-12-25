@@ -1,0 +1,817 @@
+---
+/**
+ * leaderboard.astro
+ * Global Leaderboard - Rankings by XP, Achievements, Impact
+ * 
+ * Features:
+ * - Multiple leaderboard categories
+ * - Real-time rankings
+ * - User search and filtering
+ * - Rewards for top performers
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Leaderboard" 
+  description="See top performers in music, environmental impact, and community leadership"
+  activeSection="leaderboard"
+>
+
+  <!-- ============================================ -->
+  <!-- LEADERBOARD HERO -->
+  <!-- ============================================ -->
+  <section class="leaderboard-hero">
+    <div class="container mx-auto">
+      <h1 class="hero-title">🏆 Leaderboard</h1>
+      <p class="hero-subtitle">
+        Celebrating our top contributors in music, environmental action, and community impact
+      </p>
+      
+      <!-- User's Rank (if logged in) -->
+      <div id="user-rank-card" class="user-rank-card" style="display: none;">
+        <div class="rank-badge-large">
+          <div class="rank-number" id="user-rank">#0</div>
+          <div class="rank-label">Your Global Rank</div>
+        </div>
+        <div class="rank-stats">
+          <div class="rank-stat">
+            <div class="stat-value" id="user-total-xp">0</div>
+            <div class="stat-label">Total XP</div>
+          </div>
+          <div class="rank-stat">
+            <div class="stat-value" id="user-total-achievements">0</div>
+            <div class="stat-label">Achievements</div>
+          </div>
+          <div class="rank-stat">
+            <div class="stat-value" id="user-kakuma-impact">0</div>
+            <div class="stat-label">Youth Impacted</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- LEADERBOARD CATEGORIES -->
+  <!-- ============================================ -->
+  <section class="leaderboard-section">
+    <div class="container mx-auto">
+      
+      <!-- Category Tabs -->
+      <div class="leaderboard-tabs">
+        <button class="leaderboard-tab active" data-category="global">
+          <span class="tab-icon">🌍</span>
+          <span class="tab-label">Global XP</span>
+        </button>
+        <button class="leaderboard-tab" data-category="music">
+          <span class="tab-icon">🎵</span>
+          <span class="tab-label">Music</span>
+        </button>
+        <button class="leaderboard-tab" data-category="environmental">
+          <span class="tab-icon">🌱</span>
+          <span class="tab-label">Environmental</span>
+        </button>
+        <button class="leaderboard-tab" data-category="kakuma">
+          <span class="tab-icon">🏕️</span>
+          <span class="tab-label">Kakuma Impact</span>
+        </button>
+        <button class="leaderboard-tab" data-category="battles">
+          <span class="tab-icon">⚔️</span>
+          <span class="tab-label">Battle Champions</span>
+        </button>
+        <button class="leaderboard-tab" data-category="weekly">
+          <span class="tab-icon">📅</span>
+          <span class="tab-label">This Week</span>
+        </button>
+      </div>
+
+      <!-- Filters & Search -->
+      <div class="leaderboard-filters">
+        <div class="filter-search">
+          <input 
+            type="text" 
+            id="user-search" 
+            class="search-input"
+            placeholder="Search by username or wallet..."
+          />
+        </div>
+        
+        <div class="filter-group">
+          <label>Time Period:</label>
+          <select id="time-period-filter" class="form-select">
+            <option value="all">All Time</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="year">This Year</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Location:</label>
+          <select id="location-filter" class="form-select">
+            <option value="all">Global</option>
+            <option value="kakuma">Kakuma Camp</option>
+            <option value="kenya">Kenya</option>
+            <option value="africa">Africa</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ========================================= -->
+      <!-- TAB: GLOBAL XP LEADERBOARD -->
+      <!-- ========================================= -->
+      <div id="tab-global" class="leaderboard-tab-content active">
+        
+        <!-- Top 3 Podium -->
+        <div class="podium-section">
+          <h3 class="subsection-title">Top 3 Global Leaders</h3>
+          
+          <div class="podium-grid">
+            
+            <!-- 2nd Place -->
+            <div class="podium-place second">
+              <div class="podium-medal">🥈</div>
+              <div class="podium-rank">#2</div>
+              <div class="podium-user" id="podium-2">
+                <!-- Loaded via JS -->
+              </div>
+            </div>
+
+            <!-- 1st Place -->
+            <div class="podium-place first">
+              <div class="podium-medal">🥇</div>
+              <div class="podium-rank">#1</div>
+              <div class="podium-crown">👑</div>
+              <div class="podium-user" id="podium-1">
+                <!-- Loaded via JS -->
+              </div>
+            </div>
+
+            <!-- 3rd Place -->
+            <div class="podium-place third">
+              <div class="podium-medal">🥉</div>
+              <div class="podium-rank">#3</div>
+              <div class="podium-user" id="podium-3">
+                <!-- Loaded via JS -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Leaderboard Table -->
+        <div class="leaderboard-table-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th class="rank-col">Rank</th>
+                <th class="user-col">User</th>
+                <th class="xp-col">Total XP</th>
+                <th class="level-col">Level</th>
+                <th class="achievements-col">Achievements</th>
+                <th class="mentor-col">Mentor</th>
+                <th class="kakuma-col">Kakuma Impact</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-global-tbody">
+              <!-- 
+              Rows loaded via JavaScript
+              
+              Template:
+              <tr class="leaderboard-row">
+                <td class="rank-col">
+                  <div class="rank-badge">4</div>
+                </td>
+                <td class="user-col">
+                  <div class="user-info">
+                    <div class="user-avatar">MC</div>
+                    <div>
+                      <div class="user-name">MCThunder</div>
+                      <div class="user-location">🏕️ Kakuma</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="xp-col">
+                  <strong>45,230</strong> XP
+                </td>
+                <td class="level-col">
+                  <div class="level-badge">45</div>
+                </td>
+                <td class="achievements-col">
+                  <span class="achievement-count">28</span>
+                </td>
+                <td class="mentor-col">
+                  <span class="mentor-icon">🐕</span> Dog
+                </td>
+                <td class="kakuma-col">
+                  <span class="impact-number">87</span> youth
+                </td>
+              </tr>
+              -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Load More -->
+        <div class="load-more-container">
+          <button class="btn-secondary" id="load-more-global">
+            Load More Rankings
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ========================================= -->
+      <!-- TAB: MUSIC LEADERBOARD -->
+      <!-- ========================================= -->
+      <div id="tab-music" class="leaderboard-tab-content" style="display: none;">
+        
+        <h3 class="subsection-title">Top Music Artists</h3>
+        
+        <div class="leaderboard-table-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th class="rank-col">Rank</th>
+                <th class="user-col">Artist</th>
+                <th>Published Tracks</th>
+                <th>Total Plays</th>
+                <th>Battle Record</th>
+                <th>Collaborations</th>
+                <th>Music XP</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-music-tbody">
+              <!-- Loaded via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- ========================================= -->
+      <!-- TAB: ENVIRONMENTAL LEADERBOARD -->
+      <!-- ========================================= -->
+      <div id="tab-environmental" class="leaderboard-tab-content" style="display: none;">
+        
+        <h3 class="subsection-title">Top Environmental Champions</h3>
+        
+        <div class="leaderboard-table-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th class="rank-col">Rank</th>
+                <th class="user-col">User</th>
+                <th>Courses Completed</th>
+                <th>Certifications</th>
+                <th>Observations</th>
+                <th>Projects</th>
+                <th>Environmental XP</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-environmental-tbody">
+              <!-- Loaded via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- ========================================= -->
+      <!-- TAB: KAKUMA IMPACT LEADERBOARD -->
+      <!-- ========================================= -->
+      <div id="tab-kakuma" class="leaderboard-tab-content" style="display: none;">
+        
+        <h3 class="subsection-title">Top Kakuma Supporters</h3>
+        
+        <div class="leaderboard-table-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th class="rank-col">Rank</th>
+                <th class="user-col">User</th>
+                <th>Youth Impacted</th>
+                <th>Projects Supported</th>
+                <th>Value Generated</th>
+                <th>Impact Actions</th>
+                <th>Kakuma XP</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-kakuma-tbody">
+              <!-- Loaded via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- ========================================= -->
+      <!-- TAB: BATTLE CHAMPIONS -->
+      <!-- ========================================= -->
+      <div id="tab-battles" class="leaderboard-tab-content" style="display: none;">
+        
+        <h3 class="subsection-title">Battle Champions</h3>
+        
+        <div class="leaderboard-table-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th class="rank-col">Rank</th>
+                <th class="user-col">MC</th>
+                <th>Total Battles</th>
+                <th>Wins</th>
+                <th>Win Rate</th>
+                <th>Longest Streak</th>
+                <th>Battle XP</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-battles-tbody">
+              <!-- Loaded via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- ========================================= -->
+      <!-- TAB: WEEKLY LEADERBOARD -->
+      <!-- ========================================= -->
+      <div id="tab-weekly" class="leaderboard-tab-content" style="display: none;">
+        
+        <h3 class="subsection-title">This Week's Top Performers</h3>
+        <p class="week-range" id="week-range">Week of Dec 18-24, 2025</p>
+        
+        <!-- Weekly Rewards Info -->
+        <div class="weekly-rewards-banner">
+          <div class="rewards-icon">🎁</div>
+          <div class="rewards-info">
+            <strong>Weekly Rewards:</strong> Top 10 earn bonus XP and special badges!
+            <div class="rewards-list">
+              #1: 1000 XP + Legendary Badge | #2-3: 500 XP | #4-10: 250 XP
+            </div>
+          </div>
+        </div>
+
+        <div class="leaderboard-table-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th class="rank-col">Rank</th>
+                <th class="user-col">User</th>
+                <th>XP This Week</th>
+                <th>Activities</th>
+                <th>Streak</th>
+                <th>Trending</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-weekly-tbody">
+              <!-- Loaded via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- REWARDS & RECOGNITION -->
+  <!-- ============================================ -->
+  <section class="rewards-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Leaderboard Rewards</h2>
+      
+      <div class="rewards-grid">
+        
+        <div class="reward-tier">
+          <div class="tier-badge gold">🥇 Top 3</div>
+          <h3 class="tier-title">Champions</h3>
+          <ul class="tier-benefits">
+            <li>Legendary Badge</li>
+            <li>1000 Bonus XP</li>
+            <li>Featured on Homepage</li>
+            <li>Exclusive NFT Airdrop</li>
+            <li>Direct Kakuma Mentorship</li>
+          </ul>
+        </div>
+
+        <div class="reward-tier">
+          <div class="tier-badge silver">🥈 Top 10</div>
+          <h3 class="tier-title">Leaders</h3>
+          <ul class="tier-benefits">
+            <li>Rare Badge</li>
+            <li>500 Bonus XP</li>
+            <li>Priority Support</li>
+            <li>Collaboration Opportunities</li>
+          </ul>
+        </div>
+
+        <div class="reward-tier">
+          <div class="tier-badge bronze">🥉 Top 25</div>
+          <h3 class="tier-title">Rising Stars</h3>
+          <ul class="tier-benefits">
+            <li>Achievement Badge</li>
+            <li>250 Bonus XP</li>
+            <li>Community Recognition</li>
+            <li>Mentor Session</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  /**
+   * Leaderboard Manager
+   */
+  class LeaderboardManager {
+    constructor() {
+      this.currentCategory = 'global';
+      this.currentPeriod = 'all';
+      this.leaderboardData = {};
+      this.displayCount = 25;
+    }
+
+    async initialize() {
+      await this.loadLeaderboardData();
+      this.setupTabs();
+      this.setupFilters();
+      this.renderLeaderboard();
+      
+      const walletAddress = window.walletManager?.connectedWallet;
+      if (walletAddress) {
+        await this.loadUserRank(walletAddress);
+      }
+    }
+
+    async loadLeaderboardData() {
+      try {
+        const response = await fetch(
+          `/api/gamification/leaderboard?category=${this.currentCategory}&period=${this.currentPeriod}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+          this.leaderboardData[this.currentCategory] = data.rankings;
+        }
+      } catch (error) {
+        console.error('Failed to load leaderboard:', error);
+      }
+    }
+
+    async loadUserRank(walletAddress) {
+      try {
+        const response = await fetch(
+          `/api/gamification/user-rank?walletAddress=${walletAddress}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+          this.showUserRank(data.rank);
+        }
+      } catch (error) {
+        console.error('Failed to load user rank:', error);
+      }
+    }
+
+    showUserRank(rankData) {
+      const card = document.getElementById('user-rank-card');
+      document.getElementById('user-rank').textContent = `#${rankData.globalRank}`;
+      document.getElementById('user-total-xp').textContent = rankData.totalXP;
+      document.getElementById('user-total-achievements').textContent = rankData.achievements;
+      document.getElementById('user-kakuma-impact').textContent = rankData.kakumaImpact;
+      card.style.display = 'block';
+    }
+
+    setupTabs() {
+      document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          this.switchTab(tab.dataset.category);
+        });
+      });
+    }
+
+    setupFilters() {
+      document.getElementById('time-period-filter')?.addEventListener('change', (e) => {
+        this.currentPeriod = e.target.value;
+        this.loadLeaderboardData();
+        this.renderLeaderboard();
+      });
+      
+      document.getElementById('user-search')?.addEventListener('input', (e) => {
+        this.filterLeaderboard(e.target.value);
+      });
+    }
+
+    switchTab(category) {
+      this.currentCategory = category;
+      
+      // Update active tab
+      document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.category === category);
+      });
+      
+      // Show corresponding content
+      document.querySelectorAll('.leaderboard-tab-content').forEach(content => {
+        content.style.display = content.id === `tab-${category}` ? 'block' : 'none';
+      });
+      
+      this.loadLeaderboardData();
+      this.renderLeaderboard();
+    }
+
+    renderLeaderboard() {
+      const data = this.leaderboardData[this.currentCategory] || [];
+      
+      // Render podium for global
+      if (this.currentCategory === 'global' && data.length >= 3) {
+        this.renderPodium(data.slice(0, 3));
+      }
+      
+      // Render table
+      const tbody = document.getElementById(`leaderboard-${this.currentCategory}-tbody`);
+      if (tbody) {
+        tbody.innerHTML = data.map((user, index) => 
+          this.createLeaderboardRow(user, index + 1)
+        ).join('');
+      }
+    }
+
+    renderPodium(topThree) {
+      // Render 1st, 2nd, 3rd place users in podium
+      [1, 2, 3].forEach((place, index) => {
+        const user = topThree[place === 1 ? 0 : place === 2 ? 1 : 2];
+        const element = document.getElementById(`podium-${place}`);
+        if (element && user) {
+          element.innerHTML = `
+            <div class="podium-avatar">${this.getInitials(user.username)}</div>
+            <div class="podium-name">${user.username}</div>
+            <div class="podium-xp">${user.totalXP.toLocaleString()} XP</div>
+            <div class="podium-level">Level ${user.level}</div>
+          `;
+        }
+      });
+    }
+
+    createLeaderboardRow(user, rank) {
+      // Different columns based on category
+      switch(this.currentCategory) {
+        case 'global':
+          return this.createGlobalRow(user, rank);
+        case 'music':
+          return this.createMusicRow(user, rank);
+        case 'environmental':
+          return this.createEnvironmentalRow(user, rank);
+        case 'kakuma':
+          return this.createKakumaRow(user, rank);
+        case 'battles':
+          return this.createBattlesRow(user, rank);
+        case 'weekly':
+          return this.createWeeklyRow(user, rank);
+        default:
+          return '';
+      }
+    }
+
+    createGlobalRow(user, rank) {
+      return `
+        <tr class="leaderboard-row">
+          <td class="rank-col">
+            <div class="rank-badge ${rank <= 3 ? 'top-three' : ''}">${rank}</div>
+          </td>
+          <td class="user-col">
+            <div class="user-info">
+              <div class="user-avatar">${this.getInitials(user.username)}</div>
+              <div>
+                <div class="user-name">${user.username}</div>
+                ${user.isKakumaYouth ? '<div class="user-location">🏕️ Kakuma</div>' : ''}
+              </div>
+            </div>
+          </td>
+          <td class="xp-col">
+            <strong>${user.totalXP.toLocaleString()}</strong> XP
+          </td>
+          <td class="level-col">
+            <div class="level-badge">${user.level}</div>
+          </td>
+          <td class="achievements-col">
+            <span class="achievement-count">${user.achievements}</span>
+          </td>
+          <td class="mentor-col">
+            <span class="mentor-icon">${this.getMentorEmoji(user.mentor)}</span> ${user.mentor}
+          </td>
+          <td class="kakuma-col">
+            <span class="impact-number">${user.kakumaImpact}</span> youth
+          </td>
+        </tr>
+      `;
+    }
+
+    createMusicRow(user, rank) {
+      // TODO: Implement music-specific row
+      return '';
+    }
+
+    createEnvironmentalRow(user, rank) {
+      // TODO: Implement environmental-specific row
+      return '';
+    }
+
+    createKakumaRow(user, rank) {
+      // TODO: Implement Kakuma-specific row
+      return '';
+    }
+
+    createBattlesRow(user, rank) {
+      // TODO: Implement battles-specific row
+      return '';
+    }
+
+    createWeeklyRow(user, rank) {
+      // TODO: Implement weekly-specific row
+      return '';
+    }
+
+    getInitials(username) {
+      return username?.slice(0, 2).toUpperCase() || 'UN';
+    }
+
+    getMentorEmoji(mentor) {
+      const emojis = {
+        chicken: '🐓', cat: '🐱', goat: '🐐',
+        pigeon: '🕊️', dog: '🐕', rabbit: '🐰'
+      };
+      return emojis[mentor?.toLowerCase()] || '🐓';
+    }
+
+    filterLeaderboard(searchTerm) {
+      // TODO: Implement client-side filtering
+      const rows = document.querySelectorAll('.leaderboard-row');
+      const term = searchTerm.toLowerCase();
+      
+      rows.forEach(row => {
+        const username = row.querySelector('.user-name')?.textContent.toLowerCase();
+        row.style.display = username?.includes(term) ? '' : 'none';
+      });
+    }
+  }
+
+  window.leaderboardManager = new LeaderboardManager();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.leaderboardManager.initialize();
+    }, 500);
+  });
+</script>
+
+<style>
+  .leaderboard-hero {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .user-rank-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    margin-top: 2rem;
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    align-items: center;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .rank-badge-large {
+    text-align: center;
+  }
+
+  .rank-number {
+    font-size: 3rem;
+    font-weight: 800;
+  }
+
+  .podium-section {
+    margin: 3rem 0;
+  }
+
+  .podium-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    align-items: end;
+    margin-top: 2rem;
+  }
+
+  .podium-place {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    position: relative;
+  }
+
+  .podium-place.first {
+    transform: scale(1.1);
+    border: 3px solid gold;
+    order: 2;
+  }
+
+  .podium-place.second {
+    order: 1;
+  }
+
+  .podium-place.third {
+    order: 3;
+  }
+
+  .podium-medal {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .podium-crown {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+  }
+
+  .leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .leaderboard-table th {
+    background: var(--color-gray-100);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--color-gray-700);
+  }
+
+  .leaderboard-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  .leaderboard-row:hover {
+    background: var(--color-gray-50);
+  }
+
+  .rank-badge {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--color-gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  .rank-badge.top-three {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #333;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .user-avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  /* More styles... */
+</style>

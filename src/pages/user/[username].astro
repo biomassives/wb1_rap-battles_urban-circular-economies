@@ -1,0 +1,1012 @@
+---
+/**
+ * user/[username].astro
+ * PUBLIC USER PROFILE PAGE
+ * 
+ * PLANNING NOTES & DECISIONS NEEDED
+ * ================================
+ * 
+ * PURPOSE:
+ * - Display public-facing user profile
+ * - Show achievements, stats, activity
+ * - Allow social interactions (follow, message, challenge)
+ * 
+ * KEY DECISIONS TO MAKE:
+ * 
+ * 1. PRIVACY LEVELS
+ *    Q: What can anonymous users see vs logged-in users?
+ *    Options:
+ *    A) Anonymous: Basic stats only, no activity feed
+ *    B) Logged-in: Full profile including recent activity
+ *    C) Friends: Additional private stats
+ *    DECISION: _______________
+ * 
+ * 2. SOCIAL FEATURES
+ *    Q: Which interactions should we enable?
+ *    - Follow/unfollow user
+ *    - Send direct message
+ *    - Challenge to rap battle
+ *    - Request collaboration
+ *    - Share profile
+ *    - Report/block user
+ *    DECISION: Enable _______________ (list which ones)
+ * 
+ * 3. ACTIVITY FEED
+ *    Q: How much activity history to show?
+ *    Options:
+ *    A) Last 30 days only
+ *    B) All time with pagination (20 items per page)
+ *    C) Infinite scroll
+ *    DECISION: _______________
+ * 
+ * 4. CONTENT DISPLAY
+ *    Q: What content gets featured?
+ *    - Published tracks (how many? All or recent 10?)
+ *    - Battle record (show all battles or just stats?)
+ *    - Courses completed (show certificates?)
+ *    - Kakuma impact (public or private?)
+ *    DECISION: _______________
+ * 
+ * 5. REAL-TIME UPDATES
+ *    Q: Should profile update in real-time?
+ *    Options:
+ *    A) Static - refresh page to see updates
+ *    B) WebSocket - live XP/achievement updates
+ *    C) Polling - check for updates every 30s
+ *    DECISION: _______________
+ * 
+ * EVENT FLOWS:
+ * 
+ * Flow 1: View Profile
+ * User clicks username → Load /user/[username] → Check privacy settings → 
+ * Fetch user data from API → Render profile → Show interactions based on relationship
+ * 
+ * Flow 2: Challenge to Battle
+ * Visitor clicks "Challenge" → Modal opens → Select battle type → 
+ * Pre-fill battle form with opponent → Redirect to music studio
+ * 
+ * Flow 3: Follow User
+ * Click "Follow" → API call to /api/social/follow → Update button to "Following" →
+ * Add to follower count → Show in activity feed
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Get username from URL params
+const { username } = Astro.params;
+
+// TODO: Fetch user data from API
+// const userData = await fetch(`/api/users/profile?username=${username}`);
+// For now, use placeholder
+const userData = {
+  username: username,
+  displayName: null,
+  bio: null,
+  location: null,
+  joinedDate: '2025-01-01',
+  isKakumaYouth: false,
+  stats: {
+    level: 0,
+    totalXP: 0,
+    achievements: 0,
+    tracksPublished: 0,
+    battlesWon: 0,
+    battlesTotal: 0,
+    coursesCompleted: 0,
+    kakumaImpact: 0
+  },
+  privacy: {
+    profileVisibility: 'public',
+    showActivity: true,
+    showStats: true,
+    showTracks: true,
+    showBattles: true,
+    showKakumaImpact: true
+  }
+};
+
+// Check if profile exists
+const profileExists = userData !== null;
+
+// TODO: Check if current user is viewing their own profile
+const isOwnProfile = false; // Get from session/wallet
+
+// TODO: Check relationship with current user
+const relationship = {
+  isFollowing: false,
+  isFollower: false,
+  isMutualFollow: false,
+  isBlocked: false
+};
+---
+
+<BaseLayout 
+  title={`${userData.username} - Profile`}
+  description={`View ${userData.username}'s profile, achievements, and contributions`}
+  activeSection="profile"
+>
+
+  <!-- ============================================ -->
+  <!-- PROFILE NOT FOUND (if user doesn't exist) -->
+  <!-- ============================================ -->
+  {!profileExists && (
+    <section class="profile-not-found">
+      <div class="container mx-auto">
+        <div class="not-found-content">
+          <div class="not-found-icon">👤❌</div>
+          <h1>User Not Found</h1>
+          <p>The user "{username}" doesn't exist or has been deactivated.</p>
+          <a href="/" class="btn-primary">Back to Home</a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ============================================ -->
+  <!-- PROFILE HERO SECTION -->
+  <!-- ============================================ -->
+  {profileExists && (
+    <section class="user-profile-hero">
+      <div class="container mx-auto">
+        
+        <div class="profile-header-layout">
+          
+          <!-- Left: Avatar & Basic Info -->
+          <div class="profile-main-info">
+            <div class="profile-avatar-large">
+              <span id="profile-initials">{userData.username.slice(0, 2).toUpperCase()}</span>
+            </div>
+            
+            <div class="profile-name-section">
+              <h1 class="profile-username">
+                {userData.username}
+                {userData.isKakumaYouth && <span class="kakuma-badge">🏕️ Kakuma</span>}
+              </h1>
+              {userData.displayName && (
+                <div class="profile-display-name">{userData.displayName}</div>
+              )}
+              {userData.location && (
+                <div class="profile-location">📍 {userData.location}</div>
+              )}
+              <div class="profile-joined">
+                Member since {new Date(userData.joinedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Stats & Actions -->
+          <div class="profile-stats-actions">
+            
+            <!-- Quick Stats -->
+            {userData.privacy.showStats && (
+              <div class="profile-quick-stats">
+                <div class="stat-item">
+                  <div class="stat-value">{userData.stats.level}</div>
+                  <div class="stat-label">Level</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">{userData.stats.totalXP.toLocaleString()}</div>
+                  <div class="stat-label">XP</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">{userData.stats.achievements}</div>
+                  <div class="stat-label">Achievements</div>
+                </div>
+              </div>
+            )}
+
+            <!-- Action Buttons -->
+            {!isOwnProfile && (
+              <div class="profile-actions">
+                
+                {/* DECISION POINT: Which actions to show? */}
+                
+                {/* Follow Button */}
+                <button class="btn-primary" id="follow-btn">
+                  {relationship.isFollowing ? '✓ Following' : '+ Follow'}
+                </button>
+                
+                {/* Message Button - TODO: Decide if we want DMs */}
+                <button class="btn-secondary" id="message-btn">
+                  💬 Message
+                </button>
+                
+                {/* Challenge to Battle - TODO: Decide if available to everyone */}
+                <button class="btn-secondary" id="challenge-btn">
+                  ⚔️ Challenge
+                </button>
+                
+                {/* More Actions Dropdown */}
+                <div class="dropdown">
+                  <button class="btn-icon" id="more-actions-btn">⋮</button>
+                  <div class="dropdown-menu" id="more-actions-menu" style="display: none;">
+                    <button class="dropdown-item" onclick="shareProfile()">
+                      🔗 Share Profile
+                    </button>
+                    <button class="dropdown-item" onclick="reportUser()">
+                      ⚠️ Report User
+                    </button>
+                    <button class="dropdown-item danger" onclick="blockUser()">
+                      🚫 Block User
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isOwnProfile && (
+              <div class="profile-actions">
+                <a href="/profile" class="btn-primary">✏️ Edit Profile</a>
+              </div>
+            )}
+
+          </div>
+
+        </div>
+
+        <!-- Bio Section -->
+        {userData.bio && (
+          <div class="profile-bio">
+            <p>{userData.bio}</p>
+          </div>
+        )}
+
+        <!-- Social Stats -->
+        <div class="profile-social-stats">
+          <button class="social-stat-btn" onclick="showFollowers()">
+            <strong id="followers-count">0</strong> Followers
+          </button>
+          <button class="social-stat-btn" onclick="showFollowing()">
+            <strong id="following-count">0</strong> Following
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- PROFILE CONTENT TABS -->
+    <!-- ============================================ -->
+    <section class="profile-content-section">
+      <div class="container mx-auto">
+        
+        <!-- Content Tabs -->
+        <div class="profile-tabs">
+          <button class="profile-tab active" data-tab="overview">
+            📊 Overview
+          </button>
+          {userData.privacy.showTracks && (
+            <button class="profile-tab" data-tab="music">
+              🎵 Music ({userData.stats.tracksPublished})
+            </button>
+          )}
+          {userData.privacy.showBattles && (
+            <button class="profile-tab" data-tab="battles">
+              ⚔️ Battles ({userData.stats.battlesTotal})
+            </button>
+          )}
+          <button class="profile-tab" data-tab="achievements">
+            🏆 Achievements ({userData.stats.achievements})
+          </button>
+          <button class="profile-tab" data-tab="courses">
+            📚 Courses ({userData.stats.coursesCompleted})
+          </button>
+          {userData.privacy.showActivity && (
+            <button class="profile-tab" data-tab="activity">
+              📅 Activity
+            </button>
+          )}
+        </div>
+
+        <!-- Tab Contents -->
+        
+        <!-- ========================================= -->
+        <!-- TAB: OVERVIEW -->
+        <!-- ========================================= -->
+        <div id="tab-overview" class="profile-tab-content active">
+          
+          <div class="overview-grid">
+            
+            <!-- Musical Journey Card -->
+            {userData.privacy.showTracks && (
+              <div class="overview-card">
+                <h3 class="card-title">🎵 Musical Journey</h3>
+                <div class="overview-stats">
+                  <div class="overview-stat">
+                    <div class="stat-number">{userData.stats.tracksPublished}</div>
+                    <div class="stat-text">Tracks Published</div>
+                  </div>
+                  <div class="overview-stat">
+                    <div class="stat-number">0</div>
+                    <div class="stat-text">Total Plays</div>
+                  </div>
+                  <div class="overview-stat">
+                    <div class="stat-number">0</div>
+                    <div class="stat-text">Total Likes</div>
+                  </div>
+                </div>
+                {/* TODO: Show latest 3 tracks */}
+                <div class="latest-tracks" id="latest-tracks">
+                  <p class="empty-state">No tracks published yet</p>
+                </div>
+              </div>
+            )}
+
+            <!-- Battle Stats Card -->
+            {userData.privacy.showBattles && (
+              <div class="overview-card">
+                <h3 class="card-title">⚔️ Battle Record</h3>
+                <div class="battle-record-display">
+                  <div class="record-main">
+                    <span class="wins">{userData.stats.battlesWon}W</span>
+                    <span class="separator">-</span>
+                    <span class="losses">{userData.stats.battlesTotal - userData.stats.battlesWon}L</span>
+                  </div>
+                  <div class="win-rate">
+                    {userData.stats.battlesTotal > 0 
+                      ? `${Math.round((userData.stats.battlesWon / userData.stats.battlesTotal) * 100)}% Win Rate`
+                      : 'No battles yet'
+                    }
+                  </div>
+                </div>
+                {/* TODO: Show recent battles */}
+              </div>
+            )}
+
+            <!-- Achievements Card -->
+            <div class="overview-card">
+              <h3 class="card-title">🏆 Achievements</h3>
+              <div class="achievements-preview" id="achievements-preview">
+                {/* TODO: Show earned achievements (latest 6) */}
+                <p class="empty-state">No achievements unlocked yet</p>
+              </div>
+              <a href={`/user/${username}/achievements`} class="view-all-link">
+                View All Achievements →
+              </a>
+            </div>
+
+            <!-- Learning Progress Card -->
+            <div class="overview-card">
+              <h3 class="card-title">📚 Learning Progress</h3>
+              <div class="overview-stats">
+                <div class="overview-stat">
+                  <div class="stat-number">{userData.stats.coursesCompleted}</div>
+                  <div class="stat-text">Courses Completed</div>
+                </div>
+                <div class="overview-stat">
+                  <div class="stat-number">0</div>
+                  <div class="stat-text">Certifications</div>
+                </div>
+                <div class="overview-stat">
+                  <div class="stat-number">0</div>
+                  <div class="stat-text">Observations</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kakuma Impact Card (if applicable) -->
+            {userData.isKakumaYouth || userData.privacy.showKakumaImpact && userData.stats.kakumaImpact > 0 && (
+              <div class="overview-card kakuma-card">
+                <h3 class="card-title">🏕️ Kakuma Impact</h3>
+                {userData.isKakumaYouth && (
+                  <div class="kakuma-youth-badge">
+                    <span class="badge-icon">🌟</span>
+                    <span class="badge-text">Kakuma Refugee Youth</span>
+                  </div>
+                )}
+                <div class="overview-stats">
+                  <div class="overview-stat">
+                    <div class="stat-number">{userData.stats.kakumaImpact}</div>
+                    <div class="stat-text">Youth Impacted</div>
+                  </div>
+                  {/* TODO: Add more Kakuma-specific stats */}
+                </div>
+              </div>
+            )}
+
+          </div>
+
+        </div>
+
+        <!-- ========================================= -->
+        <!-- TAB: MUSIC -->
+        <!-- ========================================= -->
+        <div id="tab-music" class="profile-tab-content" style="display: none;">
+          
+          <div class="tab-header">
+            <h3 class="tab-title">Published Tracks</h3>
+            {/* TODO: Add filters/sort */}
+            <select class="form-select" id="tracks-sort">
+              <option value="recent">Most Recent</option>
+              <option value="popular">Most Popular</option>
+              <option value="plays">Most Plays</option>
+            </select>
+          </div>
+
+          {/* TODO: Load user's tracks */}
+          <div class="tracks-grid" id="user-tracks-grid">
+            <p class="empty-state">No tracks published yet</p>
+            {/* 
+            DECISION POINT: Track display format
+            - Full player with waveform?
+            - Simple cards with play button?
+            - List view with thumbnails?
+            */}
+          </div>
+
+        </div>
+
+        <!-- ========================================= -->
+        <!-- TAB: BATTLES -->
+        <!-- ========================================= -->
+        <div id="tab-battles" class="profile-tab-content" style="display: none;">
+          
+          <div class="battles-filters">
+            <button class="filter-chip active" data-filter="all">All</button>
+            <button class="filter-chip" data-filter="won">Won</button>
+            <button class="filter-chip" data-filter="lost">Lost</button>
+            <button class="filter-chip" data-filter="ongoing">Ongoing</button>
+          </div>
+
+          {/* TODO: Load user's battle history */}
+          <div class="battles-list" id="user-battles-list">
+            <p class="empty-state">No battles yet</p>
+            {/* 
+            DECISION POINT: Battle display
+            - Show full battle details inline?
+            - Cards with click to expand?
+            - Links to dedicated battle pages?
+            */}
+          </div>
+
+        </div>
+
+        <!-- ========================================= -->
+        <!-- TAB: ACHIEVEMENTS -->
+        <!-- ========================================= -->
+        <div id="tab-achievements" class="profile-tab-content" style="display: none;">
+          
+          <div class="achievements-grid" id="user-achievements-grid">
+            {/* TODO: Load user's achievements */}
+            <p class="empty-state">No achievements unlocked yet</p>
+          </div>
+
+        </div>
+
+        <!-- ========================================= -->
+        <!-- TAB: COURSES -->
+        <!-- ========================================= -->
+        <div id="tab-courses" class="profile-tab-content" style="display: none;">
+          
+          <h3 class="tab-title">Completed Courses</h3>
+          
+          {/* TODO: Load completed courses */}
+          <div class="courses-grid" id="user-courses-grid">
+            <p class="empty-state">No courses completed yet</p>
+          </div>
+
+        </div>
+
+        <!-- ========================================= -->
+        <!-- TAB: ACTIVITY -->
+        <!-- ========================================= -->
+        <div id="tab-activity" class="profile-tab-content" style="display: none;">
+          
+          <div class="activity-feed" id="user-activity-feed">
+            {/* TODO: Load activity feed */}
+            <p class="empty-state">No recent activity</p>
+            {/* 
+            DECISION POINT: Activity types to show
+            - Track uploads
+            - Battle results
+            - Achievements earned
+            - Course completions
+            - Level ups
+            - Collaborations
+            - Comments/likes given
+            
+            DECISION POINT: Privacy controls
+            - What activities are always public?
+            - What can user hide?
+            - What requires follow relationship?
+            */}
+          </div>
+
+          {/* Load More Button */}
+          <button class="btn-secondary" id="load-more-activity" style="display: none;">
+            Load More Activity
+          </button>
+
+        </div>
+
+      </div>
+    </section>
+  )}
+
+</BaseLayout>
+
+<script>
+  /**
+   * User Profile Page Manager
+   * 
+   * IMPLEMENTATION NOTES:
+   * ====================
+   * 
+   * TODO: API Endpoints Needed
+   * - GET /api/users/profile?username={username}
+   * - POST /api/social/follow
+   * - POST /api/social/unfollow
+   * - GET /api/users/{username}/tracks
+   * - GET /api/users/{username}/battles
+   * - GET /api/users/{username}/achievements
+   * - GET /api/users/{username}/activity
+   * 
+   * TODO: Real-time Features
+   * - WebSocket connection for live updates?
+   * - Polling for follower count changes?
+   * - Activity feed auto-refresh?
+   * 
+   * TODO: Social Features
+   * - Follow/unfollow implementation
+   * - Direct messaging system
+   * - Battle challenge flow
+   * - Profile sharing
+   * - User reporting/blocking
+   * 
+   * SECURITY CONSIDERATIONS:
+   * - Validate privacy settings server-side
+   * - Rate limit follow/unfollow actions
+   * - Sanitize user-generated content
+   * - Check authentication for actions
+   */
+
+  class UserProfileManager {
+    constructor() {
+      this.username = null;
+      this.isFollowing = false;
+      this.currentTab = 'overview';
+    }
+
+    async initialize() {
+      // Get username from URL
+      const pathParts = window.location.pathname.split('/');
+      this.username = pathParts[pathParts.length - 1];
+
+      await this.loadProfileData();
+      this.setupTabs();
+      this.setupActions();
+    }
+
+    async loadProfileData() {
+      // TODO: Fetch from API
+      console.log('Loading profile for:', this.username);
+      
+      // TODO: Load followers/following counts
+      // TODO: Load latest content for overview tab
+    }
+
+    setupTabs() {
+      document.querySelectorAll('.profile-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabName = tab.dataset.tab;
+          this.switchTab(tabName);
+        });
+      });
+    }
+
+    switchTab(tabName) {
+      this.currentTab = tabName;
+
+      // Update active tab button
+      document.querySelectorAll('.profile-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabName);
+      });
+
+      // Show corresponding content
+      document.querySelectorAll('.profile-tab-content').forEach(content => {
+        content.style.display = content.id === `tab-${tabName}` ? 'block' : 'none';
+      });
+
+      // Load tab-specific data
+      this.loadTabContent(tabName);
+    }
+
+    async loadTabContent(tabName) {
+      switch(tabName) {
+        case 'music':
+          await this.loadUserTracks();
+          break;
+        case 'battles':
+          await this.loadUserBattles();
+          break;
+        case 'achievements':
+          await this.loadUserAchievements();
+          break;
+        case 'courses':
+          await this.loadUserCourses();
+          break;
+        case 'activity':
+          await this.loadUserActivity();
+          break;
+      }
+    }
+
+    async loadUserTracks() {
+      // TODO: Implement
+      console.log('Loading tracks for', this.username);
+    }
+
+    async loadUserBattles() {
+      // TODO: Implement
+      console.log('Loading battles for', this.username);
+    }
+
+    async loadUserAchievements() {
+      // TODO: Implement
+      console.log('Loading achievements for', this.username);
+    }
+
+    async loadUserCourses() {
+      // TODO: Implement
+      console.log('Loading courses for', this.username);
+    }
+
+    async loadUserActivity() {
+      // TODO: Implement
+      console.log('Loading activity for', this.username);
+    }
+
+    setupActions() {
+      // Follow button
+      document.getElementById('follow-btn')?.addEventListener('click', () => {
+        this.toggleFollow();
+      });
+
+      // Message button
+      document.getElementById('message-btn')?.addEventListener('click', () => {
+        this.openMessageDialog();
+      });
+
+      // Challenge button
+      document.getElementById('challenge-btn')?.addEventListener('click', () => {
+        this.openChallengeDialog();
+      });
+
+      // More actions menu
+      document.getElementById('more-actions-btn')?.addEventListener('click', () => {
+        this.toggleMoreActionsMenu();
+      });
+    }
+
+    async toggleFollow() {
+      const btn = document.getElementById('follow-btn');
+      
+      try {
+        const endpoint = this.isFollowing ? '/api/social/unfollow' : '/api/social/follow';
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress: window.walletManager?.connectedWallet,
+            targetUsername: this.username
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          this.isFollowing = !this.isFollowing;
+          btn.textContent = this.isFollowing ? '✓ Following' : '+ Follow';
+          
+          // Update follower count
+          const count = document.getElementById('followers-count');
+          if (count) {
+            count.textContent = this.isFollowing 
+              ? parseInt(count.textContent) + 1 
+              : parseInt(count.textContent) - 1;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to toggle follow:', error);
+      }
+    }
+
+    openMessageDialog() {
+      // TODO: Implement messaging system
+      // DECISION NEEDED: Do we want DMs? Or just redirect to Discord/Twitter?
+      alert('Messaging feature coming soon!');
+    }
+
+    openChallengeDialog() {
+      // TODO: Redirect to battle creation with pre-filled opponent
+      window.location.href = `/music?challenge=${this.username}`;
+    }
+
+    toggleMoreActionsMenu() {
+      const menu = document.getElementById('more-actions-menu');
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+  }
+
+  // Global functions
+  function shareProfile() {
+    // TODO: Implement profile sharing
+    if (navigator.share) {
+      navigator.share({
+        title: `${document.querySelector('.profile-username').textContent} - Hobby Farm`,
+        url: window.location.href
+      });
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(window.location.href);
+      alert('Profile link copied to clipboard!');
+    }
+  }
+
+  function reportUser() {
+    // TODO: Implement user reporting
+    alert('Report user feature coming soon');
+  }
+
+  function blockUser() {
+    // TODO: Implement user blocking
+    if (confirm('Are you sure you want to block this user?')) {
+      console.log('Block user');
+    }
+  }
+
+  function showFollowers() {
+    // TODO: Show followers modal/page
+    console.log('Show followers');
+  }
+
+  function showFollowing() {
+    // TODO: Show following modal/page
+    console.log('Show following');
+  }
+
+  // Initialize
+  window.userProfileManager = new UserProfileManager();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.userProfileManager.initialize();
+    }, 500);
+  });
+</script>
+
+<style>
+  /* Profile Hero */
+  .user-profile-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 0;
+  }
+
+  .profile-header-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .profile-main-info {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .profile-avatar-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: white;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .profile-username {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .kakuma-badge {
+    font-size: 1rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-kakuma);
+    border-radius: var(--radius-full);
+  }
+
+  .profile-quick-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .profile-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .profile-bio {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
+  }
+
+  .profile-social-stats {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .social-stat-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: opacity var(--transition-base);
+  }
+
+  .social-stat-btn:hover {
+    opacity: 0.8;
+  }
+
+  /* Tabs */
+  .profile-tabs {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 2px solid var(--color-gray-200);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+
+  .profile-tab {
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--color-gray-600);
+    white-space: nowrap;
+    transition: all var(--transition-base);
+  }
+
+  .profile-tab:hover {
+    color: var(--color-primary);
+  }
+
+  .profile-tab.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+
+  /* Overview Grid */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .overview-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  .overview-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .overview-stat {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .stat-text {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    margin-top: 0.25rem;
+  }
+
+  .battle-record-display {
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  .record-main {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .wins {
+    color: var(--color-success);
+  }
+
+  .losses {
+    color: var(--color-error);
+  }
+
+  .separator {
+    color: var(--color-gray-400);
+    margin: 0 0.5rem;
+  }
+
+  .win-rate {
+    font-size: 1.25rem;
+    color: var(--color-gray-600);
+  }
+
+  .kakuma-card {
+    border: 2px solid var(--color-kakuma);
+  }
+
+  .kakuma-youth-badge {
+    background: var(--color-kakuma);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .profile-header-layout {
+      flex-direction: column;
+    }
+
+    .profile-main-info {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .profile-stats-actions {
+      width: 100%;
+    }
+
+    .profile-actions {
+      flex-wrap: wrap;
+    }
+  }
+</style>

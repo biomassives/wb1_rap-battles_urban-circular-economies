@@ -1,0 +1,897 @@
+---
+/**
+ * course/[id].astro
+ * COURSE DETAIL & ENROLLMENT PAGE
+ * 
+ * PLANNING NOTES & DECISIONS NEEDED
+ * ================================
+ * 
+ * PURPOSE:
+ * - Display complete course information
+ * - Show syllabus and lesson structure
+ * - Enable enrollment
+ * - Track progress for enrolled students
+ * 
+ * KEY DECISIONS TO MAKE:
+ * 
+ * 1. COURSE ACCESS MODEL
+ *    Q: How do users access courses?
+ *    Options:
+ *    A) Free for all (open education)
+ *    B) NFT-gated (specific NFTs unlock specific courses)
+ *    C) Level-gated (requires minimum level)
+ *    D) Hybrid (Foundation free, Advanced requires NFT/Level)
+ *    DECISION: _______________
+ *    
+ *    Current plan from schema:
+ *    - Foundation courses: Chicken NFT or Level 1+
+ *    - Intermediate: Cat/Goat/Pigeon NFT or Level 10+
+ *    - Advanced: Dog/Rabbit NFT or Level 25+
+ * 
+ * 2. ENROLLMENT PROCESS
+ *    Q: What happens when user enrolls?
+ *    Steps:
+ *    - Check prerequisites (NFT/level/previous courses)
+ *    - Create user_courses record
+ *    - Award enrollment XP (+25 XP)
+ *    - Send welcome notification
+ *    - Unlock first lesson
+ *    DECISION: Confirm or modify? _______________
+ *    
+ *    Q: Can users unenroll?
+ *    - Yes, anytime (lose progress)
+ *    - No, commitment required
+ *    - After 7 days cooldown period
+ *    DECISION: _______________
+ * 
+ * 3. PROGRESS TRACKING
+ *    Q: How is progress calculated?
+ *    Options:
+ *    A) Simple: Lessons completed / Total lessons
+ *    B) Weighted: Some lessons worth more points
+ *    C) Skills-based: Must demonstrate competency
+ *    DECISION: _______________
+ *    
+ *    Q: What triggers course completion?
+ *    - Complete all lessons
+ *    - Pass final exam (70%+)
+ *    - Complete project/assignment
+ *    - All of the above
+ *    DECISION: _______________
+ * 
+ * 4. LESSON STRUCTURE
+ *    Q: What types of content in lessons?
+ *    Types:
+ *    - Text/markdown content
+ *    - Video tutorials
+ *    - Interactive quizzes
+ *    - Hands-on projects
+ *    - Discussion forums
+ *    - External resources
+ *    DECISION: Which to support? _______________
+ *    
+ *    Q: Lesson navigation?
+ *    Options:
+ *    A) Linear: Must complete in order
+ *    B) Free: Access any lesson anytime
+ *    C) Flexible: Complete prerequisites to unlock next
+ *    DECISION: _______________
+ * 
+ * 5. CERTIFICATION
+ *    Q: What earns a certificate?
+ *    Requirements:
+ *    - Complete all lessons
+ *    - Score 80%+ on final assessment
+ *    - Submit final project
+ *    - Peer review participation
+ *    DECISION: Which requirements? _______________
+ *    
+ *    Q: Certificate format?
+ *    - PDF download
+ *    - NFT certificate (on-chain)
+ *    - Digital badge
+ *    - All of the above
+ *    DECISION: _______________
+ * 
+ * 6. INSTRUCTOR/MENTOR DISPLAY
+ *    Q: How to show animal mentor connection?
+ *    Display:
+ *    - Mentor profile card
+ *    - Daily wisdom from mentor
+ *    - Video messages (if available)
+ *    - Q&A with mentor (AI-powered)
+ *    DECISION: _______________
+ * 
+ * 7. COMMUNITY FEATURES
+ *    Q: Social learning features?
+ *    Options:
+ *    - Course discussion forum
+ *    - Study groups
+ *    - Peer review system
+ *    - Leaderboard for course
+ *    - Collaborative projects
+ *    DECISION: Enable which? _______________
+ * 
+ * 8. PREREQUISITES ENFORCEMENT
+ *    Q: How strictly enforce prerequisites?
+ *    Current plan:
+ *    - Sustainable Living 101 → no prereqs
+ *    - Permaculture Design → requires Sustainable Living 101
+ *    - Solar Power Systems → requires level 15+
+ *    
+ *    Q: Display for locked courses?
+ *    - Show what's needed to unlock
+ *    - "Coming soon" for future courses
+ *    - Suggest prerequisite path
+ *    DECISION: _______________
+ * 
+ * EVENT FLOWS:
+ * 
+ * Flow 1: View Course (Not Enrolled)
+ * User lands on course page → Check access requirements → 
+ * Show course overview → Display enroll button → 
+ * Click enroll → Verify prerequisites → Create enrollment → 
+ * Award XP → Redirect to first lesson
+ * 
+ * Flow 2: View Course (Enrolled)
+ * User lands on course page → Load progress data → 
+ * Show completed/current lessons → Display continue button → 
+ * Show progress bar → Highlight next lesson
+ * 
+ * Flow 3: Complete Lesson
+ * User finishes lesson content → Mark complete → 
+ * Award lesson XP → Unlock next lesson → 
+ * Check if course complete → If yes, award certificate
+ * 
+ * Flow 4: Earn Certificate
+ * Final lesson completed → Calculate final score → 
+ * If passed → Generate certificate → Award completion XP → 
+ * Check achievements → Send notification → 
+ * Update user profile
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const { id } = Astro.params;
+
+// TODO: Fetch course data from API
+const courseData = {
+  id: id,
+  title: "Sustainable Living Foundations",
+  slug: "sustainable-living-101",
+  description: "Learn the basics of sustainable living, from composting to energy conservation. Perfect for beginners!",
+  category: "sustainable_living",
+  difficulty: "beginner",
+  mentor: "chicken",
+  estimatedDuration: "2 weeks",
+  totalLessons: 8,
+  prerequisites: [],
+  requirements: {
+    nftRequired: null, // or "chicken" for NFT requirement
+    minLevel: 1
+  },
+  learningOutcomes: [
+    "Understand core principles of sustainable living",
+    "Start your own compost system",
+    "Reduce household waste by 50%",
+    "Calculate your carbon footprint",
+    "Create a sustainable action plan"
+  ],
+  syllabus: [
+    {
+      id: 1,
+      title: "Introduction to Sustainability",
+      duration: "30 min",
+      type: "video",
+      isLocked: false
+    },
+    {
+      id: 2,
+      title: "The Waste Hierarchy",
+      duration: "45 min",
+      type: "text",
+      isLocked: false
+    },
+    {
+      id: 3,
+      title: "Composting 101",
+      duration: "60 min",
+      type: "interactive",
+      isLocked: false
+    },
+    // ... more lessons
+  ],
+  xpReward: 250,
+  stats: {
+    enrolled: 1247,
+    completed: 892,
+    rating: 4.8,
+    reviews: 156
+  },
+  instructor: {
+    name: "Chicken Mentor",
+    bio: "Master of foundations and sustainable practices",
+    specialties: ["Composting", "Waste Reduction", "Basics"]
+  }
+};
+
+// TODO: Check if user is enrolled
+const userEnrollment = null; // or { enrolledAt, progress, completedLessons }
+const isEnrolled = userEnrollment !== null;
+
+// TODO: Check if user meets prerequisites
+const meetsPrerequisites = true;
+const hasRequiredNFT = true;
+const hasRequiredLevel = true;
+const canEnroll = meetsPrerequisites && hasRequiredNFT && hasRequiredLevel;
+---
+
+<BaseLayout 
+  title={courseData.title}
+  description={courseData.description}
+  activeSection="learning"
+>
+
+  <!-- ============================================ -->
+  <!-- COURSE HERO -->
+  <!-- ============================================ -->
+  <section class="course-hero">
+    <div class="container mx-auto">
+      
+      <div class="course-hero-layout">
+        
+        <!-- Left: Course Info -->
+        <div class="course-info-main">
+          
+          <!-- Breadcrumb -->
+          <nav class="breadcrumb">
+            <a href="/learning">Learning Hub</a>
+            <span class="breadcrumb-separator">›</span>
+            <a href={`/learning?category=${courseData.category}`}>
+              {courseData.category.replace('_', ' ')}
+            </a>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-current">{courseData.title}</span>
+          </nav>
+
+          <h1 class="course-title">{courseData.title}</h1>
+          <p class="course-tagline">{courseData.description}</p>
+
+          <!-- Course Meta -->
+          <div class="course-meta-bar">
+            <div class="meta-item">
+              <span class="meta-icon">📊</span>
+              <span class="meta-text">{courseData.difficulty}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">⏱️</span>
+              <span class="meta-text">{courseData.estimatedDuration}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">📚</span>
+              <span class="meta-text">{courseData.totalLessons} lessons</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">⭐</span>
+              <span class="meta-text">{courseData.stats.rating} ({courseData.stats.reviews} reviews)</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">👥</span>
+              <span class="meta-text">{courseData.stats.enrolled.toLocaleString()} enrolled</span>
+            </div>
+          </div>
+
+          <!-- Mentor Card -->
+          <div class="course-mentor-card">
+            <div class="mentor-avatar-large">
+              {courseData.mentor === 'chicken' && '🐓'}
+              {courseData.mentor === 'cat' && '🐱'}
+              {courseData.mentor === 'goat' && '🐐'}
+              {courseData.mentor === 'pigeon' && '🕊️'}
+              {courseData.mentor === 'dog' && '🐕'}
+              {courseData.mentor === 'rabbit' && '🐰'}
+            </div>
+            <div class="mentor-info">
+              <h3 class="mentor-name">{courseData.instructor.name}</h3>
+              <p class="mentor-bio">{courseData.instructor.bio}</p>
+              <div class="mentor-specialties">
+                {courseData.instructor.specialties.map(specialty => (
+                  <span class="specialty-badge">{specialty}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Enrollment Card -->
+        <div class="course-enrollment-card">
+          
+          {!isEnrolled ? (
+            <>
+              {/* Requirements Display */}
+              <div class="requirements-section">
+                <h3 class="requirements-title">Requirements</h3>
+                
+                {courseData.requirements.nftRequired && (
+                  <div class={`requirement-item ${hasRequiredNFT ? 'met' : 'unmet'}`}>
+                    <span class="requirement-icon">
+                      {hasRequiredNFT ? '✓' : '○'}
+                    </span>
+                    <span class="requirement-text">
+                      {courseData.requirements.nftRequired.charAt(0).toUpperCase() + courseData.requirements.nftRequired.slice(1)} NFT
+                    </span>
+                  </div>
+                )}
+                
+                <div class={`requirement-item ${hasRequiredLevel ? 'met' : 'unmet'}`}>
+                  <span class="requirement-icon">
+                    {hasRequiredLevel ? '✓' : '○'}
+                  </span>
+                  <span class="requirement-text">
+                    Level {courseData.requirements.minLevel}+
+                  </span>
+                </div>
+
+                {courseData.prerequisites.length > 0 && (
+                  <div class="requirement-item">
+                    <span class="requirement-icon">○</span>
+                    <span class="requirement-text">
+                      Prerequisites:
+                      <ul class="prerequisites-list">
+                        {courseData.prerequisites.map(prereq => (
+                          <li><a href={`/course/${prereq}`}>{prereq}</a></li>
+                        ))}
+                      </ul>
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Enrollment Button */}
+              {canEnroll ? (
+                <form id="enroll-form" class="enroll-form">
+                  <div class="enroll-commitment">
+                    <label class="form-checkbox">
+                      <input type="checkbox" name="agreeCommitment" required />
+                      I commit to completing this course
+                    </label>
+                  </div>
+                  <button type="submit" class="btn-primary large">
+                    Enroll Now (+25 XP)
+                  </button>
+                </form>
+              ) : (
+                <div class="requirements-unmet">
+                  <p class="unmet-message">
+                    {!hasRequiredNFT && "You need a specific NFT to access this course."}
+                    {!hasRequiredLevel && `You need to reach Level ${courseData.requirements.minLevel}.`}
+                    {!meetsPrerequisites && "Complete prerequisite courses first."}
+                  </p>
+                  {!hasRequiredNFT && (
+                    <a href="/" class="btn-secondary">
+                      View NFT Collection
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {/* Course Benefits */}
+              <div class="course-benefits">
+                <h4 class="benefits-title">What You'll Get:</h4>
+                <ul class="benefits-list">
+                  <li>✓ {courseData.totalLessons} comprehensive lessons</li>
+                  <li>✓ {courseData.xpReward} XP upon completion</li>
+                  <li>✓ Certificate of completion</li>
+                  <li>✓ Lifetime access to materials</li>
+                  <li>✓ Mentor guidance throughout</li>
+                </ul>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Progress Card */}
+              <div class="progress-card">
+                <h3 class="progress-title">Your Progress</h3>
+                
+                <div class="progress-circle-container">
+                  <div class="progress-circle">
+                    <div class="progress-percentage">
+                      {Math.round((userEnrollment.completedLessons / courseData.totalLessons) * 100)}%
+                    </div>
+                  </div>
+                </div>
+
+                <div class="progress-stats">
+                  <div class="progress-stat">
+                    <strong>{userEnrollment.completedLessons}</strong> / {courseData.totalLessons}
+                  </div>
+                  <div class="progress-label">Lessons Completed</div>
+                </div>
+
+                <a href={`/course/${courseData.id}/lesson/${courseData.syllabus[0].id}`} class="btn-primary large">
+                  Continue Learning
+                </a>
+              </div>
+
+              {/* Next Lesson */}
+              <div class="next-lesson-card">
+                <h4 class="next-lesson-title">Next Lesson:</h4>
+                <div class="next-lesson-info">
+                  <div class="lesson-number">Lesson 3</div>
+                  <div class="lesson-title">Composting 101</div>
+                  <div class="lesson-duration">60 min</div>
+                </div>
+              </div>
+            </>
+          )}
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- LEARNING OUTCOMES -->
+  <!-- ============================================ -->
+  <section class="learning-outcomes-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">What You'll Learn</h2>
+      
+      <div class="outcomes-grid">
+        {courseData.learningOutcomes.map((outcome, index) => (
+          <div class="outcome-card">
+            <div class="outcome-number">{index + 1}</div>
+            <div class="outcome-text">{outcome}</div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- COURSE SYLLABUS -->
+  <!-- ============================================ -->
+  <section class="syllabus-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Course Syllabus</h2>
+      <p class="section-subtitle">
+        {courseData.totalLessons} lessons • {courseData.estimatedDuration} to complete
+      </p>
+
+      <div class="syllabus-list">
+        {courseData.syllabus.map((lesson, index) => (
+          <div class={`lesson-item ${lesson.isLocked ? 'locked' : ''} ${isEnrolled && userEnrollment.completedLessons > index ? 'completed' : ''}`}>
+            
+            <div class="lesson-number-badge">
+              {isEnrolled && userEnrollment.completedLessons > index ? (
+                <span class="completed-icon">✓</span>
+              ) : (
+                <span class="lesson-num">{index + 1}</span>
+              )}
+            </div>
+
+            <div class="lesson-details">
+              <h3 class="lesson-title">
+                {lesson.title}
+                {lesson.isLocked && <span class="locked-badge">🔒</span>}
+              </h3>
+              <div class="lesson-meta">
+                <span class="lesson-type">
+                  {lesson.type === 'video' && '🎥 Video'}
+                  {lesson.type === 'text' && '📄 Reading'}
+                  {lesson.type === 'interactive' && '💡 Interactive'}
+                  {lesson.type === 'quiz' && '❓ Quiz'}
+                </span>
+                <span class="lesson-duration">{lesson.duration}</span>
+              </div>
+            </div>
+
+            {isEnrolled && !lesson.isLocked && (
+              <a 
+                href={`/course/${courseData.id}/lesson/${lesson.id}`} 
+                class="btn-secondary small"
+              >
+                {userEnrollment.completedLessons > index ? 'Review' : 'Start'}
+              </a>
+            )}
+
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- STUDENT REVIEWS -->
+  <!-- ============================================ -->
+  <section class="reviews-section">
+    <div class="container mx-auto">
+      
+      <div class="reviews-header">
+        <h2 class="section-title">Student Reviews</h2>
+        <div class="rating-summary">
+          <div class="rating-number">{courseData.stats.rating}</div>
+          <div class="rating-stars">⭐⭐⭐⭐⭐</div>
+          <div class="rating-count">{courseData.stats.reviews} reviews</div>
+        </div>
+      </div>
+
+      <div class="reviews-list">
+        {/* TODO: Load reviews from API */}
+        <p class="empty-state">Reviews coming soon</p>
+        {/* 
+        Review structure:
+        - User avatar and name
+        - Star rating
+        - Review text
+        - Date
+        - Helpful votes
+        */}
+      </div>
+
+      {isEnrolled && userEnrollment.completedLessons === courseData.totalLessons && (
+        <div class="review-form-container">
+          <h3>Leave a Review</h3>
+          <form id="review-form">
+            <div class="form-group">
+              <label>Rating</label>
+              <div class="star-rating-input">
+                {[1, 2, 3, 4, 5].map(star => (
+                  <button type="button" class="star-btn" data-rating={star}>
+                    ☆
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div class="form-group">
+              <textarea 
+                class="form-textarea"
+                placeholder="Share your experience with this course..."
+                rows="4"
+                maxlength="500"
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-primary">
+              Submit Review
+            </button>
+          </form>
+        </div>
+      )}
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- RELATED COURSES -->
+  <!-- ============================================ -->
+  <section class="related-courses-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Continue Your Learning</h2>
+      
+      <div class="courses-grid">
+        {/* TODO: Load related courses */}
+        <p class="empty-state">Loading related courses...</p>
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  /**
+   * Course Detail Manager
+   * 
+   * TODO: Implementation
+   * - Enrollment flow with prerequisite checking
+   * - Progress tracking
+   * - Review submission
+   * - Lesson navigation
+   * - Certificate generation on completion
+   */
+
+  class CourseDetailManager {
+    constructor() {
+      this.courseId = null;
+      this.isEnrolled = false;
+    }
+
+    async initialize() {
+      const pathParts = window.location.pathname.split('/');
+      this.courseId = pathParts[pathParts.length - 1];
+
+      await this.loadCourseData();
+      this.setupForms();
+    }
+
+    async loadCourseData() {
+      // TODO: Fetch from API
+      console.log('Loading course:', this.courseId);
+      
+      // TODO: Check enrollment status
+      // TODO: Load user progress if enrolled
+    }
+
+    setupForms() {
+      // Enrollment form
+      document.getElementById('enroll-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await this.enrollInCourse();
+      });
+
+      // Review form
+      document.getElementById('review-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await this.submitReview();
+      });
+
+      // Star rating
+      document.querySelectorAll('.star-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.setStarRating(parseInt(btn.dataset.rating));
+        });
+      });
+    }
+
+    async enrollInCourse() {
+      const walletAddress = window.walletManager?.connectedWallet;
+
+      if (!walletAddress) {
+        alert('Please connect your wallet to enroll');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/courses/enroll', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress,
+            courseId: this.courseId
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Award enrollment XP
+          await window.progressManager?.awardXP(
+            25,
+            'course_enrolled',
+            `Enrolled in ${data.courseTitle}`
+          );
+
+          // Redirect to first lesson
+          window.location.href = `/course/${this.courseId}/lesson/1`;
+        } else {
+          alert(data.error || 'Failed to enroll. Please try again.');
+        }
+      } catch (error) {
+        console.error('Enrollment error:', error);
+        alert('Failed to enroll. Please try again.');
+      }
+    }
+
+    async submitReview() {
+      // TODO: Implement review submission
+      console.log('Submit review');
+    }
+
+    setStarRating(rating) {
+      document.querySelectorAll('.star-btn').forEach((btn, index) => {
+        btn.textContent = index < rating ? '★' : '☆';
+      });
+    }
+  }
+
+  window.courseDetailManager = new CourseDetailManager();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.courseDetailManager.initialize();
+    }, 500);
+  });
+</script>
+
+<style>
+  .course-hero {
+    background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+    color: white;
+    padding: 3rem 0;
+  }
+
+  .course-hero-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 3rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  .breadcrumb a {
+    color: white;
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .course-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+  }
+
+  .course-tagline {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+  }
+
+  .course-meta-bar {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .course-mentor-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .mentor-avatar-large {
+    width: 80px;
+    height: 80px;
+    font-size: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .course-enrollment-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    position: sticky;
+    top: 100px;
+  }
+
+  .requirements-section {
+    margin-bottom: 2rem;
+  }
+
+  .requirement-item {
+    display: flex;
+    align-items: start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .requirement-item.met {
+    background: #ecfdf5;
+    color: var(--color-success);
+  }
+
+  .requirement-item.unmet {
+    background: #fef2f2;
+    color: var(--color-error);
+  }
+
+  .syllabus-list {
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+
+  .lesson-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-gray-200);
+    transition: background var(--transition-base);
+  }
+
+  .lesson-item:hover {
+    background: var(--color-gray-50);
+  }
+
+  .lesson-item.locked {
+    opacity: 0.6;
+  }
+
+  .lesson-item.completed {
+    background: #ecfdf5;
+  }
+
+  .lesson-number-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .lesson-item.completed .lesson-number-badge {
+    background: var(--color-success);
+    color: white;
+  }
+
+  .outcomes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .outcome-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .outcome-number {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .outcome-text {
+    flex: 1;
+    line-height: 1.6;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .course-hero-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .course-enrollment-card {
+      position: static;
+    }
+  }
+</style>

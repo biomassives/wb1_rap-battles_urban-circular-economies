@@ -1,0 +1,749 @@
+---
+/**
+ * learning.astro
+ * Environmental Learning Hub
+ * 
+ * Features:
+ * - Browse and enroll in courses
+ * - Track course progress
+ * - Submit citizen science observations
+ * - Join environmental projects
+ * - Earn certifications
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Learning Hub" 
+  description="Master environmental engineering through hands-on courses and citizen science"
+  activeSection="learning"
+>
+
+  <!-- ============================================ -->
+  <!-- LEARNING HUB HERO -->
+  <!-- ============================================ -->
+  <section class="learning-hero">
+    <div class="container mx-auto">
+      <h1 class="hero-title">Environmental Engineering</h1>
+      <p class="hero-subtitle">
+        Learn sustainable practices through citizen science and real-world projects
+      </p>
+      
+      <!-- Learning Stats -->
+      <div class="learning-stats-grid">
+        <div class="learning-stat">
+          <div class="stat-value" id="courses-completed">0</div>
+          <div class="stat-label">Courses Completed</div>
+        </div>
+        <div class="learning-stat">
+          <div class="stat-value" id="total-certifications">0</div>
+          <div class="stat-label">Certifications</div>
+        </div>
+        <div class="learning-stat">
+          <div class="stat-value" id="observations-submitted">0</div>
+          <div class="stat-label">Observations</div>
+        </div>
+        <div class="learning-stat">
+          <div class="stat-value" id="projects-joined">0</div>
+          <div class="stat-label">Projects Joined</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- COURSE CATALOG -->
+  <!-- ============================================ -->
+  <section class="courses-section">
+    <div class="container mx-auto">
+      
+      <div class="section-header">
+        <h2 class="section-title">Available Courses</h2>
+        <div class="section-filters">
+          <select id="course-filter" class="form-select">
+            <option value="all">All Categories</option>
+            <option value="sustainable_living">Sustainable Living</option>
+            <option value="water">Water & Sanitation</option>
+            <option value="energy">Renewable Energy</option>
+            <option value="permaculture">Permaculture</option>
+            <option value="mycology">Mycology</option>
+            <option value="climate">Climate Adaptation</option>
+          </select>
+          
+          <select id="difficulty-filter" class="form-select">
+            <option value="all">All Levels</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Courses Grid -->
+      <div id="courses-grid" class="courses-grid">
+        
+        <!-- Example Course Card (will be dynamically loaded) -->
+        <!--
+        <div class="course-card [difficulty-class]">
+          <div class="course-header">
+            <div class="course-category-badge">🌱 Sustainable Living</div>
+            <div class="course-mentor">🐓</div>
+          </div>
+          
+          <div class="course-content">
+            <h3 class="course-title">Sustainable Living Foundations</h3>
+            <p class="course-description">
+              Learn the basics of sustainable living, composting, and waste management
+            </p>
+            
+            <div class="course-meta">
+              <span class="meta-item">📚 10 lessons</span>
+              <span class="meta-item">⏱️ 2 weeks</span>
+              <span class="meta-item">⭐ +250 XP</span>
+            </div>
+            
+            <div class="course-difficulty">
+              <span class="difficulty-badge beginner">Beginner</span>
+            </div>
+            
+            <div class="course-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 40%"></div>
+              </div>
+              <span class="progress-text">4/10 lessons</span>
+            </div>
+          </div>
+          
+          <div class="course-actions">
+            <button class="btn-primary">Continue Course</button>
+            <button class="btn-secondary">View Syllabus</button>
+          </div>
+        </div>
+        -->
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- CITIZEN SCIENCE PROJECTS -->
+  <!-- ============================================ -->
+  <section class="projects-section">
+    <div class="container mx-auto">
+      
+      <div class="section-header">
+        <h2 class="section-title">Citizen Science Projects</h2>
+        <p class="section-subtitle">
+          Contribute to real environmental research and earn XP
+        </p>
+      </div>
+
+      <!-- Projects Grid -->
+      <div id="projects-grid" class="projects-grid">
+        
+        <!-- Example Project Card -->
+        <!--
+        <div class="project-card active">
+          <div class="project-header">
+            <div class="project-type">📊 Climate Monitoring</div>
+            <div class="project-location">🏕️ Kakuma</div>
+          </div>
+          
+          <h3 class="project-title">Kakuma Climate Data Collection</h3>
+          <p class="project-description">
+            Track temperature, rainfall, and wind patterns to support drought resilience planning
+          </p>
+          
+          <div class="project-stats">
+            <div class="project-stat">
+              <span class="stat-label">Participants:</span>
+              <span class="stat-value">127</span>
+            </div>
+            <div class="project-stat">
+              <span class="stat-label">Observations:</span>
+              <span class="stat-value">2,341</span>
+            </div>
+            <div class="project-stat">
+              <span class="stat-label">Your contributions:</span>
+              <span class="stat-value">12</span>
+            </div>
+          </div>
+          
+          <div class="project-reward">
+            <span class="reward-label">Earn:</span>
+            <span class="reward-value">+75 XP per observation</span>
+          </div>
+          
+          <button class="btn-primary" onclick="showSubmitObservation('project-id')">
+            Submit Observation
+          </button>
+        </div>
+        -->
+
+      </div>
+
+      <!-- Submit Observation Form (Modal) -->
+      <div id="submit-observation-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+          
+          <div class="modal-header">
+            <h3>Submit Observation</h3>
+            <button class="btn-close" onclick="closeSubmitObservation()">×</button>
+          </div>
+
+          <form id="observation-form" class="observation-form">
+            
+            <!-- Project Selection (if coming from general button) -->
+            <div class="form-group">
+              <label for="observation-project" class="form-label">
+                Project *
+              </label>
+              <select id="observation-project" class="form-select" required>
+                <option value="">Select project...</option>
+                <!-- Projects loaded dynamically -->
+              </select>
+            </div>
+
+            <!-- Observation Type -->
+            <div class="form-group">
+              <label for="observation-type" class="form-label">
+                Observation Type *
+              </label>
+              <select id="observation-type" class="form-select" required>
+                <option value="">Select type...</option>
+                <option value="temperature">🌡️ Temperature</option>
+                <option value="rainfall">☔ Rainfall</option>
+                <option value="wind">💨 Wind Speed/Direction</option>
+                <option value="crop_yield">🌾 Crop Yield</option>
+                <option value="soil_moisture">💧 Soil Moisture</option>
+                <option value="pest_activity">🐛 Pest Activity</option>
+                <option value="plant_health">🌱 Plant Health</option>
+                <option value="water_quality">💦 Water Quality</option>
+              </select>
+            </div>
+
+            <!-- Measurement Value -->
+            <div class="form-group">
+              <label for="observation-measurement" class="form-label">
+                Measurement *
+              </label>
+              <div class="measurement-input-group">
+                <input 
+                  type="number" 
+                  id="observation-measurement" 
+                  class="form-input"
+                  placeholder="0.0"
+                  step="0.1"
+                  required
+                />
+                <select id="observation-unit" class="form-select unit-select" required>
+                  <option value="">Unit...</option>
+                  <option value="celsius">°C</option>
+                  <option value="fahrenheit">°F</option>
+                  <option value="mm">mm</option>
+                  <option value="cm">cm</option>
+                  <option value="kph">km/h</option>
+                  <option value="mph">mph</option>
+                  <option value="kg">kg</option>
+                  <option value="lb">lb</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="form-group">
+              <label for="observation-location" class="form-label">
+                Location *
+              </label>
+              <input 
+                type="text" 
+                id="observation-location" 
+                class="form-input"
+                placeholder="e.g., Kakuma 1, Section A"
+                required
+              />
+              <!--
+              TODO: Add GPS coordinates option
+              <button type="button" class="btn-text">📍 Use My Location</button>
+              -->
+            </div>
+
+            <!-- Date/Time -->
+            <div class="form-group">
+              <label for="observation-datetime" class="form-label">
+                Date & Time *
+              </label>
+              <input 
+                type="datetime-local" 
+                id="observation-datetime" 
+                class="form-input"
+                required
+              />
+            </div>
+
+            <!-- Weather Conditions (Optional) -->
+            <div class="form-group">
+              <label for="observation-weather" class="form-label">
+                Weather Conditions (Optional)
+              </label>
+              <select id="observation-weather" class="form-select">
+                <option value="">Select conditions...</option>
+                <option value="clear">☀️ Clear/Sunny</option>
+                <option value="partly-cloudy">⛅ Partly Cloudy</option>
+                <option value="cloudy">☁️ Cloudy</option>
+                <option value="rainy">🌧️ Rainy</option>
+                <option value="stormy">⛈️ Stormy</option>
+                <option value="windy">💨 Windy</option>
+              </select>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group">
+              <label for="observation-notes" class="form-label">
+                Notes (Optional)
+              </label>
+              <textarea 
+                id="observation-notes" 
+                class="form-textarea"
+                rows="4"
+                placeholder="Add any relevant details, context, or observations..."
+              ></textarea>
+            </div>
+
+            <!-- Photos (Optional) -->
+            <div class="form-group">
+              <label class="form-label">
+                Photos (Optional)
+              </label>
+              <div class="photo-upload-area">
+                <input 
+                  type="file" 
+                  id="observation-photos" 
+                  accept="image/*"
+                  multiple
+                  hidden
+                />
+                <button 
+                  type="button" 
+                  class="btn-secondary"
+                  onclick="document.getElementById('observation-photos').click()"
+                >
+                  📷 Add Photos
+                </button>
+                <div id="photo-previews" class="photo-previews">
+                  <!-- Photo previews will appear here -->
+                </div>
+              </div>
+              <p class="form-hint">
+                Photos help verify observations and improve data quality
+              </p>
+            </div>
+
+            <!-- Data Quality Self-Assessment -->
+            <div class="form-group">
+              <label class="form-label">
+                Data Quality Self-Assessment *
+              </label>
+              <div class="quality-options">
+                <label class="quality-option">
+                  <input type="radio" name="dataQuality" value="5" required />
+                  <span class="quality-label">
+                    <strong>5 - Excellent</strong>
+                    <br/>Calibrated equipment, ideal conditions
+                  </span>
+                </label>
+                <label class="quality-option">
+                  <input type="radio" name="dataQuality" value="4" />
+                  <span class="quality-label">
+                    <strong>4 - Good</strong>
+                    <br/>Reliable equipment, normal conditions
+                  </span>
+                </label>
+                <label class="quality-option">
+                  <input type="radio" name="dataQuality" value="3" checked />
+                  <span class="quality-label">
+                    <strong>3 - Fair</strong>
+                    <br/>Basic equipment, acceptable conditions
+                  </span>
+                </label>
+                <label class="quality-option">
+                  <input type="radio" name="dataQuality" value="2" />
+                  <span class="quality-label">
+                    <strong>2 - Limited</strong>
+                    <br/>Improvised equipment, challenging conditions
+                  </span>
+                </label>
+                <label class="quality-option">
+                  <input type="radio" name="dataQuality" value="1" />
+                  <span class="quality-label">
+                    <strong>1 - Rough</strong>
+                    <br/>Estimated, difficult conditions
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button 
+                type="button" 
+                class="btn-secondary"
+                onclick="closeSubmitObservation()"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn-primary">
+                <span class="btn-icon">📊</span>
+                Submit Observation (+75 XP)
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- MY LEARNING PROGRESS -->
+  <!-- ============================================ -->
+  <section class="my-learning-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">My Learning Progress</h2>
+
+      <!-- Current Courses -->
+      <div class="current-courses">
+        <h3 class="subsection-title">Current Courses</h3>
+        <div id="current-courses-list" class="current-courses-list">
+          <!--
+          Course progress cards loaded here
+          
+          Template:
+          <div class="course-progress-card">
+            <div class="course-progress-header">
+              <div class="course-mini-info">
+                <span class="course-icon">🌱</span>
+                <h4 class="course-name">Sustainable Living Foundations</h4>
+              </div>
+              <div class="course-completion">40%</div>
+            </div>
+            
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 40%"></div>
+            </div>
+            
+            <div class="course-progress-details">
+              <span>Lesson 4 of 10</span>
+              <span>2 days left</span>
+            </div>
+            
+            <button class="btn-primary small">Continue Learning</button>
+          </div>
+          -->
+        </div>
+      </div>
+
+      <!-- Certifications Earned -->
+      <div class="certifications-section">
+        <h3 class="subsection-title">Certifications Earned</h3>
+        <div id="certifications-grid" class="certifications-grid">
+          <!--
+          Certificate cards loaded here
+          
+          Template:
+          <div class="certificate-card">
+            <div class="certificate-seal">🏆</div>
+            <h4 class="certificate-title">Sustainable Living</h4>
+            <p class="certificate-issuer">WorldBridger One</p>
+            <p class="certificate-date">Issued: Jan 15, 2025</p>
+            <div class="certificate-actions">
+              <button class="btn-text">View Certificate</button>
+              <button class="btn-text">Download PDF</button>
+              <button class="btn-text">Share</button>
+            </div>
+          </div>
+          -->
+        </div>
+      </div>
+
+      <!-- Recent Observations -->
+      <div class="recent-observations">
+        <h3 class="subsection-title">Recent Observations</h3>
+        <div id="recent-observations-list" class="observations-list">
+          <!-- Observation entries loaded here -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  /**
+   * Learning Hub Manager
+   */
+  class LearningHubManager {
+    constructor() {
+      this.courses = [];
+      this.projects = [];
+      this.userProgress = null;
+    }
+
+    async initialize() {
+      const walletAddress = window.walletManager?.connectedWallet;
+      if (!walletAddress) {
+        this.showConnectPrompt();
+        return;
+      }
+
+      await this.loadCourses();
+      await this.loadProjects();
+      await this.loadUserProgress(walletAddress);
+      
+      this.renderCourses();
+      this.renderProjects();
+      this.renderUserProgress();
+    }
+
+    async loadCourses() {
+      try {
+        const response = await fetch('/api/environmental/get-courses');
+        const data = await response.json();
+        
+        if (data.success) {
+          this.courses = data.courses;
+        }
+      } catch (error) {
+        console.error('Failed to load courses:', error);
+      }
+    }
+
+    async loadProjects() {
+      try {
+        const response = await fetch('/api/environmental/get-projects');
+        const data = await response.json();
+        
+        if (data.success) {
+          this.projects = data.projects;
+        }
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+      }
+    }
+
+    async loadUserProgress(walletAddress) {
+      try {
+        const response = await fetch(
+          `/api/environmental/user-progress?walletAddress=${walletAddress}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+          this.userProgress = data;
+        }
+      } catch (error) {
+        console.error('Failed to load user progress:', error);
+      }
+    }
+
+    renderCourses() {
+      const container = document.getElementById('courses-grid');
+      
+      if (!this.courses || this.courses.length === 0) {
+        container.innerHTML = '<p class="empty-state">No courses available</p>';
+        return;
+      }
+
+      // TODO: Render course cards dynamically
+      container.innerHTML = '<p class="loading">Loading courses...</p>';
+    }
+
+    renderProjects() {
+      const container = document.getElementById('projects-grid');
+      
+      if (!this.projects || this.projects.length === 0) {
+        container.innerHTML = '<p class="empty-state">No active projects</p>';
+        return;
+      }
+
+      // TODO: Render project cards dynamically
+      container.innerHTML = '<p class="loading">Loading projects...</p>';
+    }
+
+    renderUserProgress() {
+      if (!this.userProgress) return;
+
+      // Update stats
+      document.getElementById('courses-completed').textContent = 
+        this.userProgress.coursesCompleted || 0;
+      document.getElementById('total-certifications').textContent = 
+        this.userProgress.certifications || 0;
+      document.getElementById('observations-submitted').textContent = 
+        this.userProgress.observations || 0;
+      document.getElementById('projects-joined').textContent = 
+        this.userProgress.projectsJoined || 0;
+
+      // TODO: Render current courses, certifications, recent observations
+    }
+
+    showConnectPrompt() {
+      const hero = document.querySelector('.learning-hero');
+      hero.innerHTML = `
+        <div class="connect-prompt">
+          <h2>Connect Your Wallet</h2>
+          <p>Connect your wallet to access courses and track your progress</p>
+          <button class="btn-primary" onclick="document.getElementById('connect-wallet-btn').click()">
+            Connect Wallet
+          </button>
+        </div>
+      `;
+    }
+
+    async enrollInCourse(courseId) {
+      const walletAddress = window.walletManager?.connectedWallet;
+      if (!walletAddress) return;
+
+      try {
+        const response = await fetch('/api/environmental/enroll-course', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress,
+            courseId
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          // Award enrollment XP
+          await window.progressManager?.awardXP(25, 'course_enrolled', `Enrolled in course`);
+          
+          // Reload courses
+          await this.initialize();
+        }
+      } catch (error) {
+        console.error('Failed to enroll:', error);
+      }
+    }
+  }
+
+  window.learningHubManager = new LearningHubManager();
+
+  // Initialize when ready
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.learningHubManager.initialize();
+    }, 500);
+  });
+
+  // Observation form handlers
+  function showSubmitObservation(projectId) {
+    document.getElementById('submit-observation-modal').style.display = 'flex';
+    if (projectId) {
+      document.getElementById('observation-project').value = projectId;
+    }
+  }
+
+  function closeSubmitObservation() {
+    document.getElementById('submit-observation-modal').style.display = 'none';
+    document.getElementById('observation-form').reset();
+  }
+
+  // Handle observation form submit
+  document.getElementById('observation-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const walletAddress = window.walletManager?.connectedWallet;
+    if (!walletAddress) return;
+
+    // TODO: Implement observation submission
+    // 1. Collect form data
+    // 2. Upload photos if any
+    // 3. Submit to API
+    // 4. Award XP
+    // 5. Show success message
+    
+    console.log('Observation form submitted');
+    closeSubmitObservation();
+  });
+</script>
+
+<style>
+  .learning-hero {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .learning-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .learning-stat {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+  }
+
+  .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .course-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+
+  .course-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .measurement-input-group {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .quality-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .quality-option {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .quality-option:has(input:checked) {
+    border-color: #38ef7d;
+    background: #f0fdf4;
+  }
+
+  /* More styles... */
+</style>
