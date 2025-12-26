@@ -1,5 +1,7 @@
 # 🌾 Hobby Farm NFT Collection
 
+This is a project dedicated to increasing appreciation of the amazing art forms of freestyle rhyme and rap battles, beat production, fan art, and urban youth culture as these art forms intersect with the critical plannning and maintenance needs our modern cities present environmental engineers with as they work to safeguard water supplies, reduce/eliminate cross connections and contamination dangers among other critical work provided by environmental engineers and citizen scientists that support them.
+
 A sustainable hobby farm NFT collection on Solana with automatic theme cycling, user profiles, and Postgres storage.
 
 ## 🎨 Amazing Features
