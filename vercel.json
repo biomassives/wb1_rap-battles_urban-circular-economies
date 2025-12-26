@@ -5,7 +5,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist"  // or your output directory if different
       }
     },
     {
@@ -16,7 +16,7 @@
   "routes": [
     {
       "src": "/",
-      "dest": "/hobby-farm-nft.html"
+      "dest": "/index.html"
     },
     {
       "src": "/api/(.*)",
@@ -34,3 +34,4 @@
   },
   "regions": ["iad1"]
 }
+
