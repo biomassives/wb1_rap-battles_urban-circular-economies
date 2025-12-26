@@ -158,6 +158,17 @@
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
+
+export async function getStaticPaths() {
+  // Example: Sample data fetching; replace with your actual data source
+  const battles = await fetch('your-api-endpoint/battles').then(res => res.json());
+
+  return battles.map(battle => ({
+    params: { id: battle.id.toString() }, // Ensure id is a string
+  }));
+}
+
+
 const { id } = Astro.params;
 
 // TODO: Fetch battle data from API
