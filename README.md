@@ -2,14 +2,14 @@
 
 A sustainable hobby farm NFT collection on Solana with automatic theme cycling, user profiles, and Postgres storage.
 
-## 🎨 Features
+## 🎨 Amazing Features
 
 ### NFT Collection
 - **55 Total NFTs**: 40 Chickens, 5 Cats, 4 Goats, 4 Pigeons, 1 Dog, 1 Rabbit
 - **Rarity Tiers**: Common, Uncommon, Rare, Legendary
 - **Unique Traits**: Each animal has breed, color, personality, and special attributes
 
-### Dynamic Theming
+### Always Dynamic Theming
 - **6 Farm Themes**: Auto-cycle through themes every 4 hours
   - 🌱 Green Meadow (00:00-03:59)
   - 🌅 Sunset Farm (04:00-07:59)
