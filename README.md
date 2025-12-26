@@ -9,7 +9,7 @@ A sustainable hobby farm NFT collection on Solana with automatic theme cycling, 
 - **Rarity Tiers**: Common, Uncommon, Rare, Legendary
 - **Unique Traits**: Each animal has breed, color, personality, and special attributes
 
-### Always Dynamic Theming
+### Always Beautiful Dynamic Theming
 - **6 Farm Themes**: Auto-cycle through themes every 4 hours
   - 🌱 Green Meadow (00:00-03:59)
   - 🌅 Sunset Farm (04:00-07:59)
