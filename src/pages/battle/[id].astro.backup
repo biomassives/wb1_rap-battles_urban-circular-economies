@@ -156,165 +156,79 @@
  * Update battle records → Send notifications
  */
 
-
----
-// src/pages/battle/[id].astro
-// FULLY INTEGRATED: Supabase + BattleManager + Your existing UI
 import BaseLayout from '../../layouts/BaseLayout.astro';
+
+
+export async function getStaticPaths() {
+  // Example: Sample data fetching; replace with your actual data source
+  const battles = await fetch('your-api-endpoint/battles').then(res => res.json());
+
+  return battles.map(battle => ({
+    params: { id: battle.id.toString() }, // Ensure id is a string
+  }));
+}
+
 
 const { id } = Astro.params;
 
-// ============================================
-// SUPABASE DATA FETCHING
-// ============================================
-
-let battleData = null;
-let error = null;
-let isParticipant = false;
-let canVote = true;
-
-try {
-  // Import Supabase client
-  // TODO: Uncomment when Supabase is fully configured
-  /*
-  import { supabase } from '../../lib/supabase.js';
-  
-  const { data, error: fetchError } = await supabase
-    .from('battles')
-    .select(`
-      *,
-      challenger:users!battles_challenger_id_fkey(id, username, level, wallet_address),
-      opponent:users!battles_opponent_id_fkey(id, username, level, wallet_address),
-      rounds:battle_rounds(
-        *,
-        submissions:battle_submissions(
-          *,
-          user:users(id, username, level)
-        ),
-        votes:battle_votes(count)
-      )
-    `)
-    .eq('id', id)
-    .single();
-  
-  if (!fetchError && data) {
-    // Transform Supabase data to match your UI structure
-    battleData = {
-      id: data.id,
+// TODO: Fetch battle data from API
+const battleData = {
+  id: id,
+  challenger: {
+    username: "mc_thunder",
+    walletAddress: "ABC...123",
+    level: 15
+  },
+  opponent: {
+    username: "lyrical_storm",
+    walletAddress: "XYZ...789",
+    level: 18
+  },
+  category: "wordplay",
+  status: "IN_PROGRESS", // OPEN, ACCEPTED, IN_PROGRESS, JUDGING, COMPLETED, CANCELLED
+  format: {
+    rounds: 3,
+    barsPerRound: 16,
+    timeLimit: 48 // hours per round
+  },
+  stake: {
+    amount: 0.5,
+    currency: "SOL"
+  },
+  currentRound: 1,
+  submissions: [
+    // Round 1
+    {
+      round: 1,
       challenger: {
-        username: data.challenger.username,
-        walletAddress: data.challenger.wallet_address,
-        level: data.challenger.level
+        bars: null, // Hidden until both submit
+        submittedAt: null
       },
-      opponent: data.opponent ? {
-        username: data.opponent.username,
-        walletAddress: data.opponent.wallet_address,
-        level: data.opponent.level
-      } : null,
-      category: data.category,
-      status: data.status,
-      format: {
-        rounds: data.total_rounds,
-        barsPerRound: data.bars_per_round,
-        timeLimit: data.time_limit_hours
+      opponent: {
+        bars: null,
+        submittedAt: null
       },
-      stake: {
-        amount: data.stake_amount,
-        currency: data.stake_currency
-      },
-      currentRound: data.current_round,
-      submissions: data.rounds?.map(round => ({
-        round: round.round_number,
-        challenger: {
-          bars: round.submissions?.find(s => s.user_id === data.challenger_id)?.bars || null,
-          submittedAt: round.submissions?.find(s => s.user_id === data.challenger_id)?.submitted_at || null
-        },
-        opponent: {
-          bars: round.submissions?.find(s => s.user_id === data.opponent_id)?.bars || null,
-          submittedAt: round.submissions?.find(s => s.user_id === data.opponent_id)?.submitted_at || null
-        },
-        votingOpen: round.status === 'VOTING',
-        votingEndsAt: round.voting_ended_at,
-        scores: {
-          challenger: round.challenger_score || 0,
-          opponent: round.opponent_score || 0
-        }
-      })) || [],
-      createdAt: data.created_at,
-      expiresAt: data.expires_at,
-      spectators: data.spectator_count || 0,
-      totalVotes: data.total_votes || 0
-    };
-    
-    // Check if current user is participant
-    // TODO: Get wallet address from session/state
-    // isParticipant = walletAddress === data.challenger.wallet_address || walletAddress === data.opponent?.wallet_address;
-    
-  } else {
-    error = fetchError?.message || 'Battle not found';
-  }
-  */
-  
-  // TEMPORARY: Use placeholder data until Supabase is connected
-  battleData = {
-    id: id,
-    challenger: {
-      username: "mc_thunder",
-      walletAddress: "ABC...123",
-      level: 15
-    },
-    opponent: {
-      username: "lyrical_storm",
-      walletAddress: "XYZ...789",
-      level: 18
-    },
-    category: "wordplay",
-    status: "IN_PROGRESS",
-    format: {
-      rounds: 3,
-      barsPerRound: 16,
-      timeLimit: 48
-    },
-    stake: {
-      amount: 0.5,
-      currency: "SOL"
-    },
-    currentRound: 1,
-    submissions: [
-      {
-        round: 1,
-        challenger: {
-          bars: null,
-          submittedAt: null
-        },
-        opponent: {
-          bars: null,
-          submittedAt: null
-        },
-        votingOpen: false,
-        votingEndsAt: null,
-        scores: {
-          challenger: 0,
-          opponent: 0
-        }
+      votingOpen: false,
+      votingEndsAt: null,
+      scores: {
+        challenger: 0,
+        opponent: 0
       }
-    ],
-    createdAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
-    spectators: 42,
-    totalVotes: 0
-  };
+    }
+  ],
+  createdAt: new Date().toISOString(),
+  expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+  spectators: 42,
+  totalVotes: 0
+};
 
-} catch (err) {
-  console.error('Battle fetch error:', err);
-  error = err.message;
-}
-
-const battleExists = battleData !== null && !error;
+const battleExists = battleData !== null;
+const isParticipant = false; // TODO: Check if current user is challenger or opponent
+const canVote = true; // TODO: Check voting eligibility
 ---
 
 <BaseLayout 
-  title={battleExists ? `Battle: ${battleData.challenger.username} vs ${battleData.opponent?.username || 'TBD'}` : 'Battle Not Found'}
+  title={`Battle: ${battleData.challenger.username} vs ${battleData.opponent.username}`}
   description="Watch this epic rap battle unfold"
   activeSection="music"
 >
@@ -325,7 +239,7 @@ const battleExists = battleData !== null && !error;
         <div class="not-found-content">
           <div class="not-found-icon">⚔️❌</div>
           <h1>Battle Not Found</h1>
-          <p>{error || "This battle doesn't exist or has been removed."}</p>
+          <p>This battle doesn't exist or has been removed.</p>
           <a href="/music" class="btn-primary">Browse Battles</a>
         </div>
       </div>
@@ -374,7 +288,9 @@ const battleExists = battleData !== null && !error;
                 <div class="participant-level">Level {battleData.challenger.level}</div>
               </a>
               
+              {/* Round status for challenger */}
               <div class="submission-status">
+                {/* TODO: Show submission status per round */}
                 <div class="status-indicator pending">
                   Round {battleData.currentRound} pending
                 </div>
@@ -391,9 +307,10 @@ const battleExists = battleData !== null && !error;
                 </div>
               </div>
               
+              <!-- Spectators count -->
               <div class="spectators-count">
                 <span class="spectator-icon">👁️</span>
-                <span class="spectator-text" id="spectator-count">{battleData.spectators} watching</span>
+                <span class="spectator-text">{battleData.spectators} watching</span>
               </div>
             </div>
 
@@ -444,7 +361,7 @@ const battleExists = battleData !== null && !error;
             <div class="detail-item">
               <span class="detail-icon">🗳️</span>
               <span class="detail-label">Votes:</span>
-              <span class="detail-value" id="total-votes">{battleData.totalVotes}</span>
+              <span class="detail-value">{battleData.totalVotes}</span>
             </div>
           </div>
 
@@ -461,6 +378,7 @@ const battleExists = battleData !== null && !error;
 
           <div class="rounds-container">
             
+            {/* Loop through all rounds */}
             {Array.from({ length: battleData.format.rounds }, (_, i) => i + 1).map(roundNum => {
               const round = battleData.submissions.find(s => s.round === roundNum);
               const isCurrentRound = roundNum === battleData.currentRound;
@@ -482,12 +400,14 @@ const battleExists = battleData !== null && !error;
                       <div class="round-timer">
                         <span class="timer-icon">⏱️</span>
                         <span class="timer-text" id={`round-${roundNum}-timer`}>
+                          {/* TODO: Calculate time remaining */}
                           Deadline: 23h 45m
                         </span>
                       </div>
                     )}
                   </div>
 
+                  {/* Round submissions */}
                   {!isFutureRound && round && (
                     <div class="round-submissions">
                       
@@ -502,16 +422,18 @@ const battleExists = battleData !== null && !error;
                           )}
                         </div>
                         
+                        {/* Show bars if both submitted or if judging/completed */}
                         {(round.challenger.bars && (round.opponent.bars || isPastRound)) ? (
                           <div class="bars-content">
                             <pre class="bars-text">{round.challenger.bars}</pre>
                             
-                            {(round.votingOpen || isPastRound) && (
+                            {/* Scoring if judging/completed */}
+                            {round.votingOpen || isPastRound ? (
                               <div class="submission-score">
                                 <div class="score-number">{round.scores.challenger}</div>
                                 <div class="score-label">Score</div>
                               </div>
-                            )}
+                            ) : null}
                           </div>
                         ) : (
                           <div class="bars-placeholder">
@@ -521,6 +443,7 @@ const battleExists = battleData !== null && !error;
                           </div>
                         )}
 
+                        {/* Submit button for participant */}
                         {isParticipant && isCurrentRound && !round.challenger.submittedAt && (
                           <button class="btn-primary" onclick="openSubmitModal()">
                             Submit Your Bars
@@ -543,12 +466,12 @@ const battleExists = battleData !== null && !error;
                           <div class="bars-content">
                             <pre class="bars-text">{round.opponent.bars}</pre>
                             
-                            {(round.votingOpen || isPastRound) && (
+                            {round.votingOpen || isPastRound ? (
                               <div class="submission-score">
                                 <div class="score-number">{round.scores.opponent}</div>
                                 <div class="score-label">Score</div>
                               </div>
-                            )}
+                            ) : null}
                           </div>
                         ) : (
                           <div class="bars-placeholder">
@@ -559,6 +482,7 @@ const battleExists = battleData !== null && !error;
                         )}
                       </div>
 
+                      {/* Voting section if both submitted */}
                       {round.votingOpen && canVote && (
                         <div class="voting-section">
                           <h4 class="voting-title">Cast Your Vote</h4>
@@ -567,6 +491,16 @@ const battleExists = battleData !== null && !error;
                           </p>
                           
                           <form id={`vote-form-round-${roundNum}`} class="vote-form">
+                            {/* 
+                            DECISION POINT: Voting criteria
+                            - Flow (1-10)
+                            - Wordplay (1-10)
+                            - Content (1-10)
+                            - Technical Skill (1-10)
+                            - Originality (1-10)
+                            OR
+                            - Simple winner pick
+                            */}
                             
                             <div class="vote-choice">
                               <label class="vote-option">
@@ -615,6 +549,7 @@ const battleExists = battleData !== null && !error;
               <div class="winner-card">
                 <div class="winner-badge">Winner</div>
                 <div class="winner-avatar">
+                  {/* TODO: Display winner */}
                   MC
                 </div>
                 <h3 class="winner-name">Winner Username</h3>
@@ -634,12 +569,14 @@ const battleExists = battleData !== null && !error;
                 </div>
               </div>
 
+              {/* Scoring breakdown */}
               <div class="scoring-breakdown">
                 <h3 class="breakdown-title">Scoring Breakdown</h3>
                 <div class="breakdown-grid">
                   <div class="breakdown-item">
                     <div class="breakdown-label">Peer Voting (40%)</div>
                     <div class="breakdown-bar">
+                      {/* TODO: Visual bar */}
                       <div class="breakdown-score">Challenger: 65% | Opponent: 35%</div>
                     </div>
                   </div>
@@ -672,15 +609,18 @@ const battleExists = battleData !== null && !error;
           
           <h2 class="section-title">Comments & Reactions</h2>
           
+          {/* Quick reactions */}
           <div class="quick-reactions">
-            <button class="reaction-btn" data-reaction="fire">🔥 <span>Fire</span> <strong id="reaction-fire-count">24</strong></button>
-            <button class="reaction-btn" data-reaction="destroyed">💀 <span>Destroyed</span> <strong id="reaction-destroyed-count">18</strong></button>
-            <button class="reaction-btn" data-reaction="king">👑 <span>King</span> <strong id="reaction-king-count">15</strong></button>
-            <button class="reaction-btn" data-reaction="bars">🎯 <span>Bars</span> <strong id="reaction-bars-count">32</strong></button>
+            <button class="reaction-btn">🔥 <span>Fire</span> <strong>24</strong></button>
+            <button class="reaction-btn">💀 <span>Destroyed</span> <strong>18</strong></button>
+            <button class="reaction-btn">👑 <span>King</span> <strong>15</strong></button>
+            <button class="reaction-btn">🎯 <span>Bars</span> <strong>32</strong></button>
           </div>
 
-          <div class="comments-container" id="comments-container">
+          {/* Comments */}
+          <div class="comments-container">
             <p class="empty-state">No comments yet. Be the first!</p>
+            {/* TODO: Implement comments */}
           </div>
 
         </div>
@@ -717,6 +657,7 @@ const battleExists = battleData !== null && !error;
                 </div>
               </div>
 
+              {/* Optional: Audio upload */}
               <div class="form-group">
                 <label class="form-label">
                   Audio Recording (Optional)
@@ -750,23 +691,22 @@ const battleExists = battleData !== null && !error;
 
 </BaseLayout>
 
-<style>
-  /* Use your existing styles - they're great! */
-  /* I'm keeping them as-is */
-</style>
-
 <script>
-  // Import BattleManager for real-time features
-  import BattleManager from '../../lib/battlemanager.js';
-
   /**
    * Battle Detail Manager
-   * Integrated with Supabase real-time and BattleManager
+   * 
+   * TODO: Implementation
+   * - Real-time updates (WebSocket for live submissions)
+   * - Countdown timers for deadlines
+   * - Vote submission and tallying
+   * - Bars submission with validation
+   * - Audio upload and playback
+   * - Notification system for battle events
    */
+
   class BattleDetailManager {
     constructor() {
       this.battleId = null;
-      this.battleManager = null;
       this.isParticipant = false;
       this.currentRound = 1;
     }
@@ -775,128 +715,39 @@ const battleExists = battleData !== null && !error;
       const pathParts = window.location.pathname.split('/');
       this.battleId = pathParts[pathParts.length - 1];
 
-      console.log('🎤 Initializing battle:', this.battleId);
-
-      // Initialize BattleManager for real-time updates
-      try {
-        // TODO: Uncomment when Supabase is ready
-        /*
-        this.battleManager = new BattleManager(this.battleId);
-        await this.battleManager.initialize();
-        
-        // Subscribe to battle updates
-        this.battleManager.onBattleUpdate((battle) => {
-          console.log('Battle updated:', battle);
-          this.handleBattleUpdate(battle);
-        });
-        
-        this.battleManager.onSubmission((submission) => {
-          console.log('New submission:', submission);
-          this.handleNewSubmission(submission);
-        });
-        
-        this.battleManager.onVote((vote) => {
-          console.log('New vote:', vote);
-          this.handleNewVote(vote);
-        });
-        
-        this.battleManager.onReaction((reaction) => {
-          console.log('New reaction:', reaction);
-          this.handleNewReaction(reaction);
-        });
-        */
-        
-        console.log('✅ BattleManager initialized (placeholder mode)');
-      } catch (error) {
-        console.error('BattleManager init error:', error);
-      }
-
+      await this.loadBattleData();
       this.setupTimers();
       this.setupForms();
-      this.setupReactions();
     }
 
-    handleBattleUpdate(battle) {
-      // Update spectator count
-      const spectatorEl = document.getElementById('spectator-count');
-      if (spectatorEl && battle.spectator_count) {
-        spectatorEl.textContent = `${battle.spectator_count} watching`;
-      }
-      
-      // Update vote count
-      const votesEl = document.getElementById('total-votes');
-      if (votesEl && battle.total_votes) {
-        votesEl.textContent = battle.total_votes;
-      }
-    }
-
-    handleNewSubmission(submission) {
-      // TODO: Update UI when submission comes in
-      // Show notification, update submission status
-      console.log('Handling new submission:', submission);
-    }
-
-    handleNewVote(vote) {
-      // Update vote counts
-      const votesEl = document.getElementById('total-votes');
-      if (votesEl) {
-        const current = parseInt(votesEl.textContent) || 0;
-        votesEl.textContent = current + 1;
-      }
-    }
-
-    handleNewReaction(reaction) {
-      // Update reaction count
-      const countEl = document.getElementById(`reaction-${reaction.reaction_type}-count`);
-      if (countEl) {
-        const current = parseInt(countEl.textContent) || 0;
-        countEl.textContent = current + 1;
-      }
+    async loadBattleData() {
+      // TODO: Fetch from API
+      console.log('Loading battle:', this.battleId);
     }
 
     setupTimers() {
-      // TODO: Implement countdown timers for deadlines
-      setInterval(() => {
-        // Update timers every minute
-      }, 60000);
+      // TODO: Implement countdown timers
+      // Update every second
     }
 
     setupForms() {
       // Submit bars form
-      const submitForm = document.getElementById('submit-bars-form');
-      if (submitForm) {
-        submitForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          await this.submitBars();
-        });
-      }
+      document.getElementById('submit-bars-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.submitBars();
+      });
 
       // Line counter for bars textarea
-      const barsTextarea = document.getElementById('bars-textarea');
-      if (barsTextarea) {
-        barsTextarea.addEventListener('input', (e) => {
-          const lines = e.target.value.split('\n').filter(line => line.trim());
-          const lineCountEl = document.getElementById('line-count');
-          if (lineCountEl) {
-            lineCountEl.textContent = lines.length;
-          }
-        });
-      }
+      document.getElementById('bars-textarea')?.addEventListener('input', (e) => {
+        const lines = e.target.value.split('\n').filter(line => line.trim());
+        document.getElementById('line-count').textContent = lines.length;
+      });
 
       // Vote forms
       document.querySelectorAll('.vote-form').forEach(form => {
-        form.addEventListener('submit', async (e) => {
+        form.addEventListener('submit', (e) => {
           e.preventDefault();
-          await this.submitVote(form);
-        });
-      });
-    }
-
-    setupReactions() {
-      document.querySelectorAll('.reaction-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const reactionType = btn.dataset.reaction;
-          await this.addReaction(reactionType);
+          this.submitVote(form);
         });
       });
     }
@@ -905,118 +756,35 @@ const battleExists = battleData !== null && !error;
       const bars = document.getElementById('bars-textarea').value;
       const audioFile = document.getElementById('audio-upload').files[0];
 
-      const lines = bars.split('\n').filter(line => line.trim());
-      
-      // TODO: Validate bars count matches format
-      // if (lines.length !== this.battleData.format.barsPerRound) {
-      //   alert(`Please submit exactly ${this.battleData.format.barsPerRound} bars`);
-      //   return;
-      // }
+      // TODO: Validate bars count
+      // TODO: Upload audio if present
+      // TODO: Submit to API
 
-      try {
-        // TODO: Use BattleManager to submit
-        /*
-        await this.battleManager.submitBars({
-          bars,
-          audioFile,
-          roundNumber: this.currentRound
-        });
-        */
-        
-        console.log('📝 Submitting bars:', { bars, hasAudio: !!audioFile });
-        alert('Bars submitted! (Placeholder - will use Supabase when connected)');
-        closeSubmitModal();
-        
-      } catch (error) {
-        console.error('Submit error:', error);
-        alert('Failed to submit bars: ' + error.message);
-      }
+      console.log('Submitting bars:', { bars, hasAudio: !!audioFile });
     }
 
     async submitVote(form) {
       const formData = new FormData(form);
-      const roundNumber = parseInt(form.id.match(/\d+/)[0]);
-      const vote = formData.get(`round-${roundNumber}-vote`);
-
-      try {
-        // TODO: Use BattleManager to submit vote
-        /*
-        await this.battleManager.submitVote({
-          roundNumber,
-          voteFor: vote
-        });
-        */
-        
-        console.log('🗳️ Submitting vote:', { roundNumber, vote });
-        alert('Vote submitted! +10 XP (Placeholder - will use Supabase when connected)');
-        form.querySelector('button[type="submit"]').disabled = true;
-        form.querySelector('button[type="submit"]').textContent = 'Vote Submitted ✓';
-        
-      } catch (error) {
-        console.error('Vote error:', error);
-        alert('Failed to submit vote: ' + error.message);
-      }
-    }
-
-    async addReaction(reactionType) {
-      try {
-        // TODO: Use BattleManager to add reaction
-        /*
-        await this.battleManager.addReaction({
-          reactionType,
-          targetType: 'battle',
-          targetId: this.battleId
-        });
-        */
-        
-        console.log('⚡ Adding reaction:', reactionType);
-        // Optimistically update UI
-        const countEl = document.getElementById(`reaction-${reactionType}-count`);
-        if (countEl) {
-          const current = parseInt(countEl.textContent) || 0;
-          countEl.textContent = current + 1;
-        }
-        
-      } catch (error) {
-        console.error('Reaction error:', error);
-      }
-    }
-
-    cleanup() {
-      // Unsubscribe from real-time updates
-      if (this.battleManager) {
-        this.battleManager.cleanup();
-      }
+      // TODO: Submit vote to API
+      console.log('Submitting vote');
     }
   }
 
-  // Modal functions (global scope)
-  window.openSubmitModal = function() {
-    const modal = document.getElementById('submit-bars-modal');
-    if (modal) {
-      modal.style.display = 'flex';
-    }
-  };
+  function openSubmitModal() {
+    document.getElementById('submit-bars-modal').style.display = 'flex';
+  }
 
-  window.closeSubmitModal = function() {
-    const modal = document.getElementById('submit-bars-modal');
-    if (modal) {
-      modal.style.display = 'none';
-    }
-  };
+  function closeSubmitModal() {
+    document.getElementById('submit-bars-modal').style.display = 'none';
+  }
 
-  // Initialize
   window.battleDetailManager = new BattleDetailManager();
 
   document.addEventListener('DOMContentLoaded', () => {
     window.battleDetailManager.initialize();
   });
-
-  // Cleanup on page unload
-  window.addEventListener('beforeunload', () => {
-    window.battleDetailManager.cleanup();
-  });
 </script>
+
 <style>
   .battle-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

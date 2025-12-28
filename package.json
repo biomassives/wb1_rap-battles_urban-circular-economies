@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "astro": "^5.16.6"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0"
   }
 }
