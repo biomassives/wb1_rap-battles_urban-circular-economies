@@ -3,56 +3,17 @@
  * airdrops.astro
  * Scheduled Airdrop Rewards Dashboard
  *
- * 25 Quick Action Cards cycling through scheduled airdrops:
- * - Artist Promotion Rewards
- * - Educational Project Rewards
- * - Mentorship Support Rewards
- * - Event Participation Rewards
+ * Data-driven airdrop system loading from /public/data/purple-point/
+ * - Airdrops: 25 reward templates
+ * - Projects: 5 core projects for combinations
+ * - Event Domains: Educational activity categorization
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// Airdrop schedule data
-const airdropSchedule = [
-  {
-    id: 'artist-spotlight-001',
-    type: 'artist_promotion',
-    name: 'Artist Spotlight Airdrop',
-    description: 'Support emerging artists by streaming, sharing, and engaging',
-    reward: '100 tokens',
-    xp: 50,
-    startDate: '2025-01-15T00:00:00Z',
-    endDate: '2025-01-22T23:59:59Z',
-    status: 'upcoming',
-    icon: '🎤',
-    color: '#667eea'
-  },
-  {
-    id: 'edu-course-completion',
-    type: 'educational',
-    name: 'Course Completion Bonus',
-    description: 'Complete environmental science modules',
-    reward: '150 tokens',
-    xp: 75,
-    startDate: '2025-01-08T00:00:00Z',
-    endDate: '2025-01-14T23:59:59Z',
-    status: 'active',
-    icon: '📚',
-    color: '#10b981'
-  },
-  {
-    id: 'mentor-session',
-    type: 'mentorship',
-    name: 'Mentorship Milestone',
-    description: 'Attend 3 mentor sessions or mentor 3 others',
-    reward: '200 tokens',
-    xp: 100,
-    startDate: '2025-01-01T00:00:00Z',
-    endDate: '2025-01-31T23:59:59Z',
-    status: 'active',
-    icon: '🎓',
-    color: '#f59e0b'
-  }
-];
+// Fetch data from JSON files
+const rewardsData = await fetch(new URL('/data/purple-point/airdrops/rewards.json', Astro.url)).then(r => r.json());
+const projectsData = await fetch(new URL('/data/purple-point/projects/projects.json', Astro.url)).then(r => r.json());
+const eventDomainsData = await fetch(new URL('/data/purple-point/calendar/event-domains.json', Astro.url)).then(r => r.json());
 ---
 
 <BaseLayout
@@ -72,6 +33,49 @@ const airdropSchedule = [
         <p style="color: #666; font-size: 1.125rem;">
           Earn tokens and XP through artist promotions, education, mentorship, and events
         </p>
+      </div>
+
+      <!-- Today's Date Display -->
+      <div class="today-display" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 1rem; text-align: center; margin-bottom: 3rem; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); max-width: 600px; margin-left: auto; margin-right: auto;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem;">
+          <div style="font-size: 3rem;">📅</div>
+          <div style="text-align: left;">
+            <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.25rem;">Today</div>
+            <div id="current-date" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.25rem;">Loading...</div>
+            <div id="current-time" style="font-size: 1.125rem; opacity: 0.9;">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7-Day Calendar -->
+      <div class="calendar-week">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1rem;">
+          📆 This Week's Educational Activities
+        </h2>
+        <p style="color: #666; font-size: 0.875rem; margin-bottom: 1.5rem;">
+          Color-coded by priority and domain: Learning, Cultural, Artistic, Financial
+        </p>
+
+        <!-- Calendar Legend -->
+        <div class="calendar-legend">
+          <div class="legend-item">
+            <div class="legend-box" style="background: #10b981;"></div>
+            <span>Primary (Most Important)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box" style="background: #86efac;"></div>
+            <span>Secondary</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box" style="background: #d1fae5;"></div>
+            <span>Tertiary</span>
+          </div>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="calendar-grid" id="calendar-grid">
+          <!-- Days will be populated by JavaScript -->
+        </div>
       </div>
 
       <!-- Current Balance -->
@@ -97,6 +101,52 @@ const airdropSchedule = [
               📜 View History
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Project-Airdrop Combination Wheel -->
+      <div class="combination-wheel">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 0.5rem; text-align: center;">
+          🎡 Project + Airdrop Combinations
+        </h2>
+        <p class="wheel-subtitle">
+          Cycling through all intersectional project support opportunities
+        </p>
+
+        <div class="wheel-display">
+          <div class="wheel-current" id="wheel-current">
+            <div class="combo-project">
+              <span class="project-icon">🏕️</span>
+              <span class="project-name">Kakuma</span>
+            </div>
+            <div class="combo-connector">×</div>
+            <div class="combo-airdrop">
+              <span class="airdrop-icon">🎵</span>
+              <span class="airdrop-name">Stream Boost</span>
+            </div>
+          </div>
+
+          <div class="wheel-info">
+            <div class="combo-description" id="combo-description">
+              Loading combinations...
+            </div>
+            <div class="combo-stats">
+              Combination <span id="combo-current">1</span> of
+              <span id="combo-total">125</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="wheel-controls">
+          <button class="btn-wheel" onclick="window.wheelManager?.previous()">⏮ Previous</button>
+          <button class="btn-wheel" onclick="window.wheelManager?.toggleAutoplay()">
+            <span id="autoplay-icon">⏸️</span> <span id="autoplay-text">Pause</span>
+          </button>
+          <button class="btn-wheel" onclick="window.wheelManager?.next()">Next ⏭</button>
+        </div>
+
+        <div class="wheel-progress-bar">
+          <div class="wheel-progress-fill" id="wheel-progress"></div>
         </div>
       </div>
 
@@ -157,11 +207,149 @@ const airdropSchedule = [
     </div>
   </section>
 
+  <!-- MODALS -->
+
+  <!-- Claim Confirmation Modal -->
+  <div id="claim-modal" class="modal" style="display: none;">
+    <div class="modal-overlay" onclick="window.airdropManager?.closeModal('claim-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>💰 Claim Reward</h3>
+        <button class="modal-close" onclick="window.airdropManager?.closeModal('claim-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="claim-modal-content">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;" id="claim-icon">🎁</div>
+            <h4 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem;" id="claim-title">Reward Name</h4>
+            <p style="color: #666;" id="claim-description">Reward description</p>
+          </div>
+
+          <div style="background: #f9fafb; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+              <div>
+                <div style="font-size: 2rem; font-weight: bold; color: #667eea;" id="claim-tokens">50</div>
+                <div style="font-size: 0.875rem; color: #666;">Tokens</div>
+              </div>
+              <div>
+                <div style="font-size: 2rem; font-weight: bold; color: #10b981;" id="claim-xp">25</div>
+                <div style="font-size: 0.875rem; color: #666;">XP</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: #fef3c7; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #f59e0b; margin-bottom: 1.5rem;">
+            <div style="font-size: 0.875rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">Requirements:</div>
+            <div id="claim-requirements" style="font-size: 0.875rem; color: #78350f;">
+              <!-- Requirements will be inserted here -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="window.airdropManager?.closeModal('claim-modal')">Cancel</button>
+          <button type="button" class="btn-primary" id="confirm-claim-btn" onclick="window.airdropManager?.confirmClaim()">
+            Claim Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Claim All Confirmation Modal -->
+  <div id="claim-all-modal" class="modal" style="display: none;">
+    <div class="modal-overlay" onclick="window.airdropManager?.closeModal('claim-all-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>💎 Claim All Available Rewards</h3>
+        <button class="modal-close" onclick="window.airdropManager?.closeModal('claim-all-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="claim-all-content">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+            <p style="color: #666; font-size: 1.125rem;">You're about to claim <strong id="claim-all-count">0</strong> available rewards!</p>
+          </div>
+
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; text-align: center;">
+            <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Total Rewards</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div>
+                <div style="font-size: 2.5rem; font-weight: bold;" id="claim-all-total-tokens">0</div>
+                <div style="font-size: 0.875rem; opacity: 0.9;">Tokens</div>
+              </div>
+              <div>
+                <div style="font-size: 2.5rem; font-weight: bold;" id="claim-all-total-xp">0</div>
+                <div style="font-size: 0.875rem; opacity: 0.9;">XP</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="claim-all-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 1.5rem;">
+            <!-- Reward list will be inserted here -->
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="window.airdropManager?.closeModal('claim-all-modal')">Cancel</button>
+          <button type="button" class="btn-primary" onclick="window.airdropManager?.confirmClaimAll()">
+            Claim All Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div id="history-modal" class="modal" style="display: none;">
+    <div class="modal-overlay" onclick="window.airdropManager?.closeModal('history-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📜 Claim History</h3>
+        <button class="modal-close" onclick="window.airdropManager?.closeModal('history-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="background: #f9fafb; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; text-align: center;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <div style="font-size: 2rem; font-weight: bold; color: #667eea;" id="history-total-rewards">0</div>
+              <div style="font-size: 0.875rem; color: #666;">Rewards Claimed</div>
+            </div>
+            <div>
+              <div style="font-size: 2rem; font-weight: bold; color: #10b981;" id="history-total-earned">0</div>
+              <div style="font-size: 0.875rem; color: #666;">Total Earned</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="history-list" style="max-height: 400px; overflow-y: auto;">
+          <!-- History items will be inserted here -->
+        </div>
+
+        <div class="modal-actions" style="justify-content: center;">
+          <button type="button" class="btn-primary" onclick="window.airdropManager?.closeModal('history-modal')">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </BaseLayout>
 
+<script define:vars={{ rewardsData, projectsData, eventDomainsData }}>
+  // Load data from JSON files (passed from server-side)
+  const REWARD_TEMPLATES = rewardsData.rewards;
+  const PROJECTS_DATA = projectsData.projects.map(p => ({
+    name: p.name,
+    icon: p.icon,
+    description: p.description
+  }));
+  const EVENT_DOMAINS_DATA = eventDomainsData.domains;
+</script>
+
 <script>
-  // All 25 Reward Templates
-  const REWARD_TEMPLATES = [
+  // Legacy hardcoded data (can be removed once fully migrated)
+  // All 25 Reward Templates - NOW LOADED FROM /public/data/purple-point/airdrops/rewards.json
+  const REWARD_TEMPLATES_LEGACY = [
     // ARTIST PROMOTION REWARDS (7)
     {
       id: 'artist-stream-boost',
@@ -172,7 +360,9 @@ const airdropSchedule = [
       xp: 25,
       icon: '🎵',
       requirements: ['10 streams', 'Featured artists only'],
-      frequency: 'Weekly'
+      frequency: 'Weekly',
+      startDate: '2025-12-30T00:00:00Z',
+      endDate: '2026-01-06T23:59:59Z'
     },
     {
       id: 'artist-share-campaign',
@@ -183,7 +373,9 @@ const airdropSchedule = [
       xp: 30,
       icon: '📢',
       requirements: ['3 shares', 'Tag @WorldBridgerOne'],
-      frequency: 'Bi-weekly'
+      frequency: 'Bi-weekly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-15T23:59:59Z'
     },
     {
       id: 'artist-discovery',
@@ -194,7 +386,9 @@ const airdropSchedule = [
       xp: 20,
       icon: '🔍',
       requirements: ['5 new follows', 'Listen to at least 1 track each'],
-      frequency: 'Monthly'
+      frequency: 'Monthly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-31T23:59:59Z'
     },
     {
       id: 'artist-collab-support',
@@ -205,7 +399,9 @@ const airdropSchedule = [
       xp: 40,
       icon: '🤝',
       requirements: ['Vote on 5 collabs', 'Or contribute to 1'],
-      frequency: 'Monthly'
+      frequency: 'Monthly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-31T23:59:59Z'
     },
     {
       id: 'artist-feedback',
@@ -216,7 +412,9 @@ const airdropSchedule = [
       xp: 35,
       icon: '💬',
       requirements: ['5 quality comments', 'Min 50 characters each'],
-      frequency: 'Weekly'
+      frequency: 'Weekly',
+      startDate: '2025-12-30T00:00:00Z',
+      endDate: '2026-01-06T23:59:59Z'
     },
     {
       id: 'artist-playlist',
@@ -227,7 +425,9 @@ const airdropSchedule = [
       xp: 50,
       icon: '📝',
       requirements: ['10+ tracks', 'Min 5 different artists'],
-      frequency: 'Monthly'
+      frequency: 'Monthly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-31T23:59:59Z'
     },
     {
       id: 'artist-battle-spectator',
@@ -238,7 +438,9 @@ const airdropSchedule = [
       xp: 15,
       icon: '⚔️',
       requirements: ['Watch 3 battles', 'Vote on outcomes'],
-      frequency: 'Weekly'
+      frequency: 'Weekly',
+      startDate: '2025-12-30T00:00:00Z',
+      endDate: '2026-01-06T23:59:59Z'
     },
 
     // EDUCATIONAL REWARDS (7)
@@ -251,7 +453,9 @@ const airdropSchedule = [
       xp: 100,
       icon: '🎓',
       requirements: ['Complete all modules', 'Pass final quiz'],
-      frequency: 'Monthly'
+      frequency: 'Monthly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-31T23:59:59Z'
     },
     {
       id: 'edu-quiz-master',
@@ -262,7 +466,9 @@ const airdropSchedule = [
       xp: 40,
       icon: '📝',
       requirements: ['5 quizzes', '90%+ average'],
-      frequency: 'Bi-weekly'
+      frequency: 'Bi-weekly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-15T23:59:59Z'
     },
     {
       id: 'edu-project-submit',
@@ -273,7 +479,9 @@ const airdropSchedule = [
       xp: 120,
       icon: '🚀',
       requirements: ['Working prototype', 'Documentation included'],
-      frequency: 'Monthly'
+      frequency: 'Monthly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-31T23:59:59Z'
     },
     {
       id: 'edu-research-contribute',
@@ -284,7 +492,9 @@ const airdropSchedule = [
       xp: 30,
       icon: '🔬',
       requirements: ['10 observations', 'Include data and photos'],
-      frequency: 'Weekly'
+      frequency: 'Weekly',
+      startDate: '2025-12-30T00:00:00Z',
+      endDate: '2026-01-06T23:59:59Z'
     },
     {
       id: 'edu-workshop-attend',
@@ -295,7 +505,9 @@ const airdropSchedule = [
       xp: 45,
       icon: '🏫',
       requirements: ['Attend full session', 'Participate actively'],
-      frequency: 'Per workshop'
+      frequency: 'Per workshop',
+      startDate: '2026-01-10T00:00:00Z',
+      endDate: '2026-01-10T23:59:59Z'
     },
     {
       id: 'edu-peer-teach',
@@ -306,7 +518,9 @@ const airdropSchedule = [
       xp: 80,
       icon: '👨‍🏫',
       requirements: ['Create tutorial', 'Min 5 learners engaged'],
-      frequency: 'Monthly'
+      frequency: 'Monthly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-31T23:59:59Z'
     },
     {
       id: 'edu-certification',
@@ -317,7 +531,9 @@ const airdropSchedule = [
       xp: 250,
       icon: '🏆',
       requirements: ['Complete all requirements', 'Pass final exam'],
-      frequency: 'Per certification'
+      frequency: 'Per certification',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-03-31T23:59:59Z'
     },
 
     // MENTORSHIP REWARDS (6)
@@ -330,7 +546,9 @@ const airdropSchedule = [
       xp: 50,
       icon: '🎯',
       requirements: ['Book and attend session', 'Complete action items'],
-      frequency: 'Weekly'
+      frequency: 'Weekly',
+      startDate: '2025-12-30T00:00:00Z',
+      endDate: '2026-01-06T23:59:59Z'
     },
     {
       id: 'mentor-become',
@@ -341,7 +559,9 @@ const airdropSchedule = [
       xp: 150,
       icon: '🌟',
       requirements: ['Level 10+', 'Complete mentor training'],
-      frequency: 'One-time + per session'
+      frequency: 'One-time + per session',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-12-31T23:59:59Z'
     },
     {
       id: 'mentor-milestone',
@@ -352,7 +572,9 @@ const airdropSchedule = [
       xp: 70,
       icon: '📊',
       requirements: ['3 sessions attended', 'Goals achieved'],
-      frequency: 'Monthly'
+      frequency: 'Monthly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-31T23:59:59Z'
     },
     {
       id: 'mentor-feedback',
@@ -363,7 +585,9 @@ const airdropSchedule = [
       xp: 10,
       icon: '⭐',
       requirements: ['Complete feedback form', 'Detailed responses'],
-      frequency: 'Per session'
+      frequency: 'Per session',
+      startDate: '2025-12-30T00:00:00Z',
+      endDate: '2026-01-06T23:59:59Z'
     },
     {
       id: 'mentor-peer-group',
@@ -374,7 +598,9 @@ const airdropSchedule = [
       xp: 35,
       icon: '👥',
       requirements: ['Attend group session', 'Share learnings'],
-      frequency: 'Bi-weekly'
+      frequency: 'Bi-weekly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-15T23:59:59Z'
     },
     {
       id: 'mentor-success-story',
@@ -385,7 +611,9 @@ const airdropSchedule = [
       xp: 90,
       icon: '📖',
       requirements: ['Written story', 'Before/after evidence'],
-      frequency: 'Quarterly'
+      frequency: 'Quarterly',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-03-31T23:59:59Z'
     },
 
     // EVENT REWARDS (5)
@@ -398,7 +626,9 @@ const airdropSchedule = [
       xp: 60,
       icon: '🎪',
       requirements: ['Full attendance', 'Event check-in'],
-      frequency: 'Per event'
+      frequency: 'Per event',
+      startDate: '2026-01-15T00:00:00Z',
+      endDate: '2026-01-15T23:59:59Z'
     },
     {
       id: 'event-battle-participate',
@@ -409,7 +639,9 @@ const airdropSchedule = [
       xp: 120,
       icon: '⚔️',
       requirements: ['Enter tournament', 'Complete all rounds'],
-      frequency: 'Per tournament'
+      frequency: 'Per tournament',
+      startDate: '2026-01-20T00:00:00Z',
+      endDate: '2026-01-27T23:59:59Z'
     },
     {
       id: 'event-community-day',
@@ -420,7 +652,9 @@ const airdropSchedule = [
       xp: 70,
       icon: '🌈',
       requirements: ['Join activities', 'Connect with 5+ members'],
-      frequency: 'Monthly'
+      frequency: 'Monthly',
+      startDate: '2026-01-25T00:00:00Z',
+      endDate: '2026-01-25T23:59:59Z'
     },
     {
       id: 'event-hackathon',
@@ -431,7 +665,9 @@ const airdropSchedule = [
       xp: 200,
       icon: '💻',
       requirements: ['Submit project', 'Demo presentation'],
-      frequency: 'Per hackathon'
+      frequency: 'Per hackathon',
+      startDate: '2026-02-01T00:00:00Z',
+      endDate: '2026-02-03T23:59:59Z'
     },
     {
       id: 'event-celebration',
@@ -442,7 +678,9 @@ const airdropSchedule = [
       xp: 50,
       icon: '🎉',
       requirements: ['Participate in celebration', 'Share on social'],
-      frequency: 'Per milestone'
+      frequency: 'Per milestone',
+      startDate: '2026-01-01T00:00:00Z',
+      endDate: '2026-01-07T23:59:59Z'
     }
   ];
 
@@ -475,10 +713,19 @@ const airdropSchedule = [
         }
       }
 
-      // Load active and upcoming airdrops
+      // Load active and upcoming airdrops based on actual dates
       const now = new Date();
-      this.activeAirdrops = REWARD_TEMPLATES.filter(r => Math.random() > 0.8); // Random active
-      this.upcomingAirdrops = REWARD_TEMPLATES.filter(r => Math.random() > 0.85); // Random upcoming
+      this.activeAirdrops = REWARD_TEMPLATES.filter(r => {
+        if (!r.startDate || !r.endDate) return false;
+        const start = new Date(r.startDate);
+        const end = new Date(r.endDate);
+        return now >= start && now <= end;
+      });
+
+      this.upcomingAirdrops = REWARD_TEMPLATES.filter(r => {
+        if (!r.startDate) return false;
+        return now < new Date(r.startDate);
+      }).sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     }
 
     saveToLocalStorage() {
@@ -532,6 +779,9 @@ const airdropSchedule = [
         return;
       }
       container.innerHTML = this.activeAirdrops.map(reward => this.createRewardCard(reward, 'active')).join('');
+
+      // Start countdown timers
+      setTimeout(() => startAllTimers(), 100);
     }
 
     renderUpcomingAirdrops() {
@@ -541,6 +791,9 @@ const airdropSchedule = [
         return;
       }
       container.innerHTML = this.upcomingAirdrops.map(reward => this.createRewardCard(reward, 'upcoming')).join('');
+
+      // Start countdown timers
+      setTimeout(() => startAllTimers(), 100);
     }
 
     createRewardCard(reward, mode) {
@@ -590,10 +843,22 @@ const airdropSchedule = [
           </div>
 
           ${mode === 'active' ? `
+            <div class="airdrop-timing" style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;">
+              <div style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-bottom: 0.25rem;">Ends in:</div>
+              <div class="countdown-timer" id="timer-${reward.id}" data-airdrop-id="${reward.id}" data-target-date="${reward.endDate}">
+                Calculating...
+              </div>
+            </div>
             <button class="claim-btn ${isClaimed ? 'claimed' : ''}" onclick="window.airdropManager.claimReward('${reward.id}')">
               ${isClaimed ? '✅ Claimed' : '💰 Claim Reward'}
             </button>
           ` : mode === 'upcoming' ? `
+            <div class="airdrop-timing upcoming" style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-radius: 0.5rem;">
+              <div style="font-size: 0.75rem; color: #d97706; font-weight: 600; margin-bottom: 0.25rem;">Starts in:</div>
+              <div class="countdown-timer" id="timer-start-${reward.id}" data-airdrop-id="${reward.id}" data-target-date="${reward.startDate}">
+                Calculating...
+              </div>
+            </div>
             <div class="upcoming-badge">Coming Soon</div>
           ` : `
             <div class="template-badge">Template</div>
@@ -604,11 +869,32 @@ const airdropSchedule = [
 
     claimReward(rewardId) {
       if (this.claimedRewards.includes(rewardId)) {
-        alert('You already claimed this reward!');
+        this.showToast('You already claimed this reward!', 'error');
         return;
       }
 
       const reward = REWARD_TEMPLATES.find(r => r.id === rewardId);
+      if (!reward) return;
+
+      // Store current reward for confirmation
+      this.currentClaimReward = reward;
+
+      // Populate modal
+      document.getElementById('claim-icon').textContent = reward.icon;
+      document.getElementById('claim-title').textContent = reward.name;
+      document.getElementById('claim-description').textContent = reward.description;
+      document.getElementById('claim-tokens').textContent = reward.reward.split(' ')[0];
+      document.getElementById('claim-xp').textContent = reward.xp;
+      document.getElementById('claim-requirements').innerHTML = reward.requirements.map(req =>
+        `<div style="margin-bottom: 0.25rem;">✓ ${req}</div>`
+      ).join('');
+
+      // Open modal
+      this.openModal('claim-modal');
+    }
+
+    confirmClaim() {
+      const reward = this.currentClaimReward;
       if (!reward) return;
 
       // Extract token amount
@@ -617,7 +903,7 @@ const airdropSchedule = [
       // Update balance
       this.balance += tokenAmount;
       this.totalEarned += tokenAmount;
-      this.claimedRewards.push(rewardId);
+      this.claimedRewards.push(reward.id);
 
       // Award XP
       if (window.progressManager) {
@@ -632,35 +918,547 @@ const airdropSchedule = [
       this.renderActiveAirdrops();
       this.renderAllRewards();
 
+      // Close modal
+      this.closeModal('claim-modal');
+
       // Show success
-      alert(`✅ Claimed ${reward.reward} and +${reward.xp} XP!\n\nReward: ${reward.name}`);
+      this.showToast(`✅ Claimed ${reward.reward} and +${reward.xp} XP!`, 'success');
+
+      // Clear current reward
+      this.currentClaimReward = null;
     }
 
     claimAll() {
       const unclaimed = this.activeAirdrops.filter(r => !this.claimedRewards.includes(r.id));
       if (unclaimed.length === 0) {
-        alert('No unclaimed rewards available!');
+        this.showToast('No unclaimed rewards available!', 'info');
         return;
       }
 
+      // Calculate totals
+      let totalTokens = 0;
+      let totalXP = 0;
       unclaimed.forEach(reward => {
-        this.claimReward(reward.id);
+        totalTokens += parseInt(reward.reward.split(' ')[0]);
+        totalXP += reward.xp;
       });
+
+      // Populate modal
+      document.getElementById('claim-all-count').textContent = unclaimed.length;
+      document.getElementById('claim-all-total-tokens').textContent = totalTokens;
+      document.getElementById('claim-all-total-xp').textContent = totalXP;
+
+      // Populate reward list
+      document.getElementById('claim-all-list').innerHTML = unclaimed.map(reward => `
+        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.5rem; margin-bottom: 0.5rem;">
+          <div style="font-size: 2rem;">${reward.icon}</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">${reward.name}</div>
+            <div style="font-size: 0.875rem; color: #666;">${reward.reward} • +${reward.xp} XP</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Store unclaimed for confirmation
+      this.unclaimedRewards = unclaimed;
+
+      // Open modal
+      this.openModal('claim-all-modal');
+    }
+
+    confirmClaimAll() {
+      if (!this.unclaimedRewards || this.unclaimedRewards.length === 0) return;
+
+      let totalTokens = 0;
+      let totalXP = 0;
+
+      this.unclaimedRewards.forEach(reward => {
+        const tokenAmount = parseInt(reward.reward.split(' ')[0]);
+        this.balance += tokenAmount;
+        this.totalEarned += tokenAmount;
+        totalTokens += tokenAmount;
+        totalXP += reward.xp;
+        this.claimedRewards.push(reward.id);
+
+        // Award XP
+        if (window.progressManager) {
+          window.progressManager.awardXP(reward.xp, 'airdrop_claim', `Claimed: ${reward.name}`);
+        }
+      });
+
+      // Save and update
+      this.saveToLocalStorage();
+      this.updateBalance();
+
+      // Re-render
+      this.renderActiveAirdrops();
+      this.renderAllRewards();
+
+      // Close modal
+      this.closeModal('claim-all-modal');
+
+      // Show success
+      this.showToast(`✅ Claimed ${this.unclaimedRewards.length} rewards: ${totalTokens} tokens and ${totalXP} XP!`, 'success');
+
+      // Clear unclaimed
+      this.unclaimedRewards = null;
     }
 
     viewHistory() {
-      alert('Claim History:\n\n' +
-        (this.claimedRewards.length > 0
-          ? this.claimedRewards.map(id => {
-              const reward = REWARD_TEMPLATES.find(r => r.id === id);
-              return `✅ ${reward?.name || id}`;
-            }).join('\n')
-          : 'No rewards claimed yet'));
+      // Populate stats
+      document.getElementById('history-total-rewards').textContent = this.claimedRewards.length;
+      document.getElementById('history-total-earned').textContent = this.totalEarned.toLocaleString();
+
+      // Populate history list
+      if (this.claimedRewards.length === 0) {
+        document.getElementById('history-list').innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: #9ca3af;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🎁</div>
+            <p>No rewards claimed yet</p>
+            <p style="font-size: 0.875rem; margin-top: 0.5rem;">Check out the active airdrops above to get started!</p>
+          </div>
+        `;
+      } else {
+        document.getElementById('history-list').innerHTML = this.claimedRewards.map(id => {
+          const reward = REWARD_TEMPLATES.find(r => r.id === id);
+          if (!reward) return '';
+
+          return `
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid #e5e7eb;">
+              <div style="font-size: 2rem;">${reward.icon}</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; margin-bottom: 0.25rem;">${reward.name}</div>
+                <div style="font-size: 0.875rem; color: #666;">${reward.category.replace('_', ' ')}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: bold; color: #667eea;">${reward.reward}</div>
+                <div style="font-size: 0.875rem; color: #10b981;">+${reward.xp} XP</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Open modal
+      this.openModal('history-modal');
     }
+
+    // Modal management
+    openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    // Toast notification
+    showToast(message, type = 'info') {
+      // Remove existing toasts
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  }
+
+  // Airdrop Timer Class
+  class AirdropTimer {
+    constructor(airdropId, targetDate, isStartTimer = false) {
+      this.airdropId = airdropId;
+      this.targetDate = new Date(targetDate);
+      this.isStartTimer = isStartTimer; // true for "starts in", false for "ends in"
+      this.elementId = isStartTimer ? `timer-start-${airdropId}` : `timer-${airdropId}`;
+      this.interval = null;
+    }
+
+    start() {
+      this.update();
+      this.interval = setInterval(() => this.update(), 1000);
+    }
+
+    stop() {
+      if (this.interval) {
+        clearInterval(this.interval);
+        this.interval = null;
+      }
+    }
+
+    update() {
+      const now = new Date();
+      const remaining = this.targetDate - now;
+
+      const element = document.getElementById(this.elementId);
+      if (!element) return;
+
+      if (remaining <= 0) {
+        element.textContent = this.isStartTimer ? 'Starting now!' : 'Expired';
+        element.classList.add('expired');
+        this.stop();
+
+        // Reload airdrop data after expiry
+        if (window.airdropManager) {
+          window.airdropManager.loadFromLocalStorage();
+          window.airdropManager.renderActiveAirdrops();
+          window.airdropManager.renderUpcomingAirdrops();
+        }
+        return;
+      }
+
+      const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+      let timeString = '';
+      if (days > 0) {
+        timeString = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      } else if (hours > 0) {
+        timeString = `${hours}h ${minutes}m ${seconds}s`;
+      } else {
+        timeString = `${minutes}m ${seconds}s`;
+      }
+
+      element.textContent = timeString;
+
+      // Add urgent class if less than 1 hour remaining (for "ends in" timers)
+      if (!this.isStartTimer && remaining < 3600000) {
+        element.classList.add('urgent');
+      } else {
+        element.classList.remove('urgent');
+      }
+    }
+  }
+
+  // Timer Manager
+  const activeTimers = [];
+
+  function startAllTimers() {
+    // Clear existing timers
+    activeTimers.forEach(timer => timer.stop());
+    activeTimers.length = 0;
+
+    // Find all timer elements and start timers
+    document.querySelectorAll('[id^="timer-"]').forEach(el => {
+      const airdropId = el.dataset.airdropId;
+      const targetDate = el.dataset.targetDate;
+      const isStartTimer = el.id.includes('timer-start-');
+
+      if (airdropId && targetDate) {
+        const timer = new AirdropTimer(airdropId, targetDate, isStartTimer);
+        timer.start();
+        activeTimers.push(timer);
+      }
+    });
+  }
+
+  // Project-Airdrop Wheel Manager
+  // Use data loaded from /public/data/purple-point/projects/projects.json
+  const PROJECTS = PROJECTS_DATA || [
+    { name: 'Kakuma', icon: '🏕️', description: 'Environmental projects in Kakuma refugee camp' },
+    { name: 'Music', icon: '🎵', description: 'Music production and artist development' },
+    { name: 'Learning', icon: '📚', description: 'Educational courses and certification programs' },
+    { name: 'Battles', icon: '⚔️', description: 'Creative rap battles and competitions' },
+    { name: 'Achievements', icon: '🏆', description: 'Milestone tracking and recognition system' }
+  ];
+
+  let PROJECT_AIRDROP_COMBINATIONS = [];
+
+  function generateCombinations() {
+    PROJECT_AIRDROP_COMBINATIONS = [];
+    PROJECTS.forEach(project => {
+      REWARD_TEMPLATES.forEach(airdrop => {
+        PROJECT_AIRDROP_COMBINATIONS.push({
+          id: `${project.name.toLowerCase()}-${airdrop.id}`,
+          project: project.name,
+          projectIcon: project.icon,
+          projectDescription: project.description,
+          airdrop: airdrop.id,
+          airdropName: airdrop.name,
+          airdropIcon: airdrop.icon,
+          airdropDescription: airdrop.description,
+          category: airdrop.category
+        });
+      });
+    });
+    return PROJECT_AIRDROP_COMBINATIONS;
+  }
+
+  class WheelManager {
+    constructor() {
+      this.combinations = generateCombinations();
+      this.currentIndex = 0;
+      this.autoplay = true;
+      this.intervalId = null;
+      this.rotationSpeed = 3000; // 3 seconds per combo
+    }
+
+    start() {
+      this.render();
+      if (this.autoplay) {
+        this.intervalId = setInterval(() => this.next(), this.rotationSpeed);
+      }
+    }
+
+    next() {
+      this.currentIndex = (this.currentIndex + 1) % this.combinations.length;
+      this.render();
+    }
+
+    previous() {
+      this.currentIndex = (this.currentIndex - 1 + this.combinations.length) % this.combinations.length;
+      this.render();
+    }
+
+    toggleAutoplay() {
+      this.autoplay = !this.autoplay;
+
+      const icon = document.getElementById('autoplay-icon');
+      const text = document.getElementById('autoplay-text');
+
+      if (this.autoplay) {
+        icon.textContent = '⏸️';
+        text.textContent = 'Pause';
+        this.intervalId = setInterval(() => this.next(), this.rotationSpeed);
+      } else {
+        icon.textContent = '▶️';
+        text.textContent = 'Play';
+        if (this.intervalId) {
+          clearInterval(this.intervalId);
+          this.intervalId = null;
+        }
+      }
+    }
+
+    render() {
+      const combo = this.combinations[this.currentIndex];
+      if (!combo) return;
+
+      // Update wheel display
+      const wheelCurrent = document.getElementById('wheel-current');
+      if (wheelCurrent) {
+        wheelCurrent.innerHTML = `
+          <div class="combo-project">
+            <span class="project-icon">${combo.projectIcon}</span>
+            <span class="project-name">${combo.project}</span>
+          </div>
+          <div class="combo-connector">×</div>
+          <div class="combo-airdrop">
+            <span class="airdrop-icon">${combo.airdropIcon}</span>
+            <span class="airdrop-name">${combo.airdropName}</span>
+          </div>
+        `;
+
+        // Trigger animation
+        wheelCurrent.classList.remove('fade-in');
+        setTimeout(() => wheelCurrent.classList.add('fade-in'), 10);
+      }
+
+      // Update description
+      const description = document.getElementById('combo-description');
+      if (description) {
+        description.textContent = `${combo.projectDescription} + ${combo.airdropDescription}`;
+      }
+
+      // Update stats
+      const currentSpan = document.getElementById('combo-current');
+      const totalSpan = document.getElementById('combo-total');
+      if (currentSpan) currentSpan.textContent = this.currentIndex + 1;
+      if (totalSpan) totalSpan.textContent = this.combinations.length;
+
+      // Update progress bar
+      const progressBar = document.getElementById('wheel-progress');
+      if (progressBar) {
+        const percentage = ((this.currentIndex + 1) / this.combinations.length) * 100;
+        progressBar.style.width = `${percentage}%`;
+      }
+    }
+  }
+
+  // Calendar Manager
+  // Build color and icon mappings from loaded event domains data
+  const ACTIVITY_COLORS = {};
+  const ACTIVITY_ICONS = {};
+  const ACTIVITY_CATEGORIES = {};
+
+  if (EVENT_DOMAINS_DATA) {
+    EVENT_DOMAINS_DATA.forEach(domain => {
+      const domainName = domain.name;
+      ACTIVITY_ICONS[domainName] = domain.icon;
+      ACTIVITY_CATEGORIES[domainName] = domain.categories;
+
+      if (!ACTIVITY_COLORS.primary) ACTIVITY_COLORS.primary = {};
+      if (!ACTIVITY_COLORS.secondary) ACTIVITY_COLORS.secondary = {};
+      if (!ACTIVITY_COLORS.tertiary) ACTIVITY_COLORS.tertiary = {};
+
+      ACTIVITY_COLORS.primary[domainName] = domain.colors.primary;
+      ACTIVITY_COLORS.secondary[domainName] = domain.colors.secondary;
+      ACTIVITY_COLORS.tertiary[domainName] = domain.colors.tertiary;
+    });
+  } else {
+    // Fallback to hardcoded values if data not loaded
+    ACTIVITY_COLORS.primary = {
+      Learning: '#10b981',
+      Cultural: '#667eea',
+      Artistic: '#f093fb',
+      Financial: '#f59e0b'
+    };
+    ACTIVITY_COLORS.secondary = {
+      Learning: '#86efac',
+      Cultural: '#a5b4fc',
+      Artistic: '#fbbf24',
+      Financial: '#fcd34d'
+    };
+    ACTIVITY_COLORS.tertiary = {
+      Learning: '#d1fae5',
+      Cultural: '#e0e7ff',
+      Artistic: '#fef3c7',
+      Financial: '#fef9c3'
+    };
+    ACTIVITY_ICONS.Learning = '🌱';
+    ACTIVITY_ICONS.Cultural = '🎵';
+    ACTIVITY_ICONS.Artistic = '🎨';
+    ACTIVITY_ICONS.Financial = '💰';
+  }
+
+  function generateCalendarData() {
+    const activities = [];
+    const today = new Date();
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+
+      const dayOfWeek = date.getDay();
+      const dateStr = date.toISOString().split('T')[0];
+
+      // Rotate through domains based on day
+      const domains = ['Learning', 'Cultural', 'Artistic', 'Financial'];
+      const primaryDomain = domains[dayOfWeek % 4];
+      const secondaryDomain = domains[(dayOfWeek + 1) % 4];
+      const tertiaryDomain = domains[(dayOfWeek + 2) % 4];
+
+      activities.push({
+        date: dateStr,
+        dayOfWeek: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        dayOfMonth: date.getDate(),
+        isToday: date.toDateString() === today.toDateString(),
+        primary: {
+          type: primaryDomain,
+          category: getActivityCategory(primaryDomain, 'primary'),
+          icon: ACTIVITY_ICONS[primaryDomain]
+        },
+        secondary: {
+          type: secondaryDomain,
+          category: getActivityCategory(secondaryDomain, 'secondary'),
+          icon: ACTIVITY_ICONS[secondaryDomain]
+        },
+        tertiary: {
+          type: tertiaryDomain,
+          category: getActivityCategory(tertiaryDomain, 'tertiary'),
+          icon: ACTIVITY_ICONS[tertiaryDomain]
+        }
+      });
+    }
+
+    return activities;
+  }
+
+  function getActivityCategory(domain, priority) {
+    // Use loaded categories from event domains data
+    const domainCategories = ACTIVITY_CATEGORIES[domain] || ['General Activity'];
+    const index = (priority === 'primary' ? 0 : priority === 'secondary' ? 1 : 2) % domainCategories.length;
+    return domainCategories[index];
+  }
+
+  function renderCalendar() {
+    const calendarData = generateCalendarData();
+    const gridContainer = document.getElementById('calendar-grid');
+
+    if (!gridContainer) return;
+
+    gridContainer.innerHTML = calendarData.map(day => `
+      <div class="calendar-day ${day.isToday ? 'today' : ''}" data-date="${day.date}">
+        <div class="day-header">
+          <div class="day-name">${day.dayOfWeek}</div>
+          <div class="day-date">${day.dayOfMonth}</div>
+        </div>
+        <div class="day-activities">
+          <div class="activity-block primary ${day.primary.type.toLowerCase()}"
+               style="background: ${ACTIVITY_COLORS.primary[day.primary.type]};"
+               data-tooltip="${day.primary.type}: ${day.primary.category}"
+               title="${day.primary.type}: ${day.primary.category}">
+            <span class="activity-icon">${day.primary.icon}</span>
+          </div>
+          <div class="activity-block secondary ${day.secondary.type.toLowerCase()}"
+               style="background: ${ACTIVITY_COLORS.secondary[day.secondary.type]};"
+               data-tooltip="${day.secondary.type}: ${day.secondary.category}"
+               title="${day.secondary.type}: ${day.secondary.category}">
+            <span class="activity-icon">${day.secondary.icon}</span>
+          </div>
+          <div class="activity-block tertiary ${day.tertiary.type.toLowerCase()}"
+               style="background: ${ACTIVITY_COLORS.tertiary[day.tertiary.type]};"
+               data-tooltip="${day.tertiary.type}: ${day.tertiary.category}"
+               title="${day.tertiary.type}: ${day.tertiary.category}">
+            <span class="activity-icon">${day.tertiary.icon}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Date/Time Display Manager
+  function updateDateTime() {
+    const now = new Date();
+
+    // Format date: "Thursday, January 2, 2026"
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = now.toLocaleDateString('en-US', dateOptions);
+
+    // Format time: "2:34 PM"
+    const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+    const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
+
+    // Update DOM
+    const dateElement = document.getElementById('current-date');
+    const timeElement = document.getElementById('current-time');
+
+    if (dateElement) dateElement.textContent = formattedDate;
+    if (timeElement) timeElement.textContent = formattedTime;
   }
 
   // Initialize
   document.addEventListener('DOMContentLoaded', () => {
+    // Update date/time immediately and then every second
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+
+    // Render calendar
+    renderCalendar();
+
+    // Initialize wheel
+    window.wheelManager = new WheelManager();
+    window.wheelManager.start();
+
     setTimeout(() => {
       window.airdropManager = new AirdropManager();
     }, 500);
@@ -902,6 +1700,536 @@ const airdropSchedule = [
     color: #9ca3af;
     font-style: italic;
     grid-column: 1 / -1;
+  }
+
+  /* Calendar Styles */
+  .calendar-week {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .calendar-legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .legend-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 0.25rem;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1rem;
+  }
+
+  .calendar-day {
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: all 0.3s;
+    background: #f9fafb;
+  }
+
+  .calendar-day.today {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    background: white;
+  }
+
+  .calendar-day:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .day-header {
+    text-align: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .day-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #667eea;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+
+  .day-date {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #374151;
+  }
+
+  .day-activities {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .activity-block {
+    height: 60px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .activity-block:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .activity-icon {
+    font-size: 1.5rem;
+  }
+
+  /* Mobile Responsive Calendar */
+  @media (max-width: 768px) {
+    .calendar-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .calendar-day {
+      padding: 0.75rem;
+    }
+
+    .day-activities {
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+
+    .activity-block {
+      height: 50px;
+      flex: 1;
+    }
+
+    .activity-icon {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* Wheel Styles */
+  .combination-wheel {
+    background: linear-gradient(180deg, #f9fafb 0%, white 100%);
+    padding: 3rem 2rem;
+    border-radius: 1rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .wheel-subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+    font-style: italic;
+  }
+
+  .wheel-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+    min-height: 200px;
+  }
+
+  .wheel-current {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 1.5rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .wheel-current.fade-in {
+    animation: fadeInScale 0.5s ease;
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .combo-project, .combo-airdrop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .project-icon, .airdrop-icon {
+    font-size: 3rem;
+  }
+
+  .project-name, .airdrop-name {
+    font-weight: bold;
+    color: #374151;
+  }
+
+  .combo-connector {
+    font-size: 2rem;
+    color: #667eea;
+    font-weight: bold;
+  }
+
+  .wheel-info {
+    text-align: center;
+    max-width: 600px;
+  }
+
+  .combo-description {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .combo-stats {
+    font-size: 0.75rem;
+    color: #999;
+    font-weight: 600;
+  }
+
+  .combo-stats span {
+    color: #667eea;
+    font-weight: bold;
+  }
+
+  .wheel-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .btn-wheel {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 0.5rem;
+    color: #667eea;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-wheel:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .wheel-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    margin-top: 2rem;
+    overflow: hidden;
+  }
+
+  .wheel-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+    border-radius: 3px;
+  }
+
+  /* Mobile Responsive Wheel */
+  @media (max-width: 768px) {
+    .wheel-current {
+      flex-direction: column;
+      gap: 1rem;
+      font-size: 1.125rem;
+      padding: 1.5rem;
+    }
+
+    .project-icon, .airdrop-icon {
+      font-size: 2rem;
+    }
+
+    .combo-connector {
+      font-size: 1.5rem;
+      transform: rotate(90deg);
+    }
+
+    .wheel-controls {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .btn-wheel {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Countdown Timer Styles */
+  .countdown-timer {
+    font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: #667eea;
+    text-align: center;
+  }
+
+  .countdown-timer.urgent {
+    color: #ef4444;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .countdown-timer.expired {
+    color: #9ca3af;
+    font-style: italic;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    position: relative;
+    background: white;
+    border-radius: 1rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    z-index: 10000;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .modal-header h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    color: #111827;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e5e7eb;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .btn-secondary:hover {
+    background: #d1d5db;
+  }
+
+  /* Toast Notifications */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 10001;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 400px;
+  }
+
+  .toast.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .toast-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+  }
+
+  .toast-error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+  }
+
+  .toast-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .modal-content {
+      width: 95%;
+      max-height: 85vh;
+    }
+
+    .modal-header {
+      padding: 1rem;
+    }
+
+    .modal-body {
+      padding: 1rem;
+    }
+
+    .modal-actions {
+      flex-direction: column-reverse;
+    }
+
+    .modal-actions button {
+      width: 100%;
+    }
+
+    .toast {
+      right: 1rem;
+      left: 1rem;
+      bottom: 1rem;
+      max-width: calc(100% - 2rem);
+    }
+
+    .airdrop-grid,
+    .rewards-template-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .calendar-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 

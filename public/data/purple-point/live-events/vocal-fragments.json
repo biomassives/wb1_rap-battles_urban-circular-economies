@@ -1,0 +1,181 @@
+{
+  "vocalFragments": [
+    {
+      "id": "vocal-001",
+      "type": "chant",
+      "performer": "Community Chorus",
+      "text": "Rise up! Rise up! WorldBridger One!",
+      "duration": 4,
+      "bpm": 90,
+      "key": "C major",
+      "mood": "energetic",
+      "useCase": ["intro", "transition", "crowd-engagement"],
+      "audioFile": "/audio/vocals/vocal-001.mp3",
+      "stemFiles": {
+        "lead": "/audio/vocals/vocal-001-lead.wav",
+        "harmony": "/audio/vocals/vocal-001-harmony.wav",
+        "backing": "/audio/vocals/vocal-001-backing.wav"
+      },
+      "tags": ["chant", "crowd", "energetic"]
+    },
+    {
+      "id": "vocal-002",
+      "type": "spoken-word",
+      "performer": "Orator Prime",
+      "text": "From the earth we rise, to the earth we return, but the knowledge we share lives forever",
+      "duration": 6,
+      "bpm": null,
+      "key": null,
+      "mood": "contemplative",
+      "useCase": ["interlude", "reflection", "transition"],
+      "audioFile": "/audio/vocals/vocal-002.mp3",
+      "stemFiles": {
+        "dry": "/audio/vocals/vocal-002-dry.wav",
+        "reverb": "/audio/vocals/vocal-002-reverb.wav"
+      },
+      "tags": ["spoken-word", "wisdom", "contemplative"]
+    },
+    {
+      "id": "vocal-003",
+      "type": "melody",
+      "performer": "Vocalist Harmony",
+      "text": "Ooh-ah-oh, bridging worlds together",
+      "duration": 8,
+      "bpm": 85,
+      "key": "G major",
+      "mood": "uplifting",
+      "useCase": ["hook", "background", "layer"],
+      "audioFile": "/audio/vocals/vocal-003.mp3",
+      "stemFiles": {
+        "lead": "/audio/vocals/vocal-003-lead.wav",
+        "doubled": "/audio/vocals/vocal-003-doubled.wav",
+        "harmony-high": "/audio/vocals/vocal-003-harmony-high.wav",
+        "harmony-low": "/audio/vocals/vocal-003-harmony-low.wav"
+      },
+      "tags": ["melody", "harmony", "uplifting"]
+    },
+    {
+      "id": "vocal-004",
+      "type": "experimental",
+      "performer": "Sound Sculptor",
+      "text": "Processed environmental sounds layered with vocal textures",
+      "duration": 12,
+      "bpm": 95,
+      "key": "atonal",
+      "mood": "experimental",
+      "useCase": ["ambient", "experimental", "soundscape"],
+      "audioFile": "/audio/vocals/vocal-004.mp3",
+      "stemFiles": {
+        "vocals": "/audio/vocals/vocal-004-vocals.wav",
+        "processed": "/audio/vocals/vocal-004-processed.wav",
+        "environment": "/audio/vocals/vocal-004-environment.wav",
+        "effects": "/audio/vocals/vocal-004-effects.wav"
+      },
+      "tags": ["experimental", "ambient", "soundscape"]
+    },
+    {
+      "id": "vocal-005",
+      "type": "call-response",
+      "performer": "Community Ensemble",
+      "text": "Call: 'What do we want?' Response: 'Change now!' Call: 'When do we want it?' Response: 'Right now!'",
+      "duration": 10,
+      "bpm": 100,
+      "key": "E minor",
+      "mood": "powerful",
+      "useCase": ["crowd-engagement", "rally", "climax"],
+      "audioFile": "/audio/vocals/vocal-005.mp3",
+      "stemFiles": {
+        "call": "/audio/vocals/vocal-005-call.wav",
+        "response": "/audio/vocals/vocal-005-response.wav",
+        "full": "/audio/vocals/vocal-005-full.wav"
+      },
+      "tags": ["call-response", "rally", "powerful"]
+    },
+    {
+      "id": "vocal-006",
+      "type": "beatbox",
+      "performer": "Beat Maker",
+      "text": "Boots-cats-boots-cats with environmental percussion layers",
+      "duration": 16,
+      "bpm": 110,
+      "key": null,
+      "mood": "rhythmic",
+      "useCase": ["rhythm", "breakdown", "transition"],
+      "audioFile": "/audio/vocals/vocal-006.mp3",
+      "stemFiles": {
+        "kick": "/audio/vocals/vocal-006-kick.wav",
+        "snare": "/audio/vocals/vocal-006-snare.wav",
+        "hihat": "/audio/vocals/vocal-006-hihat.wav",
+        "percussion": "/audio/vocals/vocal-006-percussion.wav"
+      },
+      "tags": ["beatbox", "rhythm", "percussion"]
+    },
+    {
+      "id": "vocal-007",
+      "type": "traditional-chant",
+      "performer": "Heritage Keepers",
+      "text": "Traditional East African vocal pattern with modern interpretation",
+      "duration": 14,
+      "bpm": 75,
+      "key": "pentatonic",
+      "mood": "cultural",
+      "useCase": ["cultural", "opening", "ceremonial"],
+      "audioFile": "/audio/vocals/vocal-007.mp3",
+      "stemFiles": {
+        "lead-vocal": "/audio/vocals/vocal-007-lead.wav",
+        "group-response": "/audio/vocals/vocal-007-response.wav",
+        "rhythmic-breathing": "/audio/vocals/vocal-007-breathing.wav"
+      },
+      "tags": ["traditional", "cultural", "heritage"]
+    },
+    {
+      "id": "vocal-008",
+      "type": "manifesto",
+      "performer": "Voice of Change",
+      "text": "We are the bridge builders, the dream weavers, the future creators. Our voices united cannot be silenced, our vision unstoppable, our impact immeasurable.",
+      "duration": 18,
+      "bpm": null,
+      "key": null,
+      "mood": "declarative",
+      "useCase": ["opening", "closing", "statement"],
+      "audioFile": "/audio/vocals/vocal-008.mp3",
+      "stemFiles": {
+        "dry": "/audio/vocals/vocal-008-dry.wav",
+        "processed": "/audio/vocals/vocal-008-processed.wav",
+        "layered": "/audio/vocals/vocal-008-layered.wav"
+      },
+      "tags": ["manifesto", "declarative", "powerful"]
+    }
+  ],
+  "usageGuidelines": {
+    "performerRoles": [
+      {
+        "role": "orator",
+        "preferredTypes": ["spoken-word", "manifesto", "call-response"],
+        "description": "Orators use vocal fragments to punctuate speeches and engage audiences"
+      },
+      {
+        "role": "musician",
+        "preferredTypes": ["melody", "chant", "beatbox"],
+        "description": "Musicians layer vocal fragments into compositions and live performances"
+      },
+      {
+        "role": "experimenter",
+        "preferredTypes": ["experimental", "processed", "ambient"],
+        "description": "Experimenters manipulate and transform vocal fragments into new sonic textures"
+      },
+      {
+        "role": "visual-artist",
+        "preferredTypes": ["all"],
+        "description": "Visual artists sync fragments with visual elements for multimedia experiences"
+      },
+      {
+        "role": "vocalist",
+        "preferredTypes": ["melody", "harmony", "traditional-chant"],
+        "description": "Vocalists use fragments as reference, inspiration, or backing tracks"
+      }
+    ],
+    "licensing": "CC BY-SA 4.0 - Attribution required, share-alike",
+    "attribution": "WorldBridger One Community"
+  }
+}

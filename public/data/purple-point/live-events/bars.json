@@ -1,0 +1,59 @@
+{
+  "bars": [
+    {
+      "id": "bar-001",
+      "type": "opening",
+      "artist": "Community Collective",
+      "text": "From Kakuma to the world, we rise with purpose clear / Environmental warriors, the future's pioneer",
+      "category": "environmental",
+      "duration": 8,
+      "bpm": 90,
+      "audioFile": "/audio/bars/bar-001.mp3",
+      "tags": ["empowerment", "environmental", "community"]
+    },
+    {
+      "id": "bar-002",
+      "type": "verse",
+      "artist": "Cultural Voice",
+      "text": "Bridging worlds with every beat, connecting heart to heart / Traditional wisdom meets the future, that's the art",
+      "category": "cultural",
+      "duration": 8,
+      "bpm": 95,
+      "audioFile": "/audio/bars/bar-002.mp3",
+      "tags": ["cultural", "unity", "tradition"]
+    },
+    {
+      "id": "bar-003",
+      "type": "hook",
+      "artist": "Unity Crew",
+      "text": "WorldBridger One, we stand together strong / Education, art, and action, that's where we belong",
+      "category": "anthem",
+      "duration": 8,
+      "bpm": 88,
+      "audioFile": "/audio/bars/bar-003.mp3",
+      "tags": ["anthem", "unity", "motivation"]
+    },
+    {
+      "id": "bar-004",
+      "type": "verse",
+      "artist": "Tech Innovator",
+      "text": "Coding futures, building dreams on blockchain foundation / Decentralized power to every single nation",
+      "category": "technology",
+      "duration": 8,
+      "bpm": 100,
+      "audioFile": "/audio/bars/bar-004.mp3",
+      "tags": ["technology", "innovation", "blockchain"]
+    },
+    {
+      "id": "bar-005",
+      "type": "closing",
+      "artist": "Peace Keeper",
+      "text": "From conflict zones to concert halls, we transform the pain / Into art, into hope, into sustainable gain",
+      "category": "transformation",
+      "duration": 8,
+      "bpm": 85,
+      "audioFile": "/audio/bars/bar-005.mp3",
+      "tags": ["transformation", "hope", "peace"]
+    }
+  ]
+}

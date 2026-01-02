@@ -1,0 +1,100 @@
+{
+  "domains": [
+    {
+      "id": "learning",
+      "name": "Learning",
+      "icon": "🌱",
+      "description": "Educational activities focused on knowledge acquisition and skill development",
+      "categories": [
+        "Environmental Science",
+        "Data Collection",
+        "Research Methods",
+        "Climate Studies",
+        "Technology Skills",
+        "Scientific Methodology"
+      ],
+      "colors": {
+        "primary": "#10b981",
+        "secondary": "#86efac",
+        "tertiary": "#d1fae5"
+      }
+    },
+    {
+      "id": "cultural",
+      "name": "Cultural",
+      "icon": "🎵",
+      "description": "Cultural expression and artistic development activities",
+      "categories": [
+        "Music Production",
+        "Traditional Arts",
+        "Storytelling",
+        "Dance",
+        "Cultural Heritage",
+        "Creative Writing"
+      ],
+      "colors": {
+        "primary": "#667eea",
+        "secondary": "#a5b4fc",
+        "tertiary": "#e0e7ff"
+      }
+    },
+    {
+      "id": "artistic",
+      "name": "Artistic",
+      "icon": "🎨",
+      "description": "Visual and creative arts focused on artistic expression",
+      "categories": [
+        "Visual Arts",
+        "Design",
+        "Photography",
+        "Crafts",
+        "Digital Art",
+        "Performance Art"
+      ],
+      "colors": {
+        "primary": "#f093fb",
+        "secondary": "#fbbf24",
+        "tertiary": "#fef3c7"
+      }
+    },
+    {
+      "id": "financial",
+      "name": "Financial",
+      "icon": "💰",
+      "description": "Financial literacy and resource management activities",
+      "categories": [
+        "Token Economics",
+        "Budgeting",
+        "Project Funding",
+        "Resource Management",
+        "Financial Planning",
+        "Sustainable Economics"
+      ],
+      "colors": {
+        "primary": "#f59e0b",
+        "secondary": "#fcd34d",
+        "tertiary": "#fef9c3"
+      }
+    }
+  ],
+  "priorityLevels": [
+    {
+      "level": "primary",
+      "name": "Primary",
+      "description": "Most important activities of the day",
+      "weight": 3
+    },
+    {
+      "level": "secondary",
+      "name": "Secondary",
+      "description": "Important supporting activities",
+      "weight": 2
+    },
+    {
+      "level": "tertiary",
+      "name": "Tertiary",
+      "description": "Additional enrichment activities",
+      "weight": 1
+    }
+  ]
+}

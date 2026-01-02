@@ -1,0 +1,64 @@
+{
+  "intros": [
+    {
+      "id": "intro-001",
+      "title": "Welcome to WorldBridger One",
+      "speaker": "Host",
+      "text": "Welcome to WorldBridger One - where environmental action meets cultural expression, where technology empowers communities, and where every voice matters in building a sustainable future.",
+      "duration": 15,
+      "mood": "energetic",
+      "audioFile": "/audio/intros/intro-001.mp3",
+      "videoFile": "/video/intros/intro-001.mp4",
+      "visualCue": "Rising sun over Kakuma",
+      "tags": ["welcome", "opening", "energetic"]
+    },
+    {
+      "id": "intro-002",
+      "title": "Artist Showcase Opening",
+      "speaker": "MC",
+      "text": "Tonight we celebrate the voices that rise from the heart of our community. From Kakuma to the global stage, these artists carry stories of resilience, hope, and transformation.",
+      "duration": 12,
+      "mood": "inspiring",
+      "audioFile": "/audio/intros/intro-002.mp3",
+      "videoFile": "/video/intros/intro-002.mp4",
+      "visualCue": "Montage of artist portraits",
+      "tags": ["artists", "showcase", "inspiring"]
+    },
+    {
+      "id": "intro-003",
+      "title": "Battle Tournament Opening",
+      "speaker": "Battle Host",
+      "text": "Let the words fly! Welcome to the WorldBridger Battle Arena where creativity clashes, metaphors meet, and the best bars win. May the most skilled wordsmith prevail!",
+      "duration": 10,
+      "mood": "hype",
+      "audioFile": "/audio/intros/intro-003.mp3",
+      "videoFile": "/video/intros/intro-003.mp4",
+      "visualCue": "Battle arena graphics",
+      "tags": ["battle", "competition", "hype"]
+    },
+    {
+      "id": "intro-004",
+      "title": "Educational Summit Opening",
+      "speaker": "Educator",
+      "text": "Knowledge is power, and today we empower each other. Welcome to our environmental science summit where learning meets action, where data drives change, and where every student becomes a teacher.",
+      "duration": 14,
+      "mood": "thoughtful",
+      "audioFile": "/audio/intros/intro-004.mp3",
+      "videoFile": "/video/intros/intro-004.mp4",
+      "visualCue": "Classroom and field research montage",
+      "tags": ["education", "summit", "thoughtful"]
+    },
+    {
+      "id": "intro-005",
+      "title": "Community Day Welcome",
+      "speaker": "Community Leader",
+      "text": "Today we gather not just as individuals, but as a community united by purpose. From every corner of our network, we come together to celebrate progress, share stories, and build the future we deserve.",
+      "duration": 13,
+      "mood": "warm",
+      "audioFile": "/audio/intros/intro-005.mp3",
+      "videoFile": "/audio/intros/intro-005.mp4",
+      "visualCue": "Community gathering footage",
+      "tags": ["community", "celebration", "warm"]
+    }
+  ]
+}

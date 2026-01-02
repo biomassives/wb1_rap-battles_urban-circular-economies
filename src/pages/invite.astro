@@ -1,0 +1,1324 @@
+---
+/**
+ * invite.astro
+ * Community Growth & Referral System
+ *
+ * Help users create invite letters, track responses, and earn rewards
+ * through the complete promotional lifecycle
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Invite & Earn"
+  description="Grow the community and earn rewards for every successful referral"
+  activeSection="invite"
+>
+
+  <section class="invite-page">
+    <div class="container mx-auto" style="padding: 2rem;">
+
+      <!-- Header -->
+      <div class="page-header" style="margin-bottom: 3rem;">
+        <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">
+          📬 Invite & Earn
+        </h1>
+        <p style="color: #666; font-size: 1.125rem;">
+          Grow the community, help others discover Purple Point, and earn rewards through the entire referral lifecycle
+        </p>
+      </div>
+
+      <!-- Referral Stats Dashboard -->
+      <div class="referral-stats-grid">
+
+        <div class="stat-card primary">
+          <div class="stat-icon">📤</div>
+          <div class="stat-content">
+            <div class="stat-value" id="invites-sent">0</div>
+            <div class="stat-label">Invites Sent</div>
+            <div class="stat-sublabel">+25 XP each</div>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-icon">✅</div>
+          <div class="stat-content">
+            <div class="stat-value" id="invites-accepted">0</div>
+            <div class="stat-label">Accepted</div>
+            <div class="stat-sublabel">+200 XP + 100 tokens each</div>
+          </div>
+        </div>
+
+        <div class="stat-card info">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-content">
+            <div class="stat-value" id="active-referrals">0</div>
+            <div class="stat-label">Active Referrals</div>
+            <div class="stat-sublabel">Earning you passive XP</div>
+          </div>
+        </div>
+
+        <div class="stat-card premium">
+          <div class="stat-icon">💰</div>
+          <div class="stat-content">
+            <div class="stat-value" id="total-earned">0</div>
+            <div class="stat-label">Total Earned</div>
+            <div class="stat-sublabel">Tokens from referrals</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Referral Tiers Progress -->
+      <div class="referral-tiers" style="margin-top: 3rem; margin-bottom: 3rem;">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1.5rem;">
+          🏆 Referral Tiers
+        </h2>
+        <div class="tiers-grid">
+
+          <div class="tier-card" data-tier="bronze">
+            <div class="tier-badge bronze">Bronze</div>
+            <div class="tier-requirement">5 Successful Referrals</div>
+            <div class="tier-rewards">
+              <div class="reward-item">+500 XP Bonus</div>
+              <div class="reward-item">1.5x Referral XP</div>
+              <div class="reward-item">"Community Builder" Badge</div>
+            </div>
+            <div class="tier-progress" id="bronze-progress">
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+              <div class="progress-label">0 / 5</div>
+            </div>
+          </div>
+
+          <div class="tier-card" data-tier="silver">
+            <div class="tier-badge silver">Silver</div>
+            <div class="tier-requirement">15 Successful Referrals</div>
+            <div class="tier-rewards">
+              <div class="reward-item">+2000 XP Bonus</div>
+              <div class="reward-item">2x Referral XP</div>
+              <div class="reward-item">5% Revenue Share from Referrals</div>
+              <div class="reward-item">"Growth Catalyst" NFT</div>
+            </div>
+            <div class="tier-progress" id="silver-progress">
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+              <div class="progress-label">0 / 15</div>
+            </div>
+          </div>
+
+          <div class="tier-card" data-tier="gold">
+            <div class="tier-badge gold">Gold</div>
+            <div class="tier-requirement">50 Successful Referrals</div>
+            <div class="tier-rewards">
+              <div class="reward-item">+10,000 XP Bonus</div>
+              <div class="reward-item">3x Referral XP</div>
+              <div class="reward-item">10% Revenue Share from Referrals</div>
+              <div class="reward-item">"Ambassador" NFT + Role</div>
+              <div class="reward-item">Featured on Homepage</div>
+            </div>
+            <div class="tier-progress" id="gold-progress">
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+              <div class="progress-label">0 / 50</div>
+            </div>
+          </div>
+
+          <div class="tier-card legendary" data-tier="platinum">
+            <div class="tier-badge platinum">Platinum</div>
+            <div class="tier-requirement">100+ Successful Referrals</div>
+            <div class="tier-rewards">
+              <div class="reward-item">+50,000 XP Bonus</div>
+              <div class="reward-item">5x Referral XP</div>
+              <div class="reward-item">15% Revenue Share from Referrals</div>
+              <div class="reward-item">Legendary "Founding Ambassador" NFT</div>
+              <div class="reward-item">Permanent Homepage Feature</div>
+              <div class="reward-item">Platform Governance Voting Rights</div>
+            </div>
+            <div class="tier-progress" id="platinum-progress">
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+              <div class="progress-label">0 / 100</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Invite Letter Builder -->
+      <div class="invite-builder-section">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1.5rem;">
+          ✍️ Create Your Invite Letter
+        </h2>
+
+        <div class="builder-layout">
+
+          <!-- Template Selection -->
+          <div class="template-selector">
+            <h3 style="font-weight: bold; margin-bottom: 1rem;">Choose Template</h3>
+            <div class="template-grid">
+
+              <button class="template-btn active" data-template="musician" onclick="window.inviteManager?.selectTemplate('musician')">
+                <span class="template-icon">🎵</span>
+                <span class="template-name">For Musicians</span>
+              </button>
+
+              <button class="template-btn" data-template="developer" onclick="window.inviteManager?.selectTemplate('developer')">
+                <span class="template-icon">💻</span>
+                <span class="template-name">For Developers</span>
+              </button>
+
+              <button class="template-btn" data-template="activist" onclick="window.inviteManager?.selectTemplate('activist')">
+                <span class="template-icon">🌱</span>
+                <span class="template-name">For Activists</span>
+              </button>
+
+              <button class="template-btn" data-template="rapper" onclick="window.inviteManager?.selectTemplate('rapper')">
+                <span class="template-icon">🎤</span>
+                <span class="template-name">For Rappers</span>
+              </button>
+
+              <button class="template-btn" data-template="generic" onclick="window.inviteManager?.selectTemplate('generic')">
+                <span class="template-icon">📧</span>
+                <span class="template-name">Generic</span>
+              </button>
+
+              <button class="template-btn" data-template="social" onclick="window.inviteManager?.selectTemplate('social')">
+                <span class="template-icon">📱</span>
+                <span class="template-name">Social Media</span>
+              </button>
+
+            </div>
+
+            <!-- Personalization Fields -->
+            <div class="personalization-fields" style="margin-top: 2rem;">
+              <h4 style="font-weight: bold; margin-bottom: 1rem;">Personalize</h4>
+
+              <div class="form-group">
+                <label for="recipient-name">Recipient's Name</label>
+                <input
+                  type="text"
+                  id="recipient-name"
+                  class="form-input"
+                  placeholder="e.g., Sarah"
+                  oninput="window.inviteManager?.updatePreview()"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="your-name">Your Name</label>
+                <input
+                  type="text"
+                  id="your-name"
+                  class="form-input"
+                  placeholder="e.g., Alex"
+                  oninput="window.inviteManager?.updatePreview()"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="custom-message">Personal Note (Optional)</label>
+                <textarea
+                  id="custom-message"
+                  class="form-textarea"
+                  rows="3"
+                  placeholder="Add a personal message..."
+                  oninput="window.inviteManager?.updatePreview()"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="highlight-feature">Highlight Feature</label>
+                <select id="highlight-feature" class="form-select" onchange="window.inviteManager?.updatePreview()">
+                  <option value="music">Music Creation & Battles</option>
+                  <option value="git">Git Learning & Open Tech</option>
+                  <option value="nft">NFT Rewards & Marketplace</option>
+                  <option value="community">Community & Mentorship</option>
+                  <option value="impact">Environmental Impact</option>
+                </select>
+              </div>
+
+            </div>
+
+            <!-- Referral Link -->
+            <div class="referral-link-section" style="margin-top: 2rem;">
+              <h4 style="font-weight: bold; margin-bottom: 1rem;">Your Referral Link</h4>
+              <div class="referral-link-display">
+                <input
+                  type="text"
+                  id="referral-link"
+                  class="referral-link-input"
+                  value="https://purplepoint.io/join?ref=USER123"
+                  readonly
+                />
+                <button class="btn-copy" onclick="window.inviteManager?.copyReferralLink()">
+                  📋 Copy
+                </button>
+              </div>
+              <p style="font-size: 0.875rem; color: #666; margin-top: 0.5rem;">
+                This unique link tracks your referrals and ensures you get credit!
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Letter Preview -->
+          <div class="letter-preview-panel">
+            <div class="preview-header">
+              <h3 style="font-weight: bold;">Preview</h3>
+              <div class="preview-actions">
+                <button class="preview-action-btn" onclick="window.inviteManager?.refreshPreview()">
+                  🔄 Refresh
+                </button>
+              </div>
+            </div>
+
+            <div class="letter-preview-content" id="letter-preview">
+              <!-- Preview will be populated by JavaScript -->
+              <div class="preview-placeholder">
+                <p style="color: #9ca3af; text-align: center;">
+                  Select a template and add personalization to see your invite letter
+                </p>
+              </div>
+            </div>
+
+            <div class="preview-actions-bottom">
+              <button class="btn-secondary" onclick="window.inviteManager?.copyLetter()">
+                📋 Copy Letter
+              </button>
+              <button class="btn-primary" onclick="window.inviteManager?.sendInvite()">
+                📤 Send Invite (+25 XP)
+              </button>
+              <button class="btn-share" onclick="window.inviteManager?.shareOnSocial()">
+                🔗 Share on Social
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Invite Tracking / Lifecycle -->
+      <div class="invite-tracking-section" style="margin-top: 4rem;">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1.5rem;">
+          📊 Track Your Invites
+        </h2>
+
+        <!-- Status Tabs -->
+        <div class="status-tabs">
+          <button class="status-tab active" data-status="all" onclick="window.inviteManager?.filterInvites('all')">
+            All Invites
+          </button>
+          <button class="status-tab" data-status="sent" onclick="window.inviteManager?.filterInvites('sent')">
+            📤 Sent
+          </button>
+          <button class="status-tab" data-status="viewed" onclick="window.inviteManager?.filterInvites('viewed')">
+            👀 Viewed
+          </button>
+          <button class="status-tab" data-status="accepted" onclick="window.inviteManager?.filterInvites('accepted')">
+            ✅ Accepted
+          </button>
+          <button class="status-tab" data-status="active" onclick="window.inviteManager?.filterInvites('active')">
+            🔥 Active
+          </button>
+        </div>
+
+        <!-- Invites Table -->
+        <div class="invites-table-container">
+          <table class="invites-table">
+            <thead>
+              <tr>
+                <th>Recipient</th>
+                <th>Status</th>
+                <th>Sent Date</th>
+                <th>Last Activity</th>
+                <th>XP Earned</th>
+                <th>Tokens Earned</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="invites-table-body">
+              <!-- Example rows -->
+              <tr class="invite-row" data-status="active">
+                <td>
+                  <div class="recipient-info">
+                    <strong>Sarah M.</strong>
+                    <span class="recipient-email">sarah@email.com</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge active">🔥 Active</span>
+                </td>
+                <td>Jan 15, 2026</td>
+                <td>
+                  <div class="activity-info">
+                    <span>Created 3 tracks</span>
+                    <span class="activity-time">2 hours ago</span>
+                  </div>
+                </td>
+                <td class="xp-earned">+425 XP</td>
+                <td class="tokens-earned">250 tokens</td>
+                <td>
+                  <button class="action-btn" onclick="window.inviteManager?.viewReferralDetails('sarah-001')">
+                    View
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="invite-row" data-status="accepted">
+                <td>
+                  <div class="recipient-info">
+                    <strong>Marcus J.</strong>
+                    <span class="recipient-email">marcus@email.com</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge accepted">✅ Accepted</span>
+                </td>
+                <td>Jan 20, 2026</td>
+                <td>
+                  <div class="activity-info">
+                    <span>Signed up</span>
+                    <span class="activity-time">1 day ago</span>
+                  </div>
+                </td>
+                <td class="xp-earned">+225 XP</td>
+                <td class="tokens-earned">100 tokens</td>
+                <td>
+                  <button class="action-btn" onclick="window.inviteManager?.viewReferralDetails('marcus-002')">
+                    View
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="invite-row" data-status="viewed">
+                <td>
+                  <div class="recipient-info">
+                    <strong>Lisa K.</strong>
+                    <span class="recipient-email">lisa@email.com</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge viewed">👀 Viewed</span>
+                </td>
+                <td>Jan 25, 2026</td>
+                <td>
+                  <div class="activity-info">
+                    <span>Opened link</span>
+                    <span class="activity-time">5 hours ago</span>
+                  </div>
+                </td>
+                <td class="xp-earned">+25 XP</td>
+                <td class="tokens-earned">0 tokens</td>
+                <td>
+                  <button class="action-btn" onclick="window.inviteManager?.sendReminder('lisa-003')">
+                    Remind
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="invite-row" data-status="sent">
+                <td>
+                  <div class="recipient-info">
+                    <strong>David R.</strong>
+                    <span class="recipient-email">david@email.com</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge sent">📤 Sent</span>
+                </td>
+                <td>Jan 28, 2026</td>
+                <td>
+                  <div class="activity-info">
+                    <span>Not opened yet</span>
+                    <span class="activity-time">-</span>
+                  </div>
+                </td>
+                <td class="xp-earned">+25 XP</td>
+                <td class="tokens-earned">0 tokens</td>
+                <td>
+                  <button class="action-btn" onclick="window.inviteManager?.sendReminder('david-004')">
+                    Remind
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Referral Tree Visualization -->
+      <div class="referral-tree-section" style="margin-top: 4rem;">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1.5rem;">
+          🌳 Your Referral Network
+        </h2>
+        <p style="color: #666; margin-bottom: 2rem;">
+          See the network effect of your invites. When your referrals invite others, you earn passive XP!
+        </p>
+
+        <div class="referral-tree-viz" id="referral-tree">
+          <!-- Tree visualization will go here -->
+          <div class="tree-placeholder" style="text-align: center; padding: 4rem; background: #f9fafb; border-radius: 1rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🌳</div>
+            <p style="color: #666;">Your referral network will appear here as people join</p>
+            <p style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.5rem;">
+              You earn 10% of your direct referrals' XP, and 5% of second-level referrals!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="leaderboard-section" style="margin-top: 4rem;">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1.5rem;">
+          🏆 Top Inviters This Month
+        </h2>
+
+        <div class="leaderboard-grid">
+
+          <div class="leaderboard-card rank-1">
+            <div class="rank-badge">🥇</div>
+            <div class="user-avatar">AM</div>
+            <div class="user-info">
+              <strong>AlexMaker</strong>
+              <span class="user-stats">127 referrals • 15,430 XP earned</span>
+            </div>
+          </div>
+
+          <div class="leaderboard-card rank-2">
+            <div class="rank-badge">🥈</div>
+            <div class="user-avatar">SB</div>
+            <div class="user-info">
+              <strong>SoundBuilder</strong>
+              <span class="user-stats">98 referrals • 12,200 XP earned</span>
+            </div>
+          </div>
+
+          <div class="leaderboard-card rank-3">
+            <div class="rank-badge">🥉</div>
+            <div class="user-avatar">MC</div>
+            <div class="user-info">
+              <strong>MC_Flow</strong>
+              <span class="user-stats">85 referrals • 10,850 XP earned</span>
+            </div>
+          </div>
+
+          <div class="leaderboard-card">
+            <div class="rank-badge">4</div>
+            <div class="user-avatar">DK</div>
+            <div class="user-info">
+              <strong>DevKing</strong>
+              <span class="user-stats">72 referrals • 9,340 XP earned</span>
+            </div>
+          </div>
+
+          <div class="leaderboard-card">
+            <div class="rank-badge">5</div>
+            <div class="user-avatar">GG</div>
+            <div class="user-info">
+              <strong>GreenGrower</strong>
+              <span class="user-stats">64 referrals • 8,120 XP earned</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Tips & Best Practices -->
+      <div class="tips-section" style="margin-top: 4rem; padding: 2rem; background: #f9fafb; border-radius: 1rem;">
+        <h3 style="font-weight: bold; margin-bottom: 1.5rem;">💡 Invitation Best Practices</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+
+          <div class="tip-card">
+            <div class="tip-icon">🎯</div>
+            <h4 style="font-weight: bold; margin-bottom: 0.5rem;">Target the Right People</h4>
+            <p style="color: #666; font-size: 0.875rem;">
+              Use the template that matches your recipient's interests. Musicians respond better to music-focused invites!
+            </p>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon">✍️</div>
+            <h4 style="font-weight: bold; margin-bottom: 0.5rem;">Personalize Your Message</h4>
+            <p style="color: #666; font-size: 0.875rem;">
+              Add a personal note explaining WHY you think they'd love Purple Point. Genuine invites convert 3x better!
+            </p>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon">🔄</div>
+            <h4 style="font-weight: bold; margin-bottom: 0.5rem;">Follow Up (But Don't Spam)</h4>
+            <p style="color: #666; font-size: 0.875rem;">
+              If someone viewed but didn't join, send ONE friendly reminder after a few days. Then let it go.
+            </p>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon">🤝</div>
+            <h4 style="font-weight: bold; margin-bottom: 0.5rem;">Help Them Get Started</h4>
+            <p style="color: #666; font-size: 0.875rem;">
+              Offer to walk them through their first track, git commit, or battle. Supported referrals are 5x more active!
+            </p>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon">📱</div>
+            <h4 style="font-weight: bold; margin-bottom: 0.5rem;">Use Multiple Channels</h4>
+            <p style="color: #666; font-size: 0.875rem;">
+              Share your referral link on Twitter, Discord, email, and direct messages. Different people prefer different channels.
+            </p>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon">🌟</div>
+            <h4 style="font-weight: bold; margin-bottom: 0.5rem;">Share Your Success</h4>
+            <p style="color: #666; font-size: 0.875rem;">
+              When you create something cool, share it! "I made this beat on Purple Point" is better marketing than any invite letter.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  // Invite Manager Class
+  class InviteManager {
+    constructor() {
+      this.currentTemplate = 'musician';
+      this.referralCode = this.generateReferralCode();
+      this.invites = [];
+      this.loadInvites();
+      this.updatePreview();
+    }
+
+    generateReferralCode() {
+      // Generate unique referral code
+      const wallet = window.walletManager?.connectedWallet || 'USER';
+      return wallet.substring(0, 8).toUpperCase();
+    }
+
+    selectTemplate(template) {
+      this.currentTemplate = template;
+
+      // Update active state
+      document.querySelectorAll('.template-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-template="${template}"]`).classList.add('active');
+
+      this.updatePreview();
+    }
+
+    getTemplateContent(template) {
+      const recipientName = document.getElementById('recipient-name')?.value || '[Name]';
+      const yourName = document.getElementById('your-name')?.value || '[Your Name]';
+      const customMessage = document.getElementById('custom-message')?.value || '';
+      const feature = document.getElementById('highlight-feature')?.value || 'music';
+      const refLink = `https://purplepoint.io/join?ref=${this.referralCode}`;
+
+      const templates = {
+        musician: `
+Hey ${recipientName}! 👋
+
+I've been using Purple Point and thought you'd love it. It's a platform where you can:
+
+🎵 Create and upload your music
+⚔️ Compete in rap battles with real prizes
+🤝 Collaborate with producers and artists worldwide
+💰 Earn tokens and NFT rewards for your creativity
+📚 Learn music production skills and get mentored
+
+${customMessage ? customMessage + '\n\n' : ''}The community is amazing, and I think your ${feature === 'music' ? 'music' : 'talent'} would fit right in.
+
+Join me here: ${refLink}
+
+Let me know if you have questions!
+
+${yourName}
+        `,
+
+        developer: `
+Hi ${recipientName},
+
+I found this platform called Purple Point that combines music, open tech, and Web3 in a really cool way.
+
+You'd especially like:
+
+💻 Open source projects with real-world impact
+🎓 Git training with XP and NFT rewards
+🔧 Build tools for musicians and environmental activists
+🌍 Contribute to Kakuma refugee camp tech initiatives
+💰 Earn tokens for your contributions
+
+${customMessage ? customMessage + '\n\n' : ''}It's like GitHub met a music platform and had a baby. Plus you get rewarded for learning and contributing.
+
+Check it out: ${refLink}
+
+${yourName}
+        `,
+
+        activist: `
+Hey ${recipientName},
+
+Want to make real environmental impact while being part of an amazing community?
+
+Purple Point is doing something unique:
+
+🌱 Environmental tech projects you can contribute to
+🏕️ Direct support for Kakuma refugee camp
+📊 Track your impact with XP and rewards
+🤝 Connect with activists, developers, and artists
+💚 Turn awareness into action
+
+${customMessage ? customMessage + '\n\n' : ''}It's not just another platform - we're actually building tools and making a difference.
+
+Join the movement: ${refLink}
+
+Hope to see you there!
+${yourName}
+        `,
+
+        rapper: `
+Yo ${recipientName}! 🎤
+
+You need to check out Purple Point - it's like a playground for rappers with real rewards.
+
+Here's what's up:
+
+⚔️ Rap battles with token prizes
+🎹 Free beat maker and samples
+🔥 Collaborate with producers worldwide
+💰 Get paid for your bars (NFT sales)
+🏆 Build your rep and fanbase
+
+${customMessage ? customMessage + '\n\n' : ''}I've been battling and the competition is fire. Plus you earn XP and tokens just for being active.
+
+Join the cypher: ${refLink}
+
+Let's get it!
+${yourName}
+        `,
+
+        generic: `
+Hi ${recipientName},
+
+I wanted to share Purple Point with you - it's a community platform that combines:
+
+✨ Creative expression (music, art)
+💻 Tech and open source learning
+🌍 Environmental and social impact
+💰 Real rewards (tokens, NFTs, XP)
+🤝 Amazing community
+
+${customMessage ? customMessage + '\n\n' : ''}Whether you're into music, tech, activism, or just want to be part of something cool, there's something for you here.
+
+Check it out: ${refLink}
+
+${yourName}
+        `,
+
+        social: `
+🎵 Just discovered @PurplePointIO - a platform where you can make music, learn git, earn NFTs, and support environmental projects!
+
+Join me: ${refLink}
+
+#PurplePoint #Web3Music #OpenSource #CommunityBuilding
+
+${customMessage ? '\n\n' + customMessage : ''}
+        `
+      };
+
+      return templates[template] || templates.generic;
+    }
+
+    updatePreview() {
+      const preview = document.getElementById('letter-preview');
+      if (!preview) return;
+
+      const content = this.getTemplateContent(this.currentTemplate);
+      preview.innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit; line-height: 1.8;">${content}</pre>`;
+    }
+
+    refreshPreview() {
+      this.updatePreview();
+    }
+
+    copyLetter() {
+      const content = this.getTemplateContent(this.currentTemplate);
+      navigator.clipboard.writeText(content).then(() => {
+        this.showToast('✅ Letter copied to clipboard!', 'success');
+      });
+    }
+
+    copyReferralLink() {
+      const link = document.getElementById('referral-link').value;
+      navigator.clipboard.writeText(link).then(() => {
+        this.showToast('✅ Referral link copied!', 'success');
+      });
+    }
+
+    async sendInvite() {
+      const recipientName = document.getElementById('recipient-name')?.value;
+      if (!recipientName) {
+        this.showToast('❌ Please enter recipient name', 'error');
+        return;
+      }
+
+      // TODO: Implement actual invite sending
+      console.log('Sending invite to:', recipientName);
+
+      // Award XP
+      if (window.progressManager) {
+        window.progressManager.awardXP(25, 'invite_sent', `Invited ${recipientName}`);
+      }
+
+      // Update stats
+      this.updateStats('sent');
+
+      this.showToast(`✅ Invite sent to ${recipientName}! +25 XP`, 'success');
+
+      // Clear form
+      document.getElementById('recipient-name').value = '';
+      document.getElementById('custom-message').value = '';
+    }
+
+    shareOnSocial() {
+      const content = this.getTemplateContent('social');
+      const url = encodeURIComponent(content);
+
+      // Open share dialog or copy to clipboard
+      this.copyLetter();
+      this.showToast('✅ Social post copied! Paste it on your favorite platform', 'success');
+    }
+
+    filterInvites(status) {
+      // Update active tab
+      document.querySelectorAll('.status-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`[data-status="${status}"]`).classList.add('active');
+
+      // Filter rows
+      const rows = document.querySelectorAll('.invite-row');
+      rows.forEach(row => {
+        if (status === 'all' || row.dataset.status === status) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    viewReferralDetails(id) {
+      // TODO: Show detailed modal
+      console.log('View details for:', id);
+      this.showToast('📊 Referral details coming soon!', 'info');
+    }
+
+    sendReminder(id) {
+      // TODO: Send reminder
+      console.log('Send reminder to:', id);
+      this.showToast('✅ Reminder sent!', 'success');
+    }
+
+    loadInvites() {
+      // TODO: Load from API/localStorage
+      // For now, using example data in HTML
+    }
+
+    updateStats(action) {
+      // TODO: Update stats based on action
+      const sentEl = document.getElementById('invites-sent');
+      if (sentEl && action === 'sent') {
+        const current = parseInt(sentEl.textContent);
+        sentEl.textContent = current + 1;
+      }
+    }
+
+    showToast(message, type = 'info') {
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  }
+
+  // Initialize
+  window.inviteManager = new InviteManager();
+</script>
+
+<style>
+  /* Referral Stats Grid */
+  .referral-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-left: 4px solid;
+  }
+
+  .stat-card.primary { border-left-color: #667eea; }
+  .stat-card.success { border-left-color: #10b981; }
+  .stat-card.info { border-left-color: #3b82f6; }
+  .stat-card.premium { border-left-color: #f59e0b; }
+
+  .stat-icon {
+    font-size: 2.5rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #111827;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 600;
+  }
+
+  .stat-sublabel {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-top: 0.25rem;
+  }
+
+  /* Tier Cards */
+  .tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .tier-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-top: 4px solid;
+  }
+
+  .tier-card[data-tier="bronze"] { border-top-color: #cd7f32; }
+  .tier-card[data-tier="silver"] { border-top-color: #c0c0c0; }
+  .tier-card[data-tier="gold"] { border-top-color: #ffd700; }
+  .tier-card[data-tier="platinum"] {
+    border-top-color: #e5e4e2;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  }
+
+  .tier-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .tier-badge.bronze { background: #cd7f32; color: white; }
+  .tier-badge.silver { background: #c0c0c0; color: #333; }
+  .tier-badge.gold { background: #ffd700; color: #333; }
+  .tier-badge.platinum { background: linear-gradient(135deg, #e5e4e2 0%, #a0a0a0 100%); color: white; }
+
+  .tier-requirement {
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #374151;
+  }
+
+  .tier-rewards {
+    margin-bottom: 1.5rem;
+  }
+
+  .reward-item {
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .reward-item:last-child {
+    border-bottom: none;
+  }
+
+  .tier-progress {
+    margin-top: 1rem;
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s;
+  }
+
+  .progress-label {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-align: right;
+  }
+
+  /* Invite Builder */
+  .builder-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .template-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .template-btn:hover {
+    border-color: #667eea;
+    background: #f9fafb;
+  }
+
+  .template-btn.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  }
+
+  .template-icon {
+    font-size: 2rem;
+  }
+
+  .template-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .letter-preview-panel {
+    background: #f9fafb;
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .preview-action-btn {
+    padding: 0.5rem 1rem;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .letter-preview-content {
+    padding: 1.5rem;
+    min-height: 400px;
+    background: white;
+    margin: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  .preview-actions-bottom {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-top: 2px solid #e5e7eb;
+  }
+
+  .btn-share {
+    background: #1da1f2;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .referral-link-display {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .referral-link-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+    font-family: monospace;
+  }
+
+  .btn-copy {
+    padding: 0.75rem 1.5rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  /* Invites Table */
+  .status-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .status-tab {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .status-tab:hover {
+    border-color: #667eea;
+  }
+
+  .status-tab.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+  }
+
+  .invites-table-container {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .invites-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .invites-table thead {
+    background: #f9fafb;
+  }
+
+  .invites-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 0.875rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .invites-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .recipient-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .recipient-email {
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .status-badge.sent { background: #dbeafe; color: #1e40af; }
+  .status-badge.viewed { background: #fef3c7; color: #92400e; }
+  .status-badge.accepted { background: #d1fae5; color: #065f46; }
+  .status-badge.active { background: #fecaca; color: #991b1b; }
+
+  .activity-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  .activity-time {
+    color: #9ca3af;
+    font-size: 0.75rem;
+  }
+
+  .xp-earned {
+    color: #10b981;
+    font-weight: 600;
+  }
+
+  .tokens-earned {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+
+  .action-btn {
+    padding: 0.5rem 1rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  /* Leaderboard */
+  .leaderboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .leaderboard-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .leaderboard-card.rank-1 { border-left: 4px solid #ffd700; }
+  .leaderboard-card.rank-2 { border-left: 4px solid #c0c0c0; }
+  .leaderboard-card.rank-3 { border-left: 4px solid #cd7f32; }
+
+  .rank-badge {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .user-stats {
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+
+  /* Tips */
+  .tip-card {
+    text-align: center;
+  }
+
+  .tip-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 10001;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  .toast.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .toast-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+  .toast-error { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+  .toast-info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .builder-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .template-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .invites-table-container {
+      overflow-x: auto;
+    }
+  }
+</style>

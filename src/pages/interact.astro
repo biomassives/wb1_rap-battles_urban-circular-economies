@@ -597,6 +597,247 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
   </section>
 
+  <!-- MODALS -->
+
+  <!-- Create Battle Modal -->
+  <div id="create-battle-modal" class="modal" style="display: none;">
+    <div class="modal-overlay" onclick="window.interactionPanel?.closeModal('create-battle-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>⚔️ Create New Battle</h3>
+        <button class="modal-close" onclick="window.interactionPanel?.closeModal('create-battle-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="create-battle-form" onsubmit="window.interactionPanel?.submitBattle(event)">
+          <div class="form-group">
+            <label for="battle-title">Battle Title *</label>
+            <input type="text" id="battle-title" name="title" placeholder="e.g., Climate Champions Showdown" required>
+          </div>
+
+          <div class="form-group">
+            <label for="battle-theme">Theme / Topic *</label>
+            <select id="battle-theme" name="theme" required>
+              <option value="">Select theme...</option>
+              <option value="environmental">Environmental Justice</option>
+              <option value="cultural">Cultural Heritage</option>
+              <option value="social">Social Change</option>
+              <option value="freestyle">Freestyle / No Theme</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="battle-rounds">Number of Rounds *</label>
+            <select id="battle-rounds" name="rounds" required>
+              <option value="1">1 Round</option>
+              <option value="2">2 Rounds</option>
+              <option value="3" selected>3 Rounds (Standard)</option>
+              <option value="5">5 Rounds (Extended)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="battle-deadline">Submission Deadline *</label>
+            <input type="datetime-local" id="battle-deadline" name="deadline" required>
+          </div>
+
+          <div class="form-group">
+            <label for="battle-prize">Prize Pool (Optional)</label>
+            <input type="number" id="battle-prize" name="prize" placeholder="Tokens" min="0">
+          </div>
+
+          <div class="form-group">
+            <label for="battle-description">Description</label>
+            <textarea id="battle-description" name="description" rows="3" placeholder="Describe your battle..."></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="window.interactionPanel?.closeModal('create-battle-modal')">Cancel</button>
+            <button type="submit" class="btn-primary">Create Battle</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start Collaboration Modal -->
+  <div id="start-collab-modal" class="modal" style="display: none;">
+    <div class="modal-overlay" onclick="window.interactionPanel?.closeModal('start-collab-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🎵 Start Collaboration</h3>
+        <button class="modal-close" onclick="window.interactionPanel?.closeModal('start-collab-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="start-collab-form" onsubmit="window.interactionPanel?.submitCollab(event)">
+          <div class="form-group">
+            <label for="collab-title">Collaboration Title *</label>
+            <input type="text" id="collab-title" name="title" placeholder="e.g., Island Vibes Riddim" required>
+          </div>
+
+          <div class="form-group">
+            <label for="collab-type">Collaboration Type *</label>
+            <select id="collab-type" name="type" required>
+              <option value="">Select type...</option>
+              <option value="track">Full Track</option>
+              <option value="riddim">Riddim/Beat</option>
+              <option value="vocals">Vocals Only</option>
+              <option value="remix">Remix</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="collab-genre">Genre *</label>
+            <select id="collab-genre" name="genre" required>
+              <option value="">Select genre...</option>
+              <option value="reggae">Reggae</option>
+              <option value="dancehall">Dancehall</option>
+              <option value="afrobeat">Afrobeat</option>
+              <option value="hip-hop">Hip Hop</option>
+              <option value="fusion">Fusion</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="collab-roles">Looking For *</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="roles" value="vocalist"> Vocalist</label>
+              <label><input type="checkbox" name="roles" value="producer"> Producer</label>
+              <label><input type="checkbox" name="roles" value="instrumentalist"> Instrumentalist</label>
+              <label><input type="checkbox" name="roles" value="mixer"> Mixing Engineer</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="collab-description">Description</label>
+            <textarea id="collab-description" name="description" rows="3" placeholder="Describe your vision..."></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="window.interactionPanel?.closeModal('start-collab-modal')">Cancel</button>
+            <button type="submit" class="btn-primary">Start Collaboration</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Project Modal -->
+  <div id="create-project-modal" class="modal" style="display: none;">
+    <div class="modal-overlay" onclick="window.interactionPanel?.closeModal('create-project-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>💻 Create New Project</h3>
+        <button class="modal-close" onclick="window.interactionPanel?.closeModal('create-project-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="create-project-form" onsubmit="window.interactionPanel?.submitProject(event)">
+          <div class="form-group">
+            <label for="project-title">Project Title *</label>
+            <input type="text" id="project-title" name="title" placeholder="e.g., Air Quality Monitor" required>
+          </div>
+
+          <div class="form-group">
+            <label for="project-category">Category *</label>
+            <select id="project-category" name="category" required>
+              <option value="">Select category...</option>
+              <option value="climate">Climate & Weather</option>
+              <option value="water">Water Quality</option>
+              <option value="air">Air Quality</option>
+              <option value="biodiversity">Biodiversity</option>
+              <option value="waste">Waste Management</option>
+              <option value="energy">Renewable Energy</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="project-tech">Technology Stack</label>
+            <input type="text" id="project-tech" name="tech" placeholder="e.g., Raspberry Pi, Python, Sensors">
+          </div>
+
+          <div class="form-group">
+            <label for="project-impact">Expected Impact *</label>
+            <textarea id="project-impact" name="impact" rows="3" placeholder="What environmental problem will this solve?" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="project-description">Full Description</label>
+            <textarea id="project-description" name="description" rows="4" placeholder="Describe your project in detail..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" name="open-source" value="yes"> Open Source (Share with community)
+            </label>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="window.interactionPanel?.closeModal('create-project-modal')">Cancel</button>
+            <button type="submit" class="btn-primary">Create Project</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start Garden Modal -->
+  <div id="start-garden-modal" class="modal" style="display: none;">
+    <div class="modal-overlay" onclick="window.interactionPanel?.closeModal('start-garden-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🌱 Start New Garden</h3>
+        <button class="modal-close" onclick="window.interactionPanel?.closeModal('start-garden-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="start-garden-form" onsubmit="window.interactionPanel?.submitGarden(event)">
+          <div class="form-group">
+            <label for="garden-name">Garden Name *</label>
+            <input type="text" id="garden-name" name="name" placeholder="e.g., Kakuma Community Garden" required>
+          </div>
+
+          <div class="form-group">
+            <label for="garden-location">Location *</label>
+            <input type="text" id="garden-location" name="location" placeholder="Community, neighborhood, or coordinates" required>
+          </div>
+
+          <div class="form-group">
+            <label for="garden-size">Garden Size</label>
+            <select id="garden-size" name="size">
+              <option value="small">Small (< 100 sq ft)</option>
+              <option value="medium" selected>Medium (100-500 sq ft)</option>
+              <option value="large">Large (500-2000 sq ft)</option>
+              <option value="xlarge">Extra Large (> 2000 sq ft)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="garden-type">Garden Type *</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="type" value="vegetables"> Vegetables</label>
+              <label><input type="checkbox" name="type" value="herbs"> Herbs</label>
+              <label><input type="checkbox" name="type" value="fruits"> Fruits</label>
+              <label><input type="checkbox" name="type" value="medicinal"> Medicinal Plants</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="garden-participants">Expected Participants</label>
+            <input type="number" id="garden-participants" name="participants" placeholder="How many people will help?" min="1">
+          </div>
+
+          <div class="form-group">
+            <label for="garden-goals">Goals & Purpose</label>
+            <textarea id="garden-goals" name="goals" rows="3" placeholder="What do you hope to achieve?"></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="window.interactionPanel?.closeModal('start-garden-modal')">Cancel</button>
+            <button type="submit" class="btn-primary">Start Garden</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 </BaseLayout>
 
 <script>
@@ -643,40 +884,183 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       });
     }
 
+    // Modal management
+    openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        // Reset form if exists
+        const form = modal.querySelector('form');
+        if (form) form.reset();
+      }
+    }
+
     // Action handlers
     createBattle() {
-      alert('Create Battle feature - Navigate to battle creation form');
-      window.location.href = '/music?action=create-battle';
+      this.openModal('create-battle-modal');
     }
 
     viewMyBattles() {
-      alert('View My Battles - Navigate to user battle history');
       window.location.href = '/music?filter=my-battles';
     }
 
     startCollab() {
-      alert('Start Collaboration - Navigate to collab creation');
-      window.location.href = '/collaborations?action=create';
+      this.openModal('start-collab-modal');
     }
 
     viewMyCollabs() {
-      alert('View My Collaborations - Navigate to user collabs');
-      window.location.href = '/collaborations?filter=mine';
+      window.location.href = '/music?filter=my-collabs';
     }
 
     createProject() {
-      alert('Create Project - Navigate to project creation');
-      window.location.href = '/learning#new-project';
+      this.openModal('create-project-modal');
     }
 
     viewMyContributions() {
-      alert('View My Contributions - Navigate to contribution dashboard');
       window.location.href = '/learning#my-contributions';
     }
 
     startGarden() {
-      alert('Start Garden - Navigate to garden creation');
-      window.location.href = '/gardens?action=create';
+      this.openModal('start-garden-modal');
+    }
+
+    // Form submission handlers
+    async submitBattle(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        // TODO: Replace with actual API call
+        console.log('Creating battle:', data);
+
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Show success message
+        this.showToast('✅ Battle created successfully!', 'success');
+        this.closeModal('create-battle-modal');
+
+        // Navigate to battle
+        setTimeout(() => {
+          window.location.href = '/music?tab=battles';
+        }, 1000);
+
+      } catch (error) {
+        this.showToast('❌ Failed to create battle. Please try again.', 'error');
+        console.error('Battle creation error:', error);
+      }
+    }
+
+    async submitCollab(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      // Handle checkboxes
+      const roles = formData.getAll('roles');
+      const data = {
+        ...Object.fromEntries(formData.entries()),
+        roles: roles
+      };
+
+      try {
+        console.log('Starting collaboration:', data);
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        this.showToast('✅ Collaboration started successfully!', 'success');
+        this.closeModal('start-collab-modal');
+
+        setTimeout(() => {
+          window.location.href = '/music?tab=collabs';
+        }, 1000);
+
+      } catch (error) {
+        this.showToast('❌ Failed to start collaboration. Please try again.', 'error');
+        console.error('Collab creation error:', error);
+      }
+    }
+
+    async submitProject(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        console.log('Creating project:', data);
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        this.showToast('✅ Project created successfully!', 'success');
+        this.closeModal('create-project-modal');
+
+        setTimeout(() => {
+          window.location.href = '/learning?filter=my-projects';
+        }, 1000);
+
+      } catch (error) {
+        this.showToast('❌ Failed to create project. Please try again.', 'error');
+        console.error('Project creation error:', error);
+      }
+    }
+
+    async submitGarden(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      // Handle checkboxes
+      const types = formData.getAll('type');
+      const data = {
+        ...Object.fromEntries(formData.entries()),
+        type: types
+      };
+
+      try {
+        console.log('Starting garden:', data);
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        this.showToast('✅ Garden started successfully!', 'success');
+        this.closeModal('start-garden-modal');
+
+        setTimeout(() => {
+          window.location.href = '/kakuma?filter=gardens';
+        }, 1000);
+
+      } catch (error) {
+        this.showToast('❌ Failed to start garden. Please try again.', 'error');
+        console.error('Garden creation error:', error);
+      }
+    }
+
+    // Toast notification
+    showToast(message, type = 'info') {
+      // Remove existing toasts
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
     }
   }
 
@@ -938,6 +1322,260 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .btn-small {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    position: relative;
+    background: white;
+    border-radius: 1rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    z-index: 10000;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .modal-header h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    color: #111827;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  /* Form Styles */
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-size: 0.875rem;
+  }
+
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group input[type="datetime-local"],
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+
+  .checkbox-group label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s;
+  }
+
+  .checkbox-group label:hover {
+    background: #f9fafb;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+    cursor: pointer;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e5e7eb;
+  }
+
+  /* Toast Notifications */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 10001;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 400px;
+  }
+
+  .toast.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .toast-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+  }
+
+  .toast-error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+  }
+
+  .toast-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .modal-content {
+      width: 95%;
+      max-height: 85vh;
+    }
+
+    .modal-header {
+      padding: 1rem;
+    }
+
+    .modal-body {
+      padding: 1rem;
+    }
+
+    .modal-actions {
+      flex-direction: column-reverse;
+    }
+
+    .modal-actions button {
+      width: 100%;
+    }
+
+    .toast {
+      right: 1rem;
+      left: 1rem;
+      bottom: 1rem;
+      max-width: calc(100% - 2rem);
+    }
+
+    .role-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .activity-cards {
+      grid-template-columns: 1fr !important;
+    }
+
+    .stats-mini {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .role-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 

@@ -1,0 +1,95 @@
+{
+  "announcements": [
+    {
+      "id": "announce-001",
+      "type": "award",
+      "category": "environmental",
+      "title": "Environmental Innovator Award",
+      "recipientType": "individual",
+      "text": "For outstanding dedication to environmental research and community impact, this award recognizes those who transform data into action and science into solutions.",
+      "presenter": "Environmental Lead",
+      "duration": 10,
+      "audioFile": "/audio/announcements/announce-001.mp3",
+      "visualCue": "Green sustainability graphics",
+      "tags": ["award", "environmental", "innovation"]
+    },
+    {
+      "id": "announce-002",
+      "type": "award",
+      "category": "artistic",
+      "title": "Rising Artist Recognition",
+      "recipientType": "individual",
+      "text": "Celebrating the voice that emerged from our community to touch hearts across the globe. This artist embodies the spirit of WorldBridger One through every note and lyric.",
+      "presenter": "Arts Director",
+      "duration": 12,
+      "audioFile": "/audio/announcements/announce-002.mp3",
+      "visualCue": "Musical note animations",
+      "tags": ["award", "artistic", "recognition"]
+    },
+    {
+      "id": "announce-003",
+      "type": "milestone",
+      "category": "community",
+      "title": "1000 Students Milestone",
+      "recipientType": "community",
+      "text": "Today we celebrate a monumental achievement - 1000 students have completed our environmental certification program. Each one is now an ambassador of change in their community.",
+      "presenter": "Program Director",
+      "duration": 15,
+      "audioFile": "/audio/announcements/announce-003.mp3",
+      "visualCue": "Student celebration montage",
+      "tags": ["milestone", "community", "education"]
+    },
+    {
+      "id": "announce-004",
+      "type": "award",
+      "category": "mentorship",
+      "title": "Outstanding Mentor Award",
+      "recipientType": "individual",
+      "text": "For countless hours of guidance, unwavering support, and transformative impact on the next generation. This mentor has changed lives through dedication and wisdom.",
+      "presenter": "Mentorship Lead",
+      "duration": 11,
+      "audioFile": "/audio/announcements/announce-004.mp3",
+      "visualCue": "Mentor-mentee success stories",
+      "tags": ["award", "mentorship", "leadership"]
+    },
+    {
+      "id": "announce-005",
+      "type": "battle-result",
+      "category": "competition",
+      "title": "Battle Champion Announcement",
+      "recipientType": "individual",
+      "text": "After fierce competition and incredible displays of lyrical mastery, we have our champion! The wordsmith who commanded the stage and captivated every judge is...",
+      "presenter": "Battle MC",
+      "duration": 8,
+      "audioFile": "/audio/announcements/announce-005.mp3",
+      "visualCue": "Championship graphics",
+      "tags": ["battle", "competition", "champion"]
+    },
+    {
+      "id": "announce-006",
+      "type": "grant",
+      "category": "funding",
+      "title": "Project Grant Award",
+      "recipientType": "team",
+      "text": "This innovative project demonstrates the perfect blend of environmental awareness, community engagement, and technological innovation. We're proud to fund this vision.",
+      "presenter": "Grants Committee",
+      "duration": 13,
+      "audioFile": "/audio/announcements/announce-006.mp3",
+      "visualCue": "Project showcase visuals",
+      "tags": ["grant", "funding", "innovation"]
+    },
+    {
+      "id": "announce-007",
+      "type": "recognition",
+      "category": "volunteer",
+      "title": "Community Hero Recognition",
+      "recipientType": "individual",
+      "text": "Some work tirelessly behind the scenes, asking for nothing but driven by everything. Today we honor the volunteer who embodies the heart of our community.",
+      "presenter": "Community Lead",
+      "duration": 10,
+      "audioFile": "/audio/announcements/announce-007.mp3",
+      "visualCue": "Volunteer in action footage",
+      "tags": ["recognition", "volunteer", "hero"]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "projects": [
+    {
+      "id": "kakuma",
+      "name": "Kakuma",
+      "icon": "🏕️",
+      "description": "Environmental projects in Kakuma refugee camp",
+      "fullDescription": "Supporting environmental science education and sustainable development projects in the Kakuma refugee camp through hands-on learning and community engagement.",
+      "color": "#10b981",
+      "tags": ["environmental", "education", "community"]
+    },
+    {
+      "id": "music",
+      "name": "Music",
+      "icon": "🎵",
+      "description": "Music production and artist development",
+      "fullDescription": "Empowering artists through music production tools, mentorship, and promotional opportunities to build sustainable creative careers.",
+      "color": "#667eea",
+      "tags": ["artistic", "cultural", "creative"]
+    },
+    {
+      "id": "learning",
+      "name": "Learning",
+      "icon": "📚",
+      "description": "Educational courses and certification programs",
+      "fullDescription": "Comprehensive educational platform offering environmental science, technology, and skill-building courses with recognized certifications.",
+      "color": "#f59e0b",
+      "tags": ["education", "certification", "skills"]
+    },
+    {
+      "id": "battles",
+      "name": "Battles",
+      "icon": "⚔️",
+      "description": "Creative rap battles and competitions",
+      "fullDescription": "Platform for creative expression through rap battles, poetry slams, and artistic competitions that celebrate cultural diversity and talent.",
+      "color": "#ec4899",
+      "tags": ["cultural", "creative", "competition"]
+    },
+    {
+      "id": "achievements",
+      "name": "Achievements",
+      "icon": "🏆",
+      "description": "Milestone tracking and recognition system",
+      "fullDescription": "Comprehensive achievement and milestone tracking system that recognizes progress, celebrates accomplishments, and motivates continued growth.",
+      "color": "#8b5cf6",
+      "tags": ["gamification", "recognition", "progress"]
+    }
+  ]
+}
