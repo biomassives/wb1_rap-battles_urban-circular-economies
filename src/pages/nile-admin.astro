@@ -1,0 +1,636 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Nile Postgres Admin">
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>🐘 Nile Postgres Admin</h1>
+      <p class="subtitle">Multi-tenant database with advanced extensions</p>
+      <div class="db-status" id="db-status">
+        <span class="status-indicator"></span>
+        <span class="status-text">Not configured</span>
+      </div>
+    </div>
+
+    <!-- Configuration Notice -->
+    <div class="notice-card">
+      <h2>📝 Nile DB Configuration</h2>
+      <p>Nile Postgres provides multi-tenant capabilities with built-in extensions.</p>
+
+      <div class="config-section">
+        <h3>Features Available:</h3>
+        <ul>
+          <li>✅ <strong>Multi-tenancy</strong> - Isolate data by organization/tenant</li>
+          <li>✅ <strong>pgvector</strong> - Vector similarity search for AI embeddings</li>
+          <li>✅ <strong>pg_cron</strong> - Schedule database jobs</li>
+          <li>✅ <strong>PostGIS</strong> - Geographic data support</li>
+          <li>✅ <strong>Full-text search</strong> - Advanced text search</li>
+          <li>✅ <strong>Row-level security</strong> - Tenant isolation</li>
+        </ul>
+      </div>
+
+      <div class="config-section">
+        <h3>Environment Variables Needed:</h3>
+        <pre class="env-example">
+# Add to .env
+NILE_POSTGRES_URL=postgresql://user:password@db.thenile.dev:5432/db_name
+NILE_API_KEY=your_nile_api_key_here
+        </pre>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="extensions">🔌 Extensions</button>
+      <button class="tab-btn" data-tab="tenants">🏢 Tenants</button>
+      <button class="tab-btn" data-tab="vector">🤖 Vector Search</button>
+      <button class="tab-btn" data-tab="jobs">⏰ Scheduled Jobs</button>
+      <button class="tab-btn" data-tab="geo">🗺️ Geographic Data</button>
+    </div>
+
+    <!-- Extensions Tab -->
+    <div class="tab-content active" id="tab-extensions">
+      <h2>Database Extensions</h2>
+
+      <div class="extension-grid">
+        <div class="extension-card">
+          <h3>🔍 pgvector</h3>
+          <p>Vector similarity search for AI embeddings</p>
+          <div class="extension-status">Not installed</div>
+          <button class="btn-primary btn-sm" onclick="installExtension('pgvector')">Install</button>
+        </div>
+
+        <div class="extension-card">
+          <h3>⏰ pg_cron</h3>
+          <p>Schedule database jobs</p>
+          <div class="extension-status">Not installed</div>
+          <button class="btn-primary btn-sm" onclick="installExtension('pg_cron')">Install</button>
+        </div>
+
+        <div class="extension-card">
+          <h3>🗺️ PostGIS</h3>
+          <p>Geographic objects and spatial functions</p>
+          <div class="extension-status">Not installed</div>
+          <button class="btn-primary btn-sm" onclick="installExtension('postgis')">Install</button>
+        </div>
+
+        <div class="extension-card">
+          <h3>🔎 pg_trgm</h3>
+          <p>Fuzzy string matching</p>
+          <div class="extension-status">Not installed</div>
+          <button class="btn-primary btn-sm" onclick="installExtension('pg_trgm')">Install</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Extension Usage Examples</h3>
+        <pre class="code-example">
+-- pgvector: Store and search embeddings
+CREATE TABLE lyrics_embeddings (
+  id UUID PRIMARY KEY,
+  lyric_text TEXT,
+  embedding vector(1536),  -- OpenAI embedding size
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Create vector similarity index
+CREATE INDEX ON lyrics_embeddings USING ivfflat (embedding vector_cosine_ops);
+
+-- Search similar lyrics
+SELECT lyric_text, embedding <=> '[...]'::vector AS distance
+FROM lyrics_embeddings
+ORDER BY distance LIMIT 10;
+
+-- pg_cron: Schedule airdrop distributions
+SELECT cron.schedule(
+  'distribute-weekly-airdrops',
+  '0 0 * * 1',  -- Every Monday at midnight
+  $$SELECT distribute_airdrops('weekly');$$
+);
+
+-- PostGIS: Find nearby gardens
+SELECT name, ST_Distance(location, ST_Point(-1.5, 36.8)) as distance
+FROM gardens
+WHERE ST_DWithin(location, ST_Point(-1.5, 36.8), 0.1)
+ORDER BY distance;
+        </pre>
+      </div>
+    </div>
+
+    <!-- Tenants Tab -->
+    <div class="tab-content" id="tab-tenants">
+      <h2>Multi-Tenant Management</h2>
+
+      <div class="section">
+        <h3>Tenant Isolation</h3>
+        <p>Nile provides built-in multi-tenancy for isolating data by organization or user.</p>
+
+        <div class="tenant-example">
+          <pre class="code-example">
+-- Create tenant-aware table
+CREATE TABLE battles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL,  -- Nile automatically filters by this
+  challenger_id UUID,
+  opponent_id UUID,
+  status VARCHAR(20),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Enable RLS for tenant isolation
+ALTER TABLE battles ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Users can only see their tenant's data
+CREATE POLICY tenant_isolation ON battles
+  FOR ALL
+  USING (tenant_id = current_setting('app.tenant_id')::UUID);
+
+-- Set tenant context in application
+SET app.tenant_id = 'tenant-uuid-here';
+
+-- Now all queries automatically filter by tenant
+SELECT * FROM battles;  -- Only returns battles for current tenant
+          </pre>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Use Cases for WorldBridge One</h3>
+        <ul>
+          <li><strong>Organizations</strong> - Separate data for different refugee camps</li>
+          <li><strong>Communities</strong> - Isolate battle leagues or garden groups</li>
+          <li><strong>Events</strong> - Separate hackathon or tournament data</li>
+          <li><strong>Privacy</strong> - Ensure data doesn't leak between tenants</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Vector Search Tab -->
+    <div class="tab-content" id="tab-vector">
+      <h2>AI Vector Search</h2>
+
+      <div class="section">
+        <h3>Use Cases</h3>
+        <div class="use-case-grid">
+          <div class="use-case-card">
+            <h4>🎤 Lyric Similarity</h4>
+            <p>Find similar rap bars based on meaning, not just keywords</p>
+          </div>
+          <div class="use-case-card">
+            <h4>🎵 Music Recommendations</h4>
+            <p>Recommend tracks based on content similarity</p>
+          </div>
+          <div class="use-case-card">
+            <h4>📚 Content Discovery</h4>
+            <p>Find related educational content or projects</p>
+          </div>
+          <div class="use-case-card">
+            <h4>🤖 Semantic Search</h4>
+            <p>Search by meaning, not exact matches</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Implementation Example</h3>
+        <pre class="code-example">
+-- 1. Create embeddings table for battle submissions
+CREATE TABLE battle_submission_embeddings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  submission_id UUID REFERENCES battle_submissions(id),
+  bars_text TEXT,
+  embedding vector(1536),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 2. Create index for fast similarity search
+CREATE INDEX battle_embedding_idx
+  ON battle_submission_embeddings
+  USING ivfflat (embedding vector_cosine_ops)
+  WITH (lists = 100);
+
+-- 3. Store embedding (generated via OpenAI API)
+INSERT INTO battle_submission_embeddings (submission_id, bars_text, embedding)
+VALUES (
+  'submission-uuid',
+  'Your bars here...',
+  '[0.123, -0.456, ...]'::vector  -- From OpenAI embeddings API
+);
+
+-- 4. Find similar bars
+SELECT
+  s.bars_text,
+  e.embedding <=> $1::vector AS similarity_score
+FROM battle_submission_embeddings e
+JOIN battle_submissions s ON e.submission_id = s.id
+ORDER BY similarity_score
+LIMIT 10;
+        </pre>
+      </div>
+    </div>
+
+    <!-- Scheduled Jobs Tab -->
+    <div class="tab-content" id="tab-jobs">
+      <h2>Scheduled Database Jobs</h2>
+
+      <div class="section">
+        <h3>Job Ideas for WorldBridge One</h3>
+
+        <div class="job-grid">
+          <div class="job-card">
+            <h4>Weekly Airdrop Distribution</h4>
+            <p>Every Monday at 00:00 UTC</p>
+            <pre>SELECT cron.schedule(
+  'weekly-airdrops',
+  '0 0 * * 1',
+  $$SELECT activate_weekly_airdrops();$$
+);</pre>
+          </div>
+
+          <div class="job-card">
+            <h4>Battle Timeout Checker</h4>
+            <p>Every hour, forfeit overdue submissions</p>
+            <pre>SELECT cron.schedule(
+  'battle-timeouts',
+  '0 * * * *',
+  $$SELECT check_battle_timeouts();$$
+);</pre>
+          </div>
+
+          <div class="job-card">
+            <h4>Impact Metrics Update</h4>
+            <p>Daily at 01:00 UTC</p>
+            <pre>SELECT cron.schedule(
+  'daily-impact-calc',
+  '0 1 * * *',
+  $$SELECT calculate_daily_impact();$$
+);</pre>
+          </div>
+
+          <div class="job-card">
+            <h4>Notification Cleanup</h4>
+            <p>Weekly, delete old read notifications</p>
+            <pre>SELECT cron.schedule(
+  'notification-cleanup',
+  '0 2 * * 0',
+  $$DELETE FROM notifications
+     WHERE is_read = true
+     AND created_at < NOW() - INTERVAL '30 days';$$
+);</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Manage Jobs</h3>
+        <pre class="code-example">
+-- List all scheduled jobs
+SELECT * FROM cron.job;
+
+-- Unschedule a job
+SELECT cron.unschedule('weekly-airdrops');
+
+-- View job run history
+SELECT * FROM cron.job_run_details
+ORDER BY start_time DESC
+LIMIT 10;
+        </pre>
+      </div>
+    </div>
+
+    <!-- Geographic Data Tab -->
+    <div class="tab-content" id="tab-geo">
+      <h2>Geographic Data (PostGIS)</h2>
+
+      <div class="section">
+        <h3>Use Cases</h3>
+        <ul>
+          <li><strong>Garden Locations</strong> - Store and query community garden coordinates</li>
+          <li><strong>Event Venues</strong> - Find nearby events based on location</li>
+          <li><strong>Impact Mapping</strong> - Visualize Kakuma camp projects on a map</li>
+          <li><strong>Resource Distribution</strong> - Optimize delivery routes</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>Implementation</h3>
+        <pre class="code-example">
+-- Add location column to gardens
+ALTER TABLE gardens
+ADD COLUMN location GEOGRAPHY(POINT, 4326);
+
+-- Create spatial index
+CREATE INDEX gardens_location_idx
+  ON gardens
+  USING GIST (location);
+
+-- Insert garden with coordinates (Kakuma Camp)
+UPDATE gardens
+SET location = ST_SetSRID(ST_MakePoint(34.813, 3.121), 4326)
+WHERE name = 'Kakuma Victory Garden';
+
+-- Find gardens within 5km of a point
+SELECT
+  name,
+  ST_Distance(location, ST_SetSRID(ST_MakePoint(34.8, 3.1), 4326)) / 1000 AS distance_km
+FROM gardens
+WHERE ST_DWithin(
+  location,
+  ST_SetSRID(ST_MakePoint(34.8, 3.1), 4326),
+  5000  -- 5km in meters
+)
+ORDER BY distance_km;
+
+-- Find nearest garden to a location
+SELECT name, location
+FROM gardens
+ORDER BY location <-> ST_SetSRID(ST_MakePoint(34.813, 3.121), 4326)
+LIMIT 1;
+        </pre>
+      </div>
+    </div>
+
+    <!-- Setup Instructions -->
+    <div class="section">
+      <h2>🚀 Getting Started with Nile</h2>
+
+      <div class="setup-steps">
+        <div class="step">
+          <h3>1. Sign up for Nile</h3>
+          <p>Visit <a href="https://thenile.dev" target="_blank">thenile.dev</a> and create an account</p>
+        </div>
+
+        <div class="step">
+          <h3>2. Create Database</h3>
+          <p>Create a new Nile database from the dashboard</p>
+        </div>
+
+        <div class="step">
+          <h3>3. Get Connection String</h3>
+          <pre>postgresql://user:password@db.thenile.dev:5432/your_db</pre>
+        </div>
+
+        <div class="step">
+          <h3>4. Add to Environment</h3>
+          <pre>
+# .env
+NILE_POSTGRES_URL=your_connection_string_here
+NILE_API_KEY=your_api_key_here
+          </pre>
+        </div>
+
+        <div class="step">
+          <h3>5. Install Extensions</h3>
+          <pre>
+-- Run in Nile SQL console
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+CREATE EXTENSION IF NOT EXISTS postgis;
+          </pre>
+        </div>
+
+        <div class="step">
+          <h3>6. Test Connection</h3>
+          <p>Use this admin panel to verify connection and run queries</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .admin-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .admin-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--color-gray-600);
+    margin-bottom: 1rem;
+  }
+
+  .db-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-gray-100);
+    border-radius: 20px;
+  }
+
+  .status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-gray-400);
+  }
+
+  .notice-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    border-left: 4px solid var(--color-success);
+  }
+
+  .notice-card h2 {
+    margin-top: 0;
+  }
+
+  .config-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  .config-section h3 {
+    margin-top: 0;
+  }
+
+  .config-section ul {
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+
+  .config-section li {
+    margin: 0.5rem 0;
+  }
+
+  .env-example {
+    background: var(--color-gray-900);
+    color: #a5f3fc;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--color-gray-200);
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--color-gray-600);
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab-btn:hover {
+    color: var(--color-success);
+  }
+
+  .tab-btn.active {
+    color: var(--color-success);
+    border-bottom-color: var(--color-success);
+  }
+
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.3s;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+  }
+
+  .section h3 {
+    margin-top: 0;
+  }
+
+  .extension-grid,
+  .use-case-grid,
+  .job-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .extension-card,
+  .use-case-card,
+  .job-card {
+    background: var(--color-gray-50);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--color-success);
+  }
+
+  .extension-card h3,
+  .use-case-card h4,
+  .job-card h4 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .extension-status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-gray-200);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    margin: 0.5rem 0;
+  }
+
+  .code-example {
+    background: var(--color-gray-900);
+    color: #a5f3fc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .tenant-example,
+  .job-card pre {
+    margin-top: 1rem;
+  }
+
+  .setup-steps {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .step {
+    background: var(--color-gray-50);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--color-success);
+  }
+
+  .step h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-success-dark);
+  }
+
+  .step pre {
+    background: var(--color-gray-900);
+    color: #a5f3fc;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+</style>
+
+<script>
+  // Setup tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabName = btn.dataset.tab;
+
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+    });
+  });
+
+  function installExtension(name) {
+    alert(`Installing ${name} extension - To be implemented when Nile DB is configured`);
+  }
+
+  window.installExtension = installExtension;
+</script>
+</BaseLayout>

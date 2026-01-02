@@ -121,6 +121,13 @@
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
+// Generate static paths - returns placeholder, real data fetched client-side
+export function getStaticPaths() {
+  return [
+    { params: { id: 'placeholder' } }
+  ];
+}
+
 // Get track ID from URL
 const { id } = Astro.params;
 

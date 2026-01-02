@@ -19,9 +19,13 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   favorite_animals JSONB DEFAULT '[]'::jsonb,
   theme_preference VARCHAR(20) DEFAULT 'meadow',
   notification_settings JSONB DEFAULT '{"email": false, "browser": false}'::jsonb,
-  
+
   -- NFT Collection
   owned_nfts JSONB DEFAULT '[]'::jsonb,
+
+  -- Gamification Fields
+  level INTEGER DEFAULT 1,
+  xp INTEGER DEFAULT 0,
   
   -- Timestamps
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

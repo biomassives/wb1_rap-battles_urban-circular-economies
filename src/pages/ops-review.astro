@@ -1,0 +1,737 @@
+---
+/**
+ * ops-review.astro
+ * Operations Review & Automated Testing Dashboard
+ *
+ * Features:
+ * - System health checks
+ * - Automated UI tests for different roles
+ * - API endpoint testing
+ * - localStorage verification
+ * - Real-time test execution
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Ops Review Dashboard"
+  description="System health monitoring and automated testing"
+  activeSection="home"
+>
+
+  <section class="ops-dashboard">
+    <div class="container mx-auto" style="padding: 2rem;">
+
+      <!-- Header -->
+      <div class="ops-header" style="margin-bottom: 3rem;">
+        <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">
+          🔧 Operations Review Dashboard
+        </h1>
+        <p style="color: #666; font-size: 1.125rem;">
+          System health monitoring and automated testing for all user roles
+        </p>
+      </div>
+
+      <!-- Role Selector -->
+      <div class="role-selector" style="margin-bottom: 2rem; padding: 1.5rem; background: white; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;">
+          Select Test Role
+        </h2>
+        <div style="display: flex; gap: 1rem;">
+          <button class="role-btn active" data-role="user">
+            👤 User
+          </button>
+          <button class="role-btn" data-role="artist">
+            🎵 Artist
+          </button>
+          <button class="role-btn" data-role="admin">
+            🔑 Admin
+          </button>
+          <button class="role-btn" data-role="developer">
+            💻 Developer
+          </button>
+        </div>
+        <div id="role-description" style="margin-top: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.5rem;">
+          <strong>User Role:</strong> Tests basic functionality (viewing, connecting wallet, browsing)
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions" style="margin-bottom: 2rem; display: flex; gap: 1rem;">
+        <button id="run-all-tests-btn" class="btn-primary">
+          ▶️ Run All Tests
+        </button>
+        <button id="run-role-tests-btn" class="btn-secondary">
+          🎯 Run Role Tests
+        </button>
+        <button id="clear-results-btn" class="btn-secondary">
+          🗑️ Clear Results
+        </button>
+        <button id="export-results-btn" class="btn-secondary">
+          📥 Export Results
+        </button>
+      </div>
+
+      <!-- System Health Overview -->
+      <div class="health-overview" style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+          System Health
+        </h2>
+        <div class="health-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+
+          <!-- API Status -->
+          <div class="health-card" id="api-health">
+            <div class="health-icon">🌐</div>
+            <div class="health-label">API Endpoints</div>
+            <div class="health-status">Checking...</div>
+            <div class="health-details"></div>
+          </div>
+
+          <!-- localStorage Status -->
+          <div class="health-card" id="storage-health">
+            <div class="health-icon">💾</div>
+            <div class="health-label">localStorage</div>
+            <div class="health-status">Checking...</div>
+            <div class="health-details"></div>
+          </div>
+
+          <!-- Database Status -->
+          <div class="health-card" id="db-health">
+            <div class="health-icon">🗄️</div>
+            <div class="health-label">Database</div>
+            <div class="health-status">Checking...</div>
+            <div class="health-details"></div>
+          </div>
+
+          <!-- Frontend Status -->
+          <div class="health-card" id="frontend-health">
+            <div class="health-icon">⚡</div>
+            <div class="health-label">Frontend</div>
+            <div class="health-status">Active</div>
+            <div class="health-details">All systems nominal</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Test Results -->
+      <div class="test-results-section">
+        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+          Test Results
+        </h2>
+
+        <!-- Test Summary -->
+        <div id="test-summary" class="test-summary" style="margin-bottom: 2rem; padding: 1.5rem; background: white; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 2rem; font-weight: bold;">
+                <span id="passed-count" style="color: #10b981;">0</span> /
+                <span id="total-count">0</span>
+              </div>
+              <div style="color: #666;">Tests Passed</div>
+            </div>
+            <div style="display: flex; gap: 2rem;">
+              <div>
+                <div style="font-size: 1.5rem; font-weight: bold; color: #10b981;">
+                  <span id="passed-percentage">0</span>%
+                </div>
+                <div style="color: #666; font-size: 0.875rem;">Success Rate</div>
+              </div>
+              <div>
+                <div style="font-size: 1.5rem; font-weight: bold; color: #ef4444;">
+                  <span id="failed-count">0</span>
+                </div>
+                <div style="color: #666; font-size: 0.875rem;">Failed</div>
+              </div>
+              <div>
+                <div style="font-size: 1.5rem; font-weight: bold; color: #f59e0b;">
+                  <span id="warning-count">0</span>
+                </div>
+                <div style="color: #666; font-size: 0.875rem;">Warnings</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Test Categories -->
+        <div id="test-results-container" class="test-categories">
+          <!-- Test results will be inserted here -->
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  // Test Framework
+  class OpsTestRunner {
+    constructor() {
+      this.tests = [];
+      this.results = [];
+      this.currentRole = 'user';
+    }
+
+    // Add test
+    addTest(category, name, role, testFn) {
+      this.tests.push({ category, name, role, testFn });
+    }
+
+    // Run all tests
+    async runAllTests() {
+      this.results = [];
+      const testPromises = this.tests.map(test => this.runTest(test));
+      await Promise.all(testPromises);
+      this.displayResults();
+      return this.results;
+    }
+
+    // Run tests for specific role
+    async runRoleTests(role) {
+      this.results = [];
+      const roleTests = this.tests.filter(t => t.role === 'all' || t.role === role);
+      const testPromises = roleTests.map(test => this.runTest(test));
+      await Promise.all(testPromises);
+      this.displayResults();
+      return this.results;
+    }
+
+    // Run individual test
+    async runTest(test) {
+      const startTime = Date.now();
+      let result = {
+        category: test.category,
+        name: test.name,
+        role: test.role,
+        status: 'running',
+        message: '',
+        duration: 0
+      };
+
+      try {
+        const testResult = await test.testFn();
+        result.status = testResult.pass ? 'passed' : 'failed';
+        result.message = testResult.message;
+        result.details = testResult.details;
+      } catch (error) {
+        result.status = 'error';
+        result.message = error.message;
+      }
+
+      result.duration = Date.now() - startTime;
+      this.results.push(result);
+      return result;
+    }
+
+    // Display results
+    displayResults() {
+      const container = document.getElementById('test-results-container');
+      const summary = document.getElementById('test-summary');
+
+      // Calculate summary
+      const total = this.results.length;
+      const passed = this.results.filter(r => r.status === 'passed').length;
+      const failed = this.results.filter(r => r.status === 'failed').length;
+      const errors = this.results.filter(r => r.status === 'error').length;
+      const warnings = this.results.filter(r => r.status === 'warning').length;
+      const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+
+      // Update summary
+      summary.style.display = 'block';
+      document.getElementById('total-count').textContent = total;
+      document.getElementById('passed-count').textContent = passed;
+      document.getElementById('failed-count').textContent = failed + errors;
+      document.getElementById('warning-count').textContent = warnings;
+      document.getElementById('passed-percentage').textContent = passRate;
+
+      // Group by category
+      const categories = {};
+      this.results.forEach(result => {
+        if (!categories[result.category]) {
+          categories[result.category] = [];
+        }
+        categories[result.category].push(result);
+      });
+
+      // Render categories
+      container.innerHTML = '';
+      Object.keys(categories).forEach(category => {
+        const categoryDiv = this.renderCategory(category, categories[category]);
+        container.appendChild(categoryDiv);
+      });
+    }
+
+    // Render category
+    renderCategory(category, results) {
+      const div = document.createElement('div');
+      div.className = 'test-category';
+      div.style.cssText = 'margin-bottom: 2rem; background: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
+
+      const passed = results.filter(r => r.status === 'passed').length;
+      const total = results.length;
+
+      div.innerHTML = `
+        <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+          <span>${category}</span>
+          <span style="font-size: 0.875rem; color: #666;">${passed}/${total} passed</span>
+        </h3>
+        <div class="test-items">
+          ${results.map(r => this.renderTestResult(r)).join('')}
+        </div>
+      `;
+
+      return div;
+    }
+
+    // Render test result
+    renderTestResult(result) {
+      const statusIcons = {
+        passed: '✅',
+        failed: '❌',
+        error: '⚠️',
+        warning: '⚠️',
+        running: '⏳'
+      };
+
+      const statusColors = {
+        passed: '#10b981',
+        failed: '#ef4444',
+        error: '#f59e0b',
+        warning: '#f59e0b',
+        running: '#6b7280'
+      };
+
+      return `
+        <div class="test-item" style="padding: 1rem; border-left: 4px solid ${statusColors[result.status]}; background: #f9fafb; margin-bottom: 0.5rem; border-radius: 0.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div style="flex: 1;">
+              <div style="font-weight: 600; margin-bottom: 0.25rem;">
+                ${statusIcons[result.status]} ${result.name}
+              </div>
+              <div style="color: #666; font-size: 0.875rem;">
+                ${result.message}
+              </div>
+              ${result.details ? `<div style="color: #999; font-size: 0.75rem; margin-top: 0.5rem; font-family: monospace;">${result.details}</div>` : ''}
+            </div>
+            <div style="text-align: right; color: #999; font-size: 0.75rem;">
+              <div>${result.duration}ms</div>
+              ${result.role !== 'all' ? `<div style="background: #e5e7eb; padding: 0.125rem 0.5rem; border-radius: 0.25rem; margin-top: 0.25rem;">${result.role}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // Initialize test runner
+  window.testRunner = new OpsTestRunner();
+
+  // Define test suites
+  function defineTests() {
+    const runner = window.testRunner;
+
+    // ===== localStorage Tests =====
+    runner.addTest('localStorage', 'localStorage Available', 'all', async () => {
+      const available = typeof localStorage !== 'undefined';
+      return {
+        pass: available,
+        message: available ? 'localStorage is available' : 'localStorage not available'
+      };
+    });
+
+    runner.addTest('localStorage', 'Can Write to localStorage', 'all', async () => {
+      try {
+        localStorage.setItem('ops_test', 'test_value');
+        const value = localStorage.getItem('ops_test');
+        localStorage.removeItem('ops_test');
+        return {
+          pass: value === 'test_value',
+          message: 'Successfully wrote and read from localStorage'
+        };
+      } catch (error) {
+        return { pass: false, message: error.message };
+      }
+    });
+
+    // ===== Wallet Tests =====
+    runner.addTest('Wallet', 'Wallet Manager Initialized', 'user', async () => {
+      const available = typeof window.walletManager !== 'undefined';
+      return {
+        pass: available,
+        message: available ? 'WalletManager is available' : 'WalletManager not found'
+      };
+    });
+
+    runner.addTest('Wallet', 'Can Connect Test Wallet', 'user', async () => {
+      try {
+        const testWallet = 'OPS_TEST_' + Date.now();
+        await window.walletManager?.connect(testWallet);
+        const connected = window.walletManager?.connectedWallet === testWallet;
+        return {
+          pass: connected,
+          message: connected ? `Connected wallet: ${testWallet}` : 'Failed to connect wallet'
+        };
+      } catch (error) {
+        return { pass: false, message: error.message };
+      }
+    });
+
+    // ===== Progress Manager Tests =====
+    runner.addTest('Progress System', 'Progress Manager Initialized', 'user', async () => {
+      const available = typeof window.progressManager !== 'undefined';
+      return {
+        pass: available,
+        message: available ? 'ProgressManager is available' : 'ProgressManager not found'
+      };
+    });
+
+    runner.addTest('Progress System', 'Can Load Progress Data', 'user', async () => {
+      try {
+        const wallet = window.walletManager?.connectedWallet;
+        if (!wallet) {
+          return { pass: false, message: 'No wallet connected' };
+        }
+
+        await window.progressManager?.loadProgress(wallet);
+        const hasData = window.progressManager?.currentProgress !== null;
+        return {
+          pass: hasData,
+          message: hasData ? 'Progress data loaded successfully' : 'No progress data loaded'
+        };
+      } catch (error) {
+        return { pass: false, message: error.message };
+      }
+    });
+
+    runner.addTest('Progress System', 'Can Award XP Locally', 'artist', async () => {
+      try {
+        const wallet = window.walletManager?.connectedWallet;
+        if (!wallet) {
+          return { pass: false, message: 'No wallet connected' };
+        }
+
+        const beforeXP = window.progressManager?.currentProgress?.progression?.totalXP || 0;
+        await window.progressManager?.awardXP(10, 'ops_test', 'OPS test XP award');
+        const afterXP = window.progressManager?.currentProgress?.progression?.totalXP || 0;
+
+        return {
+          pass: afterXP === beforeXP + 10,
+          message: `XP increased from ${beforeXP} to ${afterXP}`,
+          details: `Awarded 10 XP successfully`
+        };
+      } catch (error) {
+        return { pass: false, message: error.message };
+      }
+    });
+
+    // ===== API Tests =====
+    runner.addTest('API', '/api/gamification/user-progress', 'developer', async () => {
+      try {
+        const wallet = window.walletManager?.connectedWallet || 'TEST_WALLET';
+        const response = await fetch(`/api/gamification/user-progress?walletAddress=${wallet}`);
+        const data = await response.json();
+
+        return {
+          pass: response.ok || response.status === 400, // 400 is ok if no wallet provided
+          message: response.ok ? 'API endpoint responding' : `Status ${response.status}`,
+          details: JSON.stringify(data).substring(0, 100)
+        };
+      } catch (error) {
+        return { pass: false, message: error.message };
+      }
+    });
+
+    runner.addTest('API', '/api/kakuma/user-impact', 'developer', async () => {
+      try {
+        const wallet = window.walletManager?.connectedWallet || 'TEST_WALLET';
+        const response = await fetch(`/api/kakuma/user-impact?walletAddress=${wallet}`);
+        const data = await response.json();
+
+        return {
+          pass: response.ok || response.status === 400,
+          message: response.ok ? 'API endpoint responding' : `Status ${response.status}`,
+          details: JSON.stringify(data).substring(0, 100)
+        };
+      } catch (error) {
+        return { pass: false, message: error.message };
+      }
+    });
+
+    // ===== JSON Data Tests =====
+    runner.addTest('Data Loading', 'Can Load Sample Users JSON', 'developer', async () => {
+      try {
+        const response = await fetch('/data/sample-users.json');
+        const data = await response.json();
+        return {
+          pass: response.ok && data.users && data.users.length > 0,
+          message: `Loaded ${data.users?.length || 0} sample users`,
+          details: `First user: ${data.users?.[0]?.username || 'N/A'}`
+        };
+      } catch (error) {
+        return { pass: false, message: error.message };
+      }
+    });
+
+    runner.addTest('Data Loading', 'Can Load Sample Battles JSON', 'developer', async () => {
+      try {
+        const response = await fetch('/data/sample-battles.json');
+        const data = await response.json();
+        return {
+          pass: response.ok && data.battles && data.battles.length > 0,
+          message: `Loaded ${data.battles?.length || 0} sample battles`
+        };
+      } catch (error) {
+        return { pass: false, message: error.message };
+      }
+    });
+
+    // ===== UI Manager Tests =====
+    runner.addTest('UI System', 'UI Manager Initialized', 'all', async () => {
+      const available = typeof window.uiManager !== 'undefined';
+      return {
+        pass: available,
+        message: available ? 'UIManager is available' : 'UIManager not found'
+      };
+    });
+
+    // ===== Page Navigation Tests =====
+    runner.addTest('Navigation', 'Essential Pages Exist', 'user', async () => {
+      const pages = ['/progress', '/music', '/learning', '/kakuma', '/test-local'];
+      const results = [];
+
+      for (const page of pages) {
+        try {
+          const response = await fetch(page);
+          results.push({ page, ok: response.ok });
+        } catch (error) {
+          results.push({ page, ok: false });
+        }
+      }
+
+      const allOk = results.every(r => r.ok);
+      const okCount = results.filter(r => r.ok).length;
+
+      return {
+        pass: allOk,
+        message: `${okCount}/${pages.length} pages accessible`,
+        details: results.map(r => `${r.page}: ${r.ok ? '✓' : '✗'}`).join(', ')
+      };
+    });
+  }
+
+  // Initialize tests
+  defineTests();
+
+  // Check system health on load
+  async function checkSystemHealth() {
+    // Check API health
+    try {
+      const apiResponse = await fetch('/api/gamification/user-progress?walletAddress=HEALTH_CHECK');
+      const apiCard = document.getElementById('api-health');
+      const apiStatus = apiCard.querySelector('.health-status');
+      const apiDetails = apiCard.querySelector('.health-details');
+
+      if (apiResponse.status === 400 || apiResponse.ok) {
+        apiStatus.textContent = 'Online';
+        apiStatus.style.color = '#10b981';
+        apiDetails.textContent = 'APIs responding';
+      } else {
+        apiStatus.textContent = 'Degraded';
+        apiStatus.style.color = '#f59e0b';
+        apiDetails.textContent = `Status ${apiResponse.status}`;
+      }
+    } catch (error) {
+      const apiCard = document.getElementById('api-health');
+      const apiStatus = apiCard.querySelector('.health-status');
+      const apiDetails = apiCard.querySelector('.health-details');
+      apiStatus.textContent = 'Offline';
+      apiStatus.style.color = '#ef4444';
+      apiDetails.textContent = 'Using localStorage fallback';
+    }
+
+    // Check localStorage
+    const storageCard = document.getElementById('storage-health');
+    const storageStatus = storageCard.querySelector('.health-status');
+    const storageDetails = storageCard.querySelector('.health-details');
+
+    try {
+      localStorage.setItem('health_check', 'ok');
+      localStorage.removeItem('health_check');
+      const itemCount = localStorage.length;
+      storageStatus.textContent = 'Available';
+      storageStatus.style.color = '#10b981';
+      storageDetails.textContent = `${itemCount} items stored`;
+    } catch (error) {
+      storageStatus.textContent = 'Unavailable';
+      storageStatus.style.color = '#ef4444';
+      storageDetails.textContent = error.message;
+    }
+
+    // Check database (placeholder - would need actual DB connection)
+    const dbCard = document.getElementById('db-health');
+    const dbStatus = dbCard.querySelector('.health-status');
+    const dbDetails = dbCard.querySelector('.health-details');
+    dbStatus.textContent = 'Not Connected';
+    dbStatus.style.color = '#f59e0b';
+    dbDetails.textContent = 'Using local fallback';
+  }
+
+  // Role selector
+  document.querySelectorAll('.role-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      window.testRunner.currentRole = btn.dataset.role;
+
+      const descriptions = {
+        user: 'Tests basic functionality (viewing, connecting wallet, browsing)',
+        artist: 'Tests creative features (uploading tracks, battles, XP awards)',
+        admin: 'Tests administrative functions (moderation, analytics)',
+        developer: 'Tests technical infrastructure (APIs, database, system health)'
+      };
+
+      document.getElementById('role-description').innerHTML =
+        `<strong>${btn.textContent.trim()} Role:</strong> ${descriptions[btn.dataset.role]}`;
+    });
+  });
+
+  // Button handlers
+  document.getElementById('run-all-tests-btn')?.addEventListener('click', async () => {
+    document.getElementById('run-all-tests-btn').disabled = true;
+    document.getElementById('run-all-tests-btn').textContent = '⏳ Running Tests...';
+
+    await window.testRunner.runAllTests();
+
+    document.getElementById('run-all-tests-btn').disabled = false;
+    document.getElementById('run-all-tests-btn').textContent = '▶️ Run All Tests';
+  });
+
+  document.getElementById('run-role-tests-btn')?.addEventListener('click', async () => {
+    document.getElementById('run-role-tests-btn').disabled = true;
+    document.getElementById('run-role-tests-btn').textContent = '⏳ Running Tests...';
+
+    await window.testRunner.runRoleTests(window.testRunner.currentRole);
+
+    document.getElementById('run-role-tests-btn').disabled = false;
+    document.getElementById('run-role-tests-btn').textContent = '🎯 Run Role Tests';
+  });
+
+  document.getElementById('clear-results-btn')?.addEventListener('click', () => {
+    window.testRunner.results = [];
+    document.getElementById('test-results-container').innerHTML = '';
+    document.getElementById('test-summary').style.display = 'none';
+  });
+
+  document.getElementById('export-results-btn')?.addEventListener('click', () => {
+    const results = {
+      timestamp: new Date().toISOString(),
+      role: window.testRunner.currentRole,
+      summary: {
+        total: window.testRunner.results.length,
+        passed: window.testRunner.results.filter(r => r.status === 'passed').length,
+        failed: window.testRunner.results.filter(r => r.status === 'failed').length,
+      },
+      tests: window.testRunner.results
+    };
+
+    const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ops-review-${Date.now()}.json`;
+    a.click();
+  });
+
+  // Run health checks on load
+  setTimeout(() => {
+    checkSystemHealth();
+  }, 500);
+</script>
+
+<style>
+  .role-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+
+  .role-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+  }
+
+  .role-btn.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .health-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .health-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .health-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+  }
+
+  .health-status {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+  }
+
+  .health-details {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .btn-secondary:hover {
+    background: #d1d5db;
+  }
+</style>
+

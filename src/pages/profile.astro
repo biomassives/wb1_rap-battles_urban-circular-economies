@@ -670,14 +670,41 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     async initialize() {
       const walletAddress = window.walletManager?.connectedWallet;
+      const isAnonymous = window.walletManager?.isAnonymous;
+
       if (!walletAddress) {
+        // This shouldn't happen since WalletManager creates anonymous wallet
+        // But if it does, redirect to home
         window.location.href = '/';
         return;
       }
 
+      // Show anonymous user notice if applicable
+      if (isAnonymous) {
+        this.showAnonymousNotice();
+      }
+
       await this.loadUserProfile(walletAddress);
-      this.populateFormss();
+      this.populateForms();
       this.setupEventListeners();
+    }
+
+    showAnonymousNotice() {
+      const notice = document.createElement('div');
+      notice.className = 'anonymous-profile-notice';
+      notice.innerHTML = `
+        <div class="notice-content">
+          <span class="notice-icon">👤</span>
+          <div class="notice-text">
+            <strong>Anonymous Profile</strong>
+            <p>Your progress is saved locally. Connect a wallet to sync across devices!</p>
+          </div>
+        </div>
+      `;
+      const container = document.querySelector('.profile-container');
+      if (container) {
+        container.insertBefore(notice, container.firstChild);
+      }
     }
 
     async loadUserProfile(walletAddress) {

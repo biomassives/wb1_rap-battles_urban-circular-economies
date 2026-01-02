@@ -1,0 +1,893 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Supabase Admin & Testing">
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>🗄️ Supabase Database Admin</h1>
+      <p class="subtitle">Database testing, monitoring, and management</p>
+      <div class="db-status" id="db-status">
+        <span class="status-indicator"></span>
+        <span class="status-text">Checking connection...</span>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <h3 id="total-users">-</h3>
+          <p>Total Users</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👤</div>
+        <div class="stat-info">
+          <h3 id="anonymous-users">-</h3>
+          <p>Anonymous Users</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🎁</div>
+        <div class="stat-info">
+          <h3 id="total-airdrops">-</h3>
+          <p>Active Airdrops</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚔️</div>
+        <div class="stat-info">
+          <h3 id="total-battles">-</h3>
+          <p>Battles</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tables">📊 Tables</button>
+      <button class="tab-btn" data-tab="query">🔍 Query Runner</button>
+      <button class="tab-btn" data-tab="airdrops">🎁 Airdrops</button>
+      <button class="tab-btn" data-tab="users">👥 Users</button>
+      <button class="tab-btn" data-tab="achievements">🏆 Achievements</button>
+      <button class="tab-btn" data-tab="test">🧪 Tests</button>
+    </div>
+
+    <!-- Tables Tab -->
+    <div class="tab-content active" id="tab-tables">
+      <h2>Database Tables</h2>
+      <div class="table-list" id="table-list">
+        <p>Loading tables...</p>
+      </div>
+
+      <div class="table-viewer" id="table-viewer" style="display: none;">
+        <div class="table-viewer-header">
+          <h3 id="current-table-name">Table Data</h3>
+          <button class="btn-secondary btn-sm" onclick="document.getElementById('table-viewer').style.display='none'">Close</button>
+        </div>
+        <div class="table-data" id="table-data"></div>
+      </div>
+    </div>
+
+    <!-- Query Runner Tab -->
+    <div class="tab-content" id="tab-query">
+      <h2>SQL Query Runner</h2>
+      <div class="query-section">
+        <div class="query-templates">
+          <h3>Quick Queries</h3>
+          <button class="btn-secondary btn-sm" onclick="loadQuery('count-users')">Count Users</button>
+          <button class="btn-secondary btn-sm" onclick="loadQuery('active-airdrops')">Active Airdrops</button>
+          <button class="btn-secondary btn-sm" onclick="loadQuery('recent-battles')">Recent Battles</button>
+          <button class="btn-secondary btn-sm" onclick="loadQuery('top-users')">Top Users by XP</button>
+          <button class="btn-secondary btn-sm" onclick="loadQuery('achievements')">All Achievements</button>
+        </div>
+
+        <textarea
+          id="sql-query"
+          class="sql-input"
+          placeholder="Enter SQL query here...&#10;&#10;Example:&#10;SELECT * FROM users LIMIT 10;"
+          rows="8"
+        ></textarea>
+
+        <div class="query-actions">
+          <button class="btn-primary" onclick="runQuery()">▶ Run Query</button>
+          <button class="btn-secondary" onclick="clearQuery()">Clear</button>
+        </div>
+
+        <div class="query-results" id="query-results"></div>
+      </div>
+    </div>
+
+    <!-- Airdrops Tab -->
+    <div class="tab-content" id="tab-airdrops">
+      <h2>Airdrop Management</h2>
+
+      <div class="section">
+        <h3>Airdrop Templates (25)</h3>
+        <div class="template-grid" id="template-grid">
+          <p>Loading templates...</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Active Airdrops</h3>
+        <button class="btn-primary" onclick="showCreateAirdropModal()">+ Schedule New Airdrop</button>
+        <div class="airdrop-list" id="active-airdrops">
+          <p>Loading active airdrops...</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Recent Claims</h3>
+        <div class="claims-list" id="recent-claims">
+          <p>Loading claims...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div class="tab-content" id="tab-users">
+      <h2>User Management</h2>
+
+      <div class="user-actions">
+        <button class="btn-primary" onclick="createTestUser()">+ Create Test User</button>
+        <button class="btn-secondary" onclick="createAnonymousUser()">+ Create Anonymous User</button>
+        <button class="btn-secondary" onclick="awardTestXP()">Award Test XP</button>
+      </div>
+
+      <div class="section">
+        <h3>Recent Users</h3>
+        <div class="users-table" id="users-table">
+          <p>Loading users...</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>User Search</h3>
+        <input
+          type="text"
+          id="user-search"
+          class="search-input"
+          placeholder="Search by wallet address or username..."
+          onkeyup="searchUsers()"
+        />
+        <div class="search-results" id="search-results"></div>
+      </div>
+    </div>
+
+    <!-- Achievements Tab -->
+    <div class="tab-content" id="tab-achievements">
+      <h2>Achievements System</h2>
+
+      <div class="section">
+        <h3>All Achievements (8)</h3>
+        <div class="achievements-grid" id="achievements-grid">
+          <p>Loading achievements...</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Recent Unlocks</h3>
+        <div class="unlocks-list" id="recent-unlocks">
+          <p>Loading recent unlocks...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tests Tab -->
+    <div class="tab-content" id="tab-test">
+      <h2>System Tests</h2>
+
+      <div class="test-section">
+        <h3>Migration Verification</h3>
+        <button class="btn-primary" onclick="runMigrationTests()">Run Migration Tests</button>
+        <div class="test-results" id="migration-test-results"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>Anonymous Wallet Flow</h3>
+        <button class="btn-primary" onclick="testAnonymousFlow()">Test Anonymous Wallet</button>
+        <div class="test-results" id="anonymous-test-results"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>XP Award System</h3>
+        <button class="btn-primary" onclick="testXPAward()">Test XP Award Function</button>
+        <div class="test-results" id="xp-test-results"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>Database Functions</h3>
+        <button class="btn-primary" onclick="testFunctions()">Test All Functions</button>
+        <div class="test-results" id="functions-test-results"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Airdrop Modal -->
+  <div id="create-airdrop-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Schedule New Airdrop</h3>
+        <button class="btn-close" onclick="closeCreateAirdropModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Template:</label>
+          <select id="airdrop-template" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label>Start Date:</label>
+          <input type="datetime-local" id="airdrop-start" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>End Date:</label>
+          <input type="datetime-local" id="airdrop-end" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>Max Claims:</label>
+          <input type="number" id="airdrop-max-claims" class="form-control" value="1000" />
+        </div>
+        <div class="form-group">
+          <label>Bonus Multiplier:</label>
+          <input type="number" id="airdrop-bonus" class="form-control" value="1.0" step="0.1" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="createAirdrop()">Create Airdrop</button>
+        <button class="btn-secondary" onclick="closeCreateAirdropModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .admin-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .admin-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--color-gray-600);
+    margin-bottom: 1rem;
+  }
+
+  .db-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-gray-100);
+    border-radius: 20px;
+    margin-top: 1rem;
+  }
+
+  .status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-gray-400);
+    animation: pulse 2s infinite;
+  }
+
+  .db-status.connected .status-indicator {
+    background: var(--color-success);
+  }
+
+  .db-status.error .status-indicator {
+    background: var(--color-error);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+  }
+
+  .stat-info h3 {
+    font-size: 2rem;
+    margin: 0;
+    color: var(--color-primary);
+  }
+
+  .stat-info p {
+    margin: 0;
+    color: var(--color-gray-600);
+    font-size: 0.9rem;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--color-gray-200);
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--color-gray-600);
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab-btn:hover {
+    color: var(--color-primary);
+  }
+
+  .tab-btn.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.3s;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+  }
+
+  .section h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--color-gray-800);
+  }
+
+  .table-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .table-item {
+    background: var(--color-gray-50);
+    padding: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+
+  .table-item:hover {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+  }
+
+  .table-item h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-gray-800);
+  }
+
+  .table-item p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-gray-600);
+  }
+
+  .sql-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid var(--color-gray-300);
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    margin: 1rem 0;
+    resize: vertical;
+  }
+
+  .query-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .query-results {
+    background: var(--color-gray-50);
+    padding: 1.5rem;
+    border-radius: 8px;
+    max-height: 500px;
+    overflow: auto;
+  }
+
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+  }
+
+  .results-table th,
+  .results-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  .results-table th {
+    background: var(--color-gray-100);
+    font-weight: 600;
+  }
+
+  .user-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-gray-300);
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .template-grid,
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .template-card,
+  .achievement-card {
+    background: var(--color-gray-50);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--color-primary);
+  }
+
+  .template-card h4,
+  .achievement-card h4 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .template-card .rewards,
+  .achievement-card .rewards {
+    display: flex;
+    gap: 1rem;
+    margin: 0.5rem 0;
+  }
+
+  .reward-badge {
+    background: var(--color-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .test-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+  }
+
+  .test-results {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--color-gray-50);
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    max-height: 400px;
+    overflow: auto;
+  }
+
+  .test-pass {
+    color: var(--color-success);
+  }
+
+  .test-fail {
+    color: var(--color-error);
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+  }
+
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--color-gray-200);
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--color-gray-700);
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--color-gray-300);
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  .query-templates {
+    margin-bottom: 1rem;
+  }
+
+  .query-templates h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .query-templates button {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+</style>
+
+<script>
+  // Database connection status
+  let dbConnected = false;
+
+  // Initialize page
+  document.addEventListener('DOMContentLoaded', async () => {
+    await checkDatabaseConnection();
+    await loadStats();
+    await loadTables();
+    setupTabs();
+  });
+
+  // Check database connection
+  async function checkDatabaseConnection() {
+    const statusEl = document.getElementById('db-status');
+
+    try {
+      // Try a simple query
+      const response = await fetch('/api/gamification/user-progress?walletAddress=test');
+
+      if (response.ok || response.status === 404) {
+        statusEl.classList.add('connected');
+        statusEl.querySelector('.status-text').textContent = 'Database Connected';
+        dbConnected = true;
+      } else {
+        throw new Error('Connection failed');
+      }
+    } catch (error) {
+      statusEl.classList.add('error');
+      statusEl.querySelector('.status-text').textContent = 'Database Error';
+      console.error('Database connection error:', error);
+    }
+  }
+
+  // Load quick stats
+  async function loadStats() {
+    // TODO: Implement actual API calls when endpoints are ready
+    document.getElementById('total-users').textContent = '-';
+    document.getElementById('anonymous-users').textContent = '-';
+    document.getElementById('total-airdrops').textContent = '-';
+    document.getElementById('total-battles').textContent = '-';
+  }
+
+  // Load database tables
+  async function loadTables() {
+    const tables = [
+      { name: 'users', description: 'User accounts' },
+      { name: 'airdrop_templates', description: '25 reward types' },
+      { name: 'airdrops', description: 'Scheduled drops' },
+      { name: 'airdrop_claims', description: 'User claims' },
+      { name: 'collaborations', description: 'Music collabs' },
+      { name: 'tech_projects', description: 'Tech projects' },
+      { name: 'gardens', description: 'Community gardens' },
+      { name: 'mentors', description: 'Mentor profiles' },
+      { name: 'achievements', description: 'Achievement defs' },
+      { name: 'events', description: 'Platform events' },
+      { name: 'battles', description: 'Rap battles' },
+      { name: 'notifications', description: 'User notifications' }
+    ];
+
+    const tableList = document.getElementById('table-list');
+    tableList.innerHTML = tables.map(table => `
+      <div class="table-item" onclick="viewTable('${table.name}')">
+        <h4>${table.name}</h4>
+        <p>${table.description}</p>
+      </div>
+    `).join('');
+  }
+
+  // View table data
+  function viewTable(tableName) {
+    alert(`Table viewer for "${tableName}" - To be implemented with actual API`);
+  }
+
+  // Setup tab switching
+  function setupTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabName = btn.dataset.tab;
+
+        // Update buttons
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Update content
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+
+        // Load tab-specific data
+        loadTabData(tabName);
+      });
+    });
+  }
+
+  // Load data for specific tab
+  function loadTabData(tabName) {
+    switch(tabName) {
+      case 'airdrops':
+        loadAirdrops();
+        break;
+      case 'users':
+        loadUsers();
+        break;
+      case 'achievements':
+        loadAchievements();
+        break;
+    }
+  }
+
+  // Load airdrops
+  function loadAirdrops() {
+    // TODO: Implement with actual API
+    document.getElementById('template-grid').innerHTML = '<p>Loading templates...</p>';
+    document.getElementById('active-airdrops').innerHTML = '<p>No active airdrops</p>';
+    document.getElementById('recent-claims').innerHTML = '<p>No recent claims</p>';
+  }
+
+  // Load users
+  function loadUsers() {
+    // TODO: Implement with actual API
+    document.getElementById('users-table').innerHTML = '<p>Connect to database to view users</p>';
+  }
+
+  // Load achievements
+  function loadAchievements() {
+    // TODO: Implement with actual API
+    document.getElementById('achievements-grid').innerHTML = '<p>Loading achievements...</p>';
+    document.getElementById('recent-unlocks').innerHTML = '<p>No recent unlocks</p>';
+  }
+
+  // Query templates
+  const queryTemplates = {
+    'count-users': 'SELECT COUNT(*) as total FROM users;',
+    'active-airdrops': 'SELECT a.*, t.name, t.tokens, t.xp FROM airdrops a JOIN airdrop_templates t ON a.template_id = t.id WHERE a.status = \'active\';',
+    'recent-battles': 'SELECT * FROM battles ORDER BY created_at DESC LIMIT 10;',
+    'top-users': 'SELECT wallet_address, username, level, xp FROM users WHERE is_anonymous = false ORDER BY xp DESC LIMIT 10;',
+    'achievements': 'SELECT * FROM achievements ORDER BY category, rarity;'
+  };
+
+  function loadQuery(templateName) {
+    document.getElementById('sql-query').value = queryTemplates[templateName];
+  }
+
+  function runQuery() {
+    const query = document.getElementById('sql-query').value;
+    const resultsEl = document.getElementById('query-results');
+
+    resultsEl.innerHTML = `
+      <div class="test-fail">
+        ⚠️ Query execution not yet implemented<br>
+        This will execute: <pre>${query}</pre>
+      </div>
+    `;
+  }
+
+  function clearQuery() {
+    document.getElementById('sql-query').value = '';
+    document.getElementById('query-results').innerHTML = '';
+  }
+
+  // Test functions
+  function runMigrationTests() {
+    const resultsEl = document.getElementById('migration-test-results');
+    resultsEl.innerHTML = '<p>Running tests...</p>';
+
+    setTimeout(() => {
+      resultsEl.innerHTML = `
+        <div class="test-pass">✓ Migration verification test would run here</div>
+        <div>- Check tables exist</div>
+        <div>- Check 25 airdrop templates</div>
+        <div>- Check 8 achievements</div>
+        <div>- Check functions created</div>
+      `;
+    }, 500);
+  }
+
+  function testAnonymousFlow() {
+    const resultsEl = document.getElementById('anonymous-test-results');
+    resultsEl.innerHTML = '<p>Testing anonymous wallet flow...</p>';
+
+    setTimeout(() => {
+      resultsEl.innerHTML = `
+        <div class="test-pass">✓ Anonymous wallet flow test would run here</div>
+        <div>1. Create anonymous user</div>
+        <div>2. Award XP</div>
+        <div>3. Check auto-leveling</div>
+        <div>4. Claim to real wallet</div>
+      `;
+    }, 500);
+  }
+
+  function testXPAward() {
+    const resultsEl = document.getElementById('xp-test-results');
+    resultsEl.innerHTML = '<p>Testing XP award system...</p>';
+
+    setTimeout(() => {
+      resultsEl.innerHTML = `
+        <div class="test-pass">✓ XP award function test would run here</div>
+        <div>- Test award_xp() function</div>
+        <div>- Check auto-leveling trigger</div>
+        <div>- Verify life stage updates</div>
+        <div>- Verify animal mentor updates</div>
+      `;
+    }, 500);
+  }
+
+  function testFunctions() {
+    const resultsEl = document.getElementById('functions-test-results');
+    resultsEl.innerHTML = '<p>Testing database functions...</p>';
+
+    setTimeout(() => {
+      resultsEl.innerHTML = `
+        <div class="test-pass">✓ Function tests would run here</div>
+        <div>- calculate_xp_for_level()</div>
+        <div>- update_user_level()</div>
+        <div>- award_xp()</div>
+      `;
+    }, 500);
+  }
+
+  // Airdrop modal
+  function showCreateAirdropModal() {
+    document.getElementById('create-airdrop-modal').style.display = 'flex';
+  }
+
+  function closeCreateAirdropModal() {
+    document.getElementById('create-airdrop-modal').style.display = 'none';
+  }
+
+  function createAirdrop() {
+    alert('Airdrop creation - To be implemented with API');
+    closeCreateAirdropModal();
+  }
+
+  // User actions
+  function createTestUser() {
+    alert('Create test user - To be implemented with API');
+  }
+
+  function createAnonymousUser() {
+    alert('Create anonymous user - To be implemented with API');
+  }
+
+  function awardTestXP() {
+    alert('Award test XP - To be implemented with API');
+  }
+
+  function searchUsers() {
+    const query = document.getElementById('user-search').value;
+    if (query.length > 2) {
+      document.getElementById('search-results').innerHTML = `
+        <p>Searching for: ${query}</p>
+        <p>Search functionality - To be implemented with API</p>
+      `;
+    } else {
+      document.getElementById('search-results').innerHTML = '';
+    }
+  }
+
+  // Make functions global
+  window.viewTable = viewTable;
+  window.loadQuery = loadQuery;
+  window.runQuery = runQuery;
+  window.clearQuery = clearQuery;
+  window.runMigrationTests = runMigrationTests;
+  window.testAnonymousFlow = testAnonymousFlow;
+  window.testXPAward = testXPAward;
+  window.testFunctions = testFunctions;
+  window.showCreateAirdropModal = showCreateAirdropModal;
+  window.closeCreateAirdropModal = closeCreateAirdropModal;
+  window.createAirdrop = createAirdrop;
+  window.createTestUser = createTestUser;
+  window.createAnonymousUser = createAnonymousUser;
+  window.awardTestXP = awardTestXP;
+  window.searchUsers = searchUsers;
+</script>
+</BaseLayout>

@@ -1,0 +1,907 @@
+---
+/**
+ * airdrops.astro
+ * Scheduled Airdrop Rewards Dashboard
+ *
+ * 25 Quick Action Cards cycling through scheduled airdrops:
+ * - Artist Promotion Rewards
+ * - Educational Project Rewards
+ * - Mentorship Support Rewards
+ * - Event Participation Rewards
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Airdrop schedule data
+const airdropSchedule = [
+  {
+    id: 'artist-spotlight-001',
+    type: 'artist_promotion',
+    name: 'Artist Spotlight Airdrop',
+    description: 'Support emerging artists by streaming, sharing, and engaging',
+    reward: '100 tokens',
+    xp: 50,
+    startDate: '2025-01-15T00:00:00Z',
+    endDate: '2025-01-22T23:59:59Z',
+    status: 'upcoming',
+    icon: '🎤',
+    color: '#667eea'
+  },
+  {
+    id: 'edu-course-completion',
+    type: 'educational',
+    name: 'Course Completion Bonus',
+    description: 'Complete environmental science modules',
+    reward: '150 tokens',
+    xp: 75,
+    startDate: '2025-01-08T00:00:00Z',
+    endDate: '2025-01-14T23:59:59Z',
+    status: 'active',
+    icon: '📚',
+    color: '#10b981'
+  },
+  {
+    id: 'mentor-session',
+    type: 'mentorship',
+    name: 'Mentorship Milestone',
+    description: 'Attend 3 mentor sessions or mentor 3 others',
+    reward: '200 tokens',
+    xp: 100,
+    startDate: '2025-01-01T00:00:00Z',
+    endDate: '2025-01-31T23:59:59Z',
+    status: 'active',
+    icon: '🎓',
+    color: '#f59e0b'
+  }
+];
+---
+
+<BaseLayout
+  title="Airdrop Rewards"
+  description="Earn tokens and XP through scheduled airdrops"
+  activeSection="progress"
+>
+
+  <section class="airdrops-page">
+    <div class="container mx-auto" style="padding: 2rem;">
+
+      <!-- Header -->
+      <div class="page-header" style="margin-bottom: 3rem;">
+        <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">
+          🎁 Airdrop Rewards Dashboard
+        </h1>
+        <p style="color: #666; font-size: 1.125rem;">
+          Earn tokens and XP through artist promotions, education, mentorship, and events
+        </p>
+      </div>
+
+      <!-- Current Balance -->
+      <div class="balance-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 1rem; margin-bottom: 3rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Your Balance</div>
+            <div id="token-balance" style="font-size: 3rem; font-weight: bold;">0</div>
+            <div style="font-size: 0.875rem; opacity: 0.9;">Tokens</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">Total Earned</div>
+            <div id="total-earned" style="font-size: 2rem; font-weight: bold;">0</div>
+            <div style="font-size: 0.875rem; opacity: 0.9;">All Time</div>
+          </div>
+        </div>
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.2);">
+          <div style="display: flex; gap: 1rem;">
+            <button class="btn-white" onclick="window.airdropManager?.claimAll()">
+              💰 Claim All Available
+            </button>
+            <button class="btn-white-outline" onclick="window.airdropManager?.viewHistory()">
+              📜 View History
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Airdrops -->
+      <div class="section-block" style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1.5rem;">
+          🔥 Active Airdrops
+        </h2>
+        <div id="active-airdrops" class="airdrop-grid">
+          <!-- Active airdrops loaded here -->
+        </div>
+      </div>
+
+      <!-- Upcoming Airdrops -->
+      <div class="section-block" style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1.5rem;">
+          ⏰ Upcoming Airdrops
+        </h2>
+        <div id="upcoming-airdrops" class="airdrop-grid">
+          <!-- Upcoming airdrops loaded here -->
+        </div>
+      </div>
+
+      <!-- All 25 Reward Templates -->
+      <div class="section-block">
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1rem;">
+          🎯 All Reward Types (25 Templates)
+        </h2>
+        <p style="color: #666; margin-bottom: 2rem;">
+          These rewards cycle through scheduled airdrops. Complete actions to earn tokens and XP.
+        </p>
+
+        <!-- Category Tabs -->
+        <div class="category-tabs" style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+          <button class="category-tab active" data-category="all">
+            All (25)
+          </button>
+          <button class="category-tab" data-category="artist_promotion">
+            🎤 Artist (7)
+          </button>
+          <button class="category-tab" data-category="educational">
+            📚 Education (7)
+          </button>
+          <button class="category-tab" data-category="mentorship">
+            🎓 Mentorship (6)
+          </button>
+          <button class="category-tab" data-category="events">
+            🎉 Events (5)
+          </button>
+        </div>
+
+        <!-- Reward Templates Grid -->
+        <div id="all-rewards" class="rewards-template-grid">
+          <!-- All 25 reward cards loaded here -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  // All 25 Reward Templates
+  const REWARD_TEMPLATES = [
+    // ARTIST PROMOTION REWARDS (7)
+    {
+      id: 'artist-stream-boost',
+      category: 'artist_promotion',
+      name: 'Stream Boost',
+      description: 'Stream featured artist tracks 10+ times',
+      reward: '50 tokens',
+      xp: 25,
+      icon: '🎵',
+      requirements: ['10 streams', 'Featured artists only'],
+      frequency: 'Weekly'
+    },
+    {
+      id: 'artist-share-campaign',
+      category: 'artist_promotion',
+      name: 'Share Campaign',
+      description: 'Share artist profiles on social media',
+      reward: '75 tokens',
+      xp: 30,
+      icon: '📢',
+      requirements: ['3 shares', 'Tag @WorldBridgerOne'],
+      frequency: 'Bi-weekly'
+    },
+    {
+      id: 'artist-discovery',
+      category: 'artist_promotion',
+      name: 'Artist Discovery',
+      description: 'Discover and follow 5 new artists',
+      reward: '60 tokens',
+      xp: 20,
+      icon: '🔍',
+      requirements: ['5 new follows', 'Listen to at least 1 track each'],
+      frequency: 'Monthly'
+    },
+    {
+      id: 'artist-collab-support',
+      category: 'artist_promotion',
+      name: 'Collab Support',
+      description: 'Vote for collaborations or contribute ideas',
+      reward: '100 tokens',
+      xp: 40,
+      icon: '🤝',
+      requirements: ['Vote on 5 collabs', 'Or contribute to 1'],
+      frequency: 'Monthly'
+    },
+    {
+      id: 'artist-feedback',
+      category: 'artist_promotion',
+      name: 'Constructive Feedback',
+      description: 'Leave detailed feedback on artist works',
+      reward: '80 tokens',
+      xp: 35,
+      icon: '💬',
+      requirements: ['5 quality comments', 'Min 50 characters each'],
+      frequency: 'Weekly'
+    },
+    {
+      id: 'artist-playlist',
+      category: 'artist_promotion',
+      name: 'Playlist Creator',
+      description: 'Create playlists featuring platform artists',
+      reward: '120 tokens',
+      xp: 50,
+      icon: '📝',
+      requirements: ['10+ tracks', 'Min 5 different artists'],
+      frequency: 'Monthly'
+    },
+    {
+      id: 'artist-battle-spectator',
+      category: 'artist_promotion',
+      name: 'Battle Spectator',
+      description: 'Watch and engage with rap battles',
+      reward: '40 tokens',
+      xp: 15,
+      icon: '⚔️',
+      requirements: ['Watch 3 battles', 'Vote on outcomes'],
+      frequency: 'Weekly'
+    },
+
+    // EDUCATIONAL REWARDS (7)
+    {
+      id: 'edu-course-complete',
+      category: 'educational',
+      name: 'Course Completion',
+      description: 'Complete full environmental course',
+      reward: '200 tokens',
+      xp: 100,
+      icon: '🎓',
+      requirements: ['Complete all modules', 'Pass final quiz'],
+      frequency: 'Monthly'
+    },
+    {
+      id: 'edu-quiz-master',
+      category: 'educational',
+      name: 'Quiz Master',
+      description: 'Score 90%+ on course quizzes',
+      reward: '75 tokens',
+      xp: 40,
+      icon: '📝',
+      requirements: ['5 quizzes', '90%+ average'],
+      frequency: 'Bi-weekly'
+    },
+    {
+      id: 'edu-project-submit',
+      category: 'educational',
+      name: 'Project Submission',
+      description: 'Submit environmental tech project',
+      reward: '250 tokens',
+      xp: 120,
+      icon: '🚀',
+      requirements: ['Working prototype', 'Documentation included'],
+      frequency: 'Monthly'
+    },
+    {
+      id: 'edu-research-contribute',
+      category: 'educational',
+      name: 'Research Contributor',
+      description: 'Submit environmental observations',
+      reward: '60 tokens',
+      xp: 30,
+      icon: '🔬',
+      requirements: ['10 observations', 'Include data and photos'],
+      frequency: 'Weekly'
+    },
+    {
+      id: 'edu-workshop-attend',
+      category: 'educational',
+      name: 'Workshop Attendance',
+      description: 'Attend live educational workshops',
+      reward: '90 tokens',
+      xp: 45,
+      icon: '🏫',
+      requirements: ['Attend full session', 'Participate actively'],
+      frequency: 'Per workshop'
+    },
+    {
+      id: 'edu-peer-teach',
+      category: 'educational',
+      name: 'Peer Teacher',
+      description: 'Create tutorial or teach others',
+      reward: '180 tokens',
+      xp: 80,
+      icon: '👨‍🏫',
+      requirements: ['Create tutorial', 'Min 5 learners engaged'],
+      frequency: 'Monthly'
+    },
+    {
+      id: 'edu-certification',
+      category: 'educational',
+      name: 'Certification Earned',
+      description: 'Complete certification program',
+      reward: '500 tokens',
+      xp: 250,
+      icon: '🏆',
+      requirements: ['Complete all requirements', 'Pass final exam'],
+      frequency: 'Per certification'
+    },
+
+    // MENTORSHIP REWARDS (6)
+    {
+      id: 'mentor-session-attend',
+      category: 'mentorship',
+      name: 'Mentor Session',
+      description: 'Attend one-on-one mentor session',
+      reward: '100 tokens',
+      xp: 50,
+      icon: '🎯',
+      requirements: ['Book and attend session', 'Complete action items'],
+      frequency: 'Weekly'
+    },
+    {
+      id: 'mentor-become',
+      category: 'mentorship',
+      name: 'Become a Mentor',
+      description: 'Sign up as mentor and conduct sessions',
+      reward: '300 tokens',
+      xp: 150,
+      icon: '🌟',
+      requirements: ['Level 10+', 'Complete mentor training'],
+      frequency: 'One-time + per session'
+    },
+    {
+      id: 'mentor-milestone',
+      category: 'mentorship',
+      name: 'Mentorship Milestone',
+      description: 'Complete mentorship program milestones',
+      reward: '150 tokens',
+      xp: 70,
+      icon: '📊',
+      requirements: ['3 sessions attended', 'Goals achieved'],
+      frequency: 'Monthly'
+    },
+    {
+      id: 'mentor-feedback',
+      category: 'mentorship',
+      name: 'Mentor Feedback',
+      description: 'Provide feedback on mentor sessions',
+      reward: '30 tokens',
+      xp: 10,
+      icon: '⭐',
+      requirements: ['Complete feedback form', 'Detailed responses'],
+      frequency: 'Per session'
+    },
+    {
+      id: 'mentor-peer-group',
+      category: 'mentorship',
+      name: 'Peer Group Session',
+      description: 'Participate in group mentorship',
+      reward: '80 tokens',
+      xp: 35,
+      icon: '👥',
+      requirements: ['Attend group session', 'Share learnings'],
+      frequency: 'Bi-weekly'
+    },
+    {
+      id: 'mentor-success-story',
+      category: 'mentorship',
+      name: 'Success Story',
+      description: 'Share your mentorship success journey',
+      reward: '200 tokens',
+      xp: 90,
+      icon: '📖',
+      requirements: ['Written story', 'Before/after evidence'],
+      frequency: 'Quarterly'
+    },
+
+    // EVENT REWARDS (5)
+    {
+      id: 'event-attend-live',
+      category: 'events',
+      name: 'Live Event Attendance',
+      description: 'Attend live platform events',
+      reward: '120 tokens',
+      xp: 60,
+      icon: '🎪',
+      requirements: ['Full attendance', 'Event check-in'],
+      frequency: 'Per event'
+    },
+    {
+      id: 'event-battle-participate',
+      category: 'events',
+      name: 'Battle Event',
+      description: 'Compete in battle tournament',
+      reward: '250 tokens',
+      xp: 120,
+      icon: '⚔️',
+      requirements: ['Enter tournament', 'Complete all rounds'],
+      frequency: 'Per tournament'
+    },
+    {
+      id: 'event-community-day',
+      category: 'events',
+      name: 'Community Day',
+      description: 'Participate in community day activities',
+      reward: '150 tokens',
+      xp: 70,
+      icon: '🌈',
+      requirements: ['Join activities', 'Connect with 5+ members'],
+      frequency: 'Monthly'
+    },
+    {
+      id: 'event-hackathon',
+      category: 'events',
+      name: 'Hackathon',
+      description: 'Build project during hackathon',
+      reward: '400 tokens',
+      xp: 200,
+      icon: '💻',
+      requirements: ['Submit project', 'Demo presentation'],
+      frequency: 'Per hackathon'
+    },
+    {
+      id: 'event-celebration',
+      category: 'events',
+      name: 'Milestone Celebration',
+      description: 'Celebrate platform milestones',
+      reward: '100 tokens',
+      xp: 50,
+      icon: '🎉',
+      requirements: ['Participate in celebration', 'Share on social'],
+      frequency: 'Per milestone'
+    }
+  ];
+
+  // Airdrop Manager
+  class AirdropManager {
+    constructor() {
+      this.balance = 0;
+      this.totalEarned = 0;
+      this.claimedRewards = [];
+      this.activeAirdrops = [];
+      this.upcomingAirdrops = [];
+
+      this.loadFromLocalStorage();
+      this.setupCategoryTabs();
+      this.renderAllRewards();
+      this.renderActiveAirdrops();
+      this.renderUpcomingAirdrops();
+      this.updateBalance();
+    }
+
+    loadFromLocalStorage() {
+      const wallet = window.walletManager?.connectedWallet;
+      if (wallet) {
+        const balanceData = localStorage.getItem(`airdrop_balance_${wallet}`);
+        if (balanceData) {
+          const data = JSON.parse(balanceData);
+          this.balance = data.balance || 0;
+          this.totalEarned = data.totalEarned || 0;
+          this.claimedRewards = data.claimedRewards || [];
+        }
+      }
+
+      // Load active and upcoming airdrops
+      const now = new Date();
+      this.activeAirdrops = REWARD_TEMPLATES.filter(r => Math.random() > 0.8); // Random active
+      this.upcomingAirdrops = REWARD_TEMPLATES.filter(r => Math.random() > 0.85); // Random upcoming
+    }
+
+    saveToLocalStorage() {
+      const wallet = window.walletManager?.connectedWallet;
+      if (wallet) {
+        localStorage.setItem(`airdrop_balance_${wallet}`, JSON.stringify({
+          balance: this.balance,
+          totalEarned: this.totalEarned,
+          claimedRewards: this.claimedRewards
+        }));
+      }
+    }
+
+    updateBalance() {
+      document.getElementById('token-balance').textContent = this.balance.toLocaleString();
+      document.getElementById('total-earned').textContent = this.totalEarned.toLocaleString();
+    }
+
+    setupCategoryTabs() {
+      document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          const category = tab.dataset.category;
+          this.filterRewards(category);
+        });
+      });
+    }
+
+    filterRewards(category) {
+      const cards = document.querySelectorAll('.reward-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    renderAllRewards() {
+      const container = document.getElementById('all-rewards');
+      container.innerHTML = REWARD_TEMPLATES.map(reward => this.createRewardCard(reward, 'template')).join('');
+    }
+
+    renderActiveAirdrops() {
+      const container = document.getElementById('active-airdrops');
+      if (this.activeAirdrops.length === 0) {
+        container.innerHTML = '<div class="empty-state">No active airdrops right now. Check back soon!</div>';
+        return;
+      }
+      container.innerHTML = this.activeAirdrops.map(reward => this.createRewardCard(reward, 'active')).join('');
+    }
+
+    renderUpcomingAirdrops() {
+      const container = document.getElementById('upcoming-airdrops');
+      if (this.upcomingAirdrops.length === 0) {
+        container.innerHTML = '<div class="empty-state">No upcoming airdrops scheduled</div>';
+        return;
+      }
+      container.innerHTML = this.upcomingAirdrops.map(reward => this.createRewardCard(reward, 'upcoming')).join('');
+    }
+
+    createRewardCard(reward, mode) {
+      const isClaimed = this.claimedRewards.includes(reward.id);
+      const categoryColors = {
+        artist_promotion: '#667eea',
+        educational: '#10b981',
+        mentorship: '#f59e0b',
+        events: '#ec4899'
+      };
+
+      const modeClass = mode === 'active' ? 'active-airdrop' : mode === 'upcoming' ? 'upcoming-airdrop' : '';
+
+      return `
+        <div class="reward-card ${modeClass} ${isClaimed ? 'claimed' : ''}" data-category="${reward.category}" data-id="${reward.id}">
+          <div class="reward-icon" style="background: ${categoryColors[reward.category]}">
+            ${reward.icon}
+          </div>
+          <div class="reward-header">
+            <h3 class="reward-name">${reward.name}</h3>
+            <div class="reward-category-badge" style="background: ${categoryColors[reward.category]}">
+              ${reward.category.replace('_', ' ')}
+            </div>
+          </div>
+          <p class="reward-description">${reward.description}</p>
+
+          <div class="reward-amounts">
+            <div class="reward-amount">
+              <div class="amount-value">${reward.reward}</div>
+              <div class="amount-label">Reward</div>
+            </div>
+            <div class="reward-amount">
+              <div class="amount-value">+${reward.xp} XP</div>
+              <div class="amount-label">Experience</div>
+            </div>
+          </div>
+
+          <div class="reward-requirements">
+            <div class="requirements-label">Requirements:</div>
+            ${reward.requirements.map(req => `
+              <div class="requirement-item">✓ ${req}</div>
+            `).join('')}
+          </div>
+
+          <div class="reward-frequency">
+            📅 ${reward.frequency}
+          </div>
+
+          ${mode === 'active' ? `
+            <button class="claim-btn ${isClaimed ? 'claimed' : ''}" onclick="window.airdropManager.claimReward('${reward.id}')">
+              ${isClaimed ? '✅ Claimed' : '💰 Claim Reward'}
+            </button>
+          ` : mode === 'upcoming' ? `
+            <div class="upcoming-badge">Coming Soon</div>
+          ` : `
+            <div class="template-badge">Template</div>
+          `}
+        </div>
+      `;
+    }
+
+    claimReward(rewardId) {
+      if (this.claimedRewards.includes(rewardId)) {
+        alert('You already claimed this reward!');
+        return;
+      }
+
+      const reward = REWARD_TEMPLATES.find(r => r.id === rewardId);
+      if (!reward) return;
+
+      // Extract token amount
+      const tokenAmount = parseInt(reward.reward.split(' ')[0]);
+
+      // Update balance
+      this.balance += tokenAmount;
+      this.totalEarned += tokenAmount;
+      this.claimedRewards.push(rewardId);
+
+      // Award XP
+      if (window.progressManager) {
+        window.progressManager.awardXP(reward.xp, 'airdrop_claim', `Claimed: ${reward.name}`);
+      }
+
+      // Save and update
+      this.saveToLocalStorage();
+      this.updateBalance();
+
+      // Re-render
+      this.renderActiveAirdrops();
+      this.renderAllRewards();
+
+      // Show success
+      alert(`✅ Claimed ${reward.reward} and +${reward.xp} XP!\n\nReward: ${reward.name}`);
+    }
+
+    claimAll() {
+      const unclaimed = this.activeAirdrops.filter(r => !this.claimedRewards.includes(r.id));
+      if (unclaimed.length === 0) {
+        alert('No unclaimed rewards available!');
+        return;
+      }
+
+      unclaimed.forEach(reward => {
+        this.claimReward(reward.id);
+      });
+    }
+
+    viewHistory() {
+      alert('Claim History:\n\n' +
+        (this.claimedRewards.length > 0
+          ? this.claimedRewards.map(id => {
+              const reward = REWARD_TEMPLATES.find(r => r.id === id);
+              return `✅ ${reward?.name || id}`;
+            }).join('\n')
+          : 'No rewards claimed yet'));
+    }
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.airdropManager = new AirdropManager();
+    }, 500);
+  });
+</script>
+
+<style>
+  .airdrop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .rewards-template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .reward-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+    border: 2px solid transparent;
+  }
+
+  .reward-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+
+  .reward-card.active-airdrop {
+    border-color: #10b981;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .reward-card.upcoming-airdrop {
+    border-color: #f59e0b;
+    opacity: 0.9;
+  }
+
+  .reward-card.claimed {
+    opacity: 0.6;
+    border-color: #9ca3af;
+  }
+
+  .reward-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: white;
+  }
+
+  .reward-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .reward-name {
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin: 0;
+    flex: 1;
+  }
+
+  .reward-category-badge {
+    font-size: 0.625rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .reward-description {
+    color: #666;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .reward-amounts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+  }
+
+  .reward-amount {
+    text-align: center;
+  }
+
+  .amount-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 0.25rem;
+  }
+
+  .amount-label {
+    font-size: 0.75rem;
+    color: #666;
+  }
+
+  .reward-requirements {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+  }
+
+  .requirements-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .requirement-item {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+
+  .reward-frequency {
+    font-size: 0.75rem;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+    padding: 0.5rem;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 0.5rem;
+  }
+
+  .claim-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .claim-btn:hover:not(.claimed) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .claim-btn.claimed {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  .upcoming-badge, .template-badge {
+    text-align: center;
+    padding: 0.75rem;
+    background: #f3f4f6;
+    color: #6b7280;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .category-tab {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+
+  .category-tab:hover {
+    border-color: #667eea;
+  }
+
+  .category-tab.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+  }
+
+  .btn-white {
+    background: white;
+    color: #667eea;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+  }
+
+  .btn-white-outline {
+    background: transparent;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 2px solid rgba(255,255,255,0.5);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-white-outline:hover {
+    border-color: white;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #9ca3af;
+    font-style: italic;
+    grid-column: 1 / -1;
+  }
+</style>
+

@@ -1,0 +1,242 @@
+---
+/**
+ * test-local.astro
+ * Test page for localStorage and local JSON data
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Test Local Storage"
+  description="Test localStorage and local JSON functionality"
+  activeSection="progress"
+>
+
+  <section class="test-section">
+    <div class="container mx-auto" style="padding: 2rem; max-width: 800px;">
+
+      <!-- Link to Testing Hub -->
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <strong>🧪 Testing & Development Hub</strong>
+            <p style="margin: 0.25rem 0 0 0; opacity: 0.95; font-size: 0.9rem;">
+              Access database admin, ops review, and all testing tools
+            </p>
+          </div>
+          <a href="/testing" style="background: white; color: #667eea; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600;">
+            Open Hub →
+          </a>
+        </div>
+      </div>
+
+      <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">
+        🧪 Local Storage & JSON Test Page
+      </h1>
+
+      <div class="test-card" style="background: white; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+          1. Test Wallet Connection
+        </h2>
+        <p style="margin-bottom: 1rem; color: #666;">
+          Connect a test wallet to initialize localStorage
+        </p>
+        <button id="test-connect-btn" class="btn-primary">
+          Connect Test Wallet
+        </button>
+        <div id="wallet-status" style="margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 0.5rem; display: none;">
+          <strong>Connected:</strong> <span id="wallet-address"></span>
+        </div>
+      </div>
+
+      <div class="test-card" style="background: white; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+          2. Test XP Award (localStorage)
+        </h2>
+        <p style="margin-bottom: 1rem; color: #666;">
+          Award XP and see it update in localStorage
+        </p>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+          <button id="award-10xp-btn" class="btn-secondary">
+            +10 XP
+          </button>
+          <button id="award-50xp-btn" class="btn-secondary">
+            +50 XP
+          </button>
+          <button id="award-100xp-btn" class="btn-secondary">
+            +100 XP
+          </button>
+          <button id="award-500xp-btn" class="btn-secondary">
+            +500 XP
+          </button>
+        </div>
+        <div id="xp-status" style="padding: 1rem; background: #f5f5f5; border-radius: 0.5rem;">
+          <div><strong>Level:</strong> <span id="current-level-display">-</span></div>
+          <div><strong>XP:</strong> <span id="current-xp-display">-</span></div>
+          <div><strong>Life Stage:</strong> <span id="current-stage-display">-</span></div>
+          <div><strong>Mentor:</strong> <span id="current-mentor-display">-</span></div>
+        </div>
+      </div>
+
+      <div class="test-card" style="background: white; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+          3. Load Sample JSON Data
+        </h2>
+        <p style="margin-bottom: 1rem; color: #666;">
+          Load sample users, battles, and achievements from JSON files
+        </p>
+        <div style="display: flex; gap: 1rem;">
+          <button id="load-users-btn" class="btn-secondary">
+            Load Users
+          </button>
+          <button id="load-battles-btn" class="btn-secondary">
+            Load Battles
+          </button>
+          <button id="load-achievements-btn" class="btn-secondary">
+            Load Achievements
+          </button>
+        </div>
+        <div id="json-output" style="margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 0.5rem; max-height: 300px; overflow-y: auto; display: none;">
+          <pre id="json-content" style="margin: 0; font-size: 0.875rem;"></pre>
+        </div>
+      </div>
+
+      <div class="test-card" style="background: white; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+          4. View localStorage Data
+        </h2>
+        <p style="margin-bottom: 1rem; color: #666;">
+          View all data stored in localStorage
+        </p>
+        <button id="view-storage-btn" class="btn-secondary">
+          View All localStorage
+        </button>
+        <button id="clear-storage-btn" class="btn-secondary" style="background: #ef4444;">
+          Clear All localStorage
+        </button>
+        <div id="storage-output" style="margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 0.5rem; max-height: 400px; overflow-y: auto; display: none;">
+          <pre id="storage-content" style="margin: 0; font-size: 0.875rem;"></pre>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  // Test wallet connection
+  document.getElementById('test-connect-btn')?.addEventListener('click', async () => {
+    const testWallet = 'TEST_WALLET_' + Date.now();
+    await window.walletManager?.connect(testWallet);
+
+    document.getElementById('wallet-status').style.display = 'block';
+    document.getElementById('wallet-address').textContent = testWallet;
+
+    updateXPDisplay();
+  });
+
+  // Award XP buttons
+  document.getElementById('award-10xp-btn')?.addEventListener('click', () => awardTestXP(10));
+  document.getElementById('award-50xp-btn')?.addEventListener('click', () => awardTestXP(50));
+  document.getElementById('award-100xp-btn')?.addEventListener('click', () => awardTestXP(100));
+  document.getElementById('award-500xp-btn')?.addEventListener('click', () => awardTestXP(500));
+
+  async function awardTestXP(amount) {
+    await window.progressManager?.awardXP(amount, 'test', `Awarded ${amount} XP via test page`);
+    updateXPDisplay();
+  }
+
+  function updateXPDisplay() {
+    const progress = window.progressManager?.currentProgress;
+    if (progress) {
+      document.getElementById('current-level-display').textContent = progress.progression.currentLevel;
+      document.getElementById('current-xp-display').textContent = progress.progression.totalXP;
+      document.getElementById('current-stage-display').textContent = progress.progression.lifeStage;
+      document.getElementById('current-mentor-display').textContent = progress.progression.animalMentor;
+    }
+  }
+
+  // Load sample JSON data
+  document.getElementById('load-users-btn')?.addEventListener('click', () => loadJSON('/data/sample-users.json'));
+  document.getElementById('load-battles-btn')?.addEventListener('click', () => loadJSON('/data/sample-battles.json'));
+  document.getElementById('load-achievements-btn')?.addEventListener('click', () => loadJSON('/data/sample-achievements.json'));
+
+  async function loadJSON(url) {
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      document.getElementById('json-output').style.display = 'block';
+      document.getElementById('json-content').textContent = JSON.stringify(data, null, 2);
+    } catch (error) {
+      document.getElementById('json-output').style.display = 'block';
+      document.getElementById('json-content').textContent = 'Error loading JSON: ' + error.message;
+    }
+  }
+
+  // View localStorage
+  document.getElementById('view-storage-btn')?.addEventListener('click', () => {
+    const storage = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      try {
+        storage[key] = JSON.parse(localStorage.getItem(key));
+      } catch {
+        storage[key] = localStorage.getItem(key);
+      }
+    }
+
+    document.getElementById('storage-output').style.display = 'block';
+    document.getElementById('storage-content').textContent = JSON.stringify(storage, null, 2);
+  });
+
+  // Clear localStorage
+  document.getElementById('clear-storage-btn')?.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear all localStorage? This cannot be undone.')) {
+      localStorage.clear();
+      alert('localStorage cleared!');
+      document.getElementById('storage-output').style.display = 'none';
+      updateXPDisplay();
+    }
+  });
+
+  // Update display on page load if wallet connected
+  setTimeout(() => {
+    if (window.walletManager?.connectedWallet) {
+      document.getElementById('wallet-status').style.display = 'block';
+      document.getElementById('wallet-address').textContent = window.walletManager.connectedWallet;
+      updateXPDisplay();
+    }
+  }, 500);
+</script>
+
+<style>
+  .btn-primary, .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .btn-secondary:hover {
+    background: #d1d5db;
+  }
+</style>

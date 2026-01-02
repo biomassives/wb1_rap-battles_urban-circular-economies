@@ -1,35 +1,37 @@
 // /api/profile/upsert.js
-// Vercel Serverless Function to create or update user profile
+// Astro API endpoint to create or update user profile
 // Updated for Nile DB
 
 import { neon } from '@neondatabase/serverless';
 
-export default async function handler(req, res) {
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const {
-    walletAddress,
-    username,
-    email,
-    avatarUrl,
-    bio,
-    favoriteAnimals,
-    themePreference,
-    notificationSettings
-  } = req.body;
-
-  // Validate required fields
-  if (!walletAddress) {
-    return res.status(400).json({ error: 'Wallet address is required' });
-  }
-
+export async function POST({ request }) {
   try {
+    // Parse request body
+    const body = await request.json();
+    const {
+      walletAddress,
+      username,
+      email,
+      avatarUrl,
+      bio,
+      favoriteAnimals,
+      themePreference,
+      notificationSettings
+    } = body;
+
+    // Validate required fields
+    if (!walletAddress) {
+      return new Response(JSON.stringify({
+        error: 'Wallet address is required'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     // Connect to Nile DB using Neon serverless driver
     const sql = neon(process.env.lab_POSTGRES_URL || process.env.lab_NILEDB_URL);
-    
+
     // Use PostgreSQL UPSERT (INSERT ... ON CONFLICT ... UPDATE)
     const result = await sql`
       INSERT INTO user_profiles (
@@ -55,7 +57,7 @@ export default async function handler(req, res) {
         NOW(),
         NOW()
       )
-      ON CONFLICT (wallet_address) 
+      ON CONFLICT (wallet_address)
       DO UPDATE SET
         username = COALESCE(${username}, user_profiles.username),
         email = COALESCE(${email}, user_profiles.email),
@@ -68,17 +70,23 @@ export default async function handler(req, res) {
       RETURNING *
     `;
 
-    return res.status(200).json({
+    return new Response(JSON.stringify({
       success: true,
       profile: result[0],
       message: 'Profile saved successfully'
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
     console.error('Database error:', error);
-    return res.status(500).json({ 
+    return new Response(JSON.stringify({
       error: 'Failed to save profile',
-      message: error.message 
+      message: error.message
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

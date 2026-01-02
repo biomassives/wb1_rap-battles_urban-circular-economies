@@ -1,0 +1,48 @@
+{
+  "battles": [
+    {
+      "id": "battle-001",
+      "challenger": {
+        "username": "mc_thunder",
+        "wallet_address": "DEMO_WALLET_001",
+        "level": 15
+      },
+      "opponent": {
+        "username": "lyrical_storm",
+        "wallet_address": "DEMO_WALLET_002",
+        "level": 18
+      },
+      "category": "wordplay",
+      "status": "COMPLETED",
+      "winner_id": "DEMO_WALLET_002",
+      "total_rounds": 3,
+      "bars_per_round": 16,
+      "stake_amount": 0.5,
+      "stake_currency": "SOL",
+      "created_at": "2024-03-01T00:00:00Z",
+      "completed_at": "2024-03-02T00:00:00Z"
+    },
+    {
+      "id": "battle-002",
+      "challenger": {
+        "username": "flow_king",
+        "wallet_address": "DEMO_WALLET_003",
+        "level": 20
+      },
+      "opponent": {
+        "username": "verse_slayer",
+        "wallet_address": "DEMO_WALLET_004",
+        "level": 22
+      },
+      "category": "flow",
+      "status": "IN_PROGRESS",
+      "winner_id": null,
+      "total_rounds": 3,
+      "bars_per_round": 16,
+      "stake_amount": 1.0,
+      "stake_currency": "SOL",
+      "created_at": "2024-03-05T00:00:00Z",
+      "current_round": 2
+    }
+  ]
+}

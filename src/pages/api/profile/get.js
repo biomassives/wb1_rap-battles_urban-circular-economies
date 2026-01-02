@@ -1,29 +1,31 @@
 // /api/profile/get.js
-// Vercel Serverless Function to retrieve user profile
+// Astro API endpoint to retrieve user profile
 // Updated for Nile DB
 
 import { neon } from '@neondatabase/serverless';
 
-export default async function handler(req, res) {
-  // Only allow GET requests
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const { walletAddress } = req.query;
+export async function GET({ request }) {
+  // Get wallet address from URL search params
+  const url = new URL(request.url);
+  const walletAddress = url.searchParams.get('walletAddress');
 
   // Validate wallet address
   if (!walletAddress) {
-    return res.status(400).json({ error: 'Wallet address is required' });
+    return new Response(JSON.stringify({
+      error: 'Wallet address is required'
+    }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   try {
     // Connect to Nile DB using Neon serverless driver
     const sql = neon(process.env.lab_POSTGRES_URL || process.env.lab_NILEDB_URL);
-    
+
     // Query user profile from database
     const result = await sql`
-      SELECT 
+      SELECT
         wallet_address,
         username,
         email,
@@ -41,23 +43,32 @@ export default async function handler(req, res) {
     `;
 
     if (result.length === 0) {
-      return res.status(404).json({ 
+      return new Response(JSON.stringify({
         error: 'Profile not found',
-        walletAddress 
+        walletAddress
+      }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
     // Return user profile
-    return res.status(200).json({
+    return new Response(JSON.stringify({
       success: true,
       profile: result[0]
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
     console.error('Database error:', error);
-    return res.status(500).json({ 
+    return new Response(JSON.stringify({
       error: 'Failed to retrieve profile',
-      message: error.message 
+      message: error.message
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

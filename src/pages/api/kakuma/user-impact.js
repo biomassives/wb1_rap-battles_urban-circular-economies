@@ -17,13 +17,15 @@ export async function GET({ url }) {
     // TODO: Get real data from database
     // For now, return placeholder
 
-    const impact = {
+    return new Response(JSON.stringify({
       success: true,
       wallet_address: walletAddress,
+      youthImpacted: 0,
+      totalActions: 0,
+      valueGenerated: 0,
+      projectsSupported: 0,
       total_donated: 0,
       donations_count: 0,
-      projects_supported: 0,
-      beneficiaries_impacted: 0,
       impact_score: 0,
       donations: [
         // TODO: SELECT from donations table
@@ -50,9 +52,7 @@ export async function GET({ url }) {
         agriculture: 0,
         infrastructure: 0
       }
-    };
-
-    return new Response(JSON.stringify(impact), {
+    }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });

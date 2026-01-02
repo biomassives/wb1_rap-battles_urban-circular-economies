@@ -1,34 +1,41 @@
 // /api/profile/update-nfts.js
-// Vercel Serverless Function to update user's owned NFTs
+// Astro API endpoint to update user's owned NFTs
 // Updated for Nile DB
 
 import { neon } from '@neondatabase/serverless';
 
-export default async function handler(req, res) {
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const { walletAddress, nftTokens } = req.body;
-
-  // Validate required fields
-  if (!walletAddress) {
-    return res.status(400).json({ error: 'Wallet address is required' });
-  }
-
-  if (!Array.isArray(nftTokens)) {
-    return res.status(400).json({ error: 'nftTokens must be an array' });
-  }
-
+export async function POST({ request }) {
   try {
+    // Parse request body
+    const body = await request.json();
+    const { walletAddress, nftTokens } = body;
+
+    // Validate required fields
+    if (!walletAddress) {
+      return new Response(JSON.stringify({
+        error: 'Wallet address is required'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!Array.isArray(nftTokens)) {
+      return new Response(JSON.stringify({
+        error: 'nftTokens must be an array'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     // Connect to Nile DB using Neon serverless driver
     const sql = neon(process.env.lab_POSTGRES_URL || process.env.lab_NILEDB_URL);
-    
+
     // Update owned NFTs for the user
     const result = await sql`
       UPDATE user_profiles
-      SET 
+      SET
         owned_nfts = ${JSON.stringify(nftTokens)}::jsonb,
         updated_at = NOW()
       WHERE wallet_address = ${walletAddress}
@@ -36,25 +43,34 @@ export default async function handler(req, res) {
     `;
 
     if (result.length === 0) {
-      return res.status(404).json({ 
+      return new Response(JSON.stringify({
         error: 'Profile not found. Create profile first.',
-        walletAddress 
+        walletAddress
+      }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    return res.status(200).json({
+    return new Response(JSON.stringify({
       success: true,
       walletAddress: result[0].wallet_address,
       ownedNfts: result[0].owned_nfts,
       updatedAt: result[0].updated_at,
       message: 'NFT collection updated successfully'
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
     console.error('Database error:', error);
-    return res.status(500).json({ 
+    return new Response(JSON.stringify({
       error: 'Failed to update NFT collection',
-      message: error.message 
+      message: error.message
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

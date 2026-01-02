@@ -1,0 +1,701 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Testing & Development Hub">
+  <div class="testing-hub">
+    <div class="hub-header">
+      <h1>🧪 Testing & Development Hub</h1>
+      <p class="subtitle">Central dashboard for development, testing, and database management</p>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="quick-links">
+      <a href="/test-local" class="link-card">
+        <div class="link-icon">🔧</div>
+        <div class="link-info">
+          <h3>LocalStorage Testing</h3>
+          <p>Test local data, XP awards, and wallet connection</p>
+        </div>
+      </a>
+
+      <a href="/ops-review" class="link-card">
+        <div class="link-icon">📊</div>
+        <div class="link-info">
+          <h3>Ops Review</h3>
+          <p>Automated UI tests and system health monitoring</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Database Management -->
+    <div class="section">
+      <h2>🗄️ Database Management</h2>
+      <div class="db-grid">
+        <div class="db-card supabase">
+          <div class="db-header">
+            <h3>Supabase PostgreSQL</h3>
+            <span class="badge badge-primary">Primary</span>
+          </div>
+          <p class="db-description">
+            Main production database with complete schema including anonymous wallets, airdrops, collaborations, gardens, and more.
+          </p>
+
+          <div class="db-features">
+            <h4>Features:</h4>
+            <ul>
+              <li>✅ 30+ tables (airdrops, battles, gardens, etc.)</li>
+              <li>✅ Auto-leveling system with triggers</li>
+              <li>✅ User progress view for dashboards</li>
+              <li>✅ 25 airdrop templates pre-loaded</li>
+              <li>✅ 8 achievements ready to unlock</li>
+              <li>✅ Anonymous wallet support</li>
+            </ul>
+          </div>
+
+          <div class="db-actions">
+            <a href="/supabase-admin" class="btn-primary">Open Supabase Admin →</a>
+            <a href="https://supabase.com/dashboard" target="_blank" class="btn-secondary">Supabase Dashboard ↗</a>
+          </div>
+
+          <div class="db-docs">
+            <h4>Documentation:</h4>
+            <div class="doc-links">
+              <a href="/SUPABASE_MIGRATION_GUIDE.md" target="_blank">Migration Guide</a>
+              <a href="/supabase_quick_reference.sql" target="_blank">Quick Reference SQL</a>
+              <a href="/DATABASE_INTEGRATION_SUMMARY.md" target="_blank">Integration Summary</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-card nile">
+          <div class="db-header">
+            <h3>Nile Postgres</h3>
+            <span class="badge badge-secondary">Coming Soon</span>
+          </div>
+          <p class="db-description">
+            Advanced PostgreSQL with multi-tenancy, vector search (pgvector), scheduled jobs (pg_cron), and PostGIS for geographic data.
+          </p>
+
+          <div class="db-features">
+            <h4>Advanced Features:</h4>
+            <ul>
+              <li>🔄 Multi-tenant data isolation</li>
+              <li>🤖 AI vector search (pgvector)</li>
+              <li>⏰ Scheduled database jobs (pg_cron)</li>
+              <li>🗺️ Geographic data (PostGIS)</li>
+              <li>🔍 Full-text search</li>
+              <li>🔐 Row-level security</li>
+            </ul>
+          </div>
+
+          <div class="db-actions">
+            <a href="/nile-admin" class="btn-primary">Open Nile Admin →</a>
+            <a href="https://thenile.dev" target="_blank" class="btn-secondary">Nile.dev ↗</a>
+          </div>
+
+          <div class="db-docs">
+            <h4>Use Cases:</h4>
+            <div class="use-case-tags">
+              <span class="tag">Lyric similarity search</span>
+              <span class="tag">Tenant isolation</span>
+              <span class="tag">Auto airdrop distribution</span>
+              <span class="tag">Garden location mapping</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Testing -->
+    <div class="section">
+      <h2>🎯 Feature Testing</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>👤 Anonymous Wallets</h3>
+          <p>Test auto-generation, XP earning, and claiming flow</p>
+          <div class="test-links">
+            <a href="/test-local" class="test-link">Test Locally</a>
+            <a href="/supabase-admin" class="test-link">Test in DB</a>
+          </div>
+          <div class="status-badge success">✓ Implemented</div>
+        </div>
+
+        <div class="feature-card">
+          <h3>🎁 Airdrop System</h3>
+          <p>Test 25 reward templates and claim mechanics</p>
+          <div class="test-links">
+            <a href="/airdrops" class="test-link">View Airdrops</a>
+            <a href="/supabase-admin" class="test-link">Manage Airdrops</a>
+          </div>
+          <div class="status-badge success">✓ Implemented</div>
+        </div>
+
+        <div class="feature-card">
+          <h3>⚡ XP & Leveling</h3>
+          <p>Test auto-leveling, life stages, and animal mentors</p>
+          <div class="test-links">
+            <a href="/test-local" class="test-link">Award XP</a>
+            <a href="/progress" class="test-link">View Progress</a>
+          </div>
+          <div class="status-badge success">✓ Implemented</div>
+        </div>
+
+        <div class="feature-card">
+          <h3>🎭 Interaction Panel</h3>
+          <p>Test rap battles, collabs, tech projects, gardens</p>
+          <div class="test-links">
+            <a href="/interact" class="test-link">Open Panel</a>
+            <a href="/ops-review" class="test-link">Run Tests</a>
+          </div>
+          <div class="status-badge success">✓ Implemented</div>
+        </div>
+
+        <div class="feature-card">
+          <h3>⚔️ Battle System</h3>
+          <p>Test battle creation, submissions, and voting</p>
+          <div class="test-links">
+            <a href="/music" class="test-link">Battle Page</a>
+            <a href="/supabase-admin" class="test-link">View Data</a>
+          </div>
+          <div class="status-badge partial">⚠ Partial</div>
+        </div>
+
+        <div class="feature-card">
+          <h3>🏆 Achievements</h3>
+          <p>Test achievement unlocking and tracking</p>
+          <div class="test-links">
+            <a href="/supabase-admin" class="test-link">View Achievements</a>
+          </div>
+          <div class="status-badge pending">○ Database Only</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Endpoints -->
+    <div class="section">
+      <h2>🔌 API Endpoints</h2>
+      <div class="api-grid">
+        <div class="api-section">
+          <h3>Gamification</h3>
+          <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/gamification/user-progress</code>
+            <span class="status working">✓</span>
+          </div>
+        </div>
+
+        <div class="api-section">
+          <h3>Kakuma Impact</h3>
+          <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/kakuma/user-impact</code>
+            <span class="status working">✓</span>
+          </div>
+        </div>
+
+        <div class="api-section">
+          <h3>Profile</h3>
+          <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/profile/get</code>
+            <span class="status working">✓</span>
+          </div>
+          <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/profile/upsert</code>
+            <span class="status working">✓</span>
+          </div>
+          <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/profile/update-nfts</code>
+            <span class="status working">✓</span>
+          </div>
+        </div>
+
+        <div class="api-section">
+          <h3>Airdrops (Needed)</h3>
+          <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/airdrops/active</code>
+            <span class="status pending">○</span>
+          </div>
+          <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/airdrops/claim</code>
+            <span class="status pending">○</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section">
+      <h2>⚡ Quick Actions</h2>
+      <div class="action-grid">
+        <button class="action-btn" onclick="window.location.href='/supabase-admin'">
+          <span class="action-icon">🗄️</span>
+          <span class="action-text">Query Database</span>
+        </button>
+
+        <button class="action-btn" onclick="window.location.href='/test-local'">
+          <span class="action-icon">🔧</span>
+          <span class="action-text">Test localStorage</span>
+        </button>
+
+        <button class="action-btn" onclick="window.location.href='/ops-review'">
+          <span class="action-icon">🧪</span>
+          <span class="action-text">Run Tests</span>
+        </button>
+
+        <button class="action-btn" onclick="window.open('https://supabase.com/dashboard', '_blank')">
+          <span class="action-icon">☁️</span>
+          <span class="action-text">Supabase Dashboard</span>
+        </button>
+
+        <button class="action-btn" onclick="alert('Migration already run! Check Supabase Admin for details.')">
+          <span class="action-icon">📥</span>
+          <span class="action-text">Run Migration</span>
+        </button>
+
+        <button class="action-btn" onclick="window.location.href='/airdrops'">
+          <span class="action-icon">🎁</span>
+          <span class="action-text">View Airdrops</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Documentation -->
+    <div class="section">
+      <h2>📚 Documentation</h2>
+      <div class="docs-grid">
+        <a href="/ANONYMOUS_WALLET_GUIDE.md" target="_blank" class="doc-card">
+          <h4>Anonymous Wallet Guide</h4>
+          <p>Complete guide to anonymous wallet system</p>
+        </a>
+
+        <a href="/AIRDROP_SYSTEM_GUIDE.md" target="_blank" class="doc-card">
+          <h4>Airdrop System Guide</h4>
+          <p>25 reward templates and scheduling</p>
+        </a>
+
+        <a href="/INTERACTION_PANEL_GUIDE.md" target="_blank" class="doc-card">
+          <h4>Interaction Panel Guide</h4>
+          <p>Battles, collabs, tech, and gardens</p>
+        </a>
+
+        <a href="/OPS_REVIEW_GUIDE.md" target="_blank" class="doc-card">
+          <h4>Ops Review Guide</h4>
+          <p>Testing and monitoring documentation</p>
+        </a>
+
+        <a href="/LOCALSTORAGE_GUIDE.md" target="_blank" class="doc-card">
+          <h4>localStorage Guide</h4>
+          <p>Client-side data management</p>
+        </a>
+
+        <a href="/SUPABASE_MIGRATION_GUIDE.md" target="_blank" class="doc-card">
+          <h4>Migration Guide</h4>
+          <p>Running and troubleshooting migrations</p>
+        </a>
+
+        <a href="/supabase_quick_reference.sql" target="_blank" class="doc-card">
+          <h4>SQL Quick Reference</h4>
+          <p>Common queries and operations</p>
+        </a>
+
+        <a href="/DATABASE_INTEGRATION_SUMMARY.md" target="_blank" class="doc-card">
+          <h4>Database Summary</h4>
+          <p>Architecture and integration overview</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .testing-hub {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .hub-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .hub-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--color-gray-600);
+  }
+
+  .quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s;
+  }
+
+  .link-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .link-icon {
+    font-size: 3rem;
+  }
+
+  .link-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-gray-900);
+  }
+
+  .link-info p {
+    margin: 0;
+    color: var(--color-gray-600);
+  }
+
+  .section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+  }
+
+  .section h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .db-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+  }
+
+  .db-card {
+    background: var(--color-gray-50);
+    padding: 2rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--color-primary);
+  }
+
+  .db-card.nile {
+    border-left-color: var(--color-success);
+  }
+
+  .db-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .db-header h3 {
+    margin: 0;
+  }
+
+  .badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .badge-primary {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .badge-secondary {
+    background: var(--color-success);
+    color: white;
+  }
+
+  .db-description {
+    color: var(--color-gray-700);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .db-features,
+  .db-docs {
+    margin: 1.5rem 0;
+  }
+
+  .db-features h4,
+  .db-docs h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.95rem;
+    color: var(--color-gray-700);
+  }
+
+  .db-features ul {
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+
+  .db-features li {
+    margin: 0.5rem 0;
+    color: var(--color-gray-700);
+  }
+
+  .db-actions {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .doc-links a {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid var(--color-gray-300);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--color-gray-700);
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  .doc-links a:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .use-case-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    padding: 0.5rem 1rem;
+    background: white;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--color-gray-700);
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .feature-card {
+    background: var(--color-gray-50);
+    padding: 1.5rem;
+    border-radius: 8px;
+    position: relative;
+  }
+
+  .feature-card h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.1rem;
+  }
+
+  .feature-card p {
+    color: var(--color-gray-600);
+    margin-bottom: 1rem;
+  }
+
+  .test-links {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .test-link {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid var(--color-gray-300);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--color-gray-700);
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+
+  .test-link:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .status-badge.success {
+    background: var(--color-success);
+    color: white;
+  }
+
+  .status-badge.partial {
+    background: var(--color-warning);
+    color: white;
+  }
+
+  .status-badge.pending {
+    background: var(--color-gray-400);
+    color: white;
+  }
+
+  .api-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .api-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: var(--color-gray-700);
+  }
+
+  .endpoint {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--color-gray-50);
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  .method {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .method.get {
+    background: var(--color-success);
+    color: white;
+  }
+
+  .method.post {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .endpoint code {
+    flex: 1;
+    font-size: 0.85rem;
+  }
+
+  .endpoint .status {
+    font-size: 1.25rem;
+  }
+
+  .endpoint .status.working {
+    color: var(--color-success);
+  }
+
+  .endpoint .status.pending {
+    color: var(--color-gray-400);
+  }
+
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background: var(--color-gray-50);
+    border: 2px solid var(--color-gray-300);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .action-icon {
+    font-size: 2rem;
+  }
+
+  .action-text {
+    font-weight: 600;
+  }
+
+  .docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .doc-card {
+    padding: 1.5rem;
+    background: var(--color-gray-50);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-primary);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+  }
+
+  .doc-card:hover {
+    background: var(--color-primary-light);
+    transform: translateX(4px);
+  }
+
+  .doc-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-gray-900);
+  }
+
+  .doc-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-gray-600);
+  }
+</style>
+</BaseLayout>

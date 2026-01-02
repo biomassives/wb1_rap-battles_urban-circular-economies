@@ -1,0 +1,58 @@
+{
+  "achievements": [
+    {
+      "id": "welcome",
+      "name": "Welcome to WorldBridger",
+      "description": "Join the community",
+      "icon": "🌍",
+      "category": "general",
+      "xp_reward": 10,
+      "rarity": "common"
+    },
+    {
+      "id": "first_track",
+      "name": "First Verse",
+      "description": "Upload your first track",
+      "icon": "🎵",
+      "category": "musical",
+      "xp_reward": 50,
+      "rarity": "common"
+    },
+    {
+      "id": "battle_victor",
+      "name": "Battle Victor",
+      "description": "Win your first battle",
+      "icon": "⚔️",
+      "category": "musical",
+      "xp_reward": 100,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "level_10",
+      "name": "Emerging Artist",
+      "description": "Reach level 10",
+      "icon": "⭐",
+      "category": "progression",
+      "xp_reward": 100,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "kakuma_supporter",
+      "name": "Kakuma Supporter",
+      "description": "Make your first Kakuma donation",
+      "icon": "🏕️",
+      "category": "kakuma",
+      "xp_reward": 150,
+      "rarity": "rare"
+    },
+    {
+      "id": "eco_champion",
+      "name": "Eco Champion",
+      "description": "Complete 5 environmental courses",
+      "icon": "🌱",
+      "category": "environmental",
+      "xp_reward": 200,
+      "rarity": "rare"
+    }
+  ]
+}

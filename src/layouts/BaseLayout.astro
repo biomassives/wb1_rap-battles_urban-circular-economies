@@ -297,6 +297,8 @@ const currentYear = new Date().getFullYear();
     class WalletManager {
       constructor() {
         this.connectedWallet = null;
+        this.anonymousWallet = null;
+        this.isAnonymous = false;
         this.balance = 0;
         this.network = 'testnet';
         this.connection = null;
@@ -310,35 +312,165 @@ const currentYear = new Date().getFullYear();
             'confirmed'
           );
         }
-        
-        // Check if already connected
+
+        // Check if already connected to a real wallet
         const savedWallet = localStorage.getItem('connectedWallet');
         if (savedWallet) {
           await this.connect(savedWallet);
+          return;
         }
+
+        // No real wallet - create or load anonymous wallet
+        await this.ensureAnonymousWallet();
+      }
+
+      /**
+       * Generate or load anonymous wallet for users without credentials
+       * This allows users to start earning XP immediately
+       */
+      async ensureAnonymousWallet() {
+        // Check if anonymous wallet already exists
+        let anonWallet = localStorage.getItem('anonymousWallet');
+
+        if (!anonWallet) {
+          // Generate new anonymous wallet identifier
+          anonWallet = 'anon_' + this.generateRandomId();
+          localStorage.setItem('anonymousWallet', anonWallet);
+          localStorage.setItem('anonymousWalletCreated', new Date().toISOString());
+
+          console.log('Created new anonymous wallet:', anonWallet);
+        }
+
+        this.anonymousWallet = anonWallet;
+        this.connectedWallet = anonWallet;
+        this.isAnonymous = true;
+
+        // Load progress for anonymous wallet
+        await window.progressManager?.loadProgress(anonWallet);
+
+        this.updateUI();
+        this.showAnonymousBanner();
+      }
+
+      /**
+       * Generate a random identifier for anonymous wallets
+       */
+      generateRandomId() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let id = '';
+        for (let i = 0; i < 32; i++) {
+          id += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return id;
+      }
+
+      /**
+       * Show banner informing user they're using an anonymous wallet
+       */
+      showAnonymousBanner() {
+        const existingBanner = document.getElementById('anonymous-wallet-banner');
+        if (existingBanner) return; // Already showing
+
+        const banner = document.createElement('div');
+        banner.id = 'anonymous-wallet-banner';
+        banner.className = 'anonymous-banner';
+        banner.innerHTML = `
+          <div class="anonymous-banner-content">
+            <span class="anonymous-icon">👤</span>
+            <div class="anonymous-text">
+              <strong>Anonymous Mode</strong>
+              <p>You're earning XP anonymously. Connect a wallet to claim your progress!</p>
+            </div>
+            <button class="btn-primary btn-sm" onclick="window.walletManager?.promptConnectWallet()">
+              Connect Wallet
+            </button>
+            <button class="btn-close-banner" onclick="this.parentElement.parentElement.remove()">×</button>
+          </div>
+        `;
+        document.body.insertBefore(banner, document.body.firstChild);
+      }
+
+      /**
+       * Prompt user to connect a real wallet
+       */
+      promptConnectWallet() {
+        alert('Wallet connection coming soon! For now, your progress is saved locally.');
+        // TODO: Implement Phantom wallet connection
       }
 
       async connect(walletAddress = null) {
         // Connect wallet logic
         // TODO: Implement full Phantom integration
-        
+
         if (walletAddress) {
+          // Check if user was using anonymous wallet
+          const hadAnonymousWallet = this.isAnonymous && this.anonymousWallet;
+
+          if (hadAnonymousWallet) {
+            // Offer to claim anonymous wallet data
+            const shouldClaim = confirm(
+              'You have progress saved anonymously. Would you like to transfer it to this wallet?'
+            );
+
+            if (shouldClaim) {
+              await this.claimAnonymousWallet(walletAddress);
+            }
+          }
+
           this.connectedWallet = walletAddress;
+          this.isAnonymous = false;
           localStorage.setItem('connectedWallet', walletAddress);
           this.updateUI();
-          
+
           // Load user data
           await window.progressManager?.loadProgress(walletAddress);
-          
+
           return walletAddress;
         }
       }
 
+      /**
+       * Transfer anonymous wallet data to a real wallet
+       */
+      async claimAnonymousWallet(realWalletAddress) {
+        if (!this.anonymousWallet) return;
+
+        try {
+          // Get anonymous wallet progress
+          const anonProgress = localStorage.getItem(`progress_${this.anonymousWallet}`);
+
+          if (anonProgress) {
+            // Save to real wallet
+            localStorage.setItem(`progress_${realWalletAddress}`, anonProgress);
+            console.log('Claimed anonymous progress for:', realWalletAddress);
+
+            // Show success notification
+            window.uiManager?.showXPToast(0, 'Anonymous progress claimed successfully! 🎉');
+          }
+
+          // Transfer airdrop balance if exists
+          const anonBalance = localStorage.getItem(`airdrop_balance_${this.anonymousWallet}`);
+          if (anonBalance) {
+            localStorage.setItem(`airdrop_balance_${realWalletAddress}`, anonBalance);
+          }
+
+          // Clear anonymous wallet data
+          localStorage.removeItem('anonymousWallet');
+          localStorage.removeItem('anonymousWalletCreated');
+
+        } catch (error) {
+          console.error('Error claiming anonymous wallet:', error);
+        }
+      }
+
       disconnect() {
+        // Don't fully disconnect - revert to anonymous mode
         this.connectedWallet = null;
         this.balance = 0;
         localStorage.removeItem('connectedWallet');
-        this.updateUI();
+
+        // Reinitialize with anonymous wallet
+        this.ensureAnonymousWallet();
       }
 
       updateUI() {
@@ -348,12 +480,21 @@ const currentYear = new Date().getFullYear();
         const notificationsBtn = document.getElementById('notifications-btn');
 
         if (this.connectedWallet) {
-          connectBtn.style.display = 'none';
+          // Always show profile and XP for both real and anonymous wallets
+          if (this.isAnonymous) {
+            connectBtn.style.display = 'block';
+            connectBtn.textContent = 'Claim Progress';
+            connectBtn.className = 'btn-primary btn-pulse';
+          } else {
+            connectBtn.style.display = 'none';
+          }
           profileBtn.style.display = 'block';
           xpDisplay.style.display = 'flex';
           notificationsBtn.style.display = 'block';
         } else {
           connectBtn.style.display = 'block';
+          connectBtn.textContent = 'Connect Wallet';
+          connectBtn.className = 'btn-primary';
           profileBtn.style.display = 'none';
           xpDisplay.style.display = 'none';
           notificationsBtn.style.display = 'none';
@@ -371,18 +512,89 @@ const currentYear = new Date().getFullYear();
 
       async loadProgress(walletAddress) {
         try {
+          // Try to load from API first
           const response = await fetch(
             `/api/gamification/user-progress?walletAddress=${walletAddress}`
           );
-          const data = await response.json();
-          
-          if (data.success) {
-            this.currentProgress = data;
-            this.updateUI();
+
+          if (response.ok) {
+            const data = await response.json();
+
+            if (data.success) {
+              this.currentProgress = data;
+              // Cache in localStorage
+              localStorage.setItem(`progress_${walletAddress}`, JSON.stringify(data));
+              this.updateUI();
+              return;
+            }
           }
+
+          // API failed, try localStorage
+          const cached = localStorage.getItem(`progress_${walletAddress}`);
+          if (cached) {
+            console.log('Using cached progress data');
+            this.currentProgress = JSON.parse(cached);
+            this.updateUI();
+            return;
+          }
+
+          // No cached data, create default
+          this.currentProgress = this.getDefaultProgress(walletAddress);
+          this.updateUI();
+
         } catch (error) {
           console.error('Failed to load progress:', error);
+
+          // Fallback to localStorage or default
+          const cached = localStorage.getItem(`progress_${walletAddress}`);
+          if (cached) {
+            this.currentProgress = JSON.parse(cached);
+          } else {
+            this.currentProgress = this.getDefaultProgress(walletAddress);
+          }
+          this.updateUI();
         }
+      }
+
+      getDefaultProgress(walletAddress) {
+        return {
+          success: true,
+          progression: {
+            currentLevel: 1,
+            totalXP: 0,
+            lifeStage: 'egg',
+            animalMentor: 'chicken',
+            nextLevel: {
+              level: 2,
+              xpNeeded: 100,
+              percentComplete: 0
+            }
+          },
+          user: {
+            wallet_address: walletAddress,
+            username: 'User_' + walletAddress.substring(0, 6),
+            created_at: new Date().toISOString()
+          },
+          music: {
+            publishedTracks: 0,
+            battles: { total: 0, wins: 0, losses: 0, winRate: 0 }
+          },
+          environmental: {
+            coursesCompleted: 0,
+            projectsParticipated: 0
+          },
+          kakumaImpact: {
+            youthImpacted: 0,
+            totalActions: 0,
+            valueGenerated: 0
+          },
+          achievements: { total: 0, unlocked: [] },
+          recentActivity: [],
+          dailyWisdom: {
+            topic: 'Getting Started',
+            wisdom_text: 'Welcome to WorldBridger One! Connect and explore.'
+          }
+        };
       }
 
       updateUI() {
@@ -400,6 +612,7 @@ const currentYear = new Date().getFullYear();
         if (!walletAddress) return;
 
         try {
+          // Try API first
           const response = await fetch('/api/gamification/award-xp', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -411,27 +624,110 @@ const currentYear = new Date().getFullYear();
             })
           });
 
-          const data = await response.json();
-          
-          if (data.success) {
-            // Show XP toast
-            window.uiManager?.showXPToast(data);
-            
-            // Check for level up
-            if (data.level.leveledUp) {
-              window.uiManager?.showLevelUpModal(data);
+          if (response.ok) {
+            const data = await response.json();
+
+            if (data.success) {
+              // Show XP toast
+              window.uiManager?.showXPToast(data);
+
+              // Check for level up
+              if (data.level.leveledUp) {
+                window.uiManager?.showLevelUpModal(data);
+              }
+
+              // Check for achievements
+              if (data.achievementsUnlocked?.length > 0) {
+                window.uiManager?.showAchievementModal(data.achievementsUnlocked[0]);
+              }
+
+              // Reload progress
+              await this.loadProgress(walletAddress);
+              return;
             }
-            
-            // Check for achievements
-            if (data.achievementsUnlocked?.length > 0) {
-              window.uiManager?.showAchievementModal(data.achievementsUnlocked[0]);
-            }
-            
-            // Reload progress
-            await this.loadProgress(walletAddress);
           }
+
+          // API failed, update localStorage directly
+          console.log('API unavailable, updating XP locally');
+          this.awardXPLocally(walletAddress, amount, activityType, description);
+
         } catch (error) {
-          console.error('Failed to award XP:', error);
+          console.error('Failed to award XP via API:', error);
+          // Fallback to local storage
+          this.awardXPLocally(walletAddress, amount, activityType, description);
+        }
+      }
+
+      awardXPLocally(walletAddress, amount, activityType, description) {
+        // Get current progress from localStorage or create default
+        let progress = this.currentProgress || this.getDefaultProgress(walletAddress);
+
+        // Update XP
+        const oldXP = progress.progression.totalXP;
+        const oldLevel = progress.progression.currentLevel;
+        const newXP = oldXP + amount;
+
+        // Calculate new level (simple formula: level = floor(sqrt(xp / 100)) + 1)
+        const newLevel = Math.min(120, Math.floor(Math.sqrt(newXP / 100)) + 1);
+        const leveledUp = newLevel > oldLevel;
+
+        // Update progression
+        progress.progression.totalXP = newXP;
+        progress.progression.currentLevel = newLevel;
+
+        // Update life stage
+        if (newLevel >= 76) {
+          progress.progression.lifeStage = 'elder';
+          progress.progression.animalMentor = 'rabbit';
+        } else if (newLevel >= 51) {
+          progress.progression.lifeStage = 'adult';
+          progress.progression.animalMentor = 'dog';
+        } else if (newLevel >= 26) {
+          progress.progression.lifeStage = 'juvenile';
+          progress.progression.animalMentor = 'pigeon';
+        } else if (newLevel >= 11) {
+          progress.progression.lifeStage = 'chick';
+          progress.progression.animalMentor = 'goat';
+        }
+
+        // Calculate next level progress
+        const currentLevelXP = newLevel * 100;
+        const nextLevelXP = (newLevel + 1) * 100;
+        const xpNeeded = nextLevelXP - currentLevelXP;
+        const progressXP = newXP - currentLevelXP;
+        progress.progression.nextLevel = {
+          level: newLevel + 1,
+          xpNeeded: xpNeeded,
+          percentComplete: Math.round((progressXP / xpNeeded) * 100)
+        };
+
+        // Add to recent activity
+        if (!progress.recentActivity) progress.recentActivity = [];
+        progress.recentActivity.unshift({
+          activity_type: activityType,
+          description: description,
+          xp_earned: amount,
+          created_at: new Date().toISOString()
+        });
+        progress.recentActivity = progress.recentActivity.slice(0, 10); // Keep last 10
+
+        // Save to localStorage
+        localStorage.setItem(`progress_${walletAddress}`, JSON.stringify(progress));
+        this.currentProgress = progress;
+        this.updateUI();
+
+        // Show XP toast
+        window.uiManager?.showXPToast({
+          xp: { earned: amount, total: newXP },
+          level: { current: newLevel, leveledUp: leveledUp }
+        });
+
+        // Show level up modal if leveled up
+        if (leveledUp) {
+          window.uiManager?.showLevelUpModal({
+            level: { current: newLevel },
+            progression: progress.progression
+          });
         }
       }
     }

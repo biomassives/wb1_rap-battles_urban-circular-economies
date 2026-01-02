@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Border -->
+  <rect x="10" y="10" width="280" height="400" rx="15" ry="15"
+        fill="none" stroke="black" stroke-width="2"/>
+
+  <!-- Header Section -->
+  <rect x="20" y="20" width="260" height="40" rx="5" ry="5"
+        fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="150" y="35" text-anchor="middle" font-family="Arial" font-size="10" fill="black">
+    COLLECTION NAME
+  </text>
+  <text x="150" y="50" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="black">
+    Card Title / Animal Name
+  </text>
+
+  <!-- Main Image Area -->
+  <rect x="30" y="70" width="240" height="180" rx="8" ry="8"
+        fill="none" stroke="black" stroke-width="2"/>
+  <text x="150" y="165" text-anchor="middle" font-family="Arial" font-size="12" fill="black" opacity="0.5">
+    [NFT Image/Illustration]
+  </text>
+
+  <!-- Category/Type Badge -->
+  <rect x="40" y="80" width="80" height="24" rx="12" ry="12"
+        fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="80" y="96" text-anchor="middle" font-family="Arial" font-size="10" fill="black">
+    CATEGORY
+  </text>
+
+  <!-- Rarity Badge (top right) -->
+  <polygon points="260,70 270,70 270,90 260,80"
+           fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="265" y="82" text-anchor="middle" font-family="Arial" font-size="8" fill="black">
+    ★
+  </text>
+
+  <!-- Edition Number -->
+  <text x="150" y="240" text-anchor="middle" font-family="Arial" font-size="9" fill="black">
+    Edition #000 / 000
+  </text>
+
+  <!-- Metadata Section -->
+  <line x1="30" y1="255" x2="270" y2="255" stroke="black" stroke-width="1"/>
+
+  <!-- Attributes Grid -->
+  <g id="attributes">
+    <!-- Type -->
+    <text x="40" y="270" font-family="Arial" font-size="9" fill="black">Type:</text>
+    <rect x="100" y="260" width="160" height="16" rx="3" ry="3"
+          fill="none" stroke="black" stroke-width="1"/>
+    <text x="180" y="271" text-anchor="middle" font-family="Arial" font-size="8" fill="black">
+      Chicken / Pigeon / Goat / Horse
+    </text>
+
+    <!-- Rarity -->
+    <text x="40" y="290" font-family="Arial" font-size="9" fill="black">Rarity:</text>
+    <rect x="100" y="280" width="160" height="16" rx="3" ry="3"
+          fill="none" stroke="black" stroke-width="1"/>
+    <text x="180" y="291" text-anchor="middle" font-family="Arial" font-size="8" fill="black">
+      Common / Rare / Epic / Legendary
+    </text>
+
+    <!-- Habitat -->
+    <text x="40" y="310" font-family="Arial" font-size="9" fill="black">Habitat:</text>
+    <rect x="100" y="300" width="160" height="16" rx="3" ry="3"
+          fill="none" stroke="black" stroke-width="1"/>
+    <text x="180" y="311" text-anchor="middle" font-family="Arial" font-size="8" fill="black">
+      Farm / Wild / Water / Far Place
+    </text>
+
+    <!-- Special Trait -->
+    <text x="40" y="330" font-family="Arial" font-size="9" fill="black">Trait:</text>
+    <rect x="100" y="320" width="160" height="16" rx="3" ry="3"
+          fill="none" stroke="black" stroke-width="1"/>
+    <text x="180" y="331" text-anchor="middle" font-family="Arial" font-size="8" fill="black">
+      Heirloom / Ghost / Wild / Ancestor
+    </text>
+  </g>
+
+  <!-- Combo Points Section -->
+  <line x1="30" y1="345" x2="270" y2="345" stroke="black" stroke-width="1"/>
+
+  <g id="combo-section">
+    <text x="150" y="358" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="black">
+      COMBO BONUSES
+    </text>
+
+    <!-- Combo indicators -->
+    <circle cx="60" cy="370" r="8" fill="none" stroke="black" stroke-width="1"/>
+    <text x="75" y="374" font-family="Arial" font-size="7" fill="black">Flock Bonus</text>
+
+    <circle cx="150" cy="370" r="8" fill="none" stroke="black" stroke-width="1"/>
+    <text x="165" y="374" font-family="Arial" font-size="7" fill="black">Ecosystem</text>
+
+    <circle cx="230" cy="370" r="8" fill="none" stroke="black" stroke-width="1"/>
+    <text x="245" y="374" font-family="Arial" font-size="7" fill="black">Complete</text>
+  </g>
+
+  <!-- Footer -->
+  <line x1="30" y1="385" x2="270" y2="385" stroke="black" stroke-width="1"/>
+
+  <text x="40" y="397" font-family="Arial" font-size="7" fill="black">
+    Minted: 2026-01-01
+  </text>
+  <text x="260" y="397" text-anchor="end" font-family="Arial" font-size="7" fill="black">
+    Project: Kakuma
+  </text>
+
+  <!-- Card Back Corner Markers -->
+  <circle cx="25" cy="25" r="3" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="275" cy="25" r="3" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="25" cy="395" r="3" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="275" cy="395" r="3" fill="none" stroke="black" stroke-width="1"/>
+</svg>

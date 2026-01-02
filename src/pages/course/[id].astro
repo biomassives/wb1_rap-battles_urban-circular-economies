@@ -152,6 +152,13 @@
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
+// Generate static paths - returns placeholder, real data fetched client-side
+export function getStaticPaths() {
+  return [
+    { params: { id: 'placeholder' } }
+  ];
+}
+
 const { id } = Astro.params;
 
 // TODO: Fetch course data from API
