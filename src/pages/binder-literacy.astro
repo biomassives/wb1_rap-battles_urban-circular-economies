@@ -1,0 +1,120 @@
+---
+// src/pages/binder-literacy.astro
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Worldbringer | Binder & Reproducibility</title>
+    <style>
+        :root { --bg: #0a0a0a; --accent: #00ff88; --text: #e0e0e0; --panel: #141414; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.6; }
+        .hero { padding: 4rem 2rem; text-align: center; border-bottom: 1px solid #333; }
+        .content { max-width: 800px; margin: 0 auto; padding: 2rem; }
+        .highlight { color: var(--accent); font-weight: bold; }
+        
+        /* Modal Styles */
+        #quiz-modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-content { 
+            background: var(--panel); padding: 3rem; border-radius: 8px; border: 2px solid var(--accent);
+            max-width: 500px; width: 90%; position: relative;
+        }
+        .btn-start { background: var(--accent); color: #000; padding: 1rem 2rem; border: none; cursor: pointer; font-weight: bold; }
+        .cert-card { border: 2px dashed var(--accent); padding: 20px; text-align: center; margin-top: 20px; display: none; }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <h1>What is <span class="highlight">Binder</span>?</h1>
+        <p>The open-source bridge between your code and the world.</p>
+    </section>
+
+    <main class="content">
+        <h2>The Science of Sharing</h2>
+        <p>Imagine you write a Python script that turns a <b>Biodiversity Token</b> into music. If you just send the code, your friend has to install Python, libraries, and drivers. <b>Binder</b> solves this by creating a "virtual lab" in the cloud that anyone can enter with just a link.</p>
+        
+        <ul>
+            <li><b>Zero Install:</b> Runs in the browser.</li>
+            <li><b>Reproducible:</b> If it works for you, it works for them.</li>
+            <li><b>Open Source:</b> It belongs to the community (hosted by MyBinder.org).</li>
+        </ul>
+
+        <button class="btn-start" onclick="openQuiz()">🎓 Take the Literacy Challenge</button>
+
+        <div id="cert-display" class="cert-card">
+            <h3>🌿 Biodiversity Tech Certificate</h3>
+            <p>This confirms that you understand the pillars of Open Science and Reproducibility.</p>
+            <small id="cert-date"></small>
+            <div style="font-family: monospace; font-size: 10px; margin-top: 10px;" id="cert-hash"></div>
+        </div>
+    </main>
+
+    <div id="quiz-modal">
+        <div class="modal-content" id="quiz-body">
+            </div>
+    </div>
+
+    <script is:inline>
+        const quizData = [
+            { q: "What is the main goal of Binder?", a: ["Running code in the cloud", "Buying video games", "Selling data"], correct: 0 },
+            { q: "Why is 'reproducibility' important for biodiversity?", a: ["To make cool graphics", "So others can verify your science", "To hide the math"], correct: 1 },
+            { q: "What does Binder turn a GitHub repo into?", a: ["A website", "An interactive notebook", "An email"], correct: 1 },
+            { q: "Do you need to pay for Binder?", a: ["Yes, monthly", "No, it is a public good", "Only for Python"], correct: 1 },
+            { q: "What file format does Binder usually run?", a: [".exe", ".ipynb (Jupyter)", ".doc"], correct: 1 }
+        ];
+
+        let currentStep = 0;
+
+        function openQuiz() {
+            document.getElementById('quiz-modal').style.display = 'flex';
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const step = quizData[currentStep];
+            const html = `
+                <h3>Question ${currentStep + 1} of 5</h3>
+                <p>${step.q}</p>
+                ${step.a.map((opt, i) => `
+                    <button onclick="checkAnswer(${i})" style="display:block; width:100%; margin: 10px 0; padding: 10px; background: #222; color: white; border: 1px solid #444; text-align: left;">
+                        ${opt}
+                    </button>
+                `).join('')}
+            `;
+            document.getElementById('quiz-body').innerHTML = html;
+        }
+
+        function checkAnswer(idx) {
+            if (idx === quizData[currentStep].correct) {
+                currentStep++;
+                if (currentStep < quizData.length) {
+                    renderQuestion();
+                } else {
+                    issueCertificate();
+                }
+            } else {
+                alert("Not quite! Think about open-source values and try again.");
+            }
+        }
+
+        function issueCertificate() {
+            document.getElementById('quiz-modal').style.display = 'none';
+            const date = new Date().toLocaleDateString();
+            const hash = 'WB-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            // Save to LocalStorage (Your "Decentralized" Proof)
+            const cert = { type: 'Binder-Literacy', date, hash };
+            localStorage.setItem('cert_binder', JSON.stringify(cert));
+
+            // UI Feedback
+            document.getElementById('cert-display').style.display = 'block';
+            document.getElementById('cert-date').textContent = "Issued on: " + date;
+            document.getElementById('cert-hash').textContent = "VERIFICATION HASH: " + hash;
+        }
+    </script>
+</body>
+</html>

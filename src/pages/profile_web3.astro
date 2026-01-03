@@ -47,83 +47,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <div class="profile-wallet-address" id="profile-wallet-display">
               <!-- Wallet address will be displayed here -->
             </div>
-            <!-- Generative Level Badge with Animation -->
-            <div class="profile-level-badge-container">
-              <svg class="level-badge-bg" viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
-                <!-- Animated gradient background -->
-                <defs>
-                  <linearGradient id="levelGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" class="gradient-start">
-                      <animate attributeName="stop-color" values="#667eea;#764ba2;#f093fb;#667eea" dur="8s" repeatCount="indefinite"/>
-                    </stop>
-                    <stop offset="100%" class="gradient-end">
-                      <animate attributeName="stop-color" values="#764ba2;#f093fb;#667eea;#764ba2" dur="8s" repeatCount="indefinite"/>
-                    </stop>
-                  </linearGradient>
-
-                  <!-- Glow filter -->
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                    <feMerge>
-                      <feMergeNode in="coloredBlur"/>
-                      <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                  </filter>
-                </defs>
-
-                <!-- Animated egg shape with curves -->
-                <ellipse cx="60" cy="60" rx="45" ry="55" fill="url(#levelGradient)" opacity="0.3" class="egg-outer">
-                  <animate attributeName="rx" values="45;48;45" dur="4s" repeatCount="indefinite"/>
-                  <animate attributeName="ry" values="55;52;55" dur="4s" repeatCount="indefinite"/>
-                </ellipse>
-
-                <ellipse cx="60" cy="60" rx="35" ry="45" fill="url(#levelGradient)" opacity="0.5" class="egg-middle">
-                  <animate attributeName="rx" values="35;38;35" dur="3s" repeatCount="indefinite"/>
-                  <animate attributeName="ry" values="45;42;45" dur="3s" repeatCount="indefinite"/>
-                </ellipse>
-
-                <ellipse cx="60" cy="60" rx="25" ry="35" fill="url(#levelGradient)" opacity="0.8" filter="url(#glow)" class="egg-inner">
-                  <animate attributeName="rx" values="25;28;25" dur="2s" repeatCount="indefinite"/>
-                  <animate attributeName="ry" values="35;32;35" dur="2s" repeatCount="indefinite"/>
-                </ellipse>
-
-                <!-- Animated curves/particles -->
-                <path class="curve-1" d="M 30 30 Q 45 45 60 30" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.4">
-                  <animate attributeName="d"
-                    values="M 30 30 Q 45 45 60 30;M 30 35 Q 45 40 60 35;M 30 30 Q 45 45 60 30"
-                    dur="3s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.4;0.7;0.4" dur="3s" repeatCount="indefinite"/>
-                </path>
-
-                <path class="curve-2" d="M 35 50 Q 50 60 65 50" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.3">
-                  <animate attributeName="d"
-                    values="M 35 50 Q 50 60 65 50;M 35 55 Q 50 55 65 55;M 35 50 Q 50 60 65 50"
-                    dur="4s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite"/>
-                </path>
-
-                <!-- Sparkle particles -->
-                <circle cx="40" cy="40" r="2" fill="#ffffff" opacity="0">
-                  <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="80" cy="50" r="2" fill="#ffffff" opacity="0">
-                  <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0.7s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="50" cy="80" r="2" fill="#ffffff" opacity="0">
-                  <animate attributeName="opacity" values="0;1;0" dur="2s" begin="1.4s" repeatCount="indefinite"/>
-                </circle>
-              </svg>
-
-              <div class="level-badge-content">
-                <div class="level-icon-animated">
-                  <span class="star-icon">⭐</span>
-                  <div class="icon-glow"></div>
-                </div>
-                <div class="level-text">
-                  <span class="level-number">Level <span id="profile-level">1</span></span>
-                  <span class="life-stage" id="profile-life-stage">Egg Stage</span>
-                </div>
-              </div>
+            <div class="profile-level-badge">
+              <span class="level-icon">⭐</span>
+              <span>Level <span id="profile-level">1</span></span>
+              <span class="life-stage" id="profile-life-stage">Egg Stage</span>
             </div>
           </div>
         </div>
@@ -332,42 +259,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </form>
 
       </div>
-
-<div class="network-escalation">
-    <div class="brutalist-card action">
-        <h3>MINT_DATA_ASSET</h3>
-        <div class="button-stack">
-            <button class="mint-btn sol" onclick="window.wbWeb3.mintSolana()">MINT_TO_SOLANA_DEVNET</button>
-            <button class="mint-btn dot" onclick="window.wbWeb3.mintPolkadot()">MINT_TO_DOT_TESTNET</button>
-        </div>
-    </div>
-
-    <div class="brutalist-card node">
-        <h3>INFRASTRUCTURE_STATE</h3>
-        <div class="node-status">
-            <div class="status-indicator" id="node-indicator"></div>
-            <span>E8_LATTICE_NODE: <strong id="node-state">INACTIVE</strong></span>
-        </div>
-        <p class="node-meta">ORACLE_VALIDATOR_V1 // RUST_WASM_ENGINE</p>
-        <button class="brutalist-btn full-width" onclick="window.wbNode.toggleNode()">
-            BOOT_VALIDATOR_NODE
-        </button>
-    </div>
-</div>
-
-<style>
-    .network-escalation { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
-    .brutalist-card { border: 6px solid #000; padding: 1.5rem; background: #fff; box-shadow: 10px 10px 0 #000; }
-    .brutalist-card.node { background: #000; color: #b4f55b; }
-    .node-status { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .status-indicator { width: 12px; height: 12px; border-radius: 50%; background: #ff4757; }
-    .status-indicator.active { background: #b4f55b; box-shadow: 0 0 10px #b4f55b; }
-    .full-width { width: 100%; margin-top: 15px; background: #b4f55b; color: #000; border: 4px solid #fff; font-weight: 900; }
-    .mint-btn { font-weight: 900; padding: 12px; border: 4px solid #000; cursor: pointer; box-shadow: 4px 4px 0 #000; }
-    .mint-btn.sol { background: #9945FF; color: #fff; }
-    .mint-btn.dot { background: #E6007A; color: #fff; }
-</style>
-
 
       <!-- ============================================ -->
       <!-- TAB 2: PREFERENCES -->
@@ -764,63 +655,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
 
     </div>
-
-    <!-- ============================================ -->
-    <!-- AVATAR UPLOAD MODAL -->
-    <!-- ============================================ -->
-    <div id="avatar-upload-modal" class="modal-overlay" style="display: none;">
-      <div class="modal-content avatar-upload-modal">
-
-        <div class="modal-header">
-          <h3>Update Profile Avatar</h3>
-          <button class="btn-close" onclick="closeAvatarUpload()">×</button>
-        </div>
-
-        <div class="modal-body">
-
-          <div class="avatar-upload-options">
-            <button class="avatar-option-btn" onclick="document.getElementById('avatar-file-input').click()">
-              <span class="option-icon">📷</span>
-              <span class="option-text">Upload Image</span>
-              <span class="option-hint">JPG, PNG, GIF (max 5MB)</span>
-            </button>
-
-            <button class="avatar-option-btn" onclick="openVectorAvatarBuilder()">
-              <span class="option-icon">🎨</span>
-              <span class="option-text">Create Avatar</span>
-              <span class="option-hint">Vector avatar builder</span>
-            </button>
-          </div>
-
-          <input
-            type="file"
-            id="avatar-file-input"
-            accept="image/*"
-            hidden
-            onchange="handleAvatarSelection(event)"
-          />
-
-          <!-- Avatar Preview -->
-          <div class="avatar-preview-container">
-            <div id="avatar-preview-placeholder" class="avatar-preview-placeholder">
-              <span class="preview-icon">👤</span>
-              <span class="preview-text">Select an image to preview</span>
-            </div>
-            <img id="avatar-preview-image" class="avatar-preview-image" style="display: none;" />
-          </div>
-
-        </div>
-
-        <div class="modal-footer">
-          <button class="btn-secondary" onclick="closeAvatarUpload()">Cancel</button>
-          <button id="save-avatar-btn" class="btn-primary" onclick="saveAvatar()" disabled>
-            Save Avatar
-          </button>
-        </div>
-
-      </div>
-    </div>
-
   </div>
 
 </BaseLayout>
@@ -854,6 +688,30 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       this.populateForms();
       this.setupEventListeners();
     }
+    
+    // Inside ProfilePageManager class
+scanLocalAchievements() {
+    const cert = JSON.parse(localStorage.getItem('cert_binder'));
+    if (cert) {
+        // Update the "NFTs Owned" stat in the header dynamically
+        const nftStat = document.getElementById('profile-owned-nfts');
+        const count = parseInt(nftStat.textContent) + 1;
+        nftStat.textContent = count;
+        
+        // Inject a "Collector Card" preview into the My NFTs tab
+        const nftGrid = document.getElementById('owned-nfts-grid');
+        if (nftGrid && cert) {
+            nftGrid.innerHTML = `
+                <div class="nft-card minted-local">
+                    <div class="nft-emoji">📜</div>
+                    <h4>Binder Literacy</h4>
+                    <p class="rarity">Achievement Token</p>
+                    <a href="/certification" class="btn-secondary small">View Card</a>
+                </div>
+            ` + nftGrid.innerHTML;
+        }
+    }
+}
 
     showAnonymousNotice() {
       const notice = document.createElement('div');
@@ -893,80 +751,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       if (!this.userData) return;
 
       // Update header
-      document.getElementById('profile-username-display').textContent =
+      document.getElementById('profile-username-display').textContent = 
         this.userData.username || 'Set your username';
-      document.getElementById('profile-wallet-display').textContent =
+      document.getElementById('profile-wallet-display').textContent = 
         this.formatWalletAddress(this.userData.wallet_address);
-
+      
       // Update avatar initials
       if (this.userData.username) {
         const initials = this.userData.username.substring(0, 2).toUpperCase();
         document.getElementById('avatar-initials').textContent = initials;
       }
 
-      // Update level and life stage with generative art
-      const level = this.userData.level || 1;
-      const lifeStage = this.userData.life_stage || 'egg';
-
-      document.getElementById('profile-level').textContent = level;
-      document.getElementById('profile-life-stage').textContent =
-        this.formatLifeStage(lifeStage);
-
-      // Set data attribute for stage-specific styling
-      const badgeContainer = document.querySelector('.profile-level-badge-container');
-      if (badgeContainer) {
-        badgeContainer.setAttribute('data-stage', lifeStage);
-        badgeContainer.setAttribute('data-level', level);
-
-        // Update gradient colors based on stage
-        this.updateStageColors(lifeStage);
-      }
-
       // TODO: Update other profile fields
-    }
-
-    formatLifeStage(stage) {
-      const stageMap = {
-        'egg': 'Egg Stage',
-        'hatchling': 'Hatchling',
-        'fledgling': 'Fledgling',
-        'soaring': 'Soaring',
-        'master': 'Master'
-      };
-      return stageMap[stage] || 'Egg Stage';
-    }
-
-    updateStageColors(stage) {
-      // Define color schemes for each life stage
-      const colorSchemes = {
-        egg: ['#667eea', '#764ba2', '#f093fb'], // Purple/Pink
-        hatchling: ['#4ade80', '#22c55e', '#10b981'], // Green
-        fledgling: ['#fbbf24', '#f59e0b', '#f97316'], // Orange/Yellow
-        soaring: ['#06b6d4', '#0891b2', '#0e7490'], // Cyan
-        master: ['#dc2626', '#b91c1c', '#991b1b'] // Red
-      };
-
-      const colors = colorSchemes[stage] || colorSchemes.egg;
-
-      // Update gradient dynamically
-      const gradient = document.getElementById('levelGradient');
-      if (gradient) {
-        const stops = gradient.querySelectorAll('stop');
-        if (stops[0]) {
-          stops[0].setAttribute('stop-color', colors[0]);
-          const anim0 = stops[0].querySelector('animate');
-          if (anim0) {
-            anim0.setAttribute('values', `${colors[0]};${colors[1]};${colors[2]};${colors[0]}`);
-          }
-        }
-        if (stops[1]) {
-          stops[1].setAttribute('stop-color', colors[1]);
-          const anim1 = stops[1].querySelector('animate');
-          if (anim1) {
-            anim1.setAttribute('values', `${colors[1]};${colors[2]};${colors[0]};${colors[1]}`);
-          }
-        }
-      }
     }
 
     populateForms() {
@@ -1079,98 +875,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }, 500);
   });
 
-  // Avatar upload handling
-  let selectedAvatarFile = null;
-
+  // Helper functions
   function openAvatarUpload() {
-    document.getElementById('avatar-upload-modal').style.display = 'flex';
-  }
-
-  function closeAvatarUpload() {
-    document.getElementById('avatar-upload-modal').style.display = 'none';
-    clearAvatarPreview();
-  }
-
-  function handleAvatarSelection(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('File size must be less than 5MB');
-      return;
-    }
-
-    selectedAvatarFile = file;
-    previewAvatar(file);
-  }
-
-  function previewAvatar(file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const previewImg = document.getElementById('avatar-preview-image');
-      previewImg.src = e.target.result;
-      previewImg.style.display = 'block';
-      document.getElementById('avatar-preview-placeholder').style.display = 'none';
-      document.getElementById('save-avatar-btn').disabled = false;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function clearAvatarPreview() {
-    selectedAvatarFile = null;
-    document.getElementById('avatar-file-input').value = '';
-    document.getElementById('avatar-preview-image').style.display = 'none';
-    document.getElementById('avatar-preview-placeholder').style.display = 'flex';
-    document.getElementById('save-avatar-btn').disabled = true;
-  }
-
-  async function saveAvatar() {
-    if (!selectedAvatarFile) return;
-
-    const walletAddress = window.walletManager?.connectedWallet;
-    if (!walletAddress) return;
-
-    // In a real implementation, you would:
-    // 1. Upload to IPFS or cloud storage
-    // 2. Get the URL
-    // 3. Save to user profile
-
-    try {
-      // Simulate upload for now
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const avatarDataUrl = e.target.result;
-
-        // Update profile avatar display
-        const avatarPlaceholder = document.querySelector('.avatar-placeholder');
-        avatarPlaceholder.style.backgroundImage = `url(${avatarDataUrl})`;
-        avatarPlaceholder.style.backgroundSize = 'cover';
-        avatarPlaceholder.style.backgroundPosition = 'center';
-        avatarPlaceholder.innerHTML = '';
-
-        // Award XP
-        await window.progressManager?.awardXP(50, 'avatar_uploaded', 'Uploaded profile avatar');
-
-        closeAvatarUpload();
-        alert('Avatar updated successfully!');
-      };
-      reader.readAsDataURL(selectedAvatarFile);
-
-    } catch (error) {
-      console.error('Failed to save avatar:', error);
-      alert('Failed to save avatar. Please try again.');
-    }
-  }
-
-  function openVectorAvatarBuilder() {
-    window.location.href = '/avatar-builder';
+    // TODO: Implement avatar upload
+    console.log('Open avatar upload');
   }
 
   function resetProfileForm() {
@@ -1181,10 +889,26 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     document.getElementById('preferences-form').reset();
   }
 
-  function exportUserData() {
-    // TODO: Implement data export
-    console.log('Export user data');
-  }
+function exportUserData() {
+    const profile = window.profilePageManager.userData;
+    const certs = localStorage.getItem('cert_binder');
+    
+    const exportBundle = {
+        meta: { name: profile.username, exportedAt: new Date().toISOString() },
+        identity: profile,
+        achievements: certs ? JSON.parse(certs) : null,
+        approach: "WB1-Vanilla-JS-Static"
+    };
+
+    const blob = new Blob([JSON.stringify(exportBundle, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wb1-data-profile-${profile.username}.json`;
+    a.click();
+    
+    window.wbToast?.("Data Bundle Exported", 10);
+}
 
   function confirmDeleteAccount() {
     if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
@@ -1349,311 +1073,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: white;
   }
 
-  /* Avatar Upload Modal Styles */
-  .avatar-upload-modal {
-    max-width: 500px;
-  }
-
-  .avatar-upload-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .avatar-option-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1.5rem;
-    background: var(--color-gray-50);
-    border: 2px solid var(--color-gray-200);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all var(--transition-base);
-  }
-
-  .avatar-option-btn:hover {
-    border-color: var(--color-primary);
-    background: var(--color-primary-light);
-    transform: translateY(-2px);
-  }
-
-  .option-icon {
-    font-size: 2rem;
-  }
-
-  .option-text {
-    font-weight: 600;
-    color: var(--color-gray-900);
-  }
-
-  .option-hint {
-    font-size: 0.75rem;
-    color: var(--color-gray-600);
-  }
-
-  .avatar-preview-container {
-    width: 100%;
-    aspect-ratio: 1;
-    max-width: 300px;
-    margin: 0 auto;
-    position: relative;
-    border: 2px dashed var(--color-gray-300);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-  }
-
-  .avatar-preview-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    background: var(--color-gray-50);
-  }
-
-  .preview-icon {
-    font-size: 4rem;
-    opacity: 0.3;
-  }
-
-  .preview-text {
-    font-size: 0.875rem;
-    color: var(--color-gray-500);
-  }
-
-  .avatar-preview-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Generative Level Badge Styles */
-  .profile-level-badge-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-    border-radius: 1rem;
-    border: 2px solid rgba(102, 126, 234, 0.2);
-    overflow: hidden;
-  }
-
-  .level-badge-bg {
-    position: absolute;
-    left: -10px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 120px;
-    height: 120px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .level-badge-content {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding-left: 100px;
-  }
-
-  .level-icon-animated {
-    position: relative;
-    font-size: 2rem;
-    animation: starPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes starPulse {
-    0%, 100% {
-      transform: scale(1) rotate(0deg);
-    }
-    50% {
-      transform: scale(1.1) rotate(5deg);
-    }
-  }
-
-  .star-icon {
-    position: relative;
-    z-index: 2;
-    display: inline-block;
-    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
-  }
-
-  .icon-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent);
-    border-radius: 50%;
-    animation: glowPulse 2s ease-in-out infinite;
-    z-index: 1;
-  }
-
-  @keyframes glowPulse {
-    0%, 100% {
-      opacity: 0.5;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    50% {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1.3);
-    }
-  }
-
-  .level-text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .level-number {
-    font-weight: 700;
-    font-size: 1.25rem;
-    color: var(--color-gray-900);
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .life-stage {
-    font-size: 0.875rem;
-    color: var(--color-gray-600);
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    animation: stageShimmer 3s ease-in-out infinite;
-  }
-
-  @keyframes stageShimmer {
-    0%, 100% {
-      opacity: 0.7;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-
-  /* Stage-specific animations */
-
-  /* Egg Stage - Gentle pulsing */
-  .profile-level-badge-container[data-stage="egg"] .level-badge-bg {
-    animation: eggGrow 4s ease-in-out infinite;
-  }
-
-  @keyframes eggGrow {
-    0%, 100% {
-      transform: translateY(-50%) scale(1);
-    }
-    50% {
-      transform: translateY(-50%) scale(1.05);
-    }
-  }
-
-  /* Hatchling Stage - Cracking animation */
-  .profile-level-badge-container[data-stage="hatchling"] .level-badge-bg {
-    animation: hatchlingShake 3s ease-in-out infinite;
-  }
-
-  @keyframes hatchlingShake {
-    0%, 100% {
-      transform: translateY(-50%) rotate(0deg) scale(1);
-    }
-    25% {
-      transform: translateY(-50%) rotate(-2deg) scale(1.02);
-    }
-    50% {
-      transform: translateY(-50%) rotate(2deg) scale(1.04);
-    }
-    75% {
-      transform: translateY(-50%) rotate(-1deg) scale(1.02);
-    }
-  }
-
-  /* Fledgling Stage - Flutter animation */
-  .profile-level-badge-container[data-stage="fledgling"] .level-badge-bg {
-    animation: fledglingFlutter 2s ease-in-out infinite;
-  }
-
-  @keyframes fledglingFlutter {
-    0%, 100% {
-      transform: translateY(-50%) translateX(0) scale(1);
-    }
-    25% {
-      transform: translateY(-48%) translateX(-2px) scale(1.03);
-    }
-    50% {
-      transform: translateY(-52%) translateX(0) scale(1.06);
-    }
-    75% {
-      transform: translateY(-48%) translateX(2px) scale(1.03);
-    }
-  }
-
-  /* Soaring Stage - Gliding animation */
-  .profile-level-badge-container[data-stage="soaring"] .level-badge-bg {
-    animation: soaringGlide 5s ease-in-out infinite;
-  }
-
-  @keyframes soaringGlide {
-    0%, 100% {
-      transform: translateY(-50%) translateX(0) scale(1);
-    }
-    50% {
-      transform: translateY(-45%) translateX(5px) scale(1.08);
-    }
-  }
-
-  /* Master Stage - Powerful pulse */
-  .profile-level-badge-container[data-stage="master"] .level-badge-bg {
-    animation: masterPulse 3s ease-in-out infinite;
-  }
-
-  @keyframes masterPulse {
-    0%, 100% {
-      transform: translateY(-50%) scale(1);
-      filter: brightness(1);
-    }
-    50% {
-      transform: translateY(-50%) scale(1.1);
-      filter: brightness(1.2);
-    }
-  }
-
-  /* Stage-specific border colors */
-  .profile-level-badge-container[data-stage="egg"] {
-    border-color: rgba(102, 126, 234, 0.3);
-  }
-
-  .profile-level-badge-container[data-stage="hatchling"] {
-    border-color: rgba(74, 222, 128, 0.3);
-  }
-
-  .profile-level-badge-container[data-stage="fledgling"] {
-    border-color: rgba(251, 191, 36, 0.3);
-  }
-
-  .profile-level-badge-container[data-stage="soaring"] {
-    border-color: rgba(6, 182, 212, 0.3);
-  }
-
-  .profile-level-badge-container[data-stage="master"] {
-    border-color: rgba(220, 38, 38, 0.3);
-    box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
-  }
-
   @media (max-width: 768px) {
     .profile-header {
       flex-direction: column;
@@ -1662,38 +1081,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     .checkbox-grid {
       grid-template-columns: 1fr;
-    }
-
-    .avatar-upload-options {
-      grid-template-columns: 1fr;
-    }
-
-    /* Mobile responsive level badge */
-    .profile-level-badge-container {
-      padding: 0.5rem 1rem;
-    }
-
-    .level-badge-bg {
-      width: 90px;
-      height: 90px;
-      left: -5px;
-    }
-
-    .level-badge-content {
-      padding-left: 75px;
-      gap: 0.5rem;
-    }
-
-    .level-icon-animated {
-      font-size: 1.5rem;
-    }
-
-    .level-number {
-      font-size: 1rem;
-    }
-
-    .life-stage {
-      font-size: 0.75rem;
     }
   }
 </style>

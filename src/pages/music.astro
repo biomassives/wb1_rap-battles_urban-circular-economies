@@ -11,8 +11,87 @@
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+const steps = Array.from({ length: 16 });
+
+// You can also define your tracks here for better scaling
+const tracks = ["kick", "snare", "hihat", "reggaeton"];
 ---
 
+<style>
+/* Base Container Styling */
+.beatmaker-container {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #1a1a1a;
+  color: #efefef;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #333;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Mode Toggle Styling */
+.beatmaker-mode-toggle {
+  display: flex;
+  gap: 1rem;
+  background: #2a2a2a;
+  padding: 0.5rem;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.mode-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+}
+
+.mode-btn.active {
+  background: #007bff;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.4);
+}
+
+/* The Sequencer/Sampler Grid */
+.sampler-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Individual Pad Styling */
+.pad {
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(145deg, #333, #222);
+  border: 2px solid #444;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  position: relative;
+}
+
+.pad:active, .pad.playing {
+  transform: scale(0.95);
+  background: #00ff88; /* High visibility for accessibility */
+  box-shadow: 0 0 15px #00ff88;
+  border-color: #fff;
+}
+
+.pad-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  pointer-events: none;
+}
+</style>
 <BaseLayout 
   title="Music Studio" 
   description="Create tracks, battle opponents, and collaborate with artists worldwide"
@@ -44,30 +123,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <span class="tab-label">Collaborations</span>
           <span class="tab-badge" id="collab-requests">0</span>
         </button>
+
+        <!-- ✅ Safe: plain HTML, emoji works -->
         <button class="studio-tab" data-tab="library">
-          <span class="tab-icon">📚</span>
-          <span class="tab-label">My Library</span>
+         <span class="tab-icon">📚</span>
+         <span class="tab-label">My Library</span>
         </button>
       </div>
     </div>
   </section>
 
-  <!-- ============================================ -->
-  <!-- TAB 1: CREATE TRACK -->
-  <!-- ============================================ -->
   <section id="tab-create" class="studio-tab-content active">
     <div class="container mx-auto">
       
       <div class="create-track-layout">
         
-        <!-- Left: Upload Form -->
         <div class="track-form-container">
           <h2 class="section-title">Upload New Track</h2>
           <p class="section-subtitle">Share your music with the community (+100 XP)</p>
 
           <form id="track-upload-form" class="track-form">
             
-            <!-- Track Title -->
             <div class="form-group">
               <label for="track-title" class="form-label">
                 Track Title *
@@ -571,7 +647,7 @@ Your lyrics here...
           </div>
           <div class="steps-grid">
             ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn ${i % 4 === 0 ? 'beat-marker' : ''}" data-track="kick" data-step="${i}"
+              <button class="step-btn" data-track="kick" data-step="${i}"
                 onclick="window.beatMaker?.toggleStep('kick', ${i})"
                 onmousedown="window.beatMaker?.startDrag('kick', ${i})"
                 onmouseenter="window.beatMaker?.dragStep('kick', ${i})"
@@ -627,10 +703,16 @@ Your lyrics here...
             <span class="track-name">Guitar</span>
           </div>
           <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="guitar" data-step="${i}" onclick="window.beatMaker?.toggleStep('guitar', ${i})"></button>
-            `).join('')}
+            ${Array.from({ length: 16 }, (_, i) => `
+          <button
+            class="step-btn"
+            data-track="guitar"
+            data-step="${i}"
+            onclick="window.beatMaker?.toggleStep('guitar', ${i})"
+          ></button>
+          `).join('')}
           </div>
+
         </div>
 
         <!-- Clap -->
@@ -1807,9 +1889,362 @@ Your lyrics here...
     document.getElementById('collaborators-section').style.display = 
       e.target.checked ? 'block' : 'none';
   });
+
+  window.beatMaker = {
+    // State
+    isPlaying: false,
+    currentStep: 0,
+    tempo: 120,
+    timerId: null,
+    lastTickTime: 0,
+
+    // Audio Context
+    audioCtx: new (window.AudioContext || window.webkitAudioContext)(),
+    samples: {}, // Holds the decoded audio buffers
+
+    // Load samples into memory on initialization
+    async initSamples() {
+      const sampleMap = {
+        kick: '/samples/kick.wav',
+        snare: '/samples/snare.wav',
+        hihat: '/samples/hihat.wav',
+        reggaeton: '/samples/horn.wav',
+        shout: '/samples/yo-shout.wav'
+      };
+
+      for (const [name, path] of Object.entries(sampleMap)) {
+        try {
+          const response = await fetch(path);
+          const arrayBuffer = await response.arrayBuffer();
+          this.samples[name] = await this.audioCtx.decodeAudioData(arrayBuffer);
+        } catch (e) {
+          console.error(`Failed to load sample: ${name}`, e);
+        }
+      }
+    },
+
+    async togglePlayback() {
+      if (Object.keys(this.samples).length === 0) {
+        await this.initSamples();
+      }
+
+      if (this.audioCtx.state === 'suspended') {
+        await this.audioCtx.resume();
+      }
+
+      if (this.isPlaying) {
+        this.stop();
+      } else {
+        this.start();
+      }
+    },
+
+    start() {
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+      this.isPlaying = true;
+      document.getElementById('seq-play-text').textContent = 'Pause';
+      document.getElementById('seq-play-icon').textContent = '⏸️';
+      this.runSequencer();
+    },
+
+    stop() {
+      this.isPlaying = false;
+      cancelAnimationFrame(this.timerId);
+      document.getElementById('seq-play-text').textContent = 'Play';
+      document.getElementById('seq-play-icon').textContent = '▶️';
+      this.currentStep = 0;
+      this.updateVisuals();
+    },
+
+    runSequencer() {
+      const now = this.audioCtx.currentTime;
+      const stepDuration = 60 / this.tempo / 4; // 16th notes
+
+      if (now - this.lastTickTime > stepDuration) {
+        this.lastTickTime = now;
+        this.playStep(this.currentStep);
+        this.updateVisuals();
+        
+        // Move to next step
+        this.currentStep = (this.currentStep + 1) % 16;
+      }
+
+      if (this.isPlaying) {
+        this.timerId = requestAnimationFrame(() => this.runSequencer());
+      }
+    },
+
+    playStep(stepIndex) {
+      // Find all active buttons for this specific step
+      const activePads = document.querySelectorAll(`.step-btn[data-step="${stepIndex}"].active`);
+
+      activePads.forEach(pad => {
+        const track = pad.getAttribute('data-track');
+        this.triggerSound(track);
+      });
+    },
+
+    triggerSound(track) {
+      // Try to use loaded sample first, fallback to oscillator
+      if (this.samples[track]) {
+        const source = this.audioCtx.createBufferSource();
+        source.buffer = this.samples[track];
+
+        // Add a gain node for volume control per track
+        const gainNode = this.audioCtx.createGain();
+        const volume = document.querySelector(`.track-volume-slider[data-track="${track}"]`)?.value || 80;
+        gainNode.gain.value = volume / 100;
+
+        source.connect(gainNode);
+        gainNode.connect(this.audioCtx.destination);
+
+        source.start(0);
+      } else {
+        // Fallback to simple oscillator if sample not loaded
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+
+        // Different pitch for different tracks
+        const pitches = { kick: 150, snare: 300, hihat: 800, reggaeton: 400, bass: 80, guitar: 220, clap: 600, shout: 500, horn: 350, water: 700, electric: 1200, book: 250 };
+        osc.frequency.setValueAtTime(pitches[track] || 200, this.audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.1, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.1);
+
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + 0.1);
+      }
+    },
+
+    toggleStep(track, step) {
+      const btn = document.querySelector(`.step-btn[data-track="${track}"][data-step="${step}"]`);
+      if (btn) btn.classList.toggle('active');
+    },
+
+    setTempo(value) {
+      this.tempo = parseInt(value);
+      document.getElementById('seq-tempo-display').textContent = value;
+    },
+
+    setVolume(value) {
+      document.getElementById('seq-volume-display').textContent = value;
+    },
+
+    setSwing(value) {
+      document.getElementById('seq-swing-display').textContent = value;
+    },
+
+    toggleMute(track) {
+      console.log('Toggle mute:', track);
+    },
+
+    toggleSolo(track) {
+      console.log('Toggle solo:', track);
+    },
+
+    randomizeTrack(track) {
+      for (let i = 0; i < 16; i++) {
+        const btn = document.querySelector(`.step-btn[data-track="${track}"][data-step="${i}"]`);
+        if (btn && Math.random() > 0.7) {
+          btn.classList.add('active');
+        }
+      }
+    },
+
+    setTrackVolume(track, value) {
+      const valueSpan = document.querySelector(`.track-volume-slider[data-track="${track}"]`)?.nextElementSibling;
+      if (valueSpan) valueSpan.textContent = value;
+    },
+
+    clearPattern() {
+      document.querySelectorAll('.step-btn.active').forEach(btn => btn.classList.remove('active'));
+    },
+
+    randomizeAll() {
+      const tracks = ['kick', 'snare', 'hihat', 'bass', 'guitar', 'clap', 'shout', 'horn', 'reggaeton', 'water', 'electric', 'book'];
+      tracks.forEach(track => this.randomizeTrack(track));
+    },
+
+    tapTempo() {
+      console.log('Tap tempo');
+    },
+
+    undo() {
+      console.log('Undo');
+    },
+
+    redo() {
+      console.log('Redo');
+    },
+
+    savePattern() {
+      console.log('Save pattern');
+    },
+
+    loadPattern() {
+      console.log('Load pattern');
+    },
+
+    exportBeat() {
+      console.log('Export beat');
+    },
+
+    sharePattern() {
+      console.log('Share pattern');
+    },
+
+    useAsBackingTrack() {
+      console.log('Use as backing track');
+    },
+
+    loadPreset(preset) {
+      console.log('Load preset:', preset);
+    },
+
+    switchMode(mode) {
+      const generateMode = document.getElementById('beatmaker-generate-mode');
+      const uploadMode = document.getElementById('beatmaker-upload-mode');
+      const buttons = document.querySelectorAll('.mode-toggle-btn');
+
+      buttons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+
+      if (mode === 'generate') {
+        if (generateMode) generateMode.style.display = 'block';
+        if (uploadMode) uploadMode.style.display = 'none';
+      } else {
+        if (generateMode) generateMode.style.display = 'none';
+        if (uploadMode) uploadMode.style.display = 'block';
+      }
+    },
+
+    updateVisuals() {
+      // Update the "Step X/16" display
+      const display = document.getElementById('current-step-display');
+      if (display) display.textContent = this.currentStep + 1;
+
+      // Move the progress indicator bar
+      const indicator = document.getElementById('seq-position-indicator');
+      if (indicator) {
+        indicator.style.left = `${(this.currentStep / 16) * 100}%`;
+      }
+
+      // Visual highlight on the buttons
+      document.querySelectorAll('.step-btn').forEach(btn => btn.classList.remove('playing'));
+      document.querySelectorAll(`.step-btn[data-step="${this.currentStep}"]`).forEach(btn => {
+        btn.classList.add('playing');
+      });
+    }
+  };
+
+window.sampleManager = {
+    basePath: '/data/music/',
+    library: [],
+
+    async init() {
+      // 1. Load Base Library from /public/data/music/library.json
+      try {
+        const response = await fetch(`${this.basePath}library.json`);
+        const baseData = await response.json();
+        
+        // 2. Load User Data from localStorage
+        const userData = JSON.parse(localStorage.getItem('user_samples') || '[]');
+        
+        // 3. Merge and Render
+        this.library = [...baseData, ...userData];
+        this.renderLibrary();
+      } catch (e) {
+        console.error("Failed to load base library manifest", e);
+      }
+    },
+
+    renderLibrary() {
+      const container = document.getElementById('sample-list-container');
+      container.innerHTML = this.library.map(sample => `
+        <div class="sample-row">
+          <div class="sample-info">
+            <span class="name">${sample.name}</span>
+            <span class="origin">${sample.isUser ? '👤 User' : '📦 Base'}</span>
+          </div>
+          <div class="sample-actions">
+            <button onclick="window.sampleManager.preview('${sample.url}')">▶️</button>
+            <button onclick="window.sampleManager.assignToSequencer('${sample.id}')">🎹 Use</button>
+          </div>
+        </div>
+      `).join('');
+    },
+
+    assignToSequencer(sampleId) {
+      const sample = this.library.find(s => s.id == sampleId);
+      // Logic to tell window.beatMaker to update a track buffer
+      if (window.beatMaker) {
+        window.beatMaker.loadSpecificSample('kick', sample.url);
+        alert(`Assigned ${sample.name} to Kick track!`);
+      }
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => window.sampleManager.init());
+
+
 </script>
 
 <style>
+
+/* The vertical line or highlight that moves across the grid */
+.step-btn.playing {
+  border-color: #00ff88;
+  background-color: #333; /* Slightly brighter when playhead passes */
+}
+
+/* The Progress Bar Container */
+.playback-position {
+  width: 100%;
+  height: 20px;
+  background: #111;
+  position: relative;
+  margin: 10px 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.position-bar {
+  width: 100%;
+  height: 100%;
+}
+
+.position-indicator {
+  position: absolute;
+  top: 0;
+  width: 6.25%; /* 1/16th of the width */
+  height: 100%;
+  background: rgba(0, 255, 136, 0.3);
+  transition: left 0.05s linear;
+}
+
+/* Add this class via JS inside triggerSound for extra polish */
+.track-label.pulse {
+  color: #00ff88;
+  transform: scale(1.05);
+  transition: transform 0.1s;
+}
+
+.sequencer-row[data-track-color="drums"] .step-btn.active {
+  background: #ff4757; /* Red for drums */
+  box-shadow: 0 0 10px #ff4757;
+}
+
+.sequencer-row[data-track="reggaeton"] .step-btn.active {
+  background: #eccc68; /* Gold for the lead horn */
+  box-shadow: 0 0 10px #eccc68;
+}
+
   /* Music studio specific styles */
   .studio-header {
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);

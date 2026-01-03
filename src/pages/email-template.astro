@@ -1,0 +1,371 @@
+---
+/**
+ * email-template.astro
+ * Branded email template for notifications and communications
+ *
+ * Usage: This template can be used for:
+ * - Achievement notifications
+ * - Airdrop announcements
+ * - Battle invitations
+ * - Collaboration requests
+ * - Weekly digests
+ */
+
+const {
+  recipient = "User",
+  subject = "Update from Worldbridger One",
+  preheader = "You have new activity on Worldbridger One",
+  content = "Default content",
+  ctaText = "View on Worldbridger One",
+  ctaUrl = "https://worldbridgerone.io",
+  type = "notification" // notification, achievement, airdrop, battle, digest
+} = Astro.props;
+
+// Email-safe colors
+const colors = {
+  primary: '#667eea',
+  secondary: '#764ba2',
+  accent: '#f093fb',
+  success: '#10b981',
+  warning: '#f59e0b',
+  text: '#1f2937',
+  textLight: '#6b7280',
+  background: '#ffffff',
+  backgroundAlt: '#f9fafb',
+  border: '#e5e7eb'
+};
+
+const themeColors = {
+  notification: colors.primary,
+  achievement: colors.success,
+  airdrop: colors.accent,
+  battle: colors.warning,
+  digest: colors.secondary
+};
+
+const themeColor = themeColors[type] || colors.primary;
+---
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="format-detection" content="telephone=no,address=no,email=no,date=no,url=no">
+  <title>{subject}</title>
+
+  <!-- Email Client CSS Support -->
+  <!--[if mso]>
+  <style>
+    * { font-family: 'Segoe UI', Tahoma, sans-serif !important; }
+  </style>
+  <![endif]-->
+
+  <style>
+    /* Reset */
+    html, body {
+      margin: 0 auto !important;
+      padding: 0 !important;
+      height: 100% !important;
+      width: 100% !important;
+      background: #f9fafb;
+    }
+
+    /* No mobile rescaling */
+    * {
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Center email on desktop */
+    .email-container {
+      margin: 0 auto;
+      max-width: 600px;
+      background: #ffffff;
+    }
+
+    /* Typography */
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: {colors.text};
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    h1 { font-size: 28px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 20px; }
+
+    p {
+      margin: 0 0 16px 0;
+    }
+
+    a {
+      color: {themeColor};
+      text-decoration: none;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, {colors.primary} 0%, {colors.secondary} 100%);
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .header-logo {
+      max-width: 200px;
+      height: auto;
+    }
+
+    .header-graphic {
+      max-width: 600px;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Content */
+    .content {
+      padding: 32px 24px;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: {themeColor};
+      color: white;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    /* CTA Button */
+    .cta-button {
+      display: inline-block;
+      padding: 16px 32px;
+      background: {themeColor};
+      color: white !important;
+      border-radius: 8px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      margin: 16px 0;
+    }
+
+    .cta-button:hover {
+      opacity: 0.9;
+    }
+
+    /* Stats Card */
+    .stats-card {
+      background: {colors.backgroundAlt};
+      border: 1px solid {colors.border};
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid {colors.border};
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      color: {colors.textLight};
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-weight: 700;
+      color: {colors.text};
+    }
+
+    /* Divider */
+    .divider {
+      width: 100%;
+      height: auto;
+      margin: 24px 0;
+    }
+
+    /* Footer */
+    .footer {
+      background: {colors.backgroundAlt};
+      padding: 32px 24px;
+      text-align: center;
+      color: {colors.textLight};
+      font-size: 14px;
+    }
+
+    .footer-links {
+      margin: 16px 0;
+    }
+
+    .footer-links a {
+      color: {colors.textLight};
+      margin: 0 12px;
+      text-decoration: none;
+    }
+
+    .social-icons {
+      margin: 16px 0;
+    }
+
+    .social-icon {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      margin: 0 8px;
+    }
+
+    /* Mobile */
+    @media only screen and (max-width: 600px) {
+      .email-container {
+        width: 100% !important;
+      }
+
+      .content {
+        padding: 24px 16px !important;
+      }
+
+      h1 { font-size: 24px !important; }
+      h2 { font-size: 20px !important; }
+
+      .cta-button {
+        display: block !important;
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Preview Text (hidden, shows in inbox preview) -->
+  <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+    {preheader}
+  </div>
+
+  <!-- Email Container -->
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+    <tr>
+      <td style="padding: 40px 10px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" class="email-container">
+
+          <!-- Header -->
+          <tr>
+            <td class="header">
+              <!-- Header SVG Graphic -->
+              <img src="https://purplepoint.io/images/email/header-banner.svg"
+                   alt="Worldbridger One"
+                   class="header-graphic"
+                   style="max-width: 600px; width: 100%; height: auto; display: block;" />
+              <!-- Fallback if SVG not loaded -->
+              <div style="display: none;">
+                <h1 style="color: white; margin: 0;">Worldbridger One</h1>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td class="content">
+              <!-- Type Badge -->
+              <span class="badge" style="background: {themeColor};">
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </span>
+
+              <!-- Greeting -->
+              <h1>Hello, {recipient}!</h1>
+
+              <!-- Main Content (slot for dynamic content) -->
+              <div class="email-content">
+                <Fragment set:html={content} />
+              </div>
+
+              <!-- CTA Button -->
+              <div style="text-align: center; margin: 32px 0;">
+                <a href={ctaUrl} class="cta-button" style="background: {themeColor}; color: white;">
+                  {ctaText}
+                </a>
+              </div>
+
+              <!-- Support Text -->
+              <p style="color: {colors.textLight}; font-size: 14px; margin-top: 24px;">
+                If the button doesn't work, copy and paste this link into your browser:<br/>
+                <a href={ctaUrl} style="color: {colors.primary};">{ctaUrl}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td>
+              <img src="https://purplepoint.io/images/email/divider.svg"
+                   alt=""
+                   class="divider"
+                   style="width: 100%; height: auto; margin: 24px 0;" />
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="footer">
+              <!-- Social Icons -->
+              <div class="social-icons">
+                <a href="https://twitter.com/purplepoint" style="text-decoration: none;">
+                  <img src="https://purplepoint.io/images/icons/twitter.svg"
+                       alt="Twitter"
+                       class="social-icon"
+                       style="width: 32px; height: 32px; display: inline-block;" />
+                </a>
+                <a href="https://discord.gg/purplepoint" style="text-decoration: none;">
+                  <img src="https://purplepoint.io/images/icons/discord.svg"
+                       alt="Discord"
+                       class="social-icon"
+                       style="width: 32px; height: 32px; display: inline-block;" />
+                </a>
+                <a href="https://github.com/purplepoint" style="text-decoration: none;">
+                  <img src="https://purplepoint.io/images/icons/github.svg"
+                       alt="GitHub"
+                       class="social-icon"
+                       style="width: 32px; height: 32px; display: inline-block;" />
+                </a>
+              </div>
+
+              <!-- Footer Links -->
+              <div class="footer-links">
+                <a href="https://purplepoint.io/profile">Profile</a> •
+                <a href="https://purplepoint.io/help">Help Center</a> •
+                <a href="https://purplepoint.io/settings">Settings</a>
+              </div>
+
+              <!-- Copyright -->
+              <p style="margin: 16px 0 0 0; font-size: 12px;">
+                © 2026 Worldbridger One. All rights reserved.<br/>
+                <a href="https://purplepoint.io/unsubscribe" style="color: {colors.textLight};">Unsubscribe</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

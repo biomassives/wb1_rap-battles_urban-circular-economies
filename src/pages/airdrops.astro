@@ -9,11 +9,14 @@
  * - Event Domains: Educational activity categorization
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
 
-// Fetch data from JSON files
-const rewardsData = await fetch(new URL('/data/purple-point/airdrops/rewards.json', Astro.url)).then(r => r.json());
-const projectsData = await fetch(new URL('/data/purple-point/projects/projects.json', Astro.url)).then(r => r.json());
-const eventDomainsData = await fetch(new URL('/data/purple-point/calendar/event-domains.json', Astro.url)).then(r => r.json());
+// Read data from JSON files (using fs for static builds)
+const publicDir = path.join(process.cwd(), 'public');
+const rewardsData = JSON.parse(fs.readFileSync(path.join(publicDir, 'data/purple-point/airdrops/rewards.json'), 'utf-8'));
+const projectsData = JSON.parse(fs.readFileSync(path.join(publicDir, 'data/purple-point/projects/projects.json'), 'utf-8'));
+const eventDomainsData = JSON.parse(fs.readFileSync(path.join(publicDir, 'data/purple-point/calendar/event-domains.json'), 'utf-8'));
 ---
 
 <BaseLayout

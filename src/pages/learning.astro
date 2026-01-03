@@ -316,18 +316,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <div class="form-group">
               <label class="form-label">
                 Photos (Optional)
+                <span id="photo-count" class="photo-count-badge" style="display: none;"></span>
               </label>
               <div class="photo-upload-area">
-                <input 
-                  type="file" 
-                  id="observation-photos" 
+                <input
+                  type="file"
+                  id="observation-photos"
                   accept="image/*"
                   multiple
                   hidden
+                  onchange="handlePhotoSelection(event)"
                 />
-                <button 
-                  type="button" 
-                  class="btn-secondary"
+                <button
+                  type="button"
+                  class="btn-secondary photo-upload-btn"
                   onclick="document.getElementById('observation-photos').click()"
                 >
                   📷 Add Photos
@@ -337,7 +339,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                 </div>
               </div>
               <p class="form-hint">
-                Photos help verify observations and improve data quality
+                Photos help verify observations and improve data quality (max 5 photos, 10MB each)
               </p>
             </div>
 
@@ -654,6 +656,90 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   function closeSubmitObservation() {
     document.getElementById('submit-observation-modal').style.display = 'none';
     document.getElementById('observation-form').reset();
+    clearPhotoPreview();
+  }
+
+  // Photo upload handling
+  let selectedPhotos = [];
+  const MAX_PHOTOS = 5;
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+  function handlePhotoSelection(event) {
+    const files = Array.from(event.target.files);
+
+    // Validate number of photos
+    if (selectedPhotos.length + files.length > MAX_PHOTOS) {
+      alert(`You can only upload up to ${MAX_PHOTOS} photos`);
+      return;
+    }
+
+    // Validate file sizes and add to selected photos
+    for (const file of files) {
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`${file.name} is too large. Max file size is 10MB`);
+        continue;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        alert(`${file.name} is not an image file`);
+        continue;
+      }
+
+      selectedPhotos.push(file);
+    }
+
+    renderPhotoPreview();
+  }
+
+  function removePhoto(index) {
+    selectedPhotos.splice(index, 1);
+    renderPhotoPreview();
+  }
+
+  function clearPhotoPreview() {
+    selectedPhotos = [];
+    document.getElementById('photo-previews').innerHTML = '';
+    document.getElementById('photo-count').style.display = 'none';
+    document.getElementById('observation-photos').value = '';
+  }
+
+  function renderPhotoPreview() {
+    const container = document.getElementById('photo-previews');
+    const countBadge = document.getElementById('photo-count');
+
+    if (selectedPhotos.length === 0) {
+      container.innerHTML = '';
+      countBadge.style.display = 'none';
+      return;
+    }
+
+    // Show count badge
+    countBadge.textContent = `${selectedPhotos.length} photo${selectedPhotos.length > 1 ? 's' : ''}`;
+    countBadge.style.display = 'inline-block';
+
+    // Render previews
+    container.innerHTML = selectedPhotos.map((file, index) => {
+      const url = URL.createObjectURL(file);
+      const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+
+      return `
+        <div class="photo-preview-item">
+          <div class="photo-preview-image" style="background-image: url('${url}')"></div>
+          <div class="photo-preview-info">
+            <div class="photo-preview-name">${file.name}</div>
+            <div class="photo-preview-size">${sizeInMB} MB</div>
+          </div>
+          <button
+            type="button"
+            class="photo-preview-remove"
+            onclick="removePhoto(${index})"
+            title="Remove photo"
+          >
+            ×
+          </button>
+        </div>
+      `;
+    }).join('');
   }
 
   // Handle observation form submit
@@ -743,6 +829,107 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .quality-option:has(input:checked) {
     border-color: #38ef7d;
     background: #f0fdf4;
+  }
+
+  /* Photo Upload Styles */
+  .photo-count-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: #38ef7d;
+    color: white;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .photo-upload-area {
+    margin-top: 0.5rem;
+  }
+
+  .photo-upload-btn {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .photo-previews {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .photo-preview-item {
+    position: relative;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .photo-preview-item:hover {
+    border-color: #38ef7d;
+    box-shadow: 0 4px 6px rgba(56, 239, 125, 0.1);
+  }
+
+  .photo-preview-image {
+    width: 100%;
+    height: 150px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 0.375rem;
+    background-color: #f3f4f6;
+  }
+
+  .photo-preview-info {
+    flex: 1;
+  }
+
+  .photo-preview-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .photo-preview-size {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+  }
+
+  .photo-preview-remove {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .photo-preview-remove:hover {
+    background: rgba(220, 38, 38, 1);
+    transform: scale(1.1);
   }
 
   /* More styles... */

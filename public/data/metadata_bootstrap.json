@@ -1,0 +1,14 @@
+{
+  "project": "Worldbridger One",
+  "lattice_type": "E8_LISI_PROJECTION",
+  "traits": [
+    {"dimension": 1, "label": "Species Count", "value": 14, "status": "STABLE"},
+    {"dimension": 2, "label": "Soil Conductivity", "value": 0.82, "status": "INTERSECTING"},
+    {"dimension": 3, "label": "Acoustic Biomass", "value": 0.44, "status": "DRIFT_DETECTED"},
+    {"dimension": 4, "label": "Mycelial Network", "value": 0.91, "status": "VERIFIED"},
+    {"dimension": 5, "label": "Solar Flux", "value": 0.12, "status": "LOW_RESONANCE"},
+    {"dimension": 6, "label": "Water Retention", "value": 0.67, "status": "STABLE"},
+    {"dimension": 7, "label": "Pollinator Frequency", "value": 0.88, "status": "INTERSECTING"},
+    {"dimension": 8, "label": "Community Trust", "value": 1.0, "status": "MAX_RESONANCE"}
+  ]
+}

@@ -85,8 +85,7 @@ NILE_API_KEY=your_nile_api_key_here
 
       <div class="section">
         <h3>Extension Usage Examples</h3>
-        <pre class="code-example">
--- pgvector: Store and search embeddings
+        <pre class="code-example" set:html={`-- pgvector: Store and search embeddings
 CREATE TABLE lyrics_embeddings (
   id UUID PRIMARY KEY,
   lyric_text TEXT,
@@ -113,8 +112,7 @@ SELECT cron.schedule(
 SELECT name, ST_Distance(location, ST_Point(-1.5, 36.8)) as distance
 FROM gardens
 WHERE ST_DWithin(location, ST_Point(-1.5, 36.8), 0.1)
-ORDER BY distance;
-        </pre>
+ORDER BY distance;`}></pre>
       </div>
     </div>
 
@@ -194,8 +192,7 @@ SELECT * FROM battles;  -- Only returns battles for current tenant
 
       <div class="section">
         <h3>Implementation Example</h3>
-        <pre class="code-example">
--- 1. Create embeddings table for battle submissions
+        <pre class="code-example" set:html={`-- 1. Create embeddings table for battle submissions
 CREATE TABLE battle_submission_embeddings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   submission_id UUID REFERENCES battle_submissions(id),
@@ -225,8 +222,7 @@ SELECT
 FROM battle_submission_embeddings e
 JOIN battle_submissions s ON e.submission_id = s.id
 ORDER BY similarity_score
-LIMIT 10;
-        </pre>
+LIMIT 10;`}></pre>
       </div>
     </div>
 
@@ -315,8 +311,7 @@ LIMIT 10;
 
       <div class="section">
         <h3>Implementation</h3>
-        <pre class="code-example">
--- Add location column to gardens
+        <pre class="code-example" set:html={`-- Add location column to gardens
 ALTER TABLE gardens
 ADD COLUMN location GEOGRAPHY(POINT, 4326);
 
@@ -346,8 +341,7 @@ ORDER BY distance_km;
 SELECT name, location
 FROM gardens
 ORDER BY location <-> ST_SetSRID(ST_MakePoint(34.813, 3.121), 4326)
-LIMIT 1;
-        </pre>
+LIMIT 1;`}></pre>
       </div>
     </div>
 

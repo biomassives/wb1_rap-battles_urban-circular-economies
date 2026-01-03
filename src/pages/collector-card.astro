@@ -1,0 +1,159 @@
+---
+// src/pages/certification.astro
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Worldbringer | NFT Certificate</title>
+    <style>
+        :root { --bg: #0a0a0a; --accent: #b4f55b; --text: #e0e0e0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+        
+        .card-preview-container {
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            margin-bottom: 2rem;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        input {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            padding: 12px;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .download-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+
+        .download-btn:hover { filter: brightness(1.1); }
+    </style>
+</head>
+<body>
+
+    <header style="text-align:center; margin-bottom: 2rem;">
+        <h1 style="text-transform: uppercase; letter-spacing: 3px;">Academy <span>Collector</span></h1>
+        <p style="color: #666;">Convert your Binder Literacy into a high-fidelity card.</p>
+    </header>
+
+    <div class="card-preview-container">
+        <canvas id="nftCanvas" width="600" height="800"></canvas>
+    </div>
+
+    <div class="controls">
+        <label style="font-size: 0.7rem; color: var(--accent);">NAME OF EXPLORER</label>
+        <input type="text" id="userName" placeholder="ENTER NAME..." maxlength="20">
+        
+        <button class="download-btn" onclick="downloadCard()">💾 Download PNG Card</button>
+    </div>
+
+    <script is:inline>
+        const canvas = document.getElementById('nftCanvas');
+        const ctx = canvas.getContext('2d');
+        const nameInput = document.getElementById('userName');
+
+        // Load your SVG template (Represented here as a drawing function)
+        function drawCardBase(name) {
+            const certData = JSON.parse(localStorage.getItem('cert_binder') || '{"hash":"PENDING-000","date":"2026-01-02"}');
+            
+            // 1. Background & Border
+            ctx.fillStyle = '#141414';
+            ctx.fillRect(0, 0, 600, 800);
+            
+            ctx.strokeStyle = '#b4f55b';
+            ctx.lineWidth = 8;
+            ctx.strokeRect(20, 20, 560, 760);
+            ctx.lineWidth = 1;
+            ctx.strokeRect(30, 30, 540, 740);
+
+            // 2. Header Text
+            ctx.fillStyle = '#b4f55b';
+            ctx.textAlign = 'center';
+            ctx.font = '800 28px Inter';
+            ctx.fillText('WORLDBRINGER ACADEMY', 300, 100);
+            ctx.font = '300 20px Inter';
+            ctx.fillText('CERTIFIED BIO-TECH EXPLORER', 300, 140);
+
+            // 3. Modality Icon Placeholder (The Leaf)
+            ctx.fillStyle = '#b4f55b';
+            ctx.beginPath();
+            ctx.roundRect(70, 250, 200, 200, 20);
+            ctx.fill();
+            // Simple Leaf SVG drawing logic
+            ctx.fillStyle = '#141414';
+            ctx.font = '100px serif';
+            ctx.fillText('🌿', 170, 380);
+
+            // 4. User Data
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#888';
+            ctx.font = '12px Inter';
+            ctx.fillText('NAME:', 300, 270);
+            ctx.fillStyle = '#FFF';
+            ctx.font = '700 24px Inter';
+            ctx.fillText(name.toUpperCase() || 'YOUNG EXPLORER', 300, 305);
+
+            ctx.fillStyle = '#888';
+            ctx.font = '12px Inter';
+            ctx.fillText('COMPLETION:', 300, 360);
+            ctx.fillStyle = '#b4f55b';
+            ctx.font = '700 20px Inter';
+            ctx.fillText('BINDER LITERACY', 300, 395);
+
+            // 5. Modalities & Hash
+            ctx.fillStyle = '#888';
+            ctx.font = '10px Inter';
+            ctx.fillText('MODALITIES UNLOCKED: 1/25', 70, 550);
+            ctx.fillText('VERIFICATION HASH:', 70, 720);
+            ctx.fillStyle = '#b4f55b';
+            ctx.font = '12px monospace';
+            ctx.fillText(certData.hash, 70, 740);
+            
+            ctx.textAlign = 'right';
+            ctx.fillText('ISSUED: ' + certData.date, 530, 740);
+        }
+
+        // Live Preview Update
+        nameInput.addEventListener('input', (e) => {
+            drawCardBase(e.target.value);
+        });
+
+        function downloadCard() {
+            const link = document.createElement('a');
+            link.download = `worldbringer-cert-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Initial Draw
+        window.onload = () => drawCardBase('');
+    </script>
+</body>
+</html>

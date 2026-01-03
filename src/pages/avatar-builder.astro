@@ -1,0 +1,769 @@
+---
+/**
+ * avatar-builder.astro
+ * Vector Avatar Builder with Composable NFT Accessories
+ *
+ * Features:
+ * - Canvas-based vector avatar creation
+ * - Animal mentor base characters
+ * - Composable NFT accessories (bling, hats, chains, etc.)
+ * - Save as profile picture or rap battle avatar
+ * - Export as PNG or mint as NFT
+ */
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worldbridger One | Avatar Builder</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card-bg: #141414;
+      --accent: #667eea;
+      --accent-glow: #764ba2;
+      --text: #e0e0e0;
+      --text-dim: #888;
+      --border: #333;
+      --success: #10b981;
+      --gold: #fbbf24;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .builder-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 350px 1fr 350px;
+      gap: 2rem;
+    }
+
+    .builder-header {
+      grid-column: 1 / -1;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .builder-header h1 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .builder-header p {
+      color: var(--text-dim);
+      font-size: 1rem;
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      height: fit-content;
+    }
+
+    .panel-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .canvas-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    canvas {
+      border-radius: 8px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      max-width: 100%;
+      height: auto;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .option-btn {
+      background: #1a1a1a;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+    }
+
+    .option-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .option-btn.active {
+      border-color: var(--accent);
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .option-btn.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .option-emoji {
+      font-size: 2.5rem;
+    }
+
+    .option-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    .nft-badge {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+      background: var(--gold);
+      color: #000;
+      font-size: 0.6rem;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .locked-badge {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+      background: var(--text-dim);
+      color: #000;
+      font-size: 0.6rem;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .color-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.5rem;
+    }
+
+    .color-option {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.active {
+      border-color: white;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #1a1a1a;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-item {
+      background: #1a1a1a;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.25rem;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 1200px) {
+      .builder-container {
+        grid-template-columns: 1fr;
+      }
+
+      .canvas-container {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .option-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="builder-container">
+
+    <!-- Header -->
+    <div class="builder-header">
+      <h1>🎨 Avatar Builder</h1>
+      <p>Create your unique PFP with composable NFT accessories</p>
+    </div>
+
+    <!-- Left Panel: Base Character -->
+    <div class="panel left-panel">
+      <h3 class="panel-title">
+        <span>🐾</span>
+        <span>Base Character</span>
+      </h3>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value" id="level-display">1</div>
+          <div class="stat-label">Level</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="accessories-count">0</div>
+          <div class="stat-label">Accessories</div>
+        </div>
+      </div>
+
+      <div class="option-grid">
+        <button class="option-btn active" data-character="chicken" onclick="selectCharacter('chicken')">
+          <span class="option-emoji">🐓</span>
+          <span class="option-label">Chicken</span>
+        </button>
+        <button class="option-btn" data-character="cat" onclick="selectCharacter('cat')">
+          <span class="option-emoji">🐱</span>
+          <span class="option-label">Cat</span>
+          <span class="locked-badge">LVL 11</span>
+        </button>
+        <button class="option-btn" data-character="goat" onclick="selectCharacter('goat')">
+          <span class="option-emoji">🐐</span>
+          <span class="option-label">Goat</span>
+          <span class="locked-badge">LVL 11</span>
+        </button>
+        <button class="option-btn" data-character="pigeon" onclick="selectCharacter('pigeon')">
+          <span class="option-emoji">🕊️</span>
+          <span class="option-label">Pigeon</span>
+          <span class="locked-badge">LVL 21</span>
+        </button>
+        <button class="option-btn" data-character="dog" onclick="selectCharacter('dog')">
+          <span class="option-emoji">🐕</span>
+          <span class="option-label">Dog</span>
+          <span class="locked-badge">LVL 21</span>
+        </button>
+        <button class="option-btn" data-character="rabbit" onclick="selectCharacter('rabbit')">
+          <span class="option-emoji">🐰</span>
+          <span class="option-label">Rabbit</span>
+          <span class="locked-badge">LVL 31</span>
+        </button>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <h3 class="panel-title">
+        <span>🎨</span>
+        <span>Base Colors</span>
+      </h3>
+
+      <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1rem;">Background</p>
+      <div class="color-picker-grid">
+        <div class="color-option active" style="background: #667eea;" data-color="bg" data-value="#667eea" onclick="selectColor('bg', '#667eea', this)"></div>
+        <div class="color-option" style="background: #764ba2;" data-color="bg" data-value="#764ba2" onclick="selectColor('bg', '#764ba2', this)"></div>
+        <div class="color-option" style="background: #f093fb;" data-color="bg" data-value="#f093fb" onclick="selectColor('bg', '#f093fb', this)"></div>
+        <div class="color-option" style="background: #4facfe;" data-color="bg" data-value="#4facfe" onclick="selectColor('bg', '#4facfe', this)"></div>
+        <div class="color-option" style="background: #43e97b;" data-color="bg" data-value="#43e97b" onclick="selectColor('bg', '#43e97b', this)"></div>
+        <div class="color-option" style="background: #fa709a;" data-color="bg" data-value="#fa709a" onclick="selectColor('bg', '#fa709a', this)"></div>
+      </div>
+
+      <p style="font-size: 0.75rem; color: var(--text-dim); margin: 1rem 0 1rem 0;">Character Tint</p>
+      <div class="color-picker-grid">
+        <div class="color-option active" style="background: #ffffff;" data-color="tint" data-value="#ffffff" onclick="selectColor('tint', '#ffffff', this)"></div>
+        <div class="color-option" style="background: #fbbf24;" data-color="tint" data-value="#fbbf24" onclick="selectColor('tint', '#fbbf24', this)"></div>
+        <div class="color-option" style="background: #f87171;" data-color="tint" data-value="#f87171" onclick="selectColor('tint', '#f87171', this)"></div>
+        <div class="color-option" style="background: #60a5fa;" data-color="tint" data-value="#60a5fa" onclick="selectColor('tint', '#60a5fa', this)"></div>
+        <div class="color-option" style="background: #34d399;" data-color="tint" data-value="#34d399" onclick="selectColor('tint', '#34d399', this)"></div>
+        <div class="color-option" style="background: #a78bfa;" data-color="tint" data-value="#a78bfa" onclick="selectColor('tint', '#a78bfa', this)"></div>
+      </div>
+
+    </div>
+
+    <!-- Center: Canvas -->
+    <div class="canvas-container">
+      <canvas id="avatarCanvas" width="600" height="600"></canvas>
+
+      <div class="action-buttons" style="width: 100%; max-width: 400px;">
+        <button class="btn btn-primary" onclick="downloadAvatar()">
+          <span>💾</span>
+          <span>Download PNG</span>
+        </button>
+        <button class="btn btn-success" onclick="saveAsProfilePic()">
+          <span>👤</span>
+          <span>Set as Profile Picture</span>
+        </button>
+        <button class="btn btn-secondary" onclick="mintAsNFT()">
+          <span>✨</span>
+          <span>Mint as NFT (Coming Soon)</span>
+        </button>
+        <button class="btn btn-secondary" onclick="window.location.href='/profile'">
+          <span>←</span>
+          <span>Back to Profile</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Panel: Accessories -->
+    <div class="panel right-panel">
+      <h3 class="panel-title">
+        <span>💎</span>
+        <span>Accessories</span>
+      </h3>
+
+      <p style="font-size: 0.875rem; color: var(--text-dim); margin-bottom: 1rem;">
+        Add bling and accessories to your avatar. NFT accessories are owned items!
+      </p>
+
+      <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text);">Headwear</h4>
+      <div class="option-grid">
+        <button class="option-btn" data-accessory="none-hat" onclick="toggleAccessory('hat', 'none')">
+          <span class="option-emoji">⚪</span>
+          <span class="option-label">None</span>
+        </button>
+        <button class="option-btn" data-accessory="crown" onclick="toggleAccessory('hat', 'crown')">
+          <span class="option-emoji">👑</span>
+          <span class="option-label">Crown</span>
+          <span class="nft-badge">NFT</span>
+        </button>
+        <button class="option-btn" data-accessory="cap" onclick="toggleAccessory('hat', 'cap')">
+          <span class="option-emoji">🧢</span>
+          <span class="option-label">Cap</span>
+        </button>
+        <button class="option-btn" data-accessory="halo" onclick="toggleAccessory('hat', 'halo')">
+          <span class="option-emoji">😇</span>
+          <span class="option-label">Halo</span>
+          <span class="nft-badge">NFT</span>
+        </button>
+        <button class="option-btn locked" data-accessory="wizard" onclick="toggleAccessory('hat', 'wizard')">
+          <span class="option-emoji">🧙</span>
+          <span class="option-label">Wizard</span>
+          <span class="locked-badge">LVL 25</span>
+        </button>
+        <button class="option-btn locked" data-accessory="party" onclick="toggleAccessory('hat', 'party')">
+          <span class="option-emoji">🎉</span>
+          <span class="option-label">Party</span>
+          <span class="locked-badge">LVL 15</span>
+        </button>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text);">Bling & Chains</h4>
+      <div class="option-grid">
+        <button class="option-btn" data-accessory="none-chain" onclick="toggleAccessory('chain', 'none')">
+          <span class="option-emoji">⚪</span>
+          <span class="option-label">None</span>
+        </button>
+        <button class="option-btn" data-accessory="gold-chain" onclick="toggleAccessory('chain', 'gold')">
+          <span class="option-emoji">🥇</span>
+          <span class="option-label">Gold Chain</span>
+          <span class="nft-badge">NFT</span>
+        </button>
+        <button class="option-btn" data-accessory="diamond" onclick="toggleAccessory('chain', 'diamond')">
+          <span class="option-emoji">💎</span>
+          <span class="option-label">Diamond</span>
+          <span class="nft-badge">NFT</span>
+        </button>
+        <button class="option-btn" data-accessory="silver-chain" onclick="toggleAccessory('chain', 'silver')">
+          <span class="option-emoji">🥈</span>
+          <span class="option-label">Silver</span>
+        </button>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text);">Eyewear</h4>
+      <div class="option-grid">
+        <button class="option-btn" data-accessory="none-eyes" onclick="toggleAccessory('eyes', 'none')">
+          <span class="option-emoji">⚪</span>
+          <span class="option-label">None</span>
+        </button>
+        <button class="option-btn" data-accessory="sunglasses" onclick="toggleAccessory('eyes', 'sunglasses')">
+          <span class="option-emoji">😎</span>
+          <span class="option-label">Shades</span>
+        </button>
+        <button class="option-btn" data-accessory="monocle" onclick="toggleAccessory('eyes', 'monocle')">
+          <span class="option-emoji">🧐</span>
+          <span class="option-label">Monocle</span>
+          <span class="nft-badge">NFT</span>
+        </button>
+        <button class="option-btn locked" data-accessory="laser-eyes" onclick="toggleAccessory('eyes', 'laser')">
+          <span class="option-emoji">👁️</span>
+          <span class="option-label">Laser</span>
+          <span class="locked-badge">LVL 50</span>
+        </button>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text);">Props</h4>
+      <div class="option-grid">
+        <button class="option-btn" data-accessory="none-prop" onclick="toggleAccessory('prop', 'none')">
+          <span class="option-emoji">⚪</span>
+          <span class="option-label">None</span>
+        </button>
+        <button class="option-btn" data-accessory="mic" onclick="toggleAccessory('prop', 'mic')">
+          <span class="option-emoji">🎤</span>
+          <span class="option-label">Mic</span>
+        </button>
+        <button class="option-btn" data-accessory="money" onclick="toggleAccessory('prop', 'money')">
+          <span class="option-emoji">💰</span>
+          <span class="option-label">Money</span>
+          <span class="nft-badge">NFT</span>
+        </button>
+        <button class="option-btn" data-accessory="fire" onclick="toggleAccessory('prop', 'fire')">
+          <span class="option-emoji">🔥</span>
+          <span class="option-label">Fire</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script is:inline>
+    /**
+     * Avatar Builder Engine
+     */
+    const canvas = document.getElementById('avatarCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Avatar State
+    let avatarState = {
+      character: 'chicken',
+      bgColor: '#667eea',
+      tintColor: '#ffffff',
+      accessories: {
+        hat: 'none',
+        chain: 'none',
+        eyes: 'none',
+        prop: 'none'
+      },
+      userLevel: 1
+    };
+
+    // Character emoji map
+    const characterEmojis = {
+      chicken: '🐓',
+      cat: '🐱',
+      goat: '🐐',
+      pigeon: '🕊️',
+      dog: '🐕',
+      rabbit: '🐰'
+    };
+
+    // Accessory emoji map
+    const accessoryEmojis = {
+      hat: {
+        crown: '👑',
+        cap: '🧢',
+        halo: '😇',
+        wizard: '🧙',
+        party: '🎉'
+      },
+      chain: {
+        gold: '🥇',
+        diamond: '💎',
+        silver: '🥈'
+      },
+      eyes: {
+        sunglasses: '🕶️',
+        monocle: '🧐',
+        laser: '⚡'
+      },
+      prop: {
+        mic: '🎤',
+        money: '💰',
+        fire: '🔥'
+      }
+    };
+
+    // Initialize
+    function init() {
+      // Load user level from wallet manager
+      if (window.walletManager) {
+        avatarState.userLevel = 1; // TODO: Get from actual user data
+      }
+
+      document.getElementById('level-display').textContent = avatarState.userLevel;
+      drawAvatar();
+    }
+
+    // Draw avatar on canvas
+    function drawAvatar() {
+      // Clear canvas
+      ctx.fillStyle = avatarState.bgColor;
+      ctx.fillRect(0, 0, 600, 600);
+
+      // Draw gradient background
+      const gradient = ctx.createRadialGradient(300, 300, 100, 300, 300, 400);
+      gradient.addColorStop(0, avatarState.bgColor);
+      const darkerColor = shadeColor(avatarState.bgColor, -30);
+      gradient.addColorStop(1, darkerColor);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 600, 600);
+
+      // Draw border
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(20, 20, 560, 560);
+
+      // Draw main character (large emoji)
+      ctx.save();
+      ctx.font = '280px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Apply tint (simplified - just draw emoji)
+      ctx.fillText(characterEmojis[avatarState.character], 300, 320);
+      ctx.restore();
+
+      // Draw accessories
+      drawAccessories();
+
+      // Draw signature
+      ctx.font = '12px Inter';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.textAlign = 'right';
+      ctx.fillText('PURPLE POINT AVATAR', 580, 580);
+    }
+
+    function drawAccessories() {
+      const fontSize = 80;
+      ctx.font = `${fontSize}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Hat (above character)
+      if (avatarState.accessories.hat !== 'none') {
+        const hatEmoji = accessoryEmojis.hat[avatarState.accessories.hat];
+        if (hatEmoji) {
+          ctx.fillText(hatEmoji, 300, 120);
+        }
+      }
+
+      // Chain (below character)
+      if (avatarState.accessories.chain !== 'none') {
+        const chainEmoji = accessoryEmojis.chain[avatarState.accessories.chain];
+        if (chainEmoji) {
+          ctx.fillText(chainEmoji, 300, 420);
+        }
+      }
+
+      // Eyes (on character)
+      if (avatarState.accessories.eyes !== 'none') {
+        const eyesEmoji = accessoryEmojis.eyes[avatarState.accessories.eyes];
+        if (eyesEmoji) {
+          ctx.font = `${fontSize}px serif`;
+          ctx.fillText(eyesEmoji, 300, 260);
+        }
+      }
+
+      // Prop (beside character)
+      if (avatarState.accessories.prop !== 'none') {
+        const propEmoji = accessoryEmojis.prop[avatarState.accessories.prop];
+        if (propEmoji) {
+          ctx.fillText(propEmoji, 460, 380);
+        }
+      }
+    }
+
+    // Character selection
+    function selectCharacter(character) {
+      avatarState.character = character;
+
+      // Update active state
+      document.querySelectorAll('[data-character]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-character="${character}"]`).classList.add('active');
+
+      drawAvatar();
+    }
+
+    // Color selection
+    function selectColor(type, color, element) {
+      if (type === 'bg') {
+        avatarState.bgColor = color;
+        document.querySelectorAll('[data-color="bg"]').forEach(el => {
+          el.classList.remove('active');
+        });
+      } else if (type === 'tint') {
+        avatarState.tintColor = color;
+        document.querySelectorAll('[data-color="tint"]').forEach(el => {
+          el.classList.remove('active');
+        });
+      }
+
+      element.classList.add('active');
+      drawAvatar();
+    }
+
+    // Accessory toggle
+    function toggleAccessory(type, accessory) {
+      const btn = document.querySelector(`[data-accessory="${accessory}"]`);
+      if (btn && btn.classList.contains('locked')) {
+        alert('This accessory is locked! Level up to unlock it.');
+        return;
+      }
+
+      avatarState.accessories[type] = accessory;
+
+      // Update accessories count
+      const count = Object.values(avatarState.accessories).filter(a => a !== 'none').length;
+      document.getElementById('accessories-count').textContent = count;
+
+      drawAvatar();
+    }
+
+    // Utility: Shade color
+    function shadeColor(color, percent) {
+      const num = parseInt(color.replace('#', ''), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = (num >> 16) + amt;
+      const G = (num >> 8 & 0x00FF) + amt;
+      const B = (num & 0x0000FF) + amt;
+      return '#' + (
+        0x1000000 +
+        (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255)
+      ).toString(16).slice(1);
+    }
+
+    // Download avatar
+    function downloadAvatar() {
+      const link = document.createElement('a');
+      link.download = `purple-point-avatar-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Save as profile picture
+    function saveAsProfilePic() {
+      const avatarDataUrl = canvas.toDataURL('image/png');
+
+      // Save to localStorage for now
+      localStorage.setItem('profileAvatar', avatarDataUrl);
+
+      alert('Avatar saved! Redirecting to profile...');
+      setTimeout(() => {
+        window.location.href = '/profile';
+      }, 1000);
+    }
+
+    // Mint as NFT (placeholder)
+    function mintAsNFT() {
+      alert('NFT minting coming soon! This will mint your avatar as a composable NFT on Solana.');
+    }
+
+    // Initialize on load
+    window.addEventListener('load', init);
+  </script>
+
+</body>
+</html>

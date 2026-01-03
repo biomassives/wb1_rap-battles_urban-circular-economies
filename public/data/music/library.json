@@ -1,0 +1,16 @@
+[
+  {
+    "id": "kick_01",
+    "name": "Classic Kick",
+    "url": "/data/music/samples/kick.wav",
+    "type": "drum",
+    "isUser": false
+  },
+  {
+    "id": "horn_01",
+    "name": "Reggaeton Airhorn",
+    "url": "/data/music/samples/horn.wav",
+    "type": "fx",
+    "isUser": false
+  }
+]

@@ -1,0 +1,511 @@
+---
+/**
+ * welcome.astro
+ * Onboarding page for new users
+ * Features: Step-by-step guide, SVG illustrations, animal mentor showcase
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Welcome to Worldbridger One" description="Your journey to music, learning, and impact starts here">
+
+  <!-- Hero Section with SVG -->
+  <section class="welcome-hero">
+    <div class="container mx-auto">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="welcome-title">Welcome to Worldbridger One</h1>
+          <p class="welcome-subtitle">
+            Join a community where music, environmental action, and refugee support come together.
+            Meet your animal mentors and start earning rewards!
+          </p>
+        </div>
+        <div class="hero-illustration">
+          <!-- Placeholder for welcome hero SVG -->
+          <img src="/images/heroes/welcome-hero.svg" alt="Welcome Illustration" class="welcome-graphic" />
+          <!-- Fallback until SVG is added -->
+          <div class="placeholder-graphic">
+            <div class="placeholder-box">
+              <span class="placeholder-text">🎵 🌱 🤝</span>
+              <p>Welcome Hero Illustration</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Getting Started Steps -->
+  <section class="welcome-steps">
+    <div class="container mx-auto">
+      <h2 class="section-title">Get Started in 4 Easy Steps</h2>
+
+      <div class="steps-grid">
+
+        <!-- Step 1: Connect Wallet -->
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-illustration">
+            <img src="/images/heroes/step-wallet.svg" alt="Connect Wallet" />
+            <div class="placeholder-icon">💳</div>
+          </div>
+          <h3>Connect Your Wallet</h3>
+          <p>Connect your Solana wallet to get started. We support Phantom, Solflare, and more.</p>
+          <button class="btn-primary" onclick="window.connectWallet?.()">
+            Connect Wallet
+          </button>
+        </div>
+
+        <!-- Step 2: Choose Mentor -->
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-illustration">
+            <img src="/images/heroes/step-mentor.svg" alt="Choose Mentor" />
+            <div class="placeholder-icon">🐔</div>
+          </div>
+          <h3>Meet Your Mentor</h3>
+          <p>Choose one of 55 animal mentors to guide your journey in music, learning, or impact projects.</p>
+          <a href="/profile" class="btn-secondary">
+            Choose Mentor
+          </a>
+        </div>
+
+        <!-- Step 3: Explore Projects -->
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-illustration">
+            <img src="/images/heroes/step-explore.svg" alt="Explore Projects" />
+            <div class="placeholder-icon">🎯</div>
+          </div>
+          <h3>Explore Projects</h3>
+          <p>Dive into music creation, environmental courses, or support Kakuma refugee initiatives.</p>
+          <a href="/interact" class="btn-secondary">
+            View Projects
+          </a>
+        </div>
+
+        <!-- Step 4: Earn Rewards -->
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <div class="step-illustration">
+            <img src="/images/heroes/step-rewards.svg" alt="Earn Rewards" />
+            <div class="placeholder-icon">⭐</div>
+          </div>
+          <h3>Earn Rewards</h3>
+          <p>Complete activities, earn XP, claim airdrops, and collect NFTs as you contribute.</p>
+          <a href="/airdrops" class="btn-secondary">
+            View Rewards
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Overview -->
+  <section class="features-overview">
+    <div class="container mx-auto">
+      <h2 class="section-title">What You Can Do</h2>
+
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <img src="/images/icons/music-note.svg" alt="Music" />
+            <div class="placeholder-icon">🎵</div>
+          </div>
+          <h3>Create Music</h3>
+          <p>Upload tracks, create beats, battle other rappers, and collaborate globally.</p>
+          <a href="/music" class="feature-link">Explore Music Studio →</a>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <img src="/images/icons/leaf.svg" alt="Learning" />
+            <div class="placeholder-icon">🌱</div>
+          </div>
+          <h3>Learn & Grow</h3>
+          <p>Take environmental courses, submit observations, and earn certifications.</p>
+          <a href="/learning" class="feature-link">Start Learning →</a>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <img src="/images/icons/heart.svg" alt="Kakuma" />
+            <div class="placeholder-icon">🤝</div>
+          </div>
+          <h3>Support Kakuma</h3>
+          <p>Help refugee youth in Kakuma camp through donations, mentorship, and projects.</p>
+          <a href="/kakuma" class="feature-link">Learn More →</a>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <img src="/images/icons/trophy.svg" alt="Achievements" />
+            <div class="placeholder-icon">🏆</div>
+          </div>
+          <h3>Earn Achievements</h3>
+          <p>Unlock badges, climb leaderboards, and collect limited edition NFTs.</p>
+          <a href="/achievements" class="feature-link">View Achievements →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Animal Mentors Preview -->
+  <section class="mentors-preview">
+    <div class="container mx-auto">
+      <h2 class="section-title">Meet Your Animal Mentors</h2>
+      <p class="section-subtitle">55 unique animal mentors, each with their own personality and guidance style</p>
+
+      <div class="mentors-carousel">
+        <!-- Placeholder for mentor carousel -->
+        <div class="mentor-grid">
+          <div class="mentor-card">
+            <img src="/images/nft/card-wireframe.svg" alt="Mentor Card" />
+            <p>Wise Chicken</p>
+          </div>
+          <div class="mentor-card">
+            <img src="/images/nft/card-wireframe.svg" alt="Mentor Card" />
+            <p>Creative Pigeon</p>
+          </div>
+          <div class="mentor-card">
+            <img src="/images/nft/card-wireframe.svg" alt="Mentor Card" />
+            <p>Strong Horse</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-center">
+        <a href="/profile" class="btn-primary large">
+          Choose Your Mentor
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="welcome-cta">
+    <div class="container mx-auto">
+      <div class="cta-box">
+        <div class="cta-decorative">
+          <img src="/images/decorative/cta-pattern.svg" alt="" class="pattern-bg" />
+        </div>
+        <div class="cta-content">
+          <h2>Ready to Get Started?</h2>
+          <p>Join thousands of creators, learners, and changemakers in the Purple Point community.</p>
+          <button class="btn-primary large" onclick="window.connectWallet?.()">
+            Connect Wallet & Begin
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* Welcome Hero */
+  .welcome-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .welcome-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+  }
+
+  .welcome-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    line-height: 1.6;
+  }
+
+  .hero-illustration img {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.2));
+  }
+
+  .placeholder-graphic {
+    background: rgba(255,255,255,0.1);
+    border: 2px dashed rgba(255,255,255,0.3);
+    border-radius: 1rem;
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .placeholder-box {
+    background: rgba(255,255,255,0.05);
+    padding: 2rem;
+    border-radius: 0.5rem;
+  }
+
+  .placeholder-text {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  /* Steps Section */
+  .welcome-steps {
+    padding: 4rem 0;
+    background: #f9fafb;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .step-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+
+  .step-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  }
+
+  .step-number {
+    position: absolute;
+    top: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2.5rem;
+    height: 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.25rem;
+  }
+
+  .step-illustration {
+    margin: 1.5rem 0;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .step-illustration img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .placeholder-icon {
+    font-size: 4rem;
+    opacity: 0.3;
+  }
+
+  .step-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .step-card p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  /* Features Overview */
+  .features-overview {
+    padding: 4rem 0;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .feature-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    transition: all 0.2s;
+  }
+
+  .feature-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.1);
+  }
+
+  .feature-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .feature-icon img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .feature-card p {
+    color: #6b7280;
+    margin-bottom: 1rem;
+  }
+
+  .feature-link {
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .feature-link:hover {
+    color: #764ba2;
+  }
+
+  /* Mentors Preview */
+  .mentors-preview {
+    padding: 4rem 0;
+    background: #f9fafb;
+  }
+
+  .section-subtitle {
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 2rem;
+  }
+
+  .mentor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .mentor-card {
+    text-align: center;
+  }
+
+  .mentor-card img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem;
+  }
+
+  .cta-center {
+    text-align: center;
+  }
+
+  /* Welcome CTA */
+  .welcome-cta {
+    padding: 4rem 0;
+  }
+
+  .cta-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 1.5rem;
+    padding: 4rem;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-decorative {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+  }
+
+  .cta-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-box h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+  }
+
+  .cta-box p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-content {
+      grid-template-columns: 1fr;
+    }
+
+    .welcome-title {
+      font-size: 2.5rem;
+    }
+
+    .steps-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-box {
+      padding: 2rem;
+    }
+
+    .cta-box h2 {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<script>
+  // Connect wallet functionality (placeholder)
+  window.connectWallet = async function() {
+    alert('Wallet connection coming soon! This will connect to Phantom, Solflare, or other Solana wallets.');
+    // TODO: Implement actual wallet connection
+  };
+</script>

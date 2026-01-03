@@ -1,0 +1,100 @@
+---
+// No front‑matter needed unless you import props or components
+---
+<header class="site-header">
+  <nav class="nav-container">
+    <!-- Logo / Home link -->
+    <a href="/" class="logo">
+      <img src="/assets/logo.svg" alt="Site logo" width="40" height="40" />
+      <span class="site-name">WorldbridgerOne</span>
+    </a>
+
+    <!-- Primary navigation -->
+    <ul class="nav-list">
+      <li><a href="/music" class="nav-link">Music</a></li>
+      <li><a href="/about" class="nav-link">About</a></li>
+      <li><a href="/contact" class="nav-link">Contact</a></li>
+    </ul>
+
+    <!-- Mobile menu toggle (optional) -->
+    <button
+      class="mobile-toggle"
+      aria-label="Toggle navigation"
+      on:click={() => document.body.classList.toggle('nav-open')}
+    >
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" />
+      </svg>
+    </button>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    background: #111;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+  }
+  .nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+  }
+  .site-name {
+    margin-left: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .nav-list {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .nav-link:hover {
+    text-decoration: underline;
+  }
+  .mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .nav-list {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      height: 100vh;
+      width: 200px;
+      background: #111;
+      flex-direction: column;
+      padding-top: 4rem;
+      transition: right 0.3s ease;
+    }
+    body.nav-open .nav-list {
+      right: 0;
+    }
+    .mobile-toggle {
+      display: block;
+    }
+  }
+</style>
+
