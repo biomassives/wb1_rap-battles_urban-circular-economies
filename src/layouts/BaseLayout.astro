@@ -42,11 +42,15 @@ const currentYear = new Date().getFullYear();
   <link rel="preconnect" href="https://fonts.googleapis.com">
   
   <!-- Local CSS (emulated Tailwind + custom) -->
+  <link rel="stylesheet" href="/styles/dark-theme.css">
   <link rel="stylesheet" href="/styles/global.css">
   <link rel="stylesheet" href="/styles/gamification.css">
   
   <!-- Web3 Dependencies (Solana) -->
   <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+
+  <!-- E8 Lattice Oracle - Post-Quantum Encryption -->
+  <script is:inline src="/scripts/e8-lattice-oracle.js"></script>
 </head>
 
 <body class="bg-gradient-farm font-sans">
@@ -71,6 +75,12 @@ const currentYear = new Date().getFullYear();
           <li class={activeSection === 'home' ? 'active' : ''}>
             <a href="/">Collection</a>
           </li>
+          <li class={activeSection === 'gallery' ? 'active' : ''}>
+            <a href="/nft-gallery">
+              <span class="nav-icon">🎨</span>
+              <span>NFT Gallery</span>
+            </a>
+          </li>
           <li class={activeSection === 'progress' ? 'active' : ''}>
             <a href="/progress">
               <span class="nav-icon">📊</span>
@@ -81,6 +91,12 @@ const currentYear = new Date().getFullYear();
             <a href="/music">
               <span class="nav-icon">🎵</span>
               <span>Music Studio</span>
+            </a>
+          </li>
+          <li class={activeSection === 'remix' ? 'active' : ''}>
+            <a href="/audio-remix-lab">
+              <span class="nav-icon">🎛️</span>
+              <span>Remix Lab</span>
             </a>
           </li>
           <li class={activeSection === 'learning' ? 'active' : ''}>
@@ -105,6 +121,91 @@ const currentYear = new Date().getFullYear();
 
         <!-- User Actions -->
         <div class="nav-actions">
+          <!-- Language Switcher -->
+          <div class="language-switcher">
+            <button id="language-btn" class="btn-icon btn-language" title="Change Language">
+              <span class="language-icon">🌐</span>
+              <span id="current-language" class="language-code">EN</span>
+            </button>
+            <div id="language-dropdown" class="dropdown-menu language-menu" style="display: none;">
+              <!-- Global Languages Section -->
+              <div class="language-section-header">Global Languages</div>
+              <button class="language-option" data-lang="en">
+                <span class="flag">🇬🇧</span>
+                <span class="lang-name">English</span>
+              </button>
+              <button class="language-option" data-lang="es">
+                <span class="flag">🇪🇸</span>
+                <span class="lang-name">Español</span>
+              </button>
+              <button class="language-option" data-lang="fr">
+                <span class="flag">🇫🇷</span>
+                <span class="lang-name">Français</span>
+              </button>
+              <button class="language-option" data-lang="sw">
+                <span class="flag">🇰🇪</span>
+                <span class="lang-name">Kiswahili</span>
+              </button>
+              <button class="language-option" data-lang="ar">
+                <span class="flag">🇸🇦</span>
+                <span class="lang-name">العربية</span>
+              </button>
+              <button class="language-option" data-lang="pt">
+                <span class="flag">🇧🇷</span>
+                <span class="lang-name">Português</span>
+              </button>
+              <button class="language-option" data-lang="zh">
+                <span class="flag">🇨🇳</span>
+                <span class="lang-name">中文</span>
+              </button>
+              <button class="language-option" data-lang="hi">
+                <span class="flag">🇮🇳</span>
+                <span class="lang-name">हिन्दी</span>
+              </button>
+
+              <!-- Refugee Camp Languages Section -->
+              <div class="language-section-header">Refugee Camp Languages</div>
+              <button class="language-option" data-lang="ps">
+                <span class="flag">🇦🇫</span>
+                <span class="lang-name">پښتو (Pashto)</span>
+              </button>
+              <button class="language-option" data-lang="fa">
+                <span class="flag">🇦🇫</span>
+                <span class="lang-name">دری (Dari)</span>
+              </button>
+              <button class="language-option" data-lang="so">
+                <span class="flag">🇸🇴</span>
+                <span class="lang-name">Soomaali (Somali)</span>
+              </button>
+              <button class="language-option" data-lang="ti">
+                <span class="flag">🇪🇷</span>
+                <span class="lang-name">ትግርኛ (Tigrinya)</span>
+              </button>
+              <button class="language-option" data-lang="my">
+                <span class="flag">🇲🇲</span>
+                <span class="lang-name">မြန်မာ (Burmese)</span>
+              </button>
+              <button class="language-option" data-lang="rw">
+                <span class="flag">🇷🇼</span>
+                <span class="lang-name">Kinyarwanda</span>
+              </button>
+              <button class="language-option" data-lang="rn">
+                <span class="flag">🇧🇮</span>
+                <span class="lang-name">Kirundi</span>
+              </button>
+              <button class="language-option" data-lang="am">
+                <span class="flag">🇪🇹</span>
+                <span class="lang-name">አማርኛ (Amharic)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Theme Switcher -->
+          <button id="theme-toggle" class="btn-icon btn-theme" title="Toggle Dark/Light Mode">
+            <span class="theme-icon-dark">🌙</span>
+            <span class="theme-icon-light" style="display: none;">☀️</span>
+          </button>
+
           <!-- XP Display (shown when logged in) -->
           <div id="xp-display" class="xp-badge" style="display: none;">
             <span class="xp-icon">⭐</span>
@@ -511,8 +612,32 @@ const currentYear = new Date().getFullYear();
       }
 
       async loadProgress(walletAddress) {
+        // ALWAYS load from localStorage first (instant)
+        const cached = localStorage.getItem(`progress_${walletAddress}`);
+        if (cached) {
+          try {
+            this.currentProgress = JSON.parse(cached);
+            this.updateUI();
+            console.log('Progress loaded from localStorage');
+          } catch (error) {
+            console.error('Failed to parse cached progress:', error);
+            this.currentProgress = this.getDefaultProgress(walletAddress);
+            this.updateUI();
+          }
+        } else {
+          // No cached data, create default and save it
+          this.currentProgress = this.getDefaultProgress(walletAddress);
+          localStorage.setItem(`progress_${walletAddress}`, JSON.stringify(this.currentProgress));
+          this.updateUI();
+          console.log('New progress created and saved to localStorage');
+        }
+
+        // Then sync with API in background (non-blocking)
+        this.syncProgressFromAPI(walletAddress);
+      }
+
+      async syncProgressFromAPI(walletAddress) {
         try {
-          // Try to load from API first
           const response = await fetch(
             `/api/gamification/user-progress?walletAddress=${walletAddress}`
           );
@@ -521,38 +646,26 @@ const currentYear = new Date().getFullYear();
             const data = await response.json();
 
             if (data.success) {
-              this.currentProgress = data;
-              // Cache in localStorage
-              localStorage.setItem(`progress_${walletAddress}`, JSON.stringify(data));
-              this.updateUI();
-              return;
+              // Update if server data is newer/different
+              const serverXP = data.progression?.totalXP || 0;
+              const localXP = this.currentProgress?.progression?.totalXP || 0;
+
+              if (serverXP > localXP) {
+                console.log('Server has newer progress, updating local cache');
+                this.currentProgress = data;
+                localStorage.setItem(`progress_${walletAddress}`, JSON.stringify(data));
+                this.updateUI();
+              } else if (localXP > serverXP) {
+                console.log('Local progress is ahead of server, will sync on next XP award');
+              } else {
+                console.log('Progress is in sync');
+              }
             }
-          }
-
-          // API failed, try localStorage
-          const cached = localStorage.getItem(`progress_${walletAddress}`);
-          if (cached) {
-            console.log('Using cached progress data');
-            this.currentProgress = JSON.parse(cached);
-            this.updateUI();
-            return;
-          }
-
-          // No cached data, create default
-          this.currentProgress = this.getDefaultProgress(walletAddress);
-          this.updateUI();
-
-        } catch (error) {
-          console.error('Failed to load progress:', error);
-
-          // Fallback to localStorage or default
-          const cached = localStorage.getItem(`progress_${walletAddress}`);
-          if (cached) {
-            this.currentProgress = JSON.parse(cached);
           } else {
-            this.currentProgress = this.getDefaultProgress(walletAddress);
+            console.log('API sync unavailable, using local data');
           }
-          this.updateUI();
+        } catch (error) {
+          console.log('API sync error (using local data):', error.message);
         }
       }
 
@@ -611,8 +724,15 @@ const currentYear = new Date().getFullYear();
         const walletAddress = window.walletManager?.connectedWallet;
         if (!walletAddress) return;
 
+        // ALWAYS award XP to localStorage first (instant, offline-capable)
+        this.awardXPLocally(walletAddress, amount, activityType, description);
+
+        // Then try to sync to API in background (non-blocking)
+        this.syncXPToAPI(walletAddress, amount, activityType, description);
+      }
+
+      async syncXPToAPI(walletAddress, amount, activityType, description) {
         try {
-          // Try API first
           const response = await fetch('/api/gamification/award-xp', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -628,33 +748,19 @@ const currentYear = new Date().getFullYear();
             const data = await response.json();
 
             if (data.success) {
-              // Show XP toast
-              window.uiManager?.showXPToast(data);
+              console.log('XP synced to database successfully');
 
-              // Check for level up
-              if (data.level.leveledUp) {
-                window.uiManager?.showLevelUpModal(data);
-              }
-
-              // Check for achievements
+              // Check for server-side achievements that localStorage might have missed
               if (data.achievementsUnlocked?.length > 0) {
+                console.log('New achievements unlocked:', data.achievementsUnlocked);
                 window.uiManager?.showAchievementModal(data.achievementsUnlocked[0]);
               }
-
-              // Reload progress
-              await this.loadProgress(walletAddress);
-              return;
             }
+          } else {
+            console.log('API sync failed, XP saved locally only');
           }
-
-          // API failed, update localStorage directly
-          console.log('API unavailable, updating XP locally');
-          this.awardXPLocally(walletAddress, amount, activityType, description);
-
         } catch (error) {
-          console.error('Failed to award XP via API:', error);
-          // Fallback to local storage
-          this.awardXPLocally(walletAddress, amount, activityType, description);
+          console.log('API sync error (XP already saved locally):', error.message);
         }
       }
 
@@ -834,6 +940,85 @@ const currentYear = new Date().getFullYear();
       // Notifications button
       document.getElementById('notifications-btn')?.addEventListener('click', () => {
         document.getElementById('notifications-panel').style.display = 'block';
+      });
+
+      // Theme Switcher
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeDarkIcon = document.querySelector('.theme-icon-dark');
+      const themeLightIcon = document.querySelector('.theme-icon-light');
+
+      // Load saved theme
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeDarkIcon.style.display = 'none';
+        themeLightIcon.style.display = 'inline-block';
+      }
+
+      themeToggle?.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        const isLight = document.body.classList.contains('light-theme');
+
+        // Toggle icons
+        themeDarkIcon.style.display = isLight ? 'none' : 'inline-block';
+        themeLightIcon.style.display = isLight ? 'inline-block' : 'none';
+
+        // Save preference
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      });
+
+      // Language Switcher
+      const languageBtn = document.getElementById('language-btn');
+      const languageDropdown = document.getElementById('language-dropdown');
+      const languageCode = document.getElementById('current-language');
+      const languageOptions = document.querySelectorAll('.language-option');
+
+      // Load saved language
+      const savedLang = localStorage.getItem('language') || 'en';
+      languageCode.textContent = savedLang.toUpperCase();
+
+      // Mark active language
+      languageOptions.forEach(option => {
+        if (option.dataset.lang === savedLang) {
+          option.classList.add('active');
+        }
+      });
+
+      // Toggle dropdown
+      languageBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isVisible = languageDropdown.style.display === 'block';
+        languageDropdown.style.display = isVisible ? 'none' : 'block';
+      });
+
+      // Language selection
+      languageOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          const lang = option.dataset.lang;
+
+          // Update UI
+          languageCode.textContent = lang.toUpperCase();
+
+          // Update active state
+          languageOptions.forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+
+          // Save preference
+          localStorage.setItem('language', lang);
+
+          // Close dropdown
+          languageDropdown.style.display = 'none';
+
+          // TODO: Actually translate the page
+          console.log(`Language changed to: ${lang}`);
+        });
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!languageBtn?.contains(e.target) && !languageDropdown?.contains(e.target)) {
+          languageDropdown.style.display = 'none';
+        }
       });
 
       // Mobile menu

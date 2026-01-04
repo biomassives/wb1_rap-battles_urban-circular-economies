@@ -1,0 +1,25 @@
+{
+  "categories": [
+    {
+      "slug": "rap-battles",
+      "title": "Rap Battles",
+      "tags": ["rap", "battle", "vocal", "bass"]
+    },
+    {
+      "slug": "reggae-dub",
+      "title": "Reggae & Dub",
+      "tags": ["reggae", "dub", "sound-system"]
+    },
+    {
+      "slug": "healing-sound",
+      "title": "Healing & Gathering",
+      "tags": ["healing", "ritual", "meditation"]
+    },
+    {
+      "slug": "speech",
+      "title": "Speech & Transcripts",
+      "tags": ["speech", "education", "clarity"]
+    }
+  ]
+}
+

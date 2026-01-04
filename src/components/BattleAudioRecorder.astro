@@ -1,0 +1,934 @@
+---
+/**
+ * BattleAudioRecorder.astro
+ * Audio Recording Component for Rap Battles
+ *
+ * Features:
+ * - Browser recording with Web Audio API
+ * - Toggle between Record / Upload / Sampler
+ * - Real-time waveform visualization
+ * - Playback controls
+ * - Export to file
+ */
+
+interface Props {
+  battleId?: string;
+  maxDuration?: number;
+}
+
+const {
+  battleId = 'new',
+  maxDuration = 120 // 2 minutes default
+} = Astro.props;
+---
+
+<div class="battle-audio-recorder card-retro arcade-screen">
+
+  <!-- Mode Selector -->
+  <div class="mode-selector ska-pattern">
+    <h3 class="recorder-title neon-text">[ AUDIO INPUT ]</h3>
+    <div class="mode-buttons">
+      <button class="mode-btn active" data-mode="record" onclick="switchMode('record')">
+        <span class="mode-icon">🎤</span>
+        <span>RECORD</span>
+      </button>
+      <button class="mode-btn" data-mode="upload" onclick="switchMode('upload')">
+        <span class="mode-icon">📁</span>
+        <span>UPLOAD</span>
+      </button>
+      <button class="mode-btn" data-mode="sampler" onclick="switchMode('sampler')">
+        <span class="mode-icon">🎛️</span>
+        <span>SAMPLER</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Record Mode -->
+  <div id="record-mode" class="input-mode active">
+
+    <!-- Recording Status -->
+    <div class="recording-status">
+      <div class="status-indicator" id="rec-status">
+        <span class="status-light"></span>
+        <span class="status-text">READY</span>
+      </div>
+      <div class="timer mono neon-text" id="rec-timer">00:00</div>
+      <div class="duration-limit mono">MAX: {maxDuration}s</div>
+    </div>
+
+    <!-- Waveform Visualizer -->
+    <div class="waveform-container pixel-border">
+      <canvas id="waveform-canvas" width="800" height="200"></canvas>
+      <div class="waveform-overlay">
+        <div class="waveform-message" id="waveform-msg">
+          <span class="blink">▶</span> CLICK RECORD TO START
+        </div>
+      </div>
+    </div>
+
+    <!-- Recording Controls -->
+    <div class="recording-controls">
+      <button class="btn-retro-neon" id="btn-start-rec" onclick="startRecording()">
+        <span class="btn-icon">⬤</span>
+        <span>START RECORDING</span>
+      </button>
+      <button class="btn-retro" id="btn-stop-rec" onclick="stopRecording()" disabled style="display: none;">
+        <span class="btn-icon">⬛</span>
+        <span>STOP</span>
+      </button>
+      <button class="btn-retro" id="btn-play-rec" onclick="playRecording()" disabled style="display: none;">
+        <span class="btn-icon">▶</span>
+        <span>PLAY</span>
+      </button>
+      <button class="btn-retro" id="btn-reset-rec" onclick="resetRecording()" style="display: none;">
+        <span class="btn-icon">🔄</span>
+        <span>RE-RECORD</span>
+      </button>
+    </div>
+
+    <!-- Audio Level Meter -->
+    <div class="level-meter">
+      <div class="level-label mono">INPUT LEVEL:</div>
+      <div class="level-bar-container">
+        <div class="level-bar" id="level-bar"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Upload Mode -->
+  <div id="upload-mode" class="input-mode" style="display: none;">
+
+    <div class="upload-zone pixel-border" id="upload-zone">
+      <input
+        type="file"
+        id="audio-file-input"
+        accept="audio/*"
+        onchange="handleFileUpload(event)"
+        style="display: none;"
+      />
+
+      <div class="upload-prompt" id="upload-prompt">
+        <div class="upload-icon neon-text">📤</div>
+        <h4>DROP AUDIO FILE OR CLICK TO BROWSE</h4>
+        <p class="mono">Supported: MP3, WAV, M4A, OGG</p>
+        <p class="mono text-cyan">Max size: 10MB • Max length: {maxDuration}s</p>
+        <button class="btn-retro-neon" onclick="document.getElementById('audio-file-input').click()">
+          SELECT FILE
+        </button>
+      </div>
+
+      <div class="upload-preview" id="upload-preview" style="display: none;">
+        <div class="file-info">
+          <div class="file-name mono neon-text" id="file-name"></div>
+          <div class="file-meta mono" id="file-meta"></div>
+        </div>
+        <audio id="upload-audio" controls></audio>
+        <button class="btn-retro" onclick="clearUpload()">
+          <span>REMOVE FILE</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sampler Mode -->
+  <div id="sampler-mode" class="input-mode" style="display: none;">
+
+    <div class="sampler-info card-retro-neon">
+      <h4 class="neon-text">🎛️ SAMPLER INTEGRATION</h4>
+      <p class="mono">Create your beat using the sampler pads, then export and use it for your battle.</p>
+      <div class="sampler-actions">
+        <a href="/sampler" class="btn-retro" target="_blank">
+          OPEN SAMPLER
+        </a>
+        <button class="btn-retro-neon" onclick="document.getElementById('audio-file-input').click()">
+          IMPORT FROM SAMPLER
+        </button>
+      </div>
+    </div>
+
+    <div class="sampler-instructions mono">
+      <h5 class="text-cyan">WORKFLOW:</h5>
+      <ol>
+        <li>1. Open sampler in new tab</li>
+        <li>2. Create your beat with pads</li>
+        <li>3. Export audio file</li>
+        <li>4. Import here to use in battle</li>
+      </ol>
+    </div>
+
+  </div>
+
+  <!-- Submit Section -->
+  <div class="submit-section" id="submit-section" style="display: none;">
+    <hr class="retro" />
+    <div class="submit-controls">
+      <button class="btn-retro-neon submit-btn" onclick="submitAudio()">
+        <span class="btn-icon">✓</span>
+        <span>SUBMIT TO BATTLE</span>
+      </button>
+      <div class="submit-info mono">
+        <span class="text-cyan">Ready to submit</span>
+        <span class="blink">█</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let audioBlob = null;
+  let audioUrl = null;
+  let recordingStartTime = 0;
+  let timerInterval = null;
+  let audioContext = null;
+  let analyser = null;
+  let microphone = null;
+  let animationId = null;
+  let currentMode = 'record';
+
+  // Switch between modes
+  window.switchMode = function(mode) {
+    currentMode = mode;
+
+    // Update button states
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+
+    // Show/hide mode sections
+    document.getElementById('record-mode').style.display = mode === 'record' ? 'block' : 'none';
+    document.getElementById('upload-mode').style.display = mode === 'upload' ? 'block' : 'none';
+    document.getElementById('sampler-mode').style.display = mode === 'sampler' ? 'block' : 'none';
+
+    // Reset states
+    if (mode !== 'record') {
+      stopRecording();
+    }
+  };
+
+  // Start browser recording
+  window.startRecording = async function() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+
+      // Setup audio context for visualization
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      microphone = audioContext.createMediaStreamSource(stream);
+      microphone.connect(analyser);
+
+      // Setup MediaRecorder
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        audioUrl = URL.createObjectURL(audioBlob);
+        updateUIAfterRecording();
+      };
+
+      mediaRecorder.start(100); // Collect data every 100ms
+      recordingStartTime = Date.now();
+
+      // Update UI
+      document.getElementById('rec-status').querySelector('.status-text').textContent = 'RECORDING';
+      document.getElementById('rec-status').querySelector('.status-light').classList.add('recording');
+      document.getElementById('waveform-msg').style.display = 'none';
+      document.getElementById('btn-start-rec').style.display = 'none';
+      document.getElementById('btn-stop-rec').style.display = 'inline-flex';
+      document.getElementById('btn-stop-rec').disabled = false;
+
+      // Start timer
+      timerInterval = setInterval(updateTimer, 100);
+
+      // Start visualization
+      visualizeWaveform();
+      visualizeLevel();
+
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      alert('ERROR: Cannot access microphone. Please grant permission.');
+    }
+  };
+
+  // Stop recording
+  window.stopRecording = function() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+      mediaRecorder.stream.getTracks().forEach(track => track.stop());
+
+      clearInterval(timerInterval);
+      cancelAnimationFrame(animationId);
+
+      if (audioContext) {
+        audioContext.close();
+      }
+    }
+  };
+
+  // Update timer
+  function updateTimer() {
+    const elapsed = Date.now() - recordingStartTime;
+    const seconds = Math.floor(elapsed / 1000);
+    const deciseconds = Math.floor((elapsed % 1000) / 100);
+    document.getElementById('rec-timer').textContent =
+      `${String(seconds).padStart(2, '0')}:${deciseconds}`;
+
+    // Auto-stop at max duration
+    const maxDuration = {maxDuration};
+    if (seconds >= maxDuration) {
+      stopRecording();
+    }
+  }
+
+  // Visualize waveform
+  function visualizeWaveform() {
+    const canvas = document.getElementById('waveform-canvas');
+    const ctx = canvas.getContext('2d');
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    function draw() {
+      animationId = requestAnimationFrame(draw);
+
+      analyser.getByteTimeDomainData(dataArray);
+
+      // Clear with black background
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw waveform
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#00ff00'; // Neon green
+      ctx.shadowColor = '#00ff00';
+      ctx.shadowBlur = 10;
+
+      ctx.beginPath();
+      const sliceWidth = canvas.width / bufferLength;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = v * canvas.height / 2;
+
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+
+        x += sliceWidth;
+      }
+
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+
+      // Draw center line
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height / 2);
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+    }
+
+    draw();
+  }
+
+  // Visualize audio level
+  function visualizeLevel() {
+    const levelBar = document.getElementById('level-bar');
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    function updateLevel() {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        analyser.getByteFrequencyData(dataArray);
+
+        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+        const percentage = (average / 255) * 100;
+
+        levelBar.style.width = percentage + '%';
+
+        // Color based on level
+        if (percentage > 80) {
+          levelBar.style.background = '#ff0000'; // Red - too loud
+        } else if (percentage > 50) {
+          levelBar.style.background = '#00ff00'; // Green - good
+        } else {
+          levelBar.style.background = '#ffff00'; // Yellow - low
+        }
+
+        requestAnimationFrame(updateLevel);
+      }
+    }
+
+    updateLevel();
+  }
+
+  // Update UI after recording completes
+  function updateUIAfterRecording() {
+    document.getElementById('rec-status').querySelector('.status-text').textContent = 'COMPLETE';
+    document.getElementById('rec-status').querySelector('.status-light').classList.remove('recording');
+    document.getElementById('rec-status').querySelector('.status-light').classList.add('complete');
+    document.getElementById('btn-stop-rec').style.display = 'none';
+    document.getElementById('btn-play-rec').style.display = 'inline-flex';
+    document.getElementById('btn-play-rec').disabled = false;
+    document.getElementById('btn-reset-rec').style.display = 'inline-flex';
+    document.getElementById('submit-section').style.display = 'block';
+
+    // Show completion message on waveform
+    const msg = document.getElementById('waveform-msg');
+    msg.innerHTML = '<span class="neon-text">✓ RECORDING COMPLETE</span>';
+    msg.style.display = 'flex';
+  }
+
+  // Play recorded audio
+  window.playRecording = function() {
+    if (audioUrl) {
+      const audio = new Audio(audioUrl);
+      audio.play();
+
+      // Update button text while playing
+      const btn = document.getElementById('btn-play-rec');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="btn-icon">⏸</span><span>PLAYING...</span>';
+      btn.disabled = true;
+
+      audio.onended = () => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      };
+    }
+  };
+
+  // Reset recording
+  window.resetRecording = function() {
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+    }
+
+    audioChunks = [];
+    audioBlob = null;
+    audioUrl = null;
+
+    document.getElementById('rec-status').querySelector('.status-text').textContent = 'READY';
+    document.getElementById('rec-status').querySelector('.status-light').classList.remove('complete');
+    document.getElementById('rec-timer').textContent = '00:00';
+    document.getElementById('btn-start-rec').style.display = 'inline-flex';
+    document.getElementById('btn-play-rec').style.display = 'none';
+    document.getElementById('btn-reset-rec').style.display = 'none';
+    document.getElementById('submit-section').style.display = 'none';
+
+    const msg = document.getElementById('waveform-msg');
+    msg.innerHTML = '<span class="blink">▶</span> CLICK RECORD TO START';
+    msg.style.display = 'flex';
+
+    // Clear canvas
+    const canvas = document.getElementById('waveform-canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  };
+
+  // Handle file upload
+  window.handleFileUpload = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/m4a', 'audio/ogg'];
+    if (!validTypes.some(type => file.type.includes(type.split('/')[1]))) {
+      alert('ERROR: Invalid file type. Please upload an audio file.');
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('ERROR: File too large. Maximum size is 10MB.');
+      return;
+    }
+
+    audioBlob = file;
+    audioUrl = URL.createObjectURL(file);
+
+    // Update UI
+    document.getElementById('upload-prompt').style.display = 'none';
+    document.getElementById('upload-preview').style.display = 'block';
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-meta').textContent =
+      `${(file.size / 1024 / 1024).toFixed(2)} MB • ${file.type}`;
+
+    const audio = document.getElementById('upload-audio');
+    audio.src = audioUrl;
+
+    document.getElementById('submit-section').style.display = 'block';
+  };
+
+  // Clear uploaded file
+  window.clearUpload = function() {
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+    }
+
+    audioBlob = null;
+    audioUrl = null;
+
+    document.getElementById('audio-file-input').value = '';
+    document.getElementById('upload-prompt').style.display = 'block';
+    document.getElementById('upload-preview').style.display = 'none';
+    document.getElementById('submit-section').style.display = 'none';
+  };
+
+  // Drag & drop for upload
+  const uploadZone = document.getElementById('upload-zone');
+
+  uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('drag-over');
+  });
+
+  uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('drag-over');
+  });
+
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      document.getElementById('audio-file-input').files = files;
+      handleFileUpload({ target: { files } });
+    }
+  });
+
+  // Submit audio to battle
+  window.submitAudio = async function() {
+    if (!audioBlob) {
+      alert('ERROR: No audio to submit');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'battle-audio.webm');
+    formData.append('battleId', '{battleId}');
+    formData.append('mode', currentMode);
+
+    try {
+      // Show loading state
+      const btn = document.querySelector('.submit-btn');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<span class="loading-invader"></span><span>UPLOADING...</span>';
+      btn.disabled = true;
+
+      const response = await fetch('/api/battle/submit-audio', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('✓ AUDIO SUBMITTED SUCCESSFULLY!');
+        // Redirect or update UI
+        window.location.href = `/battle/{battleId}`;
+      } else {
+        throw new Error(data.error || 'Submission failed');
+      }
+
+    } catch (error) {
+      console.error('Submit error:', error);
+      alert('ERROR: Failed to submit audio. Please try again.');
+      btn.innerHTML = originalHTML;
+      btn.disabled = false;
+    }
+  };
+</script>
+
+<style>
+  .battle-audio-recorder {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .mode-selector {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 3px solid var(--color-white);
+  }
+
+  .recorder-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    letter-spacing: 3px;
+  }
+
+  .mode-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .mode-btn {
+    padding: 1rem 1.5rem;
+    background: var(--color-black);
+    color: var(--color-white);
+    border: 2px solid var(--color-white);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .mode-btn:hover {
+    background: var(--color-white);
+    color: var(--color-black);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--color-neon-green);
+  }
+
+  .mode-btn.active {
+    background: var(--color-neon-green);
+    color: var(--color-black);
+    border-color: var(--color-neon-green);
+    box-shadow: 0 0 20px var(--color-neon-green-glow);
+  }
+
+  .mode-icon {
+    font-size: 1.25rem;
+  }
+
+  /* Recording Status */
+  .recording-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--color-dark-gray);
+    border: 2px solid var(--color-white);
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .status-light {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-gray);
+    border: 2px solid var(--color-white);
+    transition: var(--transition-fast);
+  }
+
+  .status-light.recording {
+    background: var(--color-neon-pink);
+    box-shadow: 0 0 15px var(--color-neon-pink);
+    animation: blink 1s ease-in-out infinite;
+  }
+
+  .status-light.complete {
+    background: var(--color-neon-green);
+    box-shadow: 0 0 15px var(--color-neon-green);
+  }
+
+  .status-text {
+    font-family: var(--font-mono);
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+
+  .timer {
+    font-size: 2rem;
+    font-weight: 900;
+  }
+
+  .duration-limit {
+    font-size: 0.875rem;
+    color: var(--color-light-gray);
+  }
+
+  /* Waveform */
+  .waveform-container {
+    position: relative;
+    background: var(--color-black);
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+
+  #waveform-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .waveform-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  .waveform-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  /* Controls */
+  .recording-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Level Meter */
+  .level-meter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--color-dark-gray);
+    border: 2px solid var(--color-white);
+  }
+
+  .level-label {
+    font-weight: 900;
+    letter-spacing: 1px;
+    min-width: 120px;
+  }
+
+  .level-bar-container {
+    flex: 1;
+    height: 24px;
+    background: var(--color-black);
+    border: 2px solid var(--color-white);
+    position: relative;
+  }
+
+  .level-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--color-neon-green);
+    transition: width 0.1s ease;
+    box-shadow: 0 0 10px currentColor;
+  }
+
+  /* Upload Zone */
+  .upload-zone {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-near-black);
+    padding: 3rem;
+    cursor: pointer;
+    transition: var(--transition-base);
+  }
+
+  .upload-zone.drag-over {
+    background: var(--color-dark-gray);
+    border-color: var(--color-neon-green);
+    box-shadow: inset 0 0 30px var(--color-neon-green-glow);
+  }
+
+  .upload-prompt {
+    text-align: center;
+  }
+
+  .upload-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .upload-prompt h4 {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+  }
+
+  .upload-prompt p {
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+  }
+
+  .upload-preview {
+    text-align: center;
+    width: 100%;
+  }
+
+  .file-info {
+    margin-bottom: 1.5rem;
+  }
+
+  .file-name {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .file-meta {
+    opacity: 0.7;
+  }
+
+  #upload-audio {
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Sampler Mode */
+  .sampler-info {
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .sampler-info h4 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+  }
+
+  .sampler-info p {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+  }
+
+  .sampler-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .sampler-instructions {
+    background: var(--color-dark-gray);
+    padding: 1.5rem;
+    border: 2px solid var(--color-white);
+  }
+
+  .sampler-instructions h5 {
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+    letter-spacing: 1px;
+  }
+
+  .sampler-instructions ol {
+    list-style: none;
+    padding: 0;
+  }
+
+  .sampler-instructions li {
+    margin-bottom: 0.5rem;
+    padding-left: 1rem;
+  }
+
+  /* Submit Section */
+  .submit-section {
+    margin-top: 2rem;
+  }
+
+  .submit-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .submit-btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 1.5rem 2rem;
+    font-size: 1.25rem;
+  }
+
+  .submit-info {
+    text-align: right;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .battle-audio-recorder {
+      padding: 1rem;
+    }
+
+    .mode-buttons {
+      flex-direction: column;
+    }
+
+    .mode-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .recording-status {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .recording-controls {
+      flex-direction: column;
+    }
+
+    .recording-controls button {
+      width: 100%;
+    }
+
+    .level-meter {
+      flex-direction: column;
+    }
+
+    .submit-controls {
+      flex-direction: column;
+    }
+
+    .submit-info {
+      text-align: center;
+    }
+  }
+</style>

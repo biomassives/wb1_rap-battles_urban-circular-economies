@@ -11,6 +11,9 @@
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SamplerPad from '../components/SamplerPad.astro';
+import MoogLooper from '../components/MoogLooper.astro';
+
 const steps = Array.from({ length: 16 });
 
 // You can also define your tracks here for better scaling
@@ -109,7 +112,7 @@ const tracks = ["kick", "snare", "hihat", "reggaeton"];
           <span class="tab-icon">🎤</span>
           <span class="tab-label">Create Track</span>
         </button>
-        <button class="studio-tab" data-tab="beatmaker">
+        <button class="studio-tab" data-tab="beatmaker" data-tab-alt="beat-maker">
           <span class="tab-icon">🎹</span>
           <span class="tab-label">Beat Maker</span>
         </button>
@@ -461,670 +464,46 @@ Your lyrics here...
 
       <div class="beatmaker-header">
         <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">
-          🎹 Beat Maker & Sequencer
+          🎹 Beat Maker & Sound Creator
         </h2>
-        <p style="color: #666; margin-bottom: 1rem;">
-          Create rap backing tracks with our step sequencer or upload short samples to share with your crew.
+        <p style="color: #666; margin-bottom: 1.5rem;">
+          Create beats with sampler pads or design sounds with the Moog synth - perfect for rap battles and backing tracks.
         </p>
-
-        <!-- Mode Toggle -->
-        <div class="beatmaker-mode-toggle" style="margin-bottom: 2rem;">
-          <button
-            class="mode-toggle-btn active"
-            data-mode="generate"
-            onclick="window.beatMaker?.switchMode('generate')"
-          >
-            🎹 Generate Beats
-          </button>
-          <button
-            class="mode-toggle-btn"
-            data-mode="upload"
-            onclick="window.beatMaker?.switchMode('upload')"
-          >
-            📤 Upload Sample
-          </button>
-        </div>
       </div>
 
-      <!-- GENERATE MODE: Sequencer -->
-      <div id="beatmaker-generate-mode" class="beatmaker-mode-content">
-
-      <!-- Sequencer Controls -->
-      <div class="sequencer-controls">
-        <!-- Main Transport Controls -->
-        <div class="controls-row transport-controls">
-          <div class="transport-buttons">
-            <button id="seq-play-btn" class="seq-btn seq-btn-play" onclick="window.beatMaker?.togglePlayback()" title="Play/Pause (Space)">
-              <span id="seq-play-icon">▶️</span> <span id="seq-play-text">Play</span>
-            </button>
-            <button class="seq-btn seq-btn-stop" onclick="window.beatMaker?.stop()" title="Stop">
-              ⏹️ Stop
-            </button>
-            <button class="seq-btn seq-btn-clear" onclick="window.beatMaker?.clearPattern()" title="Clear All">
-              🗑️ Clear
-            </button>
-          </div>
-
-          <!-- Playback Position Indicator -->
-          <div class="playback-position">
-            <div class="position-bar">
-              <div class="position-indicator" id="seq-position-indicator" style="left: 0%;"></div>
-            </div>
-            <div class="position-label">
-              Step <span id="current-step-display">-</span> / 16
-            </div>
-          </div>
-        </div>
-
-        <!-- Tempo and Pattern Controls -->
-        <div class="controls-row tempo-pattern-controls">
-          <div class="control-group tempo-group">
-            <label for="seq-tempo">
-              BPM: <span id="seq-tempo-display">120</span>
-            </label>
-            <div class="tempo-controls-container">
-              <input
-                type="range"
-                id="seq-tempo"
-                min="60"
-                max="180"
-                value="120"
-                oninput="window.beatMaker?.setTempo(this.value)"
-              />
-              <button class="tap-tempo-btn" onclick="window.beatMaker?.tapTempo()" title="Tap Tempo (T)">
-                👆 Tap
-              </button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <label for="seq-volume">Master: <span id="seq-volume-display">70</span>%</label>
-            <input
-              type="range"
-              id="seq-volume"
-              min="0"
-              max="100"
-              value="70"
-              oninput="window.beatMaker?.setVolume(this.value)"
-            />
-          </div>
-
-          <div class="control-group swing-group">
-            <label for="seq-swing">Swing: <span id="seq-swing-display">0</span>%</label>
-            <input
-              type="range"
-              id="seq-swing"
-              min="0"
-              max="100"
-              value="0"
-              oninput="window.beatMaker?.setSwing(this.value)"
-            />
-          </div>
-        </div>
-
-        <!-- Pattern Management -->
-        <div class="controls-row pattern-management">
-          <div class="pattern-actions">
-            <button class="seq-btn-icon" onclick="window.beatMaker?.undo()" title="Undo (Ctrl+Z)" id="undo-btn" disabled>
-              ↶ Undo
-            </button>
-            <button class="seq-btn-icon" onclick="window.beatMaker?.redo()" title="Redo (Ctrl+Y)" id="redo-btn" disabled>
-              ↷ Redo
-            </button>
-            <button class="seq-btn-icon" onclick="window.beatMaker?.randomizeAll()" title="Randomize Pattern">
-              🎲 Random
-            </button>
-            <button class="seq-btn-icon" onclick="window.beatMaker?.savePattern()" title="Save Pattern">
-              💾 Save
-            </button>
-            <button class="seq-btn-icon" onclick="window.beatMaker?.loadPattern()" title="Load Pattern">
-              📂 Load
-            </button>
-          </div>
-        </div>
-
-        <!-- Export Controls -->
-        <div class="controls-row export-controls">
-          <button class="seq-btn seq-btn-secondary" onclick="window.beatMaker?.exportBeat()">
-            💾 Export Beat
-          </button>
-          <button class="seq-btn seq-btn-secondary" onclick="window.beatMaker?.sharePattern()">
-            🔗 Share Pattern
-          </button>
-          <button class="seq-btn seq-btn-primary" onclick="window.beatMaker?.useAsBackingTrack()">
-            🎵 Use as Backing Track
-          </button>
-        </div>
-
-        <!-- Keyboard Shortcuts Helper -->
-        <div class="keyboard-shortcuts-hint">
-          💡 <strong>Tips:</strong> Space = Play/Pause • T = Tap Tempo • Ctrl+Z = Undo • Drag to paint steps • Right-click to erase
-        </div>
+      <!-- Sampler Pads -->
+      <div style="margin-bottom: 3rem;">
+        <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #333;">
+          🎛️ Sampler Pads
+        </h3>
+        <SamplerPad minimal={false} battleMode={false} />
       </div>
 
-      <!-- Sequencer Grid -->
-      <div class="sequencer-grid-container">
-        <div class="sequencer-header-row">
-          <div class="track-label-cell">Track</div>
-          <div class="steps-header">
-            ${Array.from({length: 16}, (_, i) => `
-              <div class="step-number">${i + 1}</div>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Trap Drum - Kick -->
-        <div class="sequencer-row" data-track="kick" data-track-color="drums">
-          <div class="track-controls">
-            <div class="track-label">
-              <span class="track-icon">🥁</span>
-              <span class="track-name">Kick</span>
-            </div>
-            <div class="track-buttons">
-              <button class="track-btn mute-btn" onclick="window.beatMaker?.toggleMute('kick')" title="Mute (M)" data-track="kick">
-                M
-              </button>
-              <button class="track-btn solo-btn" onclick="window.beatMaker?.toggleSolo('kick')" title="Solo (S)" data-track="kick">
-                S
-              </button>
-              <button class="track-btn random-btn" onclick="window.beatMaker?.randomizeTrack('kick')" title="Randomize">
-                🎲
-              </button>
-            </div>
-            <div class="track-volume">
-              <input
-                type="range"
-                class="track-volume-slider"
-                min="0"
-                max="100"
-                value="80"
-                data-track="kick"
-                oninput="window.beatMaker?.setTrackVolume('kick', this.value)"
-                title="Volume"
-              />
-              <span class="volume-value">80</span>
-            </div>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="kick" data-step="${i}"
-                onclick="window.beatMaker?.toggleStep('kick', ${i})"
-                onmousedown="window.beatMaker?.startDrag('kick', ${i})"
-                onmouseenter="window.beatMaker?.dragStep('kick', ${i})"
-                oncontextmenu="window.beatMaker?.eraseStep('kick', ${i}); return false;"
-              ></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Trap Drum - Snare -->
-        <div class="sequencer-row" data-track="snare">
-          <div class="track-label">
-            <span class="track-icon">🥁</span>
-            <span class="track-name">Snare</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="snare" data-step="${i}" onclick="window.beatMaker?.toggleStep('snare', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Trap Drum - Hi-Hat -->
-        <div class="sequencer-row" data-track="hihat">
-          <div class="track-label">
-            <span class="track-icon">🥁</span>
-            <span class="track-name">Hi-Hat</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="hihat" data-step="${i}" onclick="window.beatMaker?.toggleStep('hihat', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Bass -->
-        <div class="sequencer-row" data-track="bass">
-          <div class="track-label">
-            <span class="track-icon">🎸</span>
-            <span class="track-name">Bass</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="bass" data-step="${i}" onclick="window.beatMaker?.toggleStep('bass', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Guitar Strum -->
-        <div class="sequencer-row" data-track="guitar">
-          <div class="track-label">
-            <span class="track-icon">🎸</span>
-            <span class="track-name">Guitar</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({ length: 16 }, (_, i) => `
-          <button
-            class="step-btn"
-            data-track="guitar"
-            data-step="${i}"
-            onclick="window.beatMaker?.toggleStep('guitar', ${i})"
-          ></button>
-          `).join('')}
-          </div>
-
-        </div>
-
-        <!-- Clap -->
-        <div class="sequencer-row" data-track="clap">
-          <div class="track-label">
-            <span class="track-icon">👏</span>
-            <span class="track-name">Clap</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="clap" data-step="${i}" onclick="window.beatMaker?.toggleStep('clap', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Youth Shout -->
-        <div class="sequencer-row" data-track="shout">
-          <div class="track-label">
-            <span class="track-icon">📣</span>
-            <span class="track-name">Shout</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="shout" data-step="${i}" onclick="window.beatMaker?.toggleStep('shout', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Horn -->
-        <div class="sequencer-row" data-track="horn">
-          <div class="track-label">
-            <span class="track-icon">🎺</span>
-            <span class="track-name">Horn</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="horn" data-step="${i}" onclick="window.beatMaker?.toggleStep('horn', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Reggaeton Horn -->
-        <div class="sequencer-row" data-track="reggaeton">
-          <div class="track-label">
-            <span class="track-icon">📯</span>
-            <span class="track-name">Reggaeton</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="reggaeton" data-step="${i}" onclick="window.beatMaker?.toggleStep('reggaeton', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Water Sound -->
-        <div class="sequencer-row" data-track="water">
-          <div class="track-label">
-            <span class="track-icon">💧</span>
-            <span class="track-name">Water</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="water" data-step="${i}" onclick="window.beatMaker?.toggleStep('water', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Electricity Sound -->
-        <div class="sequencer-row" data-track="electric">
-          <div class="track-label">
-            <span class="track-icon">⚡</span>
-            <span class="track-name">Electric</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="electric" data-step="${i}" onclick="window.beatMaker?.toggleStep('electric', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Book Hits Floor -->
-        <div class="sequencer-row" data-track="book">
-          <div class="track-label">
-            <span class="track-icon">📚</span>
-            <span class="track-name">Book Drop</span>
-          </div>
-          <div class="steps-grid">
-            ${Array.from({length: 16}, (_, i) => `
-              <button class="step-btn" data-track="book" data-step="${i}" onclick="window.beatMaker?.toggleStep('book', ${i})"></button>
-            `).join('')}
-          </div>
-        </div>
+      <!-- Moog Synth Looper -->
+      <div style="margin-bottom: 3rem;">
+        <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #333;">
+          🎚️ Moog Synth Looper
+        </h3>
+        <MoogLooper compact={false} />
       </div>
 
-      <!-- Pattern Presets -->
-      <div class="pattern-presets" style="margin-top: 2rem;">
-        <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;">Pattern Presets</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <button class="preset-btn" onclick="window.beatMaker?.loadPreset('trap')">🔥 Trap Beat</button>
-          <button class="preset-btn" onclick="window.beatMaker?.loadPreset('reggaeton')">🌴 Reggaeton</button>
-          <button class="preset-btn" onclick="window.beatMaker?.loadPreset('boom-bap')">📻 Boom Bap</button>
-          <button class="preset-btn" onclick="window.beatMaker?.loadPreset('ambient')">🌊 Ambient</button>
-        </div>
-      </div>
-
-      <!-- Tips -->
-      <div class="beatmaker-tips" style="margin-top: 2rem; padding: 1.5rem; background: #f9fafb; border-radius: 0.75rem;">
-        <h4 style="font-weight: bold; margin-bottom: 0.75rem;">💡 Beat Maker Tips</h4>
-        <ul style="list-style: disc; margin-left: 1.5rem; color: #666; line-height: 1.8;">
-          <li><strong>Click steps</strong> to activate them - they'll play when the sequencer reaches that step</li>
-          <li><strong>Drag to paint:</strong> Hold mouse and drag across steps to quickly fill patterns</li>
-          <li><strong>Right-click to erase:</strong> Right-click steps to remove them</li>
-          <li><strong>Keyboard shortcuts:</strong> Space = Play/Pause • T = Tap Tempo • Ctrl+Z = Undo</li>
-          <li><strong>Preset patterns:</strong> Try presets to get started, then customize to your style</li>
-          <li><strong>Pattern vectors:</strong> Save/share your patterns as lightweight data - others can load and remix!</li>
-          <li><strong>Tempo matching:</strong> Adjust BPM to match your flow - slower for storytelling (80-100), faster for hype (130-150)</li>
-          <li><strong>Layer sounds:</strong> Combine drums, bass, melody, and FX for complex rhythms</li>
-          <li><strong>Mute/Solo:</strong> Use M/S buttons to isolate tracks and perfect your mix</li>
-          <li><strong>Swing:</strong> Add groove with the swing control for more human feel</li>
+      <!-- Quick Tips -->
+      <div style="background: #f9fafb; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb;">
+        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">💡 Quick Tips</h4>
+        <ul style="color: #6b7280; line-height: 1.8; padding-left: 1.5rem;">
+          <li><strong>Sampler Pads:</strong> Click pads or use keyboard (1-4, Q-R, A-F, Z-V) for instant beats</li>
+          <li><strong>Recording:</strong> Hit Record button, play your sequence, then submit to battles or save</li>
+          <li><strong>Moog Synth:</strong> Twist dials to shape sound, use Loop for continuous playback</li>
+          <li><strong>Export:</strong> Save your creations as WAV files or JSON configs to share with your crew</li>
         </ul>
       </div>
-
-      <!-- Pattern Vector Info -->
-      <div style="margin-top: 1.5rem; padding: 1.5rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 0.75rem;">
-        <h4 style="font-weight: bold; margin-bottom: 0.5rem;">🔢 Share Pattern Vectors</h4>
-        <p style="opacity: 0.9; font-size: 0.875rem;">
-          Your beats are stored as pattern vectors (JSON data) - not heavy audio files! This means:
-          <strong>Instant sharing</strong>, <strong>easy remixing</strong>, and <strong>tiny file sizes</strong>.
-          Hit "🔗 Share Pattern" to get a shareable code that anyone can load into their sequencer.
-        </p>
-      </div>
-
-      </div>
-      <!-- END GENERATE MODE -->
-
-      <!-- UPLOAD MODE: Sample Upload & Marketplace -->
-      <div id="beatmaker-upload-mode" class="beatmaker-mode-content" style="display: none;">
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-
-          <!-- Upload Sample Section -->
-          <div class="upload-sample-section">
-            <h3 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
-              📤 Upload Sample
-            </h3>
-            <p style="color: #666; margin-bottom: 1.5rem;">
-              Upload short audio samples (0.1-3 seconds). Samples are stored as vectors for efficient sharing and pattern recreation.
-            </p>
-
-            <form id="sample-upload-form" class="sample-upload-form">
-
-              <!-- Sample File Upload -->
-              <div class="form-group">
-                <label class="form-label">Audio Sample *</label>
-                <div class="sample-upload-area" id="sample-upload-area">
-                  <input
-                    type="file"
-                    id="sample-file"
-                    name="sampleFile"
-                    accept="audio/mp3,audio/wav,audio/m4a,audio/mpeg"
-                    required
-                    hidden
-                  />
-                  <div class="file-upload-content">
-                    <div class="upload-icon">🎵</div>
-                    <p class="upload-text">
-                      <strong>Click to upload</strong> or drag sample
-                    </p>
-                    <p class="upload-hint">
-                      0.1-3 seconds • MP3, WAV, M4A (max 2MB)
-                    </p>
-                  </div>
-                  <div class="sample-file-selected" id="sample-file-selected" style="display: none;">
-                    <span class="file-icon">🎵</span>
-                    <span class="file-name" id="sample-file-name"></span>
-                    <span class="file-duration" id="sample-file-duration"></span>
-                    <button type="button" class="btn-remove" onclick="window.beatMaker?.removeSampleFile()">×</button>
-                  </div>
-                </div>
-                <div id="sample-preview-player" style="display: none; margin-top: 1rem;">
-                  <audio id="sample-audio-element" controls style="width: 100%;"></audio>
-                </div>
-              </div>
-
-              <!-- Sample Name -->
-              <div class="form-group">
-                <label for="sample-name" class="form-label">Sample Name *</label>
-                <input
-                  type="text"
-                  id="sample-name"
-                  name="sampleName"
-                  class="form-input"
-                  placeholder="e.g., Heavy Kick, Crisp Snare, Horn Stab"
-                  required
-                />
-              </div>
-
-              <!-- Sample Category -->
-              <div class="form-group">
-                <label for="sample-category" class="form-label">Category *</label>
-                <select id="sample-category" name="category" class="form-select" required>
-                  <option value="">Select category...</option>
-                  <option value="drums">Drums</option>
-                  <option value="bass">Bass</option>
-                  <option value="melody">Melody</option>
-                  <option value="fx">Sound Effects</option>
-                  <option value="vocal">Vocal Samples</option>
-                  <option value="percussion">Percussion</option>
-                </select>
-              </div>
-
-              <!-- Sample Tags -->
-              <div class="form-group">
-                <label for="sample-tags" class="form-label">Tags (Optional)</label>
-                <input
-                  type="text"
-                  id="sample-tags"
-                  name="tags"
-                  class="form-input"
-                  placeholder="trap, boom-bap, reggaeton, aggressive"
-                />
-                <span class="form-hint">Comma-separated tags</span>
-              </div>
-
-              <!-- Sharing Options -->
-              <div class="form-group">
-                <label class="form-label">Sharing Options</label>
-                <div class="checkbox-group-inline">
-                  <label class="form-checkbox">
-                    <input type="checkbox" name="sharePublic" checked />
-                    Public (Anyone can use)
-                  </label>
-                  <label class="form-checkbox">
-                    <input type="checkbox" name="allowSale" />
-                    For Sale
-                  </label>
-                  <label class="form-checkbox">
-                    <input type="checkbox" name="battleCrewOnly" />
-                    Battle Crew Only
-                  </label>
-                </div>
-              </div>
-
-              <!-- Price (if for sale) -->
-              <div class="form-group" id="sample-price-group" style="display: none;">
-                <label for="sample-price" class="form-label">Price (Tokens)</label>
-                <input
-                  type="number"
-                  id="sample-price"
-                  name="price"
-                  class="form-input"
-                  placeholder="100"
-                  min="0"
-                />
-              </div>
-
-              <!-- Submit Button -->
-              <button type="submit" class="btn-primary" style="width: 100%;">
-                <span class="btn-icon">🚀</span>
-                <span>Upload Sample (+50 XP)</span>
-              </button>
-
-            </form>
-          </div>
-
-          <!-- Sample Marketplace / Library -->
-          <div class="sample-library-section">
-            <h3 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
-              🎵 Sample Library
-            </h3>
-            <p style="color: #666; margin-bottom: 1.5rem;">
-              Browse, preview, and download samples from the community.
-            </p>
-
-            <!-- Filter Tabs -->
-            <div class="sample-filter-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
-              <button class="filter-tab active" data-filter="all" onclick="window.beatMaker?.filterSamples('all')">
-                All
-              </button>
-              <button class="filter-tab" data-filter="my-samples" onclick="window.beatMaker?.filterSamples('my-samples')">
-                My Samples
-              </button>
-              <button class="filter-tab" data-filter="crew" onclick="window.beatMaker?.filterSamples('crew')">
-                Crew
-              </button>
-              <button class="filter-tab" data-filter="marketplace" onclick="window.beatMaker?.filterSamples('marketplace')">
-                For Sale
-              </button>
-            </div>
-
-            <!-- Sample Grid -->
-            <div id="sample-library-grid" class="sample-library-grid">
-              <!-- Sample cards will be loaded here -->
-              <div class="sample-card">
-                <div class="sample-card-header">
-                  <span class="sample-icon">🥁</span>
-                  <span class="sample-name">Heavy Kick</span>
-                </div>
-                <div class="sample-card-body">
-                  <div class="sample-meta">
-                    <span class="sample-category">Drums</span>
-                    <span class="sample-duration">2.1s</span>
-                  </div>
-                  <div class="sample-tags">
-                    <span class="tag">trap</span>
-                    <span class="tag">hard</span>
-                  </div>
-                  <div class="sample-author">by <strong>MC_Flow</strong></div>
-                </div>
-                <div class="sample-card-actions">
-                  <button class="sample-action-btn" onclick="window.beatMaker?.previewSample('kick-01')">
-                    ▶️ Play
-                  </button>
-                  <button class="sample-action-btn" onclick="window.beatMaker?.downloadSample('kick-01')">
-                    💾 Download
-                  </button>
-                  <button class="sample-action-btn" onclick="window.beatMaker?.sendToCrew('kick-01')">
-                    📤 Send to Crew
-                  </button>
-                </div>
-              </div>
-
-              <div class="sample-card">
-                <div class="sample-card-header">
-                  <span class="sample-icon">📯</span>
-                  <span class="sample-name">Reggaeton Horn</span>
-                </div>
-                <div class="sample-card-body">
-                  <div class="sample-meta">
-                    <span class="sample-category">FX</span>
-                    <span class="sample-duration">1.8s</span>
-                  </div>
-                  <div class="sample-tags">
-                    <span class="tag">reggaeton</span>
-                    <span class="tag">horn</span>
-                  </div>
-                  <div class="sample-author">by <strong>BeatMaker_X</strong></div>
-                  <div class="sample-price">💰 50 tokens</div>
-                </div>
-                <div class="sample-card-actions">
-                  <button class="sample-action-btn" onclick="window.beatMaker?.previewSample('horn-01')">
-                    ▶️ Play
-                  </button>
-                  <button class="sample-action-btn" onclick="window.beatMaker?.buySample('horn-01')">
-                    💳 Buy
-                  </button>
-                </div>
-              </div>
-
-              <div class="empty-state" style="display: none;">
-                <div style="text-align: center; padding: 3rem; color: #9ca3af;">
-                  <div style="font-size: 3rem; margin-bottom: 1rem;">🎵</div>
-                  <p>No samples found</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Upload Tips & Pattern Vectors Info -->
-        <div class="sample-upload-tips" style="margin-top: 2rem; padding: 1.5rem; background: #f9fafb; border-radius: 0.75rem;">
-          <h4 style="font-weight: bold; margin-bottom: 0.75rem;">💡 Sample & Pattern Vector System</h4>
-          <ul style="list-style: disc; margin-left: 1.5rem; color: #666; line-height: 1.8;">
-            <li><strong>Short Samples:</strong> Can be as short as 0.1 seconds (one-shots, hits, stabs) or up to 3 seconds (loops, phrases)</li>
-            <li><strong>Pattern Vectors:</strong> When you create a beat, the pattern is stored as a lightweight data vector - just the step positions, not heavy audio files</li>
-            <li><strong>Efficient Sharing:</strong> Share a 1KB pattern vector instead of a 10MB audio file. Anyone can recreate your beat instantly!</li>
-            <li><strong>Remix Culture:</strong> Download pattern vectors, swap samples, adjust timing, and create your own versions</li>
-            <li><strong>Battle Crew Patterns:</strong> Share pattern vectors with your crew for collaborative beat-making</li>
-            <li><strong>Pattern Marketplace:</strong> Sell unique pattern vectors as "beat blueprints" that others can customize</li>
-            <li><strong>Quality:</strong> Upload high-quality audio (44.1kHz+) for samples that will be reused in many patterns</li>
-          </ul>
-        </div>
-
-        <!-- Pattern Vector Export/Import -->
-        <div style="margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 0.75rem;">
-          <h4 style="font-weight: bold; margin-bottom: 1rem;">🔢 Pattern Vector Format</h4>
-          <p style="margin-bottom: 1rem; opacity: 0.9;">
-            Your beat patterns are exported as JSON vectors containing step data, tempo, swing, and sample references.
-            This format is:
-          </p>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
-              <strong>📦 Tiny Size</strong><br/>
-              <span style="font-size: 0.875rem; opacity: 0.9;">~1-5KB vs 10-50MB audio</span>
-            </div>
-            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
-              <strong>⚡ Instant Load</strong><br/>
-              <span style="font-size: 0.875rem; opacity: 0.9;">Load patterns in milliseconds</span>
-            </div>
-            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
-              <strong>🔄 Remix Friendly</strong><br/>
-              <span style="font-size: 0.875rem; opacity: 0.9;">Swap samples, change tempo, modify steps</span>
-            </div>
-            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
-              <strong>🌐 Easy Sharing</strong><br/>
-              <span style="font-size: 0.875rem; opacity: 0.9;">Copy/paste code, QR codes, URLs</span>
-            </div>
-          </div>
-          <button class="btn" style="background: white; color: #667eea; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: bold; border: none; cursor: pointer;" onclick="window.beatMaker?.showPatternVectorExample()">
-            📋 View Example Pattern Vector
-          </button>
-        </div>
-
-      </div>
-      <!-- END UPLOAD MODE -->
 
     </div>
   </section>
 
   <!-- ============================================ -->
   <!-- TAB 3: RAP BATTLES -->
+  <!-- ============================================ -->
   <!-- ============================================ -->
   <section id="tab-battles" class="studio-tab-content" style="display: none;">
     <div class="container mx-auto">
@@ -1557,21 +936,54 @@ Your lyrics here...
 </BaseLayout>
 
 <script>
-  // Tab switching logic
+  // Tab switching logic with URL hash support
+  function switchToTab(tabName) {
+    // Update active tab
+    document.querySelectorAll('.studio-tab').forEach(t => t.classList.remove('active'));
+    const activeTab = document.querySelector(`.studio-tab[data-tab="${tabName}"]`);
+    if (activeTab) {
+      activeTab.classList.add('active');
+    }
+
+    // Show corresponding content
+    document.querySelectorAll('.studio-tab-content').forEach(content => {
+      content.style.display = 'none';
+    });
+    const targetContent = document.getElementById(`tab-${tabName}`);
+    if (targetContent) {
+      targetContent.style.display = 'block';
+    }
+
+    // Update URL hash (without scrolling)
+    history.replaceState(null, null, `#${tabName}`);
+  }
+
+  // Handle tab clicks
   document.querySelectorAll('.studio-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const tabName = tab.dataset.tab;
-      
-      // Update active tab
-      document.querySelectorAll('.studio-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      
-      // Show corresponding content
-      document.querySelectorAll('.studio-tab-content').forEach(content => {
-        content.style.display = 'none';
-      });
-      document.getElementById(`tab-${tabName}`).style.display = 'block';
+      switchToTab(tabName);
     });
+  });
+
+  // Handle hash changes (browser back/forward)
+  window.addEventListener('hashchange', () => {
+    let hash = window.location.hash.slice(1); // Remove #
+    // Support both "beatmaker" and "beat-maker" formats
+    if (hash === 'beat-maker') hash = 'beatmaker';
+    if (hash && document.querySelector(`.studio-tab[data-tab="${hash}"]`)) {
+      switchToTab(hash);
+    }
+  });
+
+  // Check hash on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    let hash = window.location.hash.slice(1);
+    // Support both "beatmaker" and "beat-maker" formats
+    if (hash === 'beat-maker') hash = 'beatmaker';
+    if (hash && document.querySelector(`.studio-tab[data-tab="${hash}"]`)) {
+      switchToTab(hash);
+    }
   });
 
   // Track upload form handler

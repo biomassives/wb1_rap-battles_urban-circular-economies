@@ -702,7 +702,7 @@ const battleExists = battleData !== null && !error;
           </div>
 
           <div class="submit-modal-body">
-            <form id="submit-bars-form">
+            <form id="submit-bars-form" data-autosave="30000">
               
               <div class="form-group">
                 <label class="form-label">
@@ -754,6 +754,9 @@ const battleExists = battleData !== null && !error;
   )}
 
 </BaseLayout>
+
+<!-- Form Storage Utility for auto-saving battle submissions -->
+<script is:inline src="/scripts/form-storage.js"></script>
 
 <style>
   /* Use your existing styles - they're great! */
@@ -930,6 +933,12 @@ const battleExists = battleData !== null && !error;
         
         console.log('📝 Submitting bars:', { bars, hasAudio: !!audioFile });
         alert('Bars submitted! (Placeholder - will use Supabase when connected)');
+
+        // Clear form from localStorage after successful submission
+        if (window.formStorage) {
+          window.formStorage.clearForm('submit-bars-form');
+        }
+
         closeSubmitModal();
         
       } catch (error) {

@@ -63,7 +63,7 @@ const themeColor = themeColors[type] || colors.primary;
   </style>
   <![endif]-->
 
-  <style>
+  <style define:vars={{ themeColor, ...colors }}>
     /* Reset */
     html, body {
       margin: 0 auto !important;
@@ -91,7 +91,7 @@ const themeColor = themeColors[type] || colors.primary;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 16px;
       line-height: 1.6;
-      color: {colors.text};
+      color: var(--text);
     }
 
     h1, h2, h3 {
@@ -109,13 +109,13 @@ const themeColor = themeColors[type] || colors.primary;
     }
 
     a {
-      color: {themeColor};
+      color: var(--themeColor);
       text-decoration: none;
     }
 
     /* Header */
     .header {
-      background: linear-gradient(135deg, {colors.primary} 0%, {colors.secondary} 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
       padding: 32px 24px;
       text-align: center;
     }
@@ -141,7 +141,7 @@ const themeColor = themeColors[type] || colors.primary;
     .badge {
       display: inline-block;
       padding: 6px 12px;
-      background: {themeColor};
+      background: var(--themeColor);
       color: white;
       border-radius: 16px;
       font-size: 14px;
@@ -153,7 +153,7 @@ const themeColor = themeColors[type] || colors.primary;
     .cta-button {
       display: inline-block;
       padding: 16px 32px;
-      background: {themeColor};
+      background: var(--themeColor);
       color: white !important;
       border-radius: 8px;
       font-weight: 700;
@@ -168,8 +168,8 @@ const themeColor = themeColors[type] || colors.primary;
 
     /* Stats Card */
     .stats-card {
-      background: {colors.backgroundAlt};
-      border: 1px solid {colors.border};
+      background: var(--backgroundAlt);
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 20px;
       margin: 16px 0;
@@ -179,7 +179,7 @@ const themeColor = themeColors[type] || colors.primary;
       display: flex;
       justify-content: space-between;
       padding: 8px 0;
-      border-bottom: 1px solid {colors.border};
+      border-bottom: 1px solid var(--border);
     }
 
     .stat-row:last-child {
@@ -187,13 +187,13 @@ const themeColor = themeColors[type] || colors.primary;
     }
 
     .stat-label {
-      color: {colors.textLight};
+      color: var(--textLight);
       font-weight: 600;
     }
 
     .stat-value {
       font-weight: 700;
-      color: {colors.text};
+      color: var(--text);
     }
 
     /* Divider */
@@ -205,10 +205,10 @@ const themeColor = themeColors[type] || colors.primary;
 
     /* Footer */
     .footer {
-      background: {colors.backgroundAlt};
+      background: var(--backgroundAlt);
       padding: 32px 24px;
       text-align: center;
-      color: {colors.textLight};
+      color: var(--textLight);
       font-size: 14px;
     }
 
@@ -217,7 +217,7 @@ const themeColor = themeColors[type] || colors.primary;
     }
 
     .footer-links a {
-      color: {colors.textLight};
+      color: var(--textLight);
       margin: 0 12px;
       text-decoration: none;
     }
@@ -285,7 +285,7 @@ const themeColor = themeColors[type] || colors.primary;
           <tr>
             <td class="content">
               <!-- Type Badge -->
-              <span class="badge" style="background: {themeColor};">
+              <span class="badge" style={`background: ${themeColor};`}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </span>
 
@@ -299,15 +299,15 @@ const themeColor = themeColors[type] || colors.primary;
 
               <!-- CTA Button -->
               <div style="text-align: center; margin: 32px 0;">
-                <a href={ctaUrl} class="cta-button" style="background: {themeColor}; color: white;">
+                <a href={ctaUrl} class="cta-button" style={`background: ${themeColor}; color: white;`}>
                   {ctaText}
                 </a>
               </div>
 
               <!-- Support Text -->
-              <p style="color: {colors.textLight}; font-size: 14px; margin-top: 24px;">
+              <p style={`color: ${colors.textLight}; font-size: 14px; margin-top: 24px;`}>
                 If the button doesn't work, copy and paste this link into your browser:<br/>
-                <a href={ctaUrl} style="color: {colors.primary};">{ctaUrl}</a>
+                <a href={ctaUrl} style={`color: ${colors.primary};`}>{ctaUrl}</a>
               </p>
             </td>
           </tr>
@@ -357,7 +357,7 @@ const themeColor = themeColors[type] || colors.primary;
               <!-- Copyright -->
               <p style="margin: 16px 0 0 0; font-size: 12px;">
                 © 2026 Worldbridger One. All rights reserved.<br/>
-                <a href="https://purplepoint.io/unsubscribe" style="color: {colors.textLight};">Unsubscribe</a>
+                <a href="https://purplepoint.io/unsubscribe" style={`color: ${colors.textLight};`}>Unsubscribe</a>
               </p>
             </td>
           </tr>

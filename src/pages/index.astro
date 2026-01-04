@@ -5,20 +5,377 @@
  * This is a simplified version for initial deployment
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SamplerPad from '../components/SamplerPad.astro';
+import MoogLooper from '../components/MoogLooper.astro';
+import WelcomeWizard from '../components/WelcomeWizard.astro';
 ---
 
 <BaseLayout title="Hobby Farm Collection" activeSection="home">
-  <section class="collection-hero">
+  <!-- Welcome Wizard for New Users -->
+  <WelcomeWizard />
+
+  <section class="rap-battle-hero scanlines arcade-grid">
     <div class="container mx-auto">
-      <h1 class="hero-title">Hobby Farm NFT Airdrop Incentive Program</h1>
-      <p class="hero-tagline">Meet your animal mentors. Learn music, environmental science, and support Kakuma youth.</p>
-      <div class="hero-actions">
-        <button class="btn-primary large" id="hero-connect">Get Started</button>
-        <a href="#collection" class="btn-secondary large">View Collection</a>
+      <div class="hero-content pixel-fade-in">
+        <div class="hero-badge pixel-border">
+          <span class="neon-text">▶ BATTLE ZONE ACTIVE ◀</span>
+        </div>
+        <h1 class="hero-title glitch">
+          <span class="block">SHOW SKILLS.</span>
+          <span class="block">WIN BATTLES.</span>
+          <span class="block neon-text">EARN NFTS.</span>
+        </h1>
+        <p class="hero-tagline mono">
+          > CREATE_BEATS()<br/>
+          > RAP_VS_OTHERS()<br/>
+          > COLLECT_PFP_CARDS()<br/>
+          <span class="neon-text blink">█</span>
+        </p>
+        <div class="hero-actions">
+          <a href="/music#beatmaker" class="btn-retro btn-battle-start">
+            <span class="btn-icon">⚔</span>
+            <span class="btn-text">START BATTLE</span>
+          </a>
+          <a href="#how-it-works" class="btn-retro-neon btn-learn-more">
+            <span>HOW IT WORKS</span>
+            <span class="arrow-down blink">▼</span>
+          </a>
+        </div>
+        <div class="hero-stats ska-pattern">
+          <div class="stat card-retro">
+            <div class="stat-number neon-text">1000+</div>
+            <div class="stat-label">BATTLES</div>
+          </div>
+          <div class="stat card-retro">
+            <div class="stat-number neon-text">500+</div>
+            <div class="stat-label">PLAYERS</div>
+          </div>
+          <div class="stat card-retro">
+            <div class="stat-number text-cyan">FREE</div>
+            <div class="stat-label">TO START</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
-  
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works-section">
+    <div class="container mx-auto">
+      <h2 class="section-title">3 Simple Steps to Battle</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon">🎵</div>
+          <h3 class="step-title">Create Your Beat</h3>
+          <p class="step-description">Use our Moog synth or sampler pads to create a unique beat in seconds. No music experience needed!</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon">🎤</div>
+          <h3 class="step-title">Battle & Record</h3>
+          <p class="step-description">Challenge others or go solo. Record your rap, get votes, and earn XP for every battle.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-icon">💎</div>
+          <h3 class="step-title">Collect NFT Cards</h3>
+          <p class="step-description">Every battle earns you a custom PFP card with your rapper persona and bling badges. Trade, collect, win!</p>
+        </div>
+      </div>
+      <div class="cta-center">
+        <a href="/music#beatmaker" class="btn-primary-large">
+          Ready to Battle? Let's Go! 🔥
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- NFT Gallery Showcase Section -->
+  <section id="nft-collection" class="nft-gallery-showcase scanlines">
+    <div class="container mx-auto">
+      <div class="gallery-showcase-header pixel-border arcade-screen">
+        <div class="showcase-badge">
+          <span class="neon-text blink">🎨 DAILY COLLECTION 🎨</span>
+        </div>
+        <h2 class="showcase-title glitch">
+          <span class="block neon-text">55 UNIQUE NFT RAPPERS</span>
+          <span class="block">WITH GENERATED SOUNDS</span>
+        </h2>
+        <p class="showcase-subtitle mono">
+          > BROWSE_COLLECTION()<br/>
+          > CLICK_TO_PLAY_SOUND()<br/>
+          > FILTER_BY_RARITY()<br/>
+          <span class="text-cyan blink">█</span>
+        </p>
+      </div>
+
+      <!-- Featured Preview Cards -->
+      <div class="preview-cards-grid">
+        <div class="preview-card card-retro-neon">
+          <div class="preview-header">
+            <span class="preview-rarity legendary-text">LEGENDARY</span>
+            <span class="preview-id mono">#001</span>
+          </div>
+          <div class="preview-visual">
+            <div class="preview-emoji">🦁</div>
+            <div class="preview-label mono">LION • MALE</div>
+          </div>
+          <div class="preview-details mono">
+            <div>🎵 SAWTOOTH WAVE</div>
+            <div>⭐⭐⭐ 3 BADGES</div>
+          </div>
+          <button class="preview-sound btn-retro-neon mono" disabled>
+            ▶ SOUND PREVIEW
+          </button>
+        </div>
+
+        <div class="preview-card card-retro-neon">
+          <div class="preview-header">
+            <span class="preview-rarity rare-text">RARE</span>
+            <span class="preview-id mono">#027</span>
+          </div>
+          <div class="preview-visual">
+            <div class="preview-emoji">🦅</div>
+            <div class="preview-label mono">EAGLE • FEMALE</div>
+          </div>
+          <div class="preview-details mono">
+            <div>🎵 TRIANGLE WAVE</div>
+            <div>⭐⭐ 2 BADGES</div>
+          </div>
+          <button class="preview-sound btn-retro-neon mono" disabled>
+            ▶ SOUND PREVIEW
+          </button>
+        </div>
+
+        <div class="preview-card card-retro-neon">
+          <div class="preview-header">
+            <span class="preview-rarity common-text">COMMON</span>
+            <span class="preview-id mono">#042</span>
+          </div>
+          <div class="preview-visual">
+            <div class="preview-emoji">🐓</div>
+            <div class="preview-label mono">CHICKEN • MALE</div>
+          </div>
+          <div class="preview-details mono">
+            <div>🎵 SINE WAVE</div>
+            <div>⭐ 1 BADGE</div>
+          </div>
+          <button class="preview-sound btn-retro-neon mono" disabled>
+            ▶ SOUND PREVIEW
+          </button>
+        </div>
+      </div>
+
+      <!-- Gallery CTA -->
+      <div class="gallery-cta">
+        <div class="cta-features ska-pattern">
+          <div class="cta-feature">
+            <div class="cta-icon">🎨</div>
+            <div class="cta-text mono">10 ANIMAL SPIRITS</div>
+          </div>
+          <div class="cta-feature">
+            <div class="cta-icon">🎵</div>
+            <div class="cta-text mono">UNIQUE SOUNDS</div>
+          </div>
+          <div class="cta-feature">
+            <div class="cta-icon">🔄</div>
+            <div class="cta-text mono">DAILY GENERATION</div>
+          </div>
+          <div class="cta-feature">
+            <div class="cta-icon">🎭</div>
+            <div class="cta-text mono">MALE & FEMALE</div>
+          </div>
+        </div>
+        <a href="/nft-gallery" class="btn-gallery-explore btn-retro">
+          <span class="btn-icon">👁️</span>
+          <span class="btn-text">EXPLORE FULL COLLECTION (55 CARDS)</span>
+          <span class="btn-arrow">→</span>
+        </a>
+        <a href="/rapper-template-builder" class="btn-build-custom btn-retro-neon">
+          <span class="btn-icon">✨</span>
+          <span class="btn-text">BUILD YOUR OWN RAPPER CARD</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Card Design Showcase Section -->
+  <!-- Battle PFP Cards Showcase -->
+  <section class="battle-cards-section">
+    <div class="container mx-auto">
+      <div class="section-header">
+        <h2 class="section-title">Rap Battle Commemorative PFPs</h2>
+        <p class="section-subtitle">
+          Every battle earns you a unique NFT card with your rapper persona and earned bling badges
+        </p>
+      </div>
+
+      <div class="cards-showcase-grid">
+        <!-- Legendary Card Example -->
+        <div class="card-display legendary-card" data-rarity="legendary">
+          <div class="card-wrapper">
+            <img src="/images/nft/rapper-card-legendary.svg" alt="Legendary Battle Card" class="showcase-card" />
+            <div class="card-glow legendary-glow"></div>
+          </div>
+          <div class="card-info">
+            <div class="rarity-badge legendary">
+              <span class="rarity-icon">💎</span>
+              <span class="rarity-text">LEGENDARY</span>
+            </div>
+            <h3>Champion's Card</h3>
+            <p class="card-description">
+              Win battles to earn bling badges 🏆🔥💎⚡👑 and unlock higher rarity cards with holographic effects
+            </p>
+            <div class="card-stats">
+              <div class="stat-item">
+                <span class="stat-label">Win Rate:</span>
+                <span class="stat-value">89%</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Badges:</span>
+                <span class="stat-value">5 Earned</span>
+              </div>
+            </div>
+            <a href="/music#beatmaker" class="card-cta">
+              <span class="cta-icon">⚔️</span>
+              Start Your Battle Journey
+            </a>
+          </div>
+        </div>
+
+        <!-- Common Card Example -->
+        <div class="card-display common-card" data-rarity="common">
+          <div class="card-wrapper">
+            <img src="/images/nft/rapper-card-common.svg" alt="Common Battle Card" class="showcase-card" />
+            <div class="card-glow common-glow"></div>
+          </div>
+          <div class="card-info">
+            <div class="rarity-badge common">
+              <span class="rarity-icon">🥉</span>
+              <span class="rarity-text">COMMON</span>
+            </div>
+            <h3>Your First Card</h3>
+            <p class="card-description">
+              Every participant gets a card! Start your collection with your first battle and earn the 🥇 First Blood badge
+            </p>
+            <div class="card-stats">
+              <div class="stat-item">
+                <span class="stat-label">Record:</span>
+                <span class="stat-value">3-2-0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Edition:</span>
+                <span class="stat-value">127/500</span>
+              </div>
+            </div>
+            <a href="/music#beatmaker" class="card-cta">
+              <span class="cta-icon">🎤</span>
+              Join Your First Battle
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Features Grid -->
+      <div class="card-features-modern">
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <span class="feature-icon">👤</span>
+          </div>
+          <h4>Custom Rapper Personas</h4>
+          <p>Design your avatar with 100+ options: hairstyles, bling accessories, expressions, and more</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <span class="feature-icon">💎</span>
+          </div>
+          <h4>Earn Bling Badges</h4>
+          <p>50+ badges to collect: Victory 🏆, Performance 🔥, Rarity 💎, Skills 🎯, and Special Events 🌍</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <span class="feature-icon">📈</span>
+          </div>
+          <h4>5 Rarity Tiers</h4>
+          <p>From Common (60%) to Mythic (1%) - higher rarities unlock exclusive airdrops and rewards</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <span class="feature-icon">🎁</span>
+          </div>
+          <h4>Airdrop Rewards</h4>
+          <p>Card holders get token airdrops, whitelist access, and exclusive physical merch raffles</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <span class="feature-icon">💰</span>
+          </div>
+          <h4>Trade & Collect</h4>
+          <p>Built-in marketplace to buy, sell, and swap cards - rare cards can sell for 50+ SOL</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <span class="feature-icon">🏕️</span>
+          </div>
+          <h4>Kakuma Impact</h4>
+          <p>5% of all sales support youth empowerment programs in Kakuma refugee camp</p>
+        </div>
+      </div>
+
+      <!-- Rarity Tier Showcase -->
+      <div class="rarity-tiers-section">
+        <h3 class="tiers-title">Rarity System</h3>
+        <div class="tiers-grid">
+          <div class="tier-item common-tier">
+            <span class="tier-icon">🥉</span>
+            <span class="tier-name">Common</span>
+            <span class="tier-rate">60%</span>
+          </div>
+          <div class="tier-item rare-tier">
+            <span class="tier-icon">🥈</span>
+            <span class="tier-name">Rare</span>
+            <span class="tier-rate">25%</span>
+          </div>
+          <div class="tier-item epic-tier">
+            <span class="tier-icon">🥇</span>
+            <span class="tier-name">Epic</span>
+            <span class="tier-rate">10%</span>
+          </div>
+          <div class="tier-item legendary-tier">
+            <span class="tier-icon">💎</span>
+            <span class="tier-name">Legendary</span>
+            <span class="tier-rate">4%</span>
+          </div>
+          <div class="tier-item mythic-tier">
+            <span class="tier-icon">🌈</span>
+            <span class="tier-name">Mythic</span>
+            <span class="tier-rate">1%</span>
+          </div>
+        </div>
+        <p class="tiers-description">
+          Win streaks, community votes, and special achievements increase your rarity chances!
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Moog Synth Looper Section -->
+  <section class="moog-section">
+    <div class="container mx-auto">
+      <div class="moog-intro">
+        <h2 class="section-title">Create Sounds Instantly</h2>
+        <p class="section-subtitle">Moog-style synthesizer with loop playback - perfect for beatmaking and rap battles</p>
+      </div>
+      <MoogLooper compact={false} />
+    </div>
+  </section>
+
   <section id="collection" class="collection-section">
     <div class="container mx-auto">
       <h2 class="section-title">55 NFT Animals</h2>
@@ -27,4 +384,1296 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
     </div>
   </section>
+
+  <!-- Floating Sampler Button -->
+  <button id="sampler-fab" class="sampler-fab" title="Open Sampler Pads">
+    <span class="fab-icon">🎛️</span>
+    <span class="fab-label">Sampler</span>
+  </button>
+
+  <!-- Sampler Overlay Modal -->
+  <div id="sampler-overlay" class="sampler-overlay">
+    <div class="sampler-modal">
+      <button id="close-sampler" class="close-sampler" aria-label="Close Sampler">×</button>
+      <SamplerPad minimal={true} overlayMode={true} />
+    </div>
+  </div>
+
+  <style>
+    /* Rap Battle Hero Section - Retro Dark */
+    .rap-battle-hero {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-black);
+      color: var(--color-white);
+      position: relative;
+      overflow: hidden;
+      padding: 4rem 2rem;
+      border-bottom: 4px solid var(--color-white);
+    }
+
+    .rap-battle-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(0, 255, 0, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      animation: arcadeGlow 8s ease-in-out infinite;
+    }
+
+    @keyframes arcadeGlow {
+      0%, 100% {
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+
+    /* Block display helper */
+    .block {
+      display: block;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: var(--color-black);
+      border: 3px solid var(--color-white);
+      font-size: 1rem;
+      font-weight: 900;
+      margin-bottom: 2rem;
+      letter-spacing: 3px;
+      box-shadow: 6px 6px 0 var(--color-neon-green);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+
+    /* Blink animation */
+    .blink {
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% {
+        opacity: 1;
+      }
+      51%, 100% {
+        opacity: 0;
+      }
+    }
+
+    .hero-title {
+      font-size: 4rem;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 2rem;
+      color: var(--color-white);
+      letter-spacing: -2px;
+      text-shadow: 4px 4px 0 var(--color-black);
+      border: 4px solid var(--color-white);
+      padding: 1.5rem;
+      background: var(--color-black);
+      box-shadow: 8px 8px 0 var(--color-white);
+    }
+
+    .hero-tagline {
+      font-size: 1.5rem;
+      line-height: 2;
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background: var(--color-dark-gray);
+      padding: 2rem;
+      border: 2px solid var(--color-white);
+      box-shadow: 4px 4px 0 var(--color-neon-green);
+      text-align: left;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-battle-start {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 2.5rem;
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-battle-start::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-battle-start:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 15px 40px rgba(124, 58, 237, 0.6);
+    }
+
+    .btn-battle-start:hover::before {
+      left: 100%;
+    }
+
+    .btn-icon {
+      font-size: 1.5rem;
+    }
+
+    .btn-learn-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      color: white;
+      text-decoration: none;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-learn-more:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .arrow-down {
+      font-size: 1.25rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(5px);
+      }
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      padding: 3rem 0 0;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 1.5rem 2rem;
+      min-width: 150px;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      font-family: var(--font-mono);
+      letter-spacing: -1px;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 900;
+      color: var(--color-white);
+      font-family: var(--font-mono);
+    }
+
+    /* How It Works Section */
+    .how-it-works-section {
+      padding: 5rem 2rem;
+      background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+    }
+
+    .how-it-works-section .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 3rem;
+      color: #1a1a2e;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2.5rem;
+      max-width: 1200px;
+      margin: 0 auto 3rem;
+    }
+
+    .step-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      text-align: center;
+      border: 3px solid transparent;
+    }
+
+    .step-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(124, 58, 237, 0.2);
+      border-color: rgba(124, 58, 237, 0.3);
+    }
+
+    .step-number {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 900;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+    }
+
+    .step-icon {
+      font-size: 4rem;
+      margin: 1.5rem 0 1rem;
+    }
+
+    .step-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #1a1a2e;
+    }
+
+    .step-description {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #6b7280;
+    }
+
+    .cta-center {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .btn-primary-large {
+      display: inline-block;
+      padding: 1.5rem 3rem;
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+    }
+
+    .btn-primary-large:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 15px 40px rgba(124, 58, 237, 0.6);
+    }
+
+    /* Mobile Responsive for Hero and How It Works */
+    @media (max-width: 768px) {
+      .rap-battle-hero {
+        min-height: 80vh;
+        padding: 3rem 1.5rem;
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .hero-tagline {
+        font-size: 1.1rem;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .btn-battle-start,
+      .btn-learn-more {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .hero-stats {
+        gap: 2rem;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+      }
+
+      .how-it-works-section {
+        padding: 3rem 1.5rem;
+      }
+
+      .how-it-works-section .section-title {
+        font-size: 2rem;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .btn-primary-large {
+        font-size: 1.25rem;
+        padding: 1.25rem 2rem;
+        width: 100%;
+      }
+    }
+
+    /* Battle PFP Cards Section */
+    .battle-cards-section {
+      padding: 5rem 2rem;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .battle-cards-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(155, 89, 182, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(52, 152, 219, 0.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      font-size: 1.25rem;
+      margin-bottom: 3rem;
+      opacity: 0.9;
+    }
+
+    .cards-showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 3rem;
+      margin-bottom: 5rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-display {
+      background: rgba(26, 26, 46, 0.6);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(155, 89, 182, 0.3);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+
+    .card-display.legendary-card {
+      border-color: rgba(155, 89, 182, 0.6);
+    }
+
+    .card-display.common-card {
+      border-color: rgba(205, 127, 50, 0.6);
+    }
+
+    .card-display:hover {
+      transform: translateY(-12px) scale(1.02);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      border-color: currentColor;
+    }
+
+    .card-wrapper {
+      position: relative;
+      background: transparent;
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 450px;
+    }
+
+    .card-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      height: 90%;
+      border-radius: 16px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .legendary-glow {
+      background: radial-gradient(circle, rgba(155, 89, 182, 0.4) 0%, transparent 70%);
+    }
+
+    .common-glow {
+      background: radial-gradient(circle, rgba(205, 127, 50, 0.3) 0%, transparent 70%);
+    }
+
+    .card-display:hover .card-glow {
+      opacity: 1;
+    }
+
+    .showcase-card {
+      width: 100%;
+      height: auto;
+      max-width: 280px;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+      transition: transform 0.4s ease;
+    }
+
+    .card-display:hover .showcase-card {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    .card-info {
+      text-align: center;
+    }
+
+    .rarity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+    }
+
+    .rarity-badge.legendary {
+      background: linear-gradient(135deg, #9b59b6, #3498db);
+      box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
+    }
+
+    .rarity-badge.common {
+      background: linear-gradient(135deg, #cd7f32, #8b4513);
+      box-shadow: 0 4px 12px rgba(205, 127, 50, 0.4);
+    }
+
+    .rarity-icon {
+      font-size: 1.25rem;
+    }
+
+    .card-info h3 {
+      font-size: 1.75rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #fff, #e0e0e0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .card-description {
+      margin-bottom: 1.5rem;
+      opacity: 0.9;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .card-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 1.25rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .card-cta:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      background: linear-gradient(135deg, #764ba2, #667eea);
+    }
+
+    .cta-icon {
+      font-size: 1.5rem;
+    }
+
+    /* Features Grid */
+    .card-features-modern {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .feature-card {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(102, 126, 234, 0.5);
+      transform: translateY(-5px);
+    }
+
+    .feature-icon-wrapper {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .feature-icon-wrapper .feature-icon {
+      font-size: 2rem;
+    }
+
+    .feature-card h4 {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 0.75rem;
+      color: #fff;
+    }
+
+    .feature-card p {
+      opacity: 0.85;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* Rarity Tiers Section */
+    .rarity-tiers-section {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: rgba(26, 26, 46, 0.6);
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      position: relative;
+      z-index: 1;
+    }
+
+    .tiers-title {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tier-item {
+      padding: 1.5rem 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tier-item:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .common-tier {
+      border-color: #cd7f32;
+    }
+
+    .rare-tier {
+      border-color: #c0c0c0;
+    }
+
+    .epic-tier {
+      border-color: #ffd700;
+    }
+
+    .legendary-tier {
+      border-color: #9b59b6;
+    }
+
+    .mythic-tier {
+      border-color: #e74c3c;
+      background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(231, 76, 60, 0.1));
+    }
+
+    .tier-icon {
+      font-size: 2.5rem;
+    }
+
+    .tier-name {
+      font-weight: bold;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tier-rate {
+      font-size: 0.875rem;
+      opacity: 0.7;
+    }
+
+    .tiers-description {
+      max-width: 600px;
+      margin: 0 auto;
+      opacity: 0.8;
+      line-height: 1.6;
+    }
+
+    /* Mobile Responsive Styles for Battle Cards */
+    @media (max-width: 768px) {
+      .battle-cards-section {
+        padding: 3rem 1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .section-subtitle {
+        font-size: 1rem;
+      }
+
+      .cards-showcase-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .card-display {
+        padding: 1.5rem;
+      }
+
+      .card-wrapper {
+        min-height: 380px;
+      }
+
+      .showcase-card {
+        max-width: 240px;
+      }
+
+      .card-info h3 {
+        font-size: 1.5rem;
+      }
+
+      .card-stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .card-features-modern {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .tiers-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .tier-item {
+        padding: 1rem 0.5rem;
+      }
+
+      .tier-icon {
+        font-size: 2rem;
+      }
+
+      .tier-name {
+        font-size: 0.875rem;
+      }
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .feature-item h4 {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-item p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    /* Moog Section */
+    .moog-section {
+      padding: 4rem 2rem;
+      background: #0e1117;
+    }
+
+    .moog-intro {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .moog-intro .section-title {
+      color: #e6edf3;
+    }
+
+    .moog-intro .section-subtitle {
+      color: #8b949e;
+    }
+
+    /* Floating Action Button */
+    .sampler-fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #58a6ff, #7c3aed);
+      border: none;
+      box-shadow: 0 8px 24px rgba(88, 166, 255, 0.4);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sampler-fab:hover {
+      transform: scale(1.1) translateY(-4px);
+      box-shadow: 0 12px 32px rgba(88, 166, 255, 0.6);
+    }
+
+    .fab-icon {
+      font-size: 1.75rem;
+    }
+
+    .fab-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Sampler Overlay Modal */
+    .sampler-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .sampler-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .sampler-modal {
+      position: relative;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .close-sampler {
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 2px solid white;
+      color: white;
+      font-size: 1.75rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .close-sampler:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      .card-showcase-section {
+        padding: 3rem 1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .card-showcase-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .card-features {
+        grid-template-columns: 1fr;
+      }
+
+      .sampler-fab {
+        width: 60px;
+        height: 60px;
+        bottom: 1rem;
+        right: 1rem;
+      }
+
+      .fab-icon {
+        font-size: 1.5rem;
+      }
+
+      .fab-label {
+        font-size: 0.6rem;
+      }
+
+      .sampler-modal {
+        max-height: 95vh;
+      }
+    }
+
+    /* NFT Gallery Showcase Section */
+    .nft-gallery-showcase {
+      padding: 5rem 2rem;
+      background: var(--color-black);
+      position: relative;
+    }
+
+    .gallery-showcase-header {
+      text-align: center;
+      padding: 3rem 2rem;
+      margin-bottom: 3rem;
+      background: var(--color-near-black);
+    }
+
+    .showcase-badge {
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      font-family: var(--font-mono);
+    }
+
+    .showcase-title {
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      font-family: var(--font-mono);
+      letter-spacing: 3px;
+      line-height: 1.2;
+    }
+
+    .showcase-subtitle {
+      font-size: 1.25rem;
+      line-height: 2;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Preview Cards Grid */
+    .preview-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .preview-card {
+      background: var(--color-near-black);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+
+    .preview-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .preview-rarity {
+      font-size: 0.875rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .legendary-text {
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff;
+    }
+
+    .rare-text {
+      color: #ffff00;
+      text-shadow: 0 0 10px #ffff00;
+    }
+
+    .common-text {
+      color: #00ff00;
+      text-shadow: 0 0 10px #00ff00;
+    }
+
+    .preview-id {
+      color: var(--color-light-gray);
+      font-size: 0.875rem;
+    }
+
+    .preview-visual {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-dark-gray);
+      border: 2px solid var(--color-white);
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .preview-emoji {
+      font-size: 5rem;
+      margin-bottom: 0.5rem;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+    }
+
+    .preview-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--color-white);
+      background: var(--color-black);
+      padding: 0.25rem 0.75rem;
+      border: 2px solid var(--color-white);
+    }
+
+    .preview-details {
+      font-size: 0.875rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background: var(--color-black);
+      border: 2px solid var(--color-neon-green);
+    }
+
+    .preview-sound {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: auto;
+    }
+
+    .preview-sound:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Gallery CTA */
+    .gallery-cta {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .cta-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 2rem;
+    }
+
+    .cta-feature {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cta-icon {
+      font-size: 2.5rem;
+    }
+
+    .cta-text {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--color-white);
+      letter-spacing: 1px;
+    }
+
+    .btn-gallery-explore,
+    .btn-build-custom {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.25rem 2rem;
+      margin: 0.5rem;
+      font-size: 1.125rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .btn-gallery-explore .btn-icon,
+    .btn-build-custom .btn-icon {
+      font-size: 1.5rem;
+    }
+
+    .btn-gallery-explore .btn-arrow {
+      font-size: 1.25rem;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-gallery-explore:hover .btn-arrow {
+      transform: translateX(5px);
+    }
+
+    /* Mobile Responsive for NFT Gallery Showcase */
+    @media (max-width: 768px) {
+      .nft-gallery-showcase {
+        padding: 3rem 1rem;
+      }
+
+      .showcase-title {
+        font-size: 2rem;
+      }
+
+      .preview-cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-features {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 1rem;
+      }
+
+      .btn-gallery-explore,
+      .btn-build-custom {
+        width: 100%;
+        font-size: 0.95rem;
+        padding: 1rem 1.5rem;
+      }
+    }
+  </style>
+
+  <script>
+    // Sampler overlay functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const fab = document.getElementById('sampler-fab');
+      const overlay = document.getElementById('sampler-overlay');
+      const closeBtn = document.getElementById('close-sampler');
+
+      if (fab && overlay) {
+        // Open sampler overlay
+        fab.addEventListener('click', () => {
+          overlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+
+          // Award XP for opening sampler
+          if (window.progressManager) {
+            window.progressManager.awardXP(2, 'music_exploration', 'Opened sampler pads');
+          }
+        });
+
+        // Close sampler overlay
+        const closeSampler = () => {
+          overlay.classList.remove('active');
+          document.body.style.overflow = '';
+        };
+
+        closeBtn?.addEventListener('click', closeSampler);
+
+        // Close on overlay background click
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            closeSampler();
+          }
+        });
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && overlay.classList.contains('active')) {
+            closeSampler();
+          }
+        });
+      }
+    });
+  </script>
 </BaseLayout>

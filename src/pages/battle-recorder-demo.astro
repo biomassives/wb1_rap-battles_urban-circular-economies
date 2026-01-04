@@ -1,0 +1,233 @@
+---
+/**
+ * battle-recorder-demo.astro
+ * Demo page for Battle Audio Recorder
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BattleAudioRecorder from '../components/BattleAudioRecorder.astro';
+---
+
+<BaseLayout
+  title="Battle Audio Recorder"
+  description="Record, upload, or create beats for rap battles"
+  activeSection="music"
+>
+
+<div class="battle-recorder-demo scanlines">
+  <div class="container mx-auto">
+
+    <!-- Page Header -->
+    <div class="demo-header pixel-border arcade-screen">
+      <h1 class="demo-title glitch">
+        <span class="neon-text">[ RAP BATTLE RECORDER ]</span>
+      </h1>
+      <p class="demo-subtitle mono">
+        > RECORD_VOCALS()<br/>
+        > UPLOAD_AUDIO()<br/>
+        > USE_SAMPLER()<br/>
+        <span class="blink text-cyan">█</span>
+      </p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions card-retro ska-pattern">
+      <h2 class="instructions-title neon-text">HOW IT WORKS:</h2>
+      <div class="instructions-grid">
+        <div class="instruction-item">
+          <div class="instruction-number">1</div>
+          <h3>CHOOSE MODE</h3>
+          <p class="mono">Select RECORD, UPLOAD, or SAMPLER</p>
+        </div>
+        <div class="instruction-item">
+          <div class="instruction-number">2</div>
+          <h3>CREATE AUDIO</h3>
+          <p class="mono">Record live, upload file, or use sampler</p>
+        </div>
+        <div class="instruction-item">
+          <div class="instruction-number">3</div>
+          <h3>SUBMIT</h3>
+          <p class="mono">Review and submit to battle</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audio Recorder Component -->
+    <BattleAudioRecorder battleId="demo" maxDuration={120} />
+
+    <!-- Tips Section -->
+    <div class="tips-section card-retro-neon">
+      <h3 class="tips-title">⚡ PRO TIPS</h3>
+      <ul class="tips-list mono">
+        <li>🎤 Use headphones to prevent echo/feedback</li>
+        <li>📏 Keep input level in green zone (50-80%)</li>
+        <li>🔇 Record in a quiet environment</li>
+        <li>⏱️ Max recording time: 2 minutes</li>
+        <li>💾 Supported formats: MP3, WAV, M4A, OGG</li>
+        <li>📦 Max file size: 10MB</li>
+        <li>🎛️ Use sampler to create backing beats</li>
+      </ul>
+    </div>
+
+    <!-- Navigation -->
+    <div class="demo-nav">
+      <a href="/music" class="btn-retro">
+        ← BACK TO MUSIC STUDIO
+      </a>
+      <a href="/sampler" class="btn-retro-neon">
+        OPEN SAMPLER 🎛️
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .battle-recorder-demo {
+    min-height: 100vh;
+    background: var(--color-black);
+    padding: 3rem 2rem;
+  }
+
+  .demo-header {
+    text-align: center;
+    padding: 3rem 2rem;
+    margin-bottom: 3rem;
+    background: var(--color-near-black);
+  }
+
+  .demo-title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    font-family: var(--font-mono);
+    letter-spacing: 3px;
+  }
+
+  .demo-subtitle {
+    font-size: 1.5rem;
+    line-height: 2;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* Instructions */
+  .instructions {
+    margin-bottom: 3rem;
+    padding: 2rem;
+  }
+
+  .instructions-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    letter-spacing: 3px;
+  }
+
+  .instructions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .instruction-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--color-black);
+    border: 3px solid var(--color-white);
+    box-shadow: 6px 6px 0 var(--color-neon-green);
+  }
+
+  .instruction-number {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 1rem;
+    background: var(--color-neon-green);
+    color: var(--color-black);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    font-family: var(--font-mono);
+    box-shadow: 0 0 20px var(--color-neon-green);
+  }
+
+  .instruction-item h3 {
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    letter-spacing: 2px;
+  }
+
+  .instruction-item p {
+    opacity: 0.9;
+  }
+
+  /* Tips */
+  .tips-section {
+    margin-top: 3rem;
+    padding: 2rem;
+  }
+
+  .tips-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    letter-spacing: 2px;
+  }
+
+  .tips-list {
+    list-style: none;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .tips-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: rgba(0, 255, 0, 0.05);
+    border-left: 4px solid var(--color-neon-green);
+  }
+
+  /* Navigation */
+  .demo-nav {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .demo-title {
+      font-size: 2rem;
+    }
+
+    .demo-subtitle {
+      font-size: 1.25rem;
+    }
+
+    .instructions-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .demo-nav {
+      flex-direction: column;
+    }
+
+    .demo-nav a {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+
+</BaseLayout>

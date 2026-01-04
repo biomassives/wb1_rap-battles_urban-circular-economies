@@ -1,0 +1,921 @@
+---
+/**
+ * Sampler Controls Component
+ * Provides UI for:
+ * - Sound adjustment (volume, pitch, playback rate, filters)
+ * - Save/Load banks
+ * - Microphone recording
+ * - Export for battle/jam
+ */
+---
+
+<div class="sampler-controls-panel">
+
+  <!-- Master Controls -->
+  <div class="controls-section master-controls">
+    <h3 class="section-title">🎚️ Master Controls</h3>
+
+    <div class="control-group">
+      <label for="master-volume">Master Volume</label>
+      <input
+        type="range"
+        id="master-volume"
+        min="0"
+        max="2"
+        step="0.1"
+        value="1"
+        class="slider"
+      />
+      <span class="value-display" id="master-volume-value">100%</span>
+    </div>
+  </div>
+
+  <!-- Pad Adjustment Controls -->
+  <div class="controls-section pad-controls">
+    <h3 class="section-title">🎛️ Pad Adjustments</h3>
+
+    <div class="pad-selector">
+      <label>Selected Pad:</label>
+      <select id="selected-pad" class="pad-select">
+        {Array.from({ length: 16 }, (_, i) => (
+          <option value={i}>Pad {i + 1}</option>
+        ))}
+      </select>
+      <span class="pad-name" id="selected-pad-name">No sample loaded</span>
+    </div>
+
+    <div class="adjustment-controls">
+
+      <!-- Volume -->
+      <div class="control-group">
+        <label for="pad-volume">Volume</label>
+        <input
+          type="range"
+          id="pad-volume"
+          min="0"
+          max="2"
+          step="0.05"
+          value="1"
+          class="slider"
+        />
+        <span class="value-display" id="pad-volume-value">100%</span>
+      </div>
+
+      <!-- Pitch -->
+      <div class="control-group">
+        <label for="pad-pitch">Pitch (semitones)</label>
+        <input
+          type="range"
+          id="pad-pitch"
+          min="-12"
+          max="12"
+          step="1"
+          value="0"
+          class="slider"
+        />
+        <span class="value-display" id="pad-pitch-value">0</span>
+      </div>
+
+      <!-- Playback Rate -->
+      <div class="control-group">
+        <label for="pad-playback-rate">Playback Speed</label>
+        <input
+          type="range"
+          id="pad-playback-rate"
+          min="0.25"
+          max="4"
+          step="0.25"
+          value="1"
+          class="slider"
+        />
+        <span class="value-display" id="pad-playback-rate-value">1.0x</span>
+      </div>
+
+      <!-- Loop Toggle -->
+      <div class="control-group toggle-group">
+        <label for="pad-loop">Loop Sample</label>
+        <input
+          type="checkbox"
+          id="pad-loop"
+          class="toggle-switch"
+        />
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="filter-controls">
+        <h4>Filter</h4>
+
+        <div class="control-group">
+          <label for="pad-filter-type">Filter Type</label>
+          <select id="pad-filter-type" class="filter-select">
+            <option value="none">None</option>
+            <option value="lowpass">Low Pass</option>
+            <option value="highpass">High Pass</option>
+            <option value="bandpass">Band Pass</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="pad-filter-frequency">Frequency</label>
+          <input
+            type="range"
+            id="pad-filter-frequency"
+            min="20"
+            max="20000"
+            step="10"
+            value="1000"
+            class="slider"
+          />
+          <span class="value-display" id="pad-filter-frequency-value">1000 Hz</span>
+        </div>
+
+        <div class="control-group">
+          <label for="pad-filter-q">Resonance (Q)</label>
+          <input
+            type="range"
+            id="pad-filter-q"
+            min="0.1"
+            max="20"
+            step="0.1"
+            value="1"
+            class="slider"
+          />
+          <span class="value-display" id="pad-filter-q-value">1.0</span>
+        </div>
+      </div>
+
+      <!-- Envelope Controls -->
+      <div class="envelope-controls">
+        <h4>ADSR Envelope</h4>
+
+        <div class="control-group">
+          <label for="pad-attack">Attack</label>
+          <input
+            type="range"
+            id="pad-attack"
+            min="0.001"
+            max="2"
+            step="0.001"
+            value="0.01"
+            class="slider"
+          />
+          <span class="value-display" id="pad-attack-value">0.01s</span>
+        </div>
+
+        <div class="control-group">
+          <label for="pad-decay">Decay</label>
+          <input
+            type="range"
+            id="pad-decay"
+            min="0.001"
+            max="2"
+            step="0.001"
+            value="0.1"
+            class="slider"
+          />
+          <span class="value-display" id="pad-decay-value">0.1s</span>
+        </div>
+
+        <div class="control-group">
+          <label for="pad-sustain">Sustain</label>
+          <input
+            type="range"
+            id="pad-sustain"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.8"
+            class="slider"
+          />
+          <span class="value-display" id="pad-sustain-value">80%</span>
+        </div>
+
+        <div class="control-group">
+          <label for="pad-release">Release</label>
+          <input
+            type="range"
+            id="pad-release"
+            min="0.001"
+            max="5"
+            step="0.001"
+            value="0.3"
+            class="slider"
+          />
+          <span class="value-display" id="pad-release-value">0.3s</span>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button id="test-pad-btn" class="btn btn-primary">
+          🔊 Test Sound
+        </button>
+        <button id="reset-pad-btn" class="btn btn-secondary">
+          ↻ Reset Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save/Load Banks -->
+  <div class="controls-section bank-controls">
+    <h3 class="section-title">💾 Save/Load Banks</h3>
+
+    <div class="bank-actions">
+      <div class="save-bank">
+        <input
+          type="text"
+          id="bank-name-input"
+          placeholder="Bank name..."
+          class="bank-input"
+        />
+        <button id="save-bank-btn" class="btn btn-success">
+          Save Bank
+        </button>
+      </div>
+
+      <div class="load-bank">
+        <select id="bank-select" class="bank-select">
+          <option value="">-- Select Bank --</option>
+        </select>
+        <button id="load-bank-btn" class="btn btn-primary">
+          Load Bank
+        </button>
+        <button id="delete-bank-btn" class="btn btn-danger">
+          Delete
+        </button>
+      </div>
+    </div>
+
+    <div id="bank-list" class="bank-list">
+      <!-- Populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Microphone Recording -->
+  <div class="controls-section recording-controls">
+    <h3 class="section-title">🎤 Microphone Recording</h3>
+
+    <div class="recording-actions">
+      <button id="start-recording-btn" class="btn btn-danger">
+        ● Start Recording
+      </button>
+      <button id="stop-recording-btn" class="btn btn-secondary" disabled>
+        ⏹ Stop Recording
+      </button>
+    </div>
+
+    <div class="recording-status" id="recording-status" style="display: none;">
+      <span class="recording-indicator">● REC</span>
+      <span id="recording-time">0:00</span>
+    </div>
+
+    <div id="recordings-list" class="recordings-list">
+      <!-- Populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Export for Battle/Jam -->
+  <div class="controls-section export-controls">
+    <h3 class="section-title">🎯 Export Samples</h3>
+
+    <div class="export-actions">
+      <button id="export-battle-btn" class="btn btn-accent">
+        ⚔️ Export for Battle
+      </button>
+      <button id="export-jam-btn" class="btn btn-accent">
+        🎶 Export for Jam Session
+      </button>
+    </div>
+
+    <div id="export-status" class="export-status">
+      <!-- Status messages -->
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Sampler Controls Manager
+  class SamplerControlsUI {
+    constructor() {
+      this.sampler = window.enhancedSamplerManager;
+      this.selectedPad = 0;
+      this.recordingStartTime = null;
+      this.recordingInterval = null;
+    }
+
+    init() {
+      if (!this.sampler) {
+        console.error('Enhanced Sampler Manager not found');
+        return;
+      }
+
+      this.setupEventListeners();
+      this.loadBankList();
+      this.updatePadControls();
+    }
+
+    setupEventListeners() {
+      // Master volume
+      document.getElementById('master-volume')?.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        this.sampler.setMasterVolume(value);
+        document.getElementById('master-volume-value').textContent = `${Math.round(value * 100)}%`;
+      });
+
+      // Pad selection
+      document.getElementById('selected-pad')?.addEventListener('change', (e) => {
+        this.selectedPad = parseInt(e.target.value);
+        this.updatePadControls();
+      });
+
+      // Pad controls
+      this.setupPadControl('pad-volume', (v) => {
+        this.sampler.setPadVolume(this.selectedPad, v);
+        document.getElementById('pad-volume-value').textContent = `${Math.round(v * 100)}%`;
+      });
+
+      this.setupPadControl('pad-pitch', (v) => {
+        this.sampler.setPadPitch(this.selectedPad, parseInt(v));
+        document.getElementById('pad-pitch-value').textContent = v;
+      });
+
+      this.setupPadControl('pad-playback-rate', (v) => {
+        this.sampler.setPadPlaybackRate(this.selectedPad, parseFloat(v));
+        document.getElementById('pad-playback-rate-value').textContent = `${v}x`;
+      });
+
+      document.getElementById('pad-loop')?.addEventListener('change', (e) => {
+        this.sampler.setPadLoop(this.selectedPad, e.target.checked);
+      });
+
+      // Filter controls
+      document.getElementById('pad-filter-type')?.addEventListener('change', (e) => {
+        const freq = parseFloat(document.getElementById('pad-filter-frequency').value);
+        const q = parseFloat(document.getElementById('pad-filter-q').value);
+        this.sampler.setPadFilter(this.selectedPad, e.target.value, freq, q);
+      });
+
+      this.setupPadControl('pad-filter-frequency', (v) => {
+        const type = document.getElementById('pad-filter-type').value;
+        const q = parseFloat(document.getElementById('pad-filter-q').value);
+        this.sampler.setPadFilter(this.selectedPad, type, parseFloat(v), q);
+        document.getElementById('pad-filter-frequency-value').textContent = `${v} Hz`;
+      });
+
+      this.setupPadControl('pad-filter-q', (v) => {
+        const type = document.getElementById('pad-filter-type').value;
+        const freq = parseFloat(document.getElementById('pad-filter-frequency').value);
+        this.sampler.setPadFilter(this.selectedPad, type, freq, parseFloat(v));
+        document.getElementById('pad-filter-q-value').textContent = v;
+      });
+
+      // Envelope controls
+      ['attack', 'decay', 'sustain', 'release'].forEach(param => {
+        this.setupPadControl(`pad-${param}`, (v) => {
+          this.sampler.setPadEnvelope(this.selectedPad, { [param]: parseFloat(v) });
+          const displayValue = param === 'sustain' ? `${Math.round(v * 100)}%` : `${v}s`;
+          document.getElementById(`pad-${param}-value`).textContent = displayValue;
+        });
+      });
+
+      // Test pad button
+      document.getElementById('test-pad-btn')?.addEventListener('click', () => {
+        this.sampler.playSample(this.selectedPad);
+      });
+
+      // Reset pad button
+      document.getElementById('reset-pad-btn')?.addEventListener('click', () => {
+        this.resetPadSettings();
+      });
+
+      // Bank controls
+      document.getElementById('save-bank-btn')?.addEventListener('click', () => {
+        this.saveBank();
+      });
+
+      document.getElementById('load-bank-btn')?.addEventListener('click', () => {
+        this.loadBank();
+      });
+
+      document.getElementById('delete-bank-btn')?.addEventListener('click', () => {
+        this.deleteBank();
+      });
+
+      // Recording controls
+      document.getElementById('start-recording-btn')?.addEventListener('click', () => {
+        this.startRecording();
+      });
+
+      document.getElementById('stop-recording-btn')?.addEventListener('click', () => {
+        this.stopRecording();
+      });
+
+      // Export buttons
+      document.getElementById('export-battle-btn')?.addEventListener('click', () => {
+        this.exportForBattle();
+      });
+
+      document.getElementById('export-jam-btn')?.addEventListener('click', () => {
+        this.exportForJam();
+      });
+
+      // Listen for sampler events
+      window.addEventListener('sampler:padUpdated', (e) => {
+        if (e.detail.padIndex === this.selectedPad) {
+          this.updatePadControls();
+        }
+      });
+
+      window.addEventListener('sampler:recordingComplete', (e) => {
+        this.addRecordingToList(e.detail.recording, e.detail.index);
+      });
+    }
+
+    setupPadControl(id, callback) {
+      document.getElementById(id)?.addEventListener('input', (e) => {
+        callback(e.target.value);
+      });
+    }
+
+    updatePadControls() {
+      const pad = this.sampler.getPadInfo(this.selectedPad);
+      if (!pad) return;
+
+      // Update display
+      document.getElementById('selected-pad-name').textContent =
+        pad.name || 'No sample loaded';
+
+      // Update control values
+      document.getElementById('pad-volume').value = pad.volume;
+      document.getElementById('pad-volume-value').textContent = `${Math.round(pad.volume * 100)}%`;
+
+      document.getElementById('pad-pitch').value = pad.pitch;
+      document.getElementById('pad-pitch-value').textContent = pad.pitch;
+
+      document.getElementById('pad-playback-rate').value = pad.playbackRate;
+      document.getElementById('pad-playback-rate-value').textContent = `${pad.playbackRate}x`;
+
+      document.getElementById('pad-loop').checked = pad.loop;
+
+      document.getElementById('pad-filter-type').value = pad.filterType;
+      document.getElementById('pad-filter-frequency').value = pad.filterFrequency;
+      document.getElementById('pad-filter-frequency-value').textContent = `${pad.filterFrequency} Hz`;
+      document.getElementById('pad-filter-q').value = pad.filterQ;
+      document.getElementById('pad-filter-q-value').textContent = pad.filterQ;
+
+      document.getElementById('pad-attack').value = pad.envelope.attack;
+      document.getElementById('pad-attack-value').textContent = `${pad.envelope.attack}s`;
+      document.getElementById('pad-decay').value = pad.envelope.decay;
+      document.getElementById('pad-decay-value').textContent = `${pad.envelope.decay}s`;
+      document.getElementById('pad-sustain').value = pad.envelope.sustain;
+      document.getElementById('pad-sustain-value').textContent = `${Math.round(pad.envelope.sustain * 100)}%`;
+      document.getElementById('pad-release').value = pad.envelope.release;
+      document.getElementById('pad-release-value').textContent = `${pad.envelope.release}s`;
+    }
+
+    resetPadSettings() {
+      this.sampler.setPadVolume(this.selectedPad, 1.0);
+      this.sampler.setPadPitch(this.selectedPad, 0);
+      this.sampler.setPadPlaybackRate(this.selectedPad, 1.0);
+      this.sampler.setPadLoop(this.selectedPad, false);
+      this.sampler.setPadFilter(this.selectedPad, 'none', 1000, 1);
+      this.sampler.setPadEnvelope(this.selectedPad, {
+        attack: 0.01,
+        decay: 0.1,
+        sustain: 0.8,
+        release: 0.3
+      });
+      this.updatePadControls();
+    }
+
+    saveBank() {
+      const name = document.getElementById('bank-name-input').value.trim();
+      if (!name) {
+        alert('Please enter a bank name');
+        return;
+      }
+
+      this.sampler.saveBank(name);
+      document.getElementById('bank-name-input').value = '';
+      this.loadBankList();
+      alert(`Bank "${name}" saved successfully!`);
+    }
+
+    async loadBank() {
+      const name = document.getElementById('bank-select').value;
+      if (!name) {
+        alert('Please select a bank');
+        return;
+      }
+
+      try {
+        await this.sampler.loadBank(name);
+        this.updatePadControls();
+        alert(`Bank "${name}" loaded successfully!`);
+      } catch (error) {
+        alert(`Error loading bank: ${error.message}`);
+      }
+    }
+
+    deleteBank() {
+      const name = document.getElementById('bank-select').value;
+      if (!name) {
+        alert('Please select a bank');
+        return;
+      }
+
+      if (confirm(`Delete bank "${name}"?`)) {
+        this.sampler.deleteBank(name);
+        this.loadBankList();
+        alert(`Bank "${name}" deleted`);
+      }
+    }
+
+    loadBankList() {
+      const banks = this.sampler.getBankList();
+      const select = document.getElementById('bank-select');
+
+      select.innerHTML = '<option value="">-- Select Bank --</option>';
+      banks.forEach(bank => {
+        const option = document.createElement('option');
+        option.value = bank.name;
+        option.textContent = bank.name;
+        select.appendChild(option);
+      });
+    }
+
+    async startRecording() {
+      try {
+        await this.sampler.startRecording();
+
+        document.getElementById('start-recording-btn').disabled = true;
+        document.getElementById('stop-recording-btn').disabled = false;
+        document.getElementById('recording-status').style.display = 'flex';
+
+        this.recordingStartTime = Date.now();
+        this.recordingInterval = setInterval(() => {
+          const elapsed = Math.floor((Date.now() - this.recordingStartTime) / 1000);
+          const mins = Math.floor(elapsed / 60);
+          const secs = elapsed % 60;
+          document.getElementById('recording-time').textContent =
+            `${mins}:${secs.toString().padStart(2, '0')}`;
+        }, 1000);
+      } catch (error) {
+        alert(`Recording error: ${error.message}`);
+      }
+    }
+
+    stopRecording() {
+      this.sampler.stopRecording();
+
+      document.getElementById('start-recording-btn').disabled = false;
+      document.getElementById('stop-recording-btn').disabled = true;
+      document.getElementById('recording-status').style.display = 'none';
+
+      if (this.recordingInterval) {
+        clearInterval(this.recordingInterval);
+        this.recordingInterval = null;
+      }
+    }
+
+    addRecordingToList(recording, index) {
+      const list = document.getElementById('recordings-list');
+      const item = document.createElement('div');
+      item.className = 'recording-item';
+      item.innerHTML = `
+        <span>Recording ${new Date(recording.timestamp).toLocaleTimeString()}</span>
+        <button class="btn btn-sm" data-recording="${index}">Load to Pad</button>
+      `;
+
+      item.querySelector('button').addEventListener('click', async () => {
+        await this.sampler.loadRecordingToPad(index, this.selectedPad);
+        this.updatePadControls();
+        alert(`Recording loaded to Pad ${this.selectedPad + 1}`);
+      });
+
+      list.appendChild(item);
+    }
+
+    exportForBattle() {
+      const samples = this.sampler.exportSamplesForBattle();
+      const status = document.getElementById('export-status');
+
+      status.innerHTML = `
+        <div class="success-message">
+          ✓ ${samples.length} samples exported for Battle!
+          <br/>
+          <small>Samples are now available in the Battle interface</small>
+        </div>
+      `;
+
+      // Dispatch event for battle interface to pick up
+      window.dispatchEvent(new CustomEvent('sampler:exportedForBattle', {
+        detail: { samples }
+      }));
+    }
+
+    exportForJam() {
+      const data = this.sampler.exportSamplesForJam();
+      const status = document.getElementById('export-status');
+
+      status.innerHTML = `
+        <div class="success-message">
+          ✓ Bank exported for Jam Session!
+          <br/>
+          <small>${data.samples.length} samples from "${data.bankName}"</small>
+        </div>
+      `;
+
+      // Dispatch event for jam interface
+      window.dispatchEvent(new CustomEvent('sampler:exportedForJam', {
+        detail: data
+      }));
+    }
+  }
+
+  // Initialize
+  const controlsUI = new SamplerControlsUI();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => controlsUI.init(), 500);
+    });
+  } else {
+    setTimeout(() => controlsUI.init(), 500);
+  }
+</script>
+
+<style>
+  .sampler-controls-panel {
+    background: var(--panel, #161b22);
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .controls-section {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text, #e6edf3);
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .control-group label {
+    min-width: 150px;
+    color: var(--muted, #8b949e);
+  }
+
+  .slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+  }
+
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent, #58a6ff);
+    cursor: pointer;
+  }
+
+  .value-display {
+    min-width: 60px;
+    text-align: right;
+    color: var(--text, #e6edf3);
+    font-weight: 600;
+  }
+
+  .pad-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .pad-select, .filter-select, .bank-select {
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: var(--text, #e6edf3);
+  }
+
+  .pad-name {
+    color: var(--accent, #58a6ff);
+    font-weight: 600;
+  }
+
+  .filter-controls, .envelope-controls {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .filter-controls h4, .envelope-controls h4 {
+    margin-bottom: 1rem;
+    color: var(--text, #e6edf3);
+  }
+
+  .toggle-group {
+    justify-content: space-between;
+  }
+
+  .toggle-switch {
+    width: 50px;
+    height: 24px;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .toggle-switch:checked {
+    background: var(--success, #10b981);
+  }
+
+  .toggle-switch::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+  }
+
+  .toggle-switch:checked::before {
+    transform: translateX(26px);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .btn-primary {
+    background: var(--accent, #58a6ff);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text, #e6edf3);
+  }
+
+  .btn-success {
+    background: var(--success, #10b981);
+    color: white;
+  }
+
+  .btn-danger {
+    background: var(--danger, #ef4444);
+    color: white;
+  }
+
+  .btn-accent {
+    background: var(--purple, #7c3aed);
+    color: white;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .bank-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .save-bank, .load-bank {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .bank-input {
+    flex: 1;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: var(--text, #e6edf3);
+  }
+
+  .recording-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .recording-status {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: rgba(239, 68, 68, 0.2);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .recording-indicator {
+    color: var(--danger, #ef4444);
+    font-weight: 700;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .recordings-list, .bank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .recording-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  .export-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .export-status {
+    margin-top: 1rem;
+  }
+
+  .success-message {
+    padding: 1rem;
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid var(--success, #10b981);
+    border-radius: 6px;
+    color: var(--success, #10b981);
+  }
+
+  @media (max-width: 768px) {
+    .control-group {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .control-group label {
+      min-width: auto;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+  }
+</style>

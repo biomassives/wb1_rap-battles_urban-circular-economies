@@ -2,12 +2,13 @@
 // Award XP to user and handle level ups
 // Updated for Nile DB
 
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@vercel/postgres';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+// Mark as server-rendered
+export const prerender = false;
+
+export async function POST({ request }) {
+  const body = await request.json();
 
   const {
     walletAddress,
@@ -15,23 +16,29 @@ export default async function handler(req, res) {
     activityType,
     description,
     metadata
-  } = req.body;
+  } = body;
 
   if (!walletAddress || !xpAmount || !activityType) {
-    return res.status(400).json({ 
-      error: 'Missing required fields: walletAddress, xpAmount, activityType' 
+    return new Response(JSON.stringify({
+      error: 'Missing required fields: walletAddress, xpAmount, activityType'
+    }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 
   if (xpAmount < 0) {
-    return res.status(400).json({ error: 'XP amount must be positive' });
+    return new Response(JSON.stringify({
+      error: 'XP amount must be positive'
+    }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.lab_NILEDB_URL);
-    
     // Get current user stats
-    const userResult = await sql`
+    const { rows: userResult } = await sql`
       SELECT total_xp, current_level, current_animal_mentor, life_stage
       FROM user_profiles
       WHERE wallet_address = ${walletAddress}
@@ -39,7 +46,12 @@ export default async function handler(req, res) {
     `;
 
     if (userResult.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return new Response(JSON.stringify({
+        error: 'User not found'
+      }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
 
     const user = userResult[0];
@@ -144,7 +156,7 @@ export default async function handler(req, res) {
       achievements.push('Legend Status');
     }
 
-    return res.status(200).json({
+    return new Response(JSON.stringify({
       success: true,
       xp: {
         previous: oldXP,
@@ -161,16 +173,22 @@ export default async function handler(req, res) {
         animalMentor: animalMentor
       },
       achievementsUnlocked: achievements,
-      message: leveledUp 
-        ? `Level up! You're now level ${newLevel} (${lifeStage} stage).` 
+      message: leveledUp
+        ? `Level up! You're now level ${newLevel} (${lifeStage} stage).`
         : `+${xpAmount} XP earned!`
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
     console.error('Award XP error:', error);
-    return res.status(500).json({ 
+    return new Response(JSON.stringify({
       error: 'Failed to award XP',
-      message: error.message 
+      message: error.message
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

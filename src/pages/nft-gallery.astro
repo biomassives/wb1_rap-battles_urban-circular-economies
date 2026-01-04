@@ -1,0 +1,848 @@
+---
+/**
+ * nft-gallery.astro
+ * NFT Collection Gallery - Daily Generated Rapper Cards with Sounds
+ *
+ * Features:
+ * - SVG-based rapper persona cards
+ * - Daily generated soundscapes per card
+ * - Interactive audio playback on card click
+ * - Rarity tiers with visual distinctions
+ * - Filtering by animal spirit, rarity, gender
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Generate daily seed based on date
+const today = new Date();
+const dailySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+
+// NFT Collection Configuration
+const animalSpirits = {
+  farm: ['Chicken', 'Cat', 'Goat', 'Dog', 'Bunny'],
+  sky: ['Pigeon', 'Cooper\'s Hawk', 'Eagle'],
+  wild: ['Lion', 'Coywolf']
+};
+
+const rarities = [
+  { name: 'Common', weight: 40, color: '#00ff00', glow: '0 0 10px #00ff00' },
+  { name: 'Uncommon', weight: 30, color: '#00ffff', glow: '0 0 15px #00ffff' },
+  { name: 'Rare', weight: 20, color: '#ffff00', glow: '0 0 20px #ffff00' },
+  { name: 'Legendary', weight: 10, color: '#ff00ff', glow: '0 0 30px #ff00ff' }
+];
+
+const hairstyles = ['Dreads', 'Fade', 'Afro', 'Braids', 'Bun', 'Waves'];
+const skinTones = ['#8d5524', '#c68642', '#e0ac69', '#f1c27d', '#ffdbac', '#fef0e0'];
+
+// Generate collection (55 cards matching the 55 animals)
+const collection = Array.from({ length: 55 }, (_, i) => {
+  const seed = dailySeed + i;
+  const rand = (max: number) => Math.floor((seed * (i + 1) * 9301 + 49297) % 233280 / 233280 * max);
+
+  // Determine rarity based on weights
+  let rarityRoll = rand(100);
+  let selectedRarity = rarities[0];
+  let cumulative = 0;
+  for (const rarity of rarities) {
+    cumulative += rarity.weight;
+    if (rarityRoll < cumulative) {
+      selectedRarity = rarity;
+      break;
+    }
+  }
+
+  // Pick animal spirit
+  const allAnimals = [...animalSpirits.farm, ...animalSpirits.sky, ...animalSpirits.wild];
+  const animalSpirit = allAnimals[rand(allAnimals.length)];
+
+  // Determine category
+  let category = 'farm';
+  if (animalSpirits.sky.includes(animalSpirit)) category = 'sky';
+  if (animalSpirits.wild.includes(animalSpirit)) category = 'wild';
+
+  return {
+    id: i + 1,
+    name: `${animalSpirit} Rapper #${i + 1}`,
+    animalSpirit,
+    category,
+    gender: rand(2) === 0 ? 'male' : 'female',
+    skinTone: skinTones[rand(skinTones.length)],
+    hairstyle: hairstyles[rand(hairstyles.length)],
+    rarity: selectedRarity,
+    soundFreq: 200 + rand(600), // Base frequency for daily sound
+    soundWave: ['sine', 'square', 'sawtooth', 'triangle'][rand(4)],
+    badges: rand(3) + 1 // Number of achievement badges
+  };
+});
+---
+
+<BaseLayout
+  title="NFT Gallery - Daily Rapper Collection"
+  description="Browse 55 unique rapper persona NFTs with daily generated sounds"
+  activeSection="gallery"
+>
+
+<div class="nft-gallery-page scanlines">
+  <div class="container mx-auto">
+
+    <!-- Header -->
+    <header class="gallery-header pixel-border arcade-screen">
+      <div class="header-badge">
+        <span class="neon-text blink">▶ DAILY COLLECTION ◀</span>
+      </div>
+      <h1 class="gallery-title glitch">
+        <span class="block">NFT RAPPER</span>
+        <span class="block neon-text">COLLECTION</span>
+      </h1>
+      <p class="gallery-subtitle mono">
+        > 55 UNIQUE CARDS • DAILY SOUNDS • CLICK TO PLAY<br/>
+        > SEED: <span class="text-cyan">{dailySeed}</span>
+        <span class="blink text-neon">█</span>
+      </p>
+    </header>
+
+    <!-- Filter Controls -->
+    <div class="filter-section card-retro">
+      <h2 class="filter-title mono">FILTERS:</h2>
+      <div class="filter-grid">
+
+        <!-- Rarity Filter -->
+        <div class="filter-group">
+          <label class="filter-label mono">RARITY:</label>
+          <select id="rarityFilter" class="filter-select mono">
+            <option value="all">All Rarities</option>
+            <option value="Common">Common (40%)</option>
+            <option value="Uncommon">Uncommon (30%)</option>
+            <option value="Rare">Rare (20%)</option>
+            <option value="Legendary">Legendary (10%)</option>
+          </select>
+        </div>
+
+        <!-- Animal Category Filter -->
+        <div class="filter-group">
+          <label class="filter-label mono">CATEGORY:</label>
+          <select id="categoryFilter" class="filter-select mono">
+            <option value="all">All Animals</option>
+            <option value="farm">🐓 Farm (5 types)</option>
+            <option value="sky">🦅 Sky (3 types)</option>
+            <option value="wild">🦁 Wild (2 types)</option>
+          </select>
+        </div>
+
+        <!-- Gender Filter -->
+        <div class="filter-group">
+          <label class="filter-label mono">GENDER:</label>
+          <select id="genderFilter" class="filter-select mono">
+            <option value="all">All Genders</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <!-- Sort -->
+        <div class="filter-group">
+          <label class="filter-label mono">SORT BY:</label>
+          <select id="sortFilter" class="filter-select mono">
+            <option value="id">ID Number</option>
+            <option value="rarity">Rarity</option>
+            <option value="animal">Animal Type</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="filter-stats mono">
+        Showing: <span id="visibleCount" class="text-neon">55</span> / 55 cards
+      </div>
+    </div>
+
+    <!-- Collection Grid -->
+    <div class="collection-grid" id="collectionGrid">
+      {collection.map(card => (
+        <article
+          class="nft-card card-retro-neon"
+          data-id={card.id}
+          data-rarity={card.rarity.name}
+          data-category={card.category}
+          data-gender={card.gender}
+          data-freq={card.soundFreq}
+          data-wave={card.soundWave}
+          style={`--rarity-color: ${card.rarity.color}; --rarity-glow: ${card.rarity.glow};`}
+        >
+          <!-- Card Header -->
+          <div class="card-header">
+            <div class="card-number mono">#{String(card.id).padStart(3, '0')}</div>
+            <div class="card-rarity mono" style={`color: ${card.rarity.color}; text-shadow: ${card.rarity.glow};`}>
+              {card.rarity.name}
+            </div>
+          </div>
+
+          <!-- SVG Preview (Simplified - full SVG generated on click) -->
+          <div class="card-preview">
+            <div class="preview-placeholder" style={`background: linear-gradient(135deg, ${card.skinTone} 0%, ${card.rarity.color}22 100%);`}>
+              <div class="preview-icon">{
+                card.animalSpirit === 'Chicken' ? '🐓' :
+                card.animalSpirit === 'Cat' ? '🐱' :
+                card.animalSpirit === 'Goat' ? '🐐' :
+                card.animalSpirit === 'Dog' ? '🐕' :
+                card.animalSpirit === 'Bunny' ? '🐰' :
+                card.animalSpirit === 'Pigeon' ? '🕊️' :
+                card.animalSpirit === "Cooper's Hawk" ? '🦅' :
+                card.animalSpirit === 'Eagle' ? '🦅' :
+                card.animalSpirit === 'Lion' ? '🦁' :
+                '🐺'
+              }</div>
+              <div class="preview-gender mono">{card.gender.toUpperCase()}</div>
+            </div>
+
+            <!-- Sound Wave Indicator -->
+            <div class="sound-indicator">
+              <div class="sound-wave" data-active="false">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Info -->
+          <div class="card-info">
+            <h3 class="card-name mono">{card.name}</h3>
+            <div class="card-details mono">
+              <div class="detail-row">
+                <span class="detail-label">Spirit:</span>
+                <span class="detail-value">{card.animalSpirit}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Style:</span>
+                <span class="detail-value">{card.hairstyle}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Sound:</span>
+                <span class="detail-value">{card.soundWave.toUpperCase()}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Badges:</span>
+                <span class="detail-value">{'⭐'.repeat(card.badges)}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Play Button -->
+          <button class="card-play-btn btn-retro-neon mono" data-playing="false">
+            <span class="play-icon">▶</span>
+            <span class="play-text">PLAY SOUND</span>
+          </button>
+
+        </article>
+      ))}
+    </div>
+
+    <!-- Stats Panel -->
+    <aside class="stats-panel card-retro ska-pattern">
+      <h3 class="stats-title mono neon-text">COLLECTION STATS</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value text-neon">{collection.filter(c => c.rarity.name === 'Common').length}</div>
+          <div class="stat-label mono">Common</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value text-cyan">{collection.filter(c => c.rarity.name === 'Uncommon').length}</div>
+          <div class="stat-label mono">Uncommon</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value text-yellow">{collection.filter(c => c.rarity.name === 'Rare').length}</div>
+          <div class="stat-label mono">Rare</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" style="color: #ff00ff">{collection.filter(c => c.rarity.name === 'Legendary').length}</div>
+          <div class="stat-label mono">Legendary</div>
+        </div>
+      </div>
+
+      <div class="stats-breakdown">
+        <h4 class="breakdown-title mono">By Category:</h4>
+        <div class="breakdown-list mono">
+          <div>🐓 Farm: {collection.filter(c => c.category === 'farm').length} cards</div>
+          <div>🦅 Sky: {collection.filter(c => c.category === 'sky').length} cards</div>
+          <div>🦁 Wild: {collection.filter(c => c.category === 'wild').length} cards</div>
+        </div>
+      </div>
+
+      <a href="/rapper-template-builder" class="btn-retro" style="width: 100%; text-align: center; margin-top: 1rem;">
+        BUILD CUSTOM CARD →
+      </a>
+    </aside>
+
+    <!-- Navigation -->
+    <nav class="gallery-nav">
+      <a href="/" class="btn-retro">← BACK TO HOME</a>
+      <a href="/rapper-template-builder" class="btn-retro-neon">CUSTOMIZE RAPPER</a>
+      <a href="/music" class="btn-retro">CREATE BEATS →</a>
+    </nav>
+
+  </div>
+</div>
+
+<script>
+  /**
+   * NFT Gallery Interactive Features
+   * - Filter cards by rarity, category, gender
+   * - Play daily generated sounds on card click
+   * - Sound wave animation
+   */
+
+  // Audio Context (Web Audio API)
+  let audioContext: AudioContext | null = null;
+  let currentOscillator: OscillatorNode | null = null;
+  let currentGain: GainNode | null = null;
+
+  // Initialize audio on first interaction
+  function initAudio() {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+  }
+
+  // Play card sound
+  function playCardSound(frequency: number, waveType: OscillatorType, button: HTMLElement) {
+    initAudio();
+    if (!audioContext) return;
+
+    // Stop current sound if playing
+    stopSound();
+
+    // Create oscillator
+    currentOscillator = audioContext.createOscillator();
+    currentGain = audioContext.createGain();
+
+    currentOscillator.type = waveType;
+    currentOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+    // ADSR envelope
+    currentGain.gain.setValueAtTime(0, audioContext.currentTime);
+    currentGain.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.05); // Attack
+    currentGain.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.1); // Decay
+    currentGain.gain.setValueAtTime(0.2, audioContext.currentTime + 1.5); // Sustain
+    currentGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 2); // Release
+
+    currentOscillator.connect(currentGain);
+    currentGain.connect(audioContext.destination);
+
+    currentOscillator.start();
+    currentOscillator.stop(audioContext.currentTime + 2);
+
+    // Update button state
+    button.dataset.playing = 'true';
+    const playIcon = button.querySelector('.play-icon');
+    const playText = button.querySelector('.play-text');
+    if (playIcon) playIcon.textContent = '■';
+    if (playText) playText.textContent = 'PLAYING...';
+
+    // Activate sound wave animation
+    const card = button.closest('.nft-card');
+    const soundWave = card?.querySelector('.sound-wave');
+    if (soundWave) soundWave.setAttribute('data-active', 'true');
+
+    // Reset after playback
+    currentOscillator.onended = () => {
+      button.dataset.playing = 'false';
+      if (playIcon) playIcon.textContent = '▶';
+      if (playText) playText.textContent = 'PLAY SOUND';
+      if (soundWave) soundWave.setAttribute('data-active', 'false');
+      currentOscillator = null;
+      currentGain = null;
+    };
+  }
+
+  // Stop current sound
+  function stopSound() {
+    if (currentOscillator) {
+      currentOscillator.stop();
+      currentOscillator.disconnect();
+      currentOscillator = null;
+    }
+    if (currentGain) {
+      currentGain.disconnect();
+      currentGain = null;
+    }
+  }
+
+  // Filter cards
+  function filterCards() {
+    const rarityFilter = (document.getElementById('rarityFilter') as HTMLSelectElement).value;
+    const categoryFilter = (document.getElementById('categoryFilter') as HTMLSelectElement).value;
+    const genderFilter = (document.getElementById('genderFilter') as HTMLSelectElement).value;
+    const sortFilter = (document.getElementById('sortFilter') as HTMLSelectElement).value;
+
+    const cards = Array.from(document.querySelectorAll('.nft-card')) as HTMLElement[];
+    let visibleCount = 0;
+
+    // Filter
+    cards.forEach(card => {
+      const matchesRarity = rarityFilter === 'all' || card.dataset.rarity === rarityFilter;
+      const matchesCategory = categoryFilter === 'all' || card.dataset.category === categoryFilter;
+      const matchesGender = genderFilter === 'all' || card.dataset.gender === genderFilter;
+
+      if (matchesRarity && matchesCategory && matchesGender) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Sort visible cards
+    const visibleCards = cards.filter(c => c.style.display !== 'none');
+    visibleCards.sort((a, b) => {
+      if (sortFilter === 'id') {
+        return parseInt(a.dataset.id || '0') - parseInt(b.dataset.id || '0');
+      } else if (sortFilter === 'rarity') {
+        const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Legendary'];
+        return rarityOrder.indexOf(b.dataset.rarity || '') - rarityOrder.indexOf(a.dataset.rarity || '');
+      } else { // animal
+        return (a.querySelector('.card-name')?.textContent || '').localeCompare(
+          b.querySelector('.card-name')?.textContent || ''
+        );
+      }
+    });
+
+    // Re-append in sorted order
+    const grid = document.getElementById('collectionGrid');
+    if (grid) {
+      visibleCards.forEach(card => grid.appendChild(card));
+    }
+
+    // Update count
+    const countEl = document.getElementById('visibleCount');
+    if (countEl) countEl.textContent = visibleCount.toString();
+  }
+
+  // Event Listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    // Play button clicks
+    document.querySelectorAll('.card-play-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const btn = button as HTMLElement;
+        const card = btn.closest('.nft-card') as HTMLElement;
+
+        if (btn.dataset.playing === 'true') {
+          stopSound();
+          btn.dataset.playing = 'false';
+          const playIcon = btn.querySelector('.play-icon');
+          const playText = btn.querySelector('.play-text');
+          if (playIcon) playIcon.textContent = '▶';
+          if (playText) playText.textContent = 'PLAY SOUND';
+          const soundWave = card?.querySelector('.sound-wave');
+          if (soundWave) soundWave.setAttribute('data-active', 'false');
+        } else {
+          const freq = parseFloat(card.dataset.freq || '440');
+          const wave = card.dataset.wave as OscillatorType || 'sine';
+          playCardSound(freq, wave, btn);
+        }
+      });
+    });
+
+    // Filter listeners
+    document.getElementById('rarityFilter')?.addEventListener('change', filterCards);
+    document.getElementById('categoryFilter')?.addEventListener('change', filterCards);
+    document.getElementById('genderFilter')?.addEventListener('change', filterCards);
+    document.getElementById('sortFilter')?.addEventListener('change', filterCards);
+
+    // Card click to play (alternative to button)
+    document.querySelectorAll('.nft-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.card-play-btn')) {
+          const playBtn = card.querySelector('.card-play-btn') as HTMLElement;
+          playBtn?.click();
+        }
+      });
+    });
+  });
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    stopSound();
+    if (audioContext) {
+      audioContext.close();
+    }
+  });
+</script>
+
+<style>
+  .nft-gallery-page {
+    min-height: 100vh;
+    background: var(--color-black);
+    padding: 3rem 2rem;
+  }
+
+  /* Header */
+  .gallery-header {
+    text-align: center;
+    padding: 3rem 2rem;
+    margin-bottom: 3rem;
+    background: var(--color-near-black);
+  }
+
+  .header-badge {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-family: var(--font-mono);
+  }
+
+  .gallery-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-mono);
+    letter-spacing: 4px;
+    line-height: 1.1;
+  }
+
+  .gallery-subtitle {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Filters */
+  .filter-section {
+    margin-bottom: 3rem;
+    padding: 2rem;
+  }
+
+  .filter-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: var(--color-neon-green);
+  }
+
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-white);
+    letter-spacing: 1px;
+  }
+
+  .filter-select {
+    padding: 0.75rem 1rem;
+    background: var(--color-black);
+    color: var(--color-white);
+    border: 2px solid var(--color-white);
+    font-family: var(--font-mono);
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+
+  .filter-select:hover,
+  .filter-select:focus {
+    border-color: var(--color-neon-green);
+    box-shadow: 0 0 10px var(--color-neon-green-glow);
+    outline: none;
+  }
+
+  .filter-stats {
+    text-align: center;
+    padding: 1rem;
+    background: var(--color-near-black);
+    border: 2px solid var(--color-neon-green);
+    font-size: 1.125rem;
+  }
+
+  /* Collection Grid */
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  /* NFT Card */
+  .nft-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-near-black);
+    border: 2px solid var(--rarity-color);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .nft-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: var(--rarity-color);
+    opacity: 0;
+    filter: blur(10px);
+    transition: opacity 0.3s ease;
+    z-index: -1;
+  }
+
+  .nft-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--rarity-glow), 0 8px 25px rgba(0, 0, 0, 0.5);
+  }
+
+  .nft-card:hover::before {
+    opacity: 0.5;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .card-number {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-light-gray);
+  }
+
+  .card-rarity {
+    font-size: 0.875rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Preview */
+  .card-preview {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .preview-placeholder {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .preview-icon {
+    font-size: 5rem;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  }
+
+  .preview-gender {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-white);
+    background: var(--color-black);
+    padding: 0.25rem 0.75rem;
+    border: 2px solid var(--color-white);
+  }
+
+  /* Sound Indicator */
+  .sound-indicator {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .sound-wave {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 30px;
+  }
+
+  .sound-wave span {
+    width: 4px;
+    height: 8px;
+    background: var(--color-neon-green);
+    transition: height 0.1s ease;
+  }
+
+  .sound-wave[data-active="true"] span {
+    animation: soundBars 0.5s ease-in-out infinite;
+  }
+
+  .sound-wave[data-active="true"] span:nth-child(2) { animation-delay: 0.1s; }
+  .sound-wave[data-active="true"] span:nth-child(3) { animation-delay: 0.2s; }
+  .sound-wave[data-active="true"] span:nth-child(4) { animation-delay: 0.3s; }
+  .sound-wave[data-active="true"] span:nth-child(5) { animation-delay: 0.4s; }
+
+  @keyframes soundBars {
+    0%, 100% { height: 8px; }
+    50% { height: 25px; }
+  }
+
+  /* Card Info */
+  .card-info {
+    margin-bottom: 1rem;
+  }
+
+  .card-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-white);
+  }
+
+  .card-details {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid var(--color-dark-gray);
+  }
+
+  .detail-label {
+    color: var(--color-light-gray);
+  }
+
+  .detail-value {
+    color: var(--color-white);
+    font-weight: 700;
+  }
+
+  /* Play Button */
+  .card-play-btn {
+    width: 100%;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+
+  .card-play-btn[data-playing="true"] {
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  /* Stats Panel */
+  .stats-panel {
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .stats-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    font-family: var(--font-mono);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--color-light-gray);
+  }
+
+  .stats-breakdown {
+    padding: 1.5rem;
+    background: var(--color-black);
+    border: 2px solid var(--color-white);
+  }
+
+  .breakdown-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-neon-green);
+  }
+
+  .breakdown-list {
+    font-size: 0.95rem;
+    line-height: 2;
+  }
+
+  .breakdown-list div {
+    padding: 0.25rem 0;
+  }
+
+  /* Navigation */
+  .gallery-nav {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .gallery-title {
+      font-size: 2.5rem;
+    }
+
+    .collection-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gallery-nav {
+      flex-direction: column;
+    }
+
+    .gallery-nav a {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  /* Animations */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+</style>
+
+</BaseLayout>

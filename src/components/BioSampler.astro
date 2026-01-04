@@ -1,0 +1,533 @@
+---
+const { taxonomy } = Astro.props;
+---
+
+<section class="bio-sampler">
+  <h2>🎛 Bio Sampler Generator</h2>
+
+  <div class="preset-section">
+    <label>Preset</label>
+    <select id="preset">
+      <option value="rap">Rap / Battle</option>
+      <option value="reggae">Reggae / Dub</option>
+      <option value="healing">Healing / Gathering</option>
+      <option value="speech">Speech / Transcript</option>
+      <option value="singing">Singing / Choir</option>
+    </select>
+  </div>
+
+  <div class="waveform-section">
+    <canvas id="scope" width="800" height="120"></canvas>
+  </div>
+
+  <div class="dials-grid">
+    <div class="dial-container">
+      <label>Frequency (Hz)</label>
+      <div class="dial-wrapper">
+        <svg class="dial" data-param="f" width="80" height="80" viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="dial-gradient-f">
+              <stop offset="0%" style="stop-color:#2a2e35"/>
+              <stop offset="100%" style="stop-color:#1a1d23"/>
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="45" fill="url(#dial-gradient-f)" stroke="#30363d" stroke-width="2"/>
+          <path class="dial-arc" fill="none" stroke="#58a6ff" stroke-width="4" stroke-linecap="round"/>
+          <line class="dial-indicator" x1="50" y1="50" x2="50" y2="15" stroke="#58a6ff" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="8" fill="#58a6ff"/>
+        </svg>
+        <div class="dial-value" id="f-display">180</div>
+      </div>
+      <input type="range" id="f" min="20" max="2000" value="180" step="0.1" />
+    </div>
+
+    <div class="dial-container">
+      <label>Duration (s)</label>
+      <div class="dial-wrapper">
+        <svg class="dial" data-param="d" width="80" height="80" viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="dial-gradient-d">
+              <stop offset="0%" style="stop-color:#2a2e35"/>
+              <stop offset="100%" style="stop-color:#1a1d23"/>
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="45" fill="url(#dial-gradient-d)" stroke="#30363d" stroke-width="2"/>
+          <path class="dial-arc" fill="none" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/>
+          <line class="dial-indicator" x1="50" y1="50" x2="50" y2="15" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="8" fill="#7c3aed"/>
+        </svg>
+        <div class="dial-value" id="d-display">0.6</div>
+      </div>
+      <input type="range" id="d" min="0.1" max="15" value="0.6" step="0.1" />
+    </div>
+
+    <div class="dial-container">
+      <label>Intensity</label>
+      <div class="dial-wrapper">
+        <svg class="dial" data-param="a" width="80" height="80" viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="dial-gradient-a">
+              <stop offset="0%" style="stop-color:#2a2e35"/>
+              <stop offset="100%" style="stop-color:#1a1d23"/>
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="45" fill="url(#dial-gradient-a)" stroke="#30363d" stroke-width="2"/>
+          <path class="dial-arc" fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round"/>
+          <line class="dial-indicator" x1="50" y1="50" x2="50" y2="15" stroke="#10b981" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="8" fill="#10b981"/>
+        </svg>
+        <div class="dial-value" id="a-display">0.9</div>
+      </div>
+      <input type="range" id="a" min="0" max="1" value="0.9" step="0.05" />
+    </div>
+
+    <div class="dial-container">
+      <label>Modulation (Hz)</label>
+      <div class="dial-wrapper">
+        <svg class="dial" data-param="m" width="80" height="80" viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="dial-gradient-m">
+              <stop offset="0%" style="stop-color:#2a2e35"/>
+              <stop offset="100%" style="stop-color:#1a1d23"/>
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="45" fill="url(#dial-gradient-m)" stroke="#30363d" stroke-width="2"/>
+          <path class="dial-arc" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+          <line class="dial-indicator" x1="50" y1="50" x2="50" y2="15" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="8" fill="#f59e0b"/>
+        </svg>
+        <div class="dial-value" id="m-display">40</div>
+      </div>
+      <input type="range" id="m" min="0" max="200" value="40" step="0.1" />
+    </div>
+  </div>
+
+  <div class="controls-section">
+    <label class="checkbox-label">
+      <input type="checkbox" id="auto-preview" checked />
+      <span>🎵 Auto Preview</span>
+    </label>
+  </div>
+
+  <div class="actions">
+    <button id="preview" class="btn-primary">▶ Preview</button>
+    <button id="wav" class="btn-secondary">⬇ Export WAV</button>
+    <button id="json" class="btn-secondary">🧾 Save JSON</button>
+  </div>
+
+  <footer class="sampler-footer">
+    WAV files are generated locally • No audio leaves your device
+  </footer>
+</section>
+
+<style>
+  .bio-sampler {
+    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 900px;
+    margin: auto;
+    border: 1px solid #30363d;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    margin: 0 0 1.5rem 0;
+    color: #e6edf3;
+    font-weight: 600;
+  }
+
+  .preset-section {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.875rem;
+    color: #8b949e;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  select {
+    width: 100%;
+    padding: 0.75rem;
+    background: #0d1117;
+    color: #e6edf3;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  select:hover {
+    border-color: #58a6ff;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+  }
+
+  .waveform-section {
+    background: #000;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #30363d;
+  }
+
+  canvas {
+    width: 100%;
+    height: 120px;
+    display: block;
+    border-radius: 4px;
+  }
+
+  .dials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dial-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dial-wrapper {
+    position: relative;
+    margin: 0.75rem 0;
+  }
+
+  .dial {
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  .dial:hover {
+    transform: scale(1.05);
+  }
+
+  .dial-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e6edf3;
+    pointer-events: none;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .controls-section {
+    margin-bottom: 1rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: #e6edf3;
+    font-size: 0.95rem;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  button {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #58a6ff, #4a9eff);
+    color: #000;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(88, 166, 255, 0.3);
+  }
+
+  .btn-secondary {
+    background: #30363d;
+    color: #e6edf3;
+    border: 1px solid #444c56;
+  }
+
+  .btn-secondary:hover {
+    background: #3d444d;
+    border-color: #58a6ff;
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  .sampler-footer {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: #8b949e;
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .dials-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script is:inline src="/scripts/bio-synth-generator.js"></script>
+
+<script define:vars={{ taxonomy }}>
+const gen = new window.BioSynthGenerator();
+const scope = document.getElementById('scope');
+const ctx = scope.getContext('2d');
+
+const PRESETS = {
+  rap: { f: 180, d: 0.6, a: 0.9, m: 40 },
+  reggae: { f: 41.2, d: 2, a: 0.8, m: 7.83 },
+  healing: { f: 528, d: 10, a: 0.5, m: 7.83 },
+  speech: { f: 220, d: 3, a: 0.6, m: 174 },
+  singing: { f: 256, d: 6, a: 0.7, m: 128 }
+};
+
+const el = id => document.getElementById(id);
+
+// Dial rotation logic
+const dials = ['f', 'd', 'a', 'm'];
+const dialParams = {
+  f: { min: 20, max: 2000, step: 0.1 },
+  d: { min: 0.1, max: 15, step: 0.1 },
+  a: { min: 0, max: 1, step: 0.05 },
+  m: { min: 0, max: 200, step: 0.1 }
+};
+
+function updateDial(param, value) {
+  const p = dialParams[param];
+  const normalized = (value - p.min) / (p.max - p.min);
+  const angle = -135 + (normalized * 270); // -135 to +135 degrees
+
+  const svg = document.querySelector(`.dial[data-param="${param}"]`);
+  const indicator = svg.querySelector('.dial-indicator');
+  const arc = svg.querySelector('.dial-arc');
+
+  // Rotate indicator
+  indicator.setAttribute('transform', `rotate(${angle} 50 50)`);
+
+  // Draw arc
+  const startAngle = -135;
+  const endAngle = angle;
+  const radius = 40;
+  const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+
+  const start = polarToCartesian(50, 50, radius, startAngle);
+  const end = polarToCartesian(50, 50, radius, endAngle);
+
+  const d = `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}`;
+  arc.setAttribute('d', d);
+
+  // Update display
+  el(`${param}-display`).textContent = value.toFixed(param === 'a' ? 2 : 1);
+}
+
+function polarToCartesian(cx, cy, r, angle) {
+  const rad = (angle - 90) * Math.PI / 180;
+  return {
+    x: cx + r * Math.cos(rad),
+    y: cy + r * Math.sin(rad)
+  };
+}
+
+// Make dials draggable
+dials.forEach(param => {
+  const svg = document.querySelector(`.dial[data-param="${param}"]`);
+  const input = el(param);
+  let isDragging = false;
+
+  function handleMove(e) {
+    if (!isDragging) return;
+
+    const rect = svg.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+    const dx = clientX - centerX;
+    const dy = clientY - centerY;
+    let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+
+    // Constrain to -135 to +135
+    if (angle < -135) angle = -135;
+    if (angle > 135) angle = 135;
+
+    const p = dialParams[param];
+    const normalized = (angle + 135) / 270;
+    const value = p.min + normalized * (p.max - p.min);
+
+    input.value = value;
+    updateDial(param, value);
+
+    if (el('auto-preview').checked) {
+      autoPreviewDebounced();
+    }
+  }
+
+  svg.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    e.preventDefault();
+  });
+
+  svg.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', handleMove);
+  document.addEventListener('touchmove', handleMove);
+
+  document.addEventListener('mouseup', () => isDragging = false);
+  document.addEventListener('touchend', () => isDragging = false);
+
+  // Scroll wheel support
+  svg.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const p = dialParams[param];
+    let value = parseFloat(input.value);
+    const delta = e.deltaY > 0 ? -p.step : p.step;
+    value = Math.max(p.min, Math.min(p.max, value + delta));
+    input.value = value;
+    updateDial(param, value);
+
+    if (el('auto-preview').checked) {
+      autoPreviewDebounced();
+    }
+  });
+});
+
+// Synthesis
+function vector() {
+  return {
+    preset: el('preset').value,
+    frequency: +el('f').value,
+    duration: +el('d').value,
+    intensity: +el('a').value,
+    modulation: +el('m').value,
+    created: new Date().toISOString()
+  };
+}
+
+function synth(v) {
+  const n = gen.sampleRate * v.duration;
+  const a = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const t = i / gen.sampleRate;
+    a[i] = Math.sin(2 * Math.PI * v.frequency * t
+      + Math.sin(2 * Math.PI * v.modulation * t) * 0.3)
+      * Math.exp(-t * 2) * v.intensity;
+  }
+  draw(a);
+  return a;
+}
+
+function draw(a) {
+  ctx.clearRect(0, 0, scope.width, scope.height);
+  ctx.strokeStyle = '#58a6ff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+
+  for (let i = 0; i < a.length; i += 200) {
+    const x = (i / a.length) * scope.width;
+    const y = (1 - a[i]) * 60;
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+  }
+  ctx.stroke();
+}
+
+// Auto-preview with debounce
+let autoPreviewTimeout;
+function autoPreviewDebounced() {
+  clearTimeout(autoPreviewTimeout);
+  autoPreviewTimeout = setTimeout(() => {
+    const audio = synth(vector());
+    gen.previewAudio(audio);
+  }, 300);
+}
+
+// Preset handling
+el('preset').onchange = () => {
+  const p = PRESETS[el('preset').value];
+  ['f', 'd', 'a', 'm'].forEach(k => {
+    el(k).value = p[k];
+    updateDial(k, p[k]);
+  });
+
+  if (el('auto-preview').checked) {
+    autoPreviewDebounced();
+  }
+};
+
+// Button handlers
+el('preview').onclick = () => {
+  const audio = synth(vector());
+  gen.previewAudio(audio);
+};
+
+el('wav').onclick = () => {
+  const v = vector();
+  gen.downloadWav(
+    gen.audioDataToWav(synth(v)),
+    `${v.preset}-${v.frequency}Hz.wav`
+  );
+};
+
+el('json').onclick = () => {
+  const v = vector();
+  const blob = new Blob([JSON.stringify(v, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${v.preset}-config.json`;
+  a.click();
+};
+
+// Initialize
+el('preset').value = 'rap';
+el('preset').dispatchEvent(new Event('change'));
+</script>

@@ -10,14 +10,14 @@ class BattleManager {
   constructor(battleId, supabaseClient) {
     this.battleId = battleId;
     this.supabase = supabaseClient;
-    
+
     // State
     this.battleData = null;
     this.currentUser = null;
     this.isParticipant = false;
     this.participantType = null; // 'challenger' or 'opponent'
     this.currentPhase = 'PREP'; // PREP, LIVE, FOLLOWUP
-    
+
     // Real-time subscriptions
     this.subscriptions = {
       battle: null,
@@ -27,10 +27,10 @@ class BattleManager {
       reactions: null,
       comments: null
     };
-    
+
     // Timers
     this.timers = new Map();
-    
+
     // Event handlers
     this.eventHandlers = {
       battleUpdate: [],
@@ -42,6 +42,58 @@ class BattleManager {
       phaseChange: [],
       timerTick: []
     };
+
+    // Setup sampler integration
+    this.setupSamplerIntegration();
+  }
+
+  /**
+   * Setup integration with sampler pad submissions
+   */
+  setupSamplerIntegration() {
+    // Listen for sampler submissions
+    window.addEventListener('sampler-battle-submit', async (event) => {
+      if (!this.isParticipant) {
+        console.log('User is not a participant in this battle');
+        return;
+      }
+
+      const { recording, timestamp } = event.detail;
+      await this.submitSamplerRecording(recording, timestamp);
+    });
+  }
+
+  /**
+   * Submit a sampler recording as a battle submission
+   */
+  async submitSamplerRecording(recording, timestamp) {
+    try {
+      // Convert recording to a storable format
+      const submissionData = {
+        battle_id: this.battleId,
+        user_id: this.currentUser.id,
+        submission_type: 'sampler',
+        content: JSON.stringify(recording),
+        timestamp: timestamp,
+        created_at: new Date().toISOString()
+      };
+
+      // Submit to Supabase
+      const { data, error } = await this.supabase
+        .from('battle_submissions')
+        .insert([submissionData])
+        .select();
+
+      if (error) throw error;
+
+      console.log('Sampler recording submitted successfully:', data);
+      this.emit('submissionUpdate', data);
+
+      return { success: true, data };
+    } catch (error) {
+      console.error('Failed to submit sampler recording:', error);
+      return { success: false, error };
+    }
   }
 
   /**
@@ -867,3 +919,6 @@ class BattleManager {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = BattleManager;
 }
+
+// ES6 default export for Astro
+export default BattleManager;

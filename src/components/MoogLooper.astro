@@ -1,0 +1,736 @@
+---
+/**
+ * MoogLooper.astro
+ * Moog-style synth controls with loop playback
+ * Compact component for immediate use on homepage and music page
+ *
+ * Props:
+ * - compact: Boolean - minimal layout for homepage
+ */
+
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<div class="moog-looper" data-compact={compact}>
+  <div class="moog-header">
+    {!compact && <h3>🎛️ Moog Synth Looper</h3>}
+    <div class="preset-selector">
+      <select id="moog-preset" class="preset-select">
+        <option value="rap">Rap / Battle</option>
+        <option value="reggae">Reggae / Dub</option>
+        <option value="healing">Healing</option>
+        <option value="speech">Speech</option>
+        <option value="singing">Singing</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="moog-visualizer">
+    <canvas id="moog-waveform" width="600" height="100"></canvas>
+  </div>
+
+  <div class="moog-dials">
+    <!-- Frequency -->
+    <div class="dial-group">
+      <label>Freq (Hz)</label>
+      <div class="dial-visual" data-param="freq">
+        <svg class="dial-svg" width="60" height="60" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="#1a1f26" stroke="#30363d" stroke-width="2"/>
+          <path class="dial-arc" fill="none" stroke="#58a6ff" stroke-width="4" stroke-linecap="round"/>
+          <line class="dial-needle" x1="50" y1="50" x2="50" y2="15" stroke="#58a6ff" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="8" fill="#58a6ff"/>
+        </svg>
+        <div class="dial-value" id="freq-value">180</div>
+      </div>
+      <input type="range" id="moog-freq" min="20" max="2000" value="180" step="1" class="dial-input" />
+    </div>
+
+    <!-- Duration -->
+    <div class="dial-group">
+      <label>Duration (s)</label>
+      <div class="dial-visual" data-param="duration">
+        <svg class="dial-svg" width="60" height="60" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="#1a1f26" stroke="#30363d" stroke-width="2"/>
+          <path class="dial-arc" fill="none" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/>
+          <line class="dial-needle" x1="50" y1="50" x2="50" y2="15" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="8" fill="#7c3aed"/>
+        </svg>
+        <div class="dial-value" id="duration-value">0.6</div>
+      </div>
+      <input type="range" id="moog-duration" min="0.1" max="15" value="0.6" step="0.1" class="dial-input" />
+    </div>
+
+    <!-- Intensity -->
+    <div class="dial-group">
+      <label>Intensity</label>
+      <div class="dial-visual" data-param="intensity">
+        <svg class="dial-svg" width="60" height="60" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="#1a1f26" stroke="#30363d" stroke-width="2"/>
+          <path class="dial-arc" fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round"/>
+          <line class="dial-needle" x1="50" y1="50" x2="50" y2="15" stroke="#10b981" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="8" fill="#10b981"/>
+        </svg>
+        <div class="dial-value" id="intensity-value">0.9</div>
+      </div>
+      <input type="range" id="moog-intensity" min="0" max="1" value="0.9" step="0.05" class="dial-input" />
+    </div>
+
+    <!-- Modulation -->
+    <div class="dial-group">
+      <label>Mod (Hz)</label>
+      <div class="dial-visual" data-param="modulation">
+        <svg class="dial-svg" width="60" height="60" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="#1a1f26" stroke="#30363d" stroke-width="2"/>
+          <path class="dial-arc" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+          <line class="dial-needle" x1="50" y1="50" x2="50" y2="15" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="8" fill="#f59e0b"/>
+        </svg>
+        <div class="dial-value" id="modulation-value">40</div>
+      </div>
+      <input type="range" id="moog-modulation" min="0" max="200" value="40" step="1" class="dial-input" />
+    </div>
+  </div>
+
+  <div class="moog-controls">
+    <div class="playback-controls">
+      <button class="moog-btn moog-btn-play" id="moog-play">
+        <span id="moog-play-icon">▶️</span>
+        <span id="moog-play-text">Play</span>
+      </button>
+      <button class="moog-btn moog-btn-loop" id="moog-loop">
+        <span>🔁</span>
+        <span>Loop</span>
+      </button>
+      <button class="moog-btn moog-btn-stop" id="moog-stop">
+        <span>⏹️</span>
+        <span>Stop</span>
+      </button>
+    </div>
+    <div class="export-controls">
+      <button class="moog-btn moog-btn-secondary" id="moog-export">
+        💾 Export WAV
+      </button>
+      {!compact && (
+        <button class="moog-btn moog-btn-secondary" id="moog-save">
+          🧾 Save JSON
+        </button>
+      )}
+    </div>
+  </div>
+
+  {!compact && (
+    <div class="moog-info">
+      💡 Adjust dials to shape your sound • Loop for continuous playback
+    </div>
+  )}
+</div>
+
+<style>
+  .moog-looper {
+    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #30363d;
+    color: #e6edf3;
+  }
+
+  .moog-looper[data-compact="true"] {
+    padding: 1rem;
+  }
+
+  .moog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .moog-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #58a6ff, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .preset-select {
+    padding: 0.5rem 1rem;
+    background: #0d1117;
+    color: #e6edf3;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .preset-select:hover {
+    border-color: #58a6ff;
+  }
+
+  .preset-select:focus {
+    outline: none;
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+  }
+
+  .moog-visualizer {
+    background: #000;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #30363d;
+  }
+
+  #moog-waveform {
+    width: 100%;
+    height: 100px;
+    display: block;
+  }
+
+  .moog-dials {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .moog-looper[data-compact="true"] .moog-dials {
+    gap: 0.75rem;
+  }
+
+  .dial-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .dial-group label {
+    font-size: 0.75rem;
+    color: #8b949e;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .dial-visual {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .dial-svg {
+    transition: transform 0.1s;
+  }
+
+  .dial-svg:hover {
+    transform: scale(1.05);
+  }
+
+  .dial-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #e6edf3;
+    pointer-events: none;
+  }
+
+  .dial-input {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .moog-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .playback-controls,
+  .export-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .moog-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 0.625rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .moog-btn-play {
+    background: linear-gradient(135deg, #58a6ff, #4a9eff);
+    color: #000;
+  }
+
+  .moog-btn-play:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(88, 166, 255, 0.4);
+  }
+
+  .moog-btn-play.playing {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+  }
+
+  .moog-btn-loop {
+    background: #30363d;
+    color: #e6edf3;
+    border: 1px solid #444c56;
+  }
+
+  .moog-btn-loop.active {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+  }
+
+  .moog-btn-loop:hover {
+    background: #3d444d;
+    border-color: #58a6ff;
+  }
+
+  .moog-btn-loop.active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.4);
+  }
+
+  .moog-btn-stop {
+    background: #30363d;
+    color: #e6edf3;
+    border: 1px solid #444c56;
+  }
+
+  .moog-btn-stop:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+  }
+
+  .moog-btn-secondary {
+    background: #30363d;
+    color: #e6edf3;
+    border: 1px solid #444c56;
+  }
+
+  .moog-btn-secondary:hover {
+    background: #3d444d;
+    border-color: #58a6ff;
+  }
+
+  .moog-info {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: rgba(88, 166, 255, 0.1);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #8b949e;
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .moog-dials {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .moog-btn {
+      min-width: 80px;
+      font-size: 0.75rem;
+      padding: 0.5rem 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  class MoogLooper {
+    constructor() {
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      this.isPlaying = false;
+      this.isLooping = false;
+      this.currentSource = null;
+      this.loopTimeout = null;
+
+      this.params = {
+        freq: 180,
+        duration: 0.6,
+        intensity: 0.9,
+        modulation: 40
+      };
+
+      this.presets = {
+        rap: { freq: 180, duration: 0.6, intensity: 0.9, modulation: 40 },
+        reggae: { freq: 41.2, duration: 2, intensity: 0.8, modulation: 7.83 },
+        healing: { freq: 528, duration: 10, intensity: 0.5, modulation: 7.83 },
+        speech: { freq: 220, duration: 3, intensity: 0.6, modulation: 174 },
+        singing: { freq: 256, duration: 6, intensity: 0.7, modulation: 128 }
+      };
+
+      this.init();
+    }
+
+    init() {
+      this.setupDials();
+      this.setupControls();
+      this.setupPreset();
+      this.updateAllDials();
+    }
+
+    setupDials() {
+      const dialParams = {
+        freq: { min: 20, max: 2000, input: 'moog-freq' },
+        duration: { min: 0.1, max: 15, input: 'moog-duration' },
+        intensity: { min: 0, max: 1, input: 'moog-intensity' },
+        modulation: { min: 0, max: 200, input: 'moog-modulation' }
+      };
+
+      Object.entries(dialParams).forEach(([param, config]) => {
+        const visual = document.querySelector(`.dial-visual[data-param="${param}"]`);
+        const input = document.getElementById(config.input);
+
+        if (!visual || !input) return;
+
+        let isDragging = false;
+
+        const handleMove = (e) => {
+          if (!isDragging) return;
+
+          const rect = visual.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+
+          const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+          const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+          const dx = clientX - centerX;
+          const dy = clientY - centerY;
+          let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+
+          if (angle < -135) angle = -135;
+          if (angle > 135) angle = 135;
+
+          const normalized = (angle + 135) / 270;
+          const value = config.min + normalized * (config.max - config.min);
+
+          input.value = value;
+          this.params[param] = value;
+          this.updateDial(param, value, config);
+        };
+
+        visual.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          e.preventDefault();
+        });
+
+        visual.addEventListener('touchstart', (e) => {
+          isDragging = true;
+          e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('touchmove', handleMove);
+        document.addEventListener('mouseup', () => isDragging = false);
+        document.addEventListener('touchend', () => isDragging = false);
+
+        // Input changes
+        input.addEventListener('input', (e) => {
+          this.params[param] = parseFloat(e.target.value);
+          this.updateDial(param, this.params[param], config);
+        });
+
+        // Scroll wheel
+        visual.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const step = (config.max - config.min) / 100;
+          let value = this.params[param];
+          value += e.deltaY > 0 ? -step : step;
+          value = Math.max(config.min, Math.min(config.max, value));
+
+          input.value = value;
+          this.params[param] = value;
+          this.updateDial(param, value, config);
+        });
+      });
+    }
+
+    updateDial(param, value, config) {
+      const visual = document.querySelector(`.dial-visual[data-param="${param}"]`);
+      if (!visual) return;
+
+      const normalized = (value - config.min) / (config.max - config.min);
+      const angle = -135 + (normalized * 270);
+
+      const needle = visual.querySelector('.dial-needle');
+      const arc = visual.querySelector('.dial-arc');
+      const valueDisplay = document.getElementById(`${param}-value`);
+
+      if (needle) {
+        needle.setAttribute('transform', `rotate(${angle} 50 50)`);
+      }
+
+      if (arc) {
+        const radius = 40;
+        const startAngle = -135;
+        const endAngle = angle;
+        const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+
+        const start = this.polarToCartesian(50, 50, radius, startAngle);
+        const end = this.polarToCartesian(50, 50, radius, endAngle);
+
+        const d = `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}`;
+        arc.setAttribute('d', d);
+      }
+
+      if (valueDisplay) {
+        const precision = param === 'intensity' ? 2 : (param === 'duration' ? 1 : 0);
+        valueDisplay.textContent = value.toFixed(precision);
+      }
+    }
+
+    updateAllDials() {
+      const configs = {
+        freq: { min: 20, max: 2000 },
+        duration: { min: 0.1, max: 15 },
+        intensity: { min: 0, max: 1 },
+        modulation: { min: 0, max: 200 }
+      };
+
+      Object.entries(this.params).forEach(([param, value]) => {
+        this.updateDial(param, value, configs[param]);
+      });
+    }
+
+    polarToCartesian(cx, cy, r, angle) {
+      const rad = (angle - 90) * Math.PI / 180;
+      return {
+        x: cx + r * Math.cos(rad),
+        y: cy + r * Math.sin(rad)
+      };
+    }
+
+    setupControls() {
+      const playBtn = document.getElementById('moog-play');
+      const loopBtn = document.getElementById('moog-loop');
+      const stopBtn = document.getElementById('moog-stop');
+      const exportBtn = document.getElementById('moog-export');
+      const saveBtn = document.getElementById('moog-save');
+
+      playBtn?.addEventListener('click', () => this.togglePlay());
+      loopBtn?.addEventListener('click', () => this.toggleLoop());
+      stopBtn?.addEventListener('click', () => this.stop());
+      exportBtn?.addEventListener('click', () => this.exportWAV());
+      saveBtn?.addEventListener('click', () => this.saveJSON());
+    }
+
+    setupPreset() {
+      const presetSelect = document.getElementById('moog-preset');
+      presetSelect?.addEventListener('change', (e) => {
+        const preset = this.presets[e.target.value];
+        if (!preset) return;
+
+        this.params = { ...preset };
+
+        // Update inputs
+        document.getElementById('moog-freq').value = preset.freq;
+        document.getElementById('moog-duration').value = preset.duration;
+        document.getElementById('moog-intensity').value = preset.intensity;
+        document.getElementById('moog-modulation').value = preset.modulation;
+
+        this.updateAllDials();
+      });
+    }
+
+    togglePlay() {
+      if (this.isPlaying) {
+        this.pause();
+      } else {
+        this.play();
+      }
+    }
+
+    play() {
+      this.isPlaying = true;
+      const playBtn = document.getElementById('moog-play');
+      playBtn?.classList.add('playing');
+
+      const icon = document.getElementById('moog-play-icon');
+      const text = document.getElementById('moog-play-text');
+      if (icon) icon.textContent = '⏸️';
+      if (text) text.textContent = 'Pause';
+
+      this.synthesize();
+
+      if (this.isLooping) {
+        this.scheduleLoop();
+      }
+
+      // Award XP
+      if (window.progressManager) {
+        window.progressManager.awardXP(3, 'music_creation', 'Played Moog synth');
+      }
+    }
+
+    pause() {
+      this.isPlaying = false;
+      const playBtn = document.getElementById('moog-play');
+      playBtn?.classList.remove('playing');
+
+      const icon = document.getElementById('moog-play-icon');
+      const text = document.getElementById('moog-play-text');
+      if (icon) icon.textContent = '▶️';
+      if (text) text.textContent = 'Play';
+
+      if (this.currentSource) {
+        this.currentSource.stop();
+        this.currentSource = null;
+      }
+
+      if (this.loopTimeout) {
+        clearTimeout(this.loopTimeout);
+        this.loopTimeout = null;
+      }
+    }
+
+    stop() {
+      this.pause();
+      this.isPlaying = false;
+    }
+
+    toggleLoop() {
+      this.isLooping = !this.isLooping;
+      const loopBtn = document.getElementById('moog-loop');
+      loopBtn?.classList.toggle('active', this.isLooping);
+
+      if (this.isLooping && this.isPlaying) {
+        this.scheduleLoop();
+      }
+    }
+
+    scheduleLoop() {
+      if (this.loopTimeout) {
+        clearTimeout(this.loopTimeout);
+      }
+
+      this.loopTimeout = setTimeout(() => {
+        if (this.isLooping && this.isPlaying) {
+          this.synthesize();
+          this.scheduleLoop();
+        }
+      }, this.params.duration * 1000);
+    }
+
+    synthesize() {
+      const { freq, duration, intensity, modulation } = this.params;
+
+      const oscillator = this.audioContext.createOscillator();
+      const modulator = this.audioContext.createOscillator();
+      const modulatorGain = this.audioContext.createGain();
+      const gainNode = this.audioContext.createGain();
+
+      // Setup modulation
+      modulator.frequency.value = modulation;
+      modulatorGain.gain.value = freq * 0.3;
+
+      modulator.connect(modulatorGain);
+      modulatorGain.connect(oscillator.frequency);
+
+      // Setup main oscillator
+      oscillator.type = 'sine';
+      oscillator.frequency.value = freq;
+
+      gainNode.gain.setValueAtTime(intensity, this.audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      // Draw waveform
+      this.drawWaveform(freq, duration, intensity, modulation);
+
+      oscillator.start();
+      modulator.start();
+      oscillator.stop(this.audioContext.currentTime + duration);
+      modulator.stop(this.audioContext.currentTime + duration);
+
+      this.currentSource = oscillator;
+    }
+
+    drawWaveform(freq, duration, intensity, modulation) {
+      const canvas = document.getElementById('moog-waveform');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.strokeStyle = '#58a6ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      const samples = 1000;
+      for (let i = 0; i < samples; i++) {
+        const t = (i / samples) * duration;
+        const x = (i / samples) * width;
+
+        const modValue = Math.sin(2 * Math.PI * modulation * t) * 0.3;
+        const envelope = Math.exp(-t * 2);
+        const y = height / 2 +
+          Math.sin(2 * Math.PI * freq * t + modValue) *
+          envelope * intensity * (height / 2 - 10);
+
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+
+      ctx.stroke();
+    }
+
+    exportWAV() {
+      alert('WAV export coming soon!');
+      // TODO: Implement WAV export
+    }
+
+    saveJSON() {
+      const config = {
+        preset: document.getElementById('moog-preset')?.value,
+        params: this.params,
+        timestamp: new Date().toISOString()
+      };
+
+      const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `moog-${config.preset}-config.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  // Initialize
+  if (document.querySelector('.moog-looper')) {
+    window.moogLooper = new MoogLooper();
+  }
+</script>

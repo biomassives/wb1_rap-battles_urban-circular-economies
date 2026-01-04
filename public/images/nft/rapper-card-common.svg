@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Common Bronze Border -->
+    <linearGradient id="bronze-border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#cd7f32;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b4513;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Card Background -->
+    <linearGradient id="card-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a2a3e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a2e;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Subtle Glow -->
+    <filter id="subtle-glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer Border (Bronze) -->
+  <rect x="0" y="0" width="400" height="600" rx="24" fill="url(#bronze-border)"/>
+
+  <!-- Main Card Background -->
+  <rect x="6" y="6" width="388" height="588" rx="20" fill="url(#card-bg)" stroke="#cd7f32" stroke-width="2"/>
+
+  <!-- Simple Corner Accents -->
+  <path d="M 30 30 L 60 30 L 30 60 Z" fill="#cd7f32" opacity="0.2"/>
+  <path d="M 370 30 L 340 30 L 370 60 Z" fill="#cd7f32" opacity="0.2"/>
+  <path d="M 30 570 L 60 570 L 30 540 Z" fill="#cd7f32" opacity="0.2"/>
+  <path d="M 370 570 L 340 570 L 370 540 Z" fill="#cd7f32" opacity="0.2"/>
+
+  <!-- Rarity Badge (Top Right) -->
+  <g transform="translate(330, 40)">
+    <circle cx="0" cy="0" r="28" fill="#cd7f32" opacity="0.8"/>
+    <text x="0" y="8" text-anchor="middle" font-size="24" font-weight="bold" fill="#fff">🥉</text>
+  </g>
+
+  <!-- Card Number (Top Left) -->
+  <text x="40" y="48" font-family="'Courier New', monospace" font-size="18" font-weight="bold" fill="#cd7f32">#0127</text>
+
+  <!-- Avatar Frame -->
+  <g transform="translate(200, 180)">
+    <!-- Avatar Circle -->
+    <circle cx="0" cy="0" r="88" fill="#3a3a4e" stroke="#cd7f32" stroke-width="3"/>
+
+    <!-- Basic Rapper Avatar -->
+    <g id="rapper-avatar">
+      <!-- Face -->
+      <circle cx="0" cy="0" r="65" fill="#c49a6c"/>
+
+      <!-- Beanie Hat -->
+      <ellipse cx="0" cy="-50" rx="55" ry="18" fill="#2c2c3c"/>
+      <rect x="-45" y="-60" width="90" height="15" rx="2" fill="#2c2c3c"/>
+
+      <!-- Eyes -->
+      <ellipse cx="-22" cy="-8" rx="7" ry="10" fill="#fff"/>
+      <ellipse cx="22" cy="-8" rx="7" ry="10" fill="#fff"/>
+      <circle cx="-22" cy="-5" r="4" fill="#1a1a1a"/>
+      <circle cx="22" cy="-5" r="4" fill="#1a1a1a"/>
+
+      <!-- Nose -->
+      <ellipse cx="0" cy="12" rx="6" ry="8" fill="#9b7653"/>
+
+      <!-- Mouth (Neutral) -->
+      <path d="M -18 30 Q 0 35 18 30" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+      <!-- Simple Chain -->
+      <g transform="translate(0, 65)">
+        <ellipse cx="0" cy="0" rx="30" ry="6" fill="none" stroke="#daa520" stroke-width="4"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Username -->
+  <text x="200" y="315" text-anchor="middle" font-family="'Arial', sans-serif" font-size="28" font-weight="bold" fill="#fff">
+    ROOKIE MC
+  </text>
+
+  <!-- Battle Record -->
+  <text x="200" y="350" text-anchor="middle" font-size="16" fill="#cd7f32">
+    Record: 3-2-0
+  </text>
+
+  <!-- Single Bling Badge -->
+  <g id="bling-badge" transform="translate(200, 400)">
+    <rect x="-40" y="-25" width="80" height="50" rx="8" fill="rgba(205, 127, 50, 0.2)" stroke="#cd7f32" stroke-width="2"/>
+
+    <!-- First Win Badge -->
+    <g transform="translate(0, 0)">
+      <circle r="16" fill="rgba(255, 215, 0, 0.2)" stroke="#cd7f32" stroke-width="2"/>
+      <text x="0" y="7" text-anchor="middle" font-size="20">🥇</text>
+    </g>
+  </g>
+
+  <!-- Battle Info -->
+  <g transform="translate(200, 480)">
+    <text x="0" y="0" text-anchor="middle" font-size="14" fill="#999">
+      Battle: Beginner Bracket
+    </text>
+    <text x="0" y="22" text-anchor="middle" font-size="12" fill="#777">
+      January 3, 2026
+    </text>
+    <text x="0" y="48" text-anchor="middle" font-size="18" font-weight="bold" fill="#4CAF50">
+      WIN
+    </text>
+  </g>
+
+  <!-- Bottom: DVG Logo and Edition -->
+  <g transform="translate(50, 560)">
+    <circle cx="0" cy="0" r="12" fill="none" stroke="#cd7f32" stroke-width="1.5"/>
+    <path d="M -8,-8 L 0,0 L 8,-8 L 0,8 Z" fill="#cd7f32" opacity="0.6"/>
+  </g>
+
+  <text x="350" y="568" text-anchor="end" font-size="12" fill="#666" font-family="monospace">
+    Edition 127/500
+  </text>
+
+  <!-- Common Label -->
+  <text x="200" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#cd7f32" letter-spacing="2">
+    COMMON
+  </text>
+</svg>

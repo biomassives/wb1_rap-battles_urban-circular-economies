@@ -437,7 +437,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <button class="btn-close" onclick="closeVolunteerModal()">×</button>
       </div>
 
-      <form id="volunteer-form" class="volunteer-form">
+      <form id="volunteer-form" class="volunteer-form" data-autosave="30000">
         
         <!-- Project Selection -->
         <div class="form-group">
@@ -566,7 +566,225 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
   </div>
 
+  <!-- ============================================ -->
+  <!-- MENTOR SIGNUP MODAL -->
+  <!-- ============================================ -->
+  <div id="mentor-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h3>🎓 Become a Mentor</h3>
+        <button class="btn-close" onclick="closeMentorModal()">×</button>
+      </div>
+
+      <div class="mentor-intro">
+        <p>Help Kakuma youth learn music production, environmental science, and life skills. Share your expertise and make a lasting impact!</p>
+      </div>
+
+      <form id="mentor-form" class="mentor-form" data-autosave="30000">
+
+        <!-- Personal Info -->
+        <div class="form-section">
+          <h4>Personal Information</h4>
+
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input
+              type="text"
+              name="mentorName"
+              id="mentor-name"
+              class="form-input"
+              placeholder="Your full name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input
+              type="email"
+              name="mentorEmail"
+              id="mentor-email"
+              class="form-input"
+              placeholder="your.email@example.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input
+              type="text"
+              name="mentorLocation"
+              id="mentor-location"
+              class="form-input"
+              placeholder="City, Country"
+            />
+          </div>
+        </div>
+
+        <!-- Expertise -->
+        <div class="form-section">
+          <h4>Your Expertise</h4>
+
+          <div class="form-group">
+            <label class="form-label">Areas of Expertise *</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseMusic" value="music" />
+                <span>Music Production</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseRap" value="rap" />
+                <span>Rap & Lyricism</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseEnvironmental" value="environmental" />
+                <span>Environmental Science</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseAgriculture" value="agriculture" />
+                <span>Agriculture/Permaculture</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseTech" value="tech" />
+                <span>Technology/Coding</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseBusiness" value="business" />
+                <span>Business/Entrepreneurship</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Experience (years)</label>
+            <select name="mentorExperience" id="mentor-experience" class="form-select">
+              <option value="">Select experience level</option>
+              <option value="0-2">0-2 years</option>
+              <option value="3-5">3-5 years</option>
+              <option value="6-10">6-10 years</option>
+              <option value="10+">10+ years</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tell us about your background *</label>
+            <textarea
+              name="mentorBio"
+              id="mentor-bio"
+              class="form-textarea"
+              rows="4"
+              placeholder="Share your experience, achievements, and why you want to mentor Kakuma youth..."
+              required
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Availability -->
+        <div class="form-section">
+          <h4>Availability</h4>
+
+          <div class="form-group">
+            <label class="form-label">Time commitment</label>
+            <select name="mentorCommitment" id="mentor-commitment" class="form-select">
+              <option value="">Select time commitment</option>
+              <option value="1-2">1-2 hours/week</option>
+              <option value="3-5">3-5 hours/week</option>
+              <option value="6-10">6-10 hours/week</option>
+              <option value="10+">10+ hours/week</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Preferred communication method</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" name="commVideo" value="video" />
+                <span>Video calls</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="commText" value="text" />
+                <span>Text messaging</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="commVoice" value="voice" />
+                <span>Voice calls</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="commWhatsapp" value="whatsapp" />
+                <span>WhatsApp</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">WhatsApp Number (if applicable)</label>
+            <input
+              type="tel"
+              name="mentorWhatsapp"
+              id="mentor-whatsapp"
+              class="form-input"
+              placeholder="+1234567890"
+            />
+          </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="form-section">
+          <h4>Additional Information</h4>
+
+          <div class="form-group">
+            <label class="form-label">Languages you speak</label>
+            <input
+              type="text"
+              name="mentorLanguages"
+              id="mentor-languages"
+              class="form-input"
+              placeholder="English, Swahili, Arabic, etc."
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Anything else we should know?</label>
+            <textarea
+              name="mentorNotes"
+              id="mentor-notes"
+              class="form-textarea"
+              rows="3"
+              placeholder="Share any additional information..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-secondary"
+            onclick="closeMentorModal()"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary">
+            <span class="btn-icon">🎓</span>
+            Submit Application
+          </button>
+        </div>
+
+        <p class="form-note">
+          We'll review your application and get back to you within 3-5 business days. Thank you for your interest in mentoring!
+        </p>
+
+      </form>
+
+    </div>
+  </div>
+
 </BaseLayout>
+
+<!-- Form Storage Utility -->
+<script is:inline src="/scripts/form-storage.js"></script>
 
 <script>
   /**
@@ -973,6 +1191,128 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     } catch (error) {
       console.error('Contribution error:', error);
       alert('Failed to process contribution. Please try again.');
+    }
+  });
+
+  // =======================
+  // Mentor Modal Functions
+  // =======================
+
+  function showMentorModal() {
+    const modal = document.getElementById('mentor-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+      // Award XP for opening mentor modal
+      if (window.xpManager) {
+        window.xpManager.awardXP(5, 'Opened mentor signup form');
+      }
+    }
+  }
+
+  function closeMentorModal() {
+    const modal = document.getElementById('mentor-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  // Make functions globally available
+  window.showMentorModal = showMentorModal;
+  window.closeMentorModal = closeMentorModal;
+
+  // Mentor form submission handler
+  document.getElementById('mentor-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const data = {
+      name: formData.get('mentorName'),
+      email: formData.get('mentorEmail'),
+      location: formData.get('mentorLocation'),
+      expertise: {
+        music: formData.get('expertiseMusic') === 'music',
+        rap: formData.get('expertiseRap') === 'rap',
+        environmental: formData.get('expertiseEnvironmental') === 'environmental',
+        agriculture: formData.get('expertiseAgriculture') === 'agriculture',
+        tech: formData.get('expertiseTech') === 'tech',
+        business: formData.get('expertiseBusiness') === 'business'
+      },
+      experience: formData.get('mentorExperience'),
+      bio: formData.get('mentorBio'),
+      commitment: formData.get('mentorCommitment'),
+      communication: {
+        email: formData.get('commEmail') === 'on',
+        whatsapp: formData.get('commWhatsapp') === 'on',
+        videoCall: formData.get('commVideoCall') === 'on',
+        inPerson: formData.get('commInPerson') === 'on'
+      },
+      whatsapp: formData.get('mentorWhatsapp'),
+      languages: formData.get('mentorLanguages'),
+      notes: formData.get('mentorNotes'),
+      walletAddress: window.walletManager?.connectedWallet || null,
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      // TODO: Replace with actual API endpoint
+      console.log('Mentor application submitted:', data);
+
+      // Simulate API call
+      const response = await fetch('/api/mentor-application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).catch(() => {
+        // If API not available, store locally for now
+        const applications = JSON.parse(localStorage.getItem('mentor_applications') || '[]');
+        applications.push(data);
+        localStorage.setItem('mentor_applications', JSON.stringify(applications));
+        return { ok: true, json: async () => ({ success: true, stored_locally: true }) };
+      });
+
+      const result = await response.json();
+
+      if (result.success || result.stored_locally) {
+        // Clear form from localStorage after successful submission
+        if (window.formStorage) {
+          window.formStorage.clearForm('mentor-form');
+        }
+
+        // Award XP for submitting mentor application
+        if (window.xpManager) {
+          window.xpManager.awardXP(50, 'Submitted mentor application');
+        }
+
+        const message = result.stored_locally
+          ? 'Thank you for applying to be a mentor! Your application has been saved locally and will be submitted when you connect your wallet.\n\nXP Earned: +50'
+          : 'Thank you for applying to be a mentor! We will review your application and get back to you soon.\n\nXP Earned: +50';
+
+        alert(message);
+        closeMentorModal();
+        document.getElementById('mentor-form').reset();
+      } else {
+        alert('Application failed: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Mentor application error:', error);
+      alert('Failed to submit application. Please try again.');
+    }
+  });
+
+  // Close mentor modal when clicking outside
+  document.getElementById('mentor-modal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'mentor-modal') {
+      closeMentorModal();
+    }
+  });
+
+  // ESC key to close mentor modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const mentorModal = document.getElementById('mentor-modal');
+      if (mentorModal && mentorModal.style.display === 'flex') {
+        closeMentorModal();
+      }
     }
   });
 </script>

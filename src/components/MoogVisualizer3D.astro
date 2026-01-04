@@ -1,0 +1,639 @@
+---
+/**
+ * MoogVisualizer3D.astro
+ * 3D parameter space visualization for Moog synthesizer
+ * Shows sound path through 3D space with draggable vertices
+ * Multiple camera views and rotation
+ */
+
+interface Props {
+  width?: number;
+  height?: number;
+}
+
+const { width = 800, height = 600 } = Astro.props;
+---
+
+<div class="moog-3d-container">
+  <div class="moog-3d-header">
+    <h3>🎛️ 3D Parameter Space</h3>
+    <div class="view-controls">
+      <button class="view-btn active" data-view="perspective">Perspective</button>
+      <button class="view-btn" data-view="left">Left</button>
+      <button class="view-btn" data-view="top">Top</button>
+      <button class="view-btn" data-view="front">Front</button>
+    </div>
+    <div class="rotation-controls">
+      <label class="rotation-toggle">
+        <input type="checkbox" id="auto-rotate" />
+        <span>Auto Rotate</span>
+      </label>
+      <label class="speed-control">
+        <span>Speed:</span>
+        <input type="range" id="rotation-speed" min="0.1" max="2" value="0.5" step="0.1" />
+      </label>
+    </div>
+  </div>
+
+  <canvas id="moog-3d-canvas" width={width} height={height}></canvas>
+
+  <div class="moog-3d-info">
+    <div class="axis-legend">
+      <div class="axis-item">
+        <span class="axis-color" style="background: #ff6b6b;"></span>
+        <span>X: Frequency (Hz)</span>
+      </div>
+      <div class="axis-item">
+        <span class="axis-color" style="background: #4ecdc4;"></span>
+        <span>Y: Intensity</span>
+      </div>
+      <div class="axis-item">
+        <span class="axis-color" style="background: #45b7d1;"></span>
+        <span>Z: Modulation (Hz)</span>
+      </div>
+    </div>
+    <div class="control-hint">
+      💡 Drag vertices to shape sound • Click view buttons to change perspective • Enable rotation to see path in motion
+    </div>
+  </div>
+</div>
+
+<!-- Three.js from CDN -->
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+  .moog-3d-container {
+    background: linear-gradient(135deg, #1a1f26 0%, #0d1117 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #30363d;
+  }
+
+  .moog-3d-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .moog-3d-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #58a6ff, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .view-controls {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .view-btn {
+    padding: 0.5rem 1rem;
+    background: #30363d;
+    color: #e6edf3;
+    border: 1px solid #444c56;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .view-btn:hover {
+    background: #3d444d;
+    border-color: #58a6ff;
+  }
+
+  .view-btn.active {
+    background: linear-gradient(135deg, #58a6ff, #7c3aed);
+    color: white;
+    border-color: #58a6ff;
+  }
+
+  .rotation-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .rotation-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #e6edf3;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .rotation-toggle input {
+    cursor: pointer;
+  }
+
+  .speed-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #8b949e;
+    font-size: 0.875rem;
+  }
+
+  .speed-control input {
+    width: 80px;
+  }
+
+  #moog-3d-canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background: #000;
+    display: block;
+    cursor: grab;
+  }
+
+  #moog-3d-canvas:active {
+    cursor: grabbing;
+  }
+
+  .moog-3d-info {
+    margin-top: 1rem;
+  }
+
+  .axis-legend {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .axis-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #e6edf3;
+  }
+
+  .axis-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    display: block;
+  }
+
+  .control-hint {
+    font-size: 0.75rem;
+    color: #8b949e;
+    padding: 0.75rem;
+    background: rgba(88, 166, 255, 0.1);
+    border-radius: 6px;
+  }
+
+  @media (max-width: 768px) {
+    .moog-3d-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .view-controls {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .view-btn {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .rotation-controls {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>
+
+<script>
+  class MoogVisualizer3D {
+    constructor(canvasId = 'moog-3d-canvas') {
+      this.canvas = document.getElementById(canvasId);
+      if (!this.canvas || typeof THREE === 'undefined') {
+        console.error('Canvas or Three.js not found');
+        return;
+      }
+
+      // Scene setup
+      this.scene = new THREE.Scene();
+      this.scene.background = new THREE.Color(0x000000);
+
+      // Camera setup
+      this.camera = new THREE.PerspectiveCamera(
+        75,
+        this.canvas.width / this.canvas.height,
+        0.1,
+        1000
+      );
+      this.camera.position.set(5, 5, 5);
+      this.camera.lookAt(0, 0, 0);
+
+      // Renderer setup
+      this.renderer = new THREE.WebGLRenderer({
+        canvas: this.canvas,
+        antialias: true
+      });
+      this.renderer.setSize(this.canvas.width, this.canvas.height);
+
+      // State
+      this.autoRotate = false;
+      this.rotationSpeed = 0.5;
+      this.currentView = 'perspective';
+      this.isDragging = false;
+      this.previousMousePosition = { x: 0, y: 0 };
+
+      // Sound parameters (normalized 0-1)
+      this.params = {
+        frequency: 0.5,  // Will map to 20-2000 Hz
+        intensity: 0.9,
+        modulation: 0.2,  // Will map to 0-200 Hz
+        duration: 0.1     // Will map to 0.1-15s
+      };
+
+      // Control points for the sound path
+      this.controlPoints = [
+        new THREE.Vector3(0, 0, 0),      // Start point
+        new THREE.Vector3(2, 1.8, 0.4),  // Attack
+        new THREE.Vector3(3, 1.5, 0.6),  // Sustain
+        new THREE.Vector3(4, 0.2, 0.1)   // Release
+      ];
+
+      this.init();
+    }
+
+    init() {
+      this.createAxes();
+      this.createGrid();
+      this.createSoundPath();
+      this.createControlSpheres();
+      this.createLabels();
+      this.setupControls();
+      this.setupEventListeners();
+      this.animate();
+    }
+
+    createAxes() {
+      const axisLength = 5;
+
+      // X axis (Frequency) - Red
+      const xGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(axisLength, 0, 0)
+      ]);
+      const xMaterial = new THREE.LineBasicMaterial({ color: 0xff6b6b, linewidth: 2 });
+      const xAxis = new THREE.Line(xGeometry, xMaterial);
+      this.scene.add(xAxis);
+
+      // Y axis (Intensity) - Cyan
+      const yGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, axisLength, 0)
+      ]);
+      const yMaterial = new THREE.LineBasicMaterial({ color: 0x4ecdc4, linewidth: 2 });
+      const yAxis = new THREE.Line(yGeometry, yMaterial);
+      this.scene.add(yAxis);
+
+      // Z axis (Modulation) - Blue
+      const zGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0, axisLength)
+      ]);
+      const zMaterial = new THREE.LineBasicMaterial({ color: 0x45b7d1, linewidth: 2 });
+      const zAxis = new THREE.Line(zGeometry, zMaterial);
+      this.scene.add(zAxis);
+
+      // Add arrow cones at the end of each axis
+      this.addArrowCone(axisLength, 0, 0, 0xff6b6b);
+      this.addArrowCone(0, axisLength, 0, 0x4ecdc4);
+      this.addArrowCone(0, 0, axisLength, 0x45b7d1);
+    }
+
+    addArrowCone(x, y, z, color) {
+      const geometry = new THREE.ConeGeometry(0.1, 0.3, 8);
+      const material = new THREE.MeshBasicMaterial({ color });
+      const cone = new THREE.Mesh(geometry, material);
+
+      if (x > 0) {
+        cone.rotation.z = -Math.PI / 2;
+        cone.position.set(x + 0.15, 0, 0);
+      } else if (y > 0) {
+        cone.position.set(0, y + 0.15, 0);
+      } else if (z > 0) {
+        cone.rotation.x = Math.PI / 2;
+        cone.position.set(0, 0, z + 0.15);
+      }
+
+      this.scene.add(cone);
+    }
+
+    createGrid() {
+      const size = 10;
+      const divisions = 10;
+
+      // XY grid
+      const gridHelperXY = new THREE.GridHelper(size, divisions, 0x444444, 0x222222);
+      gridHelperXY.rotation.x = Math.PI / 2;
+      gridHelperXY.position.z = 0;
+      this.scene.add(gridHelperXY);
+
+      // XZ grid (floor)
+      const gridHelperXZ = new THREE.GridHelper(size, divisions, 0x444444, 0x222222);
+      this.scene.add(gridHelperXZ);
+    }
+
+    createSoundPath() {
+      // Create a smooth curve through control points
+      const curve = new THREE.CatmullRomCurve3(this.controlPoints);
+
+      // Create the path geometry
+      const points = curve.getPoints(100);
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+      // Gradient material (simulate attenuation)
+      const colors = [];
+      for (let i = 0; i < points.length; i++) {
+        const t = i / points.length;
+        const intensity = 1 - t; // Fade from bright to dim
+        colors.push(intensity, intensity * 0.6, intensity * 0.8);
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+      const material = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        linewidth: 3
+      });
+
+      if (this.soundPath) {
+        this.scene.remove(this.soundPath);
+      }
+
+      this.soundPath = new THREE.Line(geometry, material);
+      this.scene.add(this.soundPath);
+
+      // Add particle trail
+      this.createParticleTrail(points);
+    }
+
+    createParticleTrail(points) {
+      if (this.particleSystem) {
+        this.scene.remove(this.particleSystem);
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      const positions = [];
+      const colors = [];
+      const sizes = [];
+
+      points.forEach((point, i) => {
+        positions.push(point.x, point.y, point.z);
+
+        const t = i / points.length;
+        const intensity = 1 - t;
+        colors.push(0.3 + intensity * 0.7, 0.4 + intensity * 0.6, 0.8 + intensity * 0.2);
+
+        sizes.push((1 - t) * 20);
+      });
+
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+      const material = new THREE.PointsMaterial({
+        size: 0.1,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.6,
+        sizeAttenuation: true
+      });
+
+      this.particleSystem = new THREE.Points(geometry, material);
+      this.scene.add(this.particleSystem);
+    }
+
+    createControlSpheres() {
+      this.controlSpheres = [];
+
+      this.controlPoints.forEach((point, index) => {
+        const geometry = new THREE.SphereGeometry(0.15, 16, 16);
+        const material = new THREE.MeshBasicMaterial({
+          color: index === 0 ? 0x00ff00 : index === this.controlPoints.length - 1 ? 0xff0000 : 0xffff00,
+          transparent: true,
+          opacity: 0.8
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        sphere.position.copy(point);
+        sphere.userData = { index, controlPoint: point };
+
+        this.scene.add(sphere);
+        this.controlSpheres.push(sphere);
+      });
+    }
+
+    createLabels() {
+      // Create text sprites for axis labels
+      this.createTextLabel('Frequency →', 5.5, 0, 0, 0xff6b6b);
+      this.createTextLabel('Intensity →', 0, 5.5, 0, 0x4ecdc4);
+      this.createTextLabel('Modulation →', 0, 0, 5.5, 0x45b7d1);
+    }
+
+    createTextLabel(text, x, y, z, color) {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.width = 256;
+      canvas.height = 64;
+
+      context.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
+      context.font = 'Bold 24px Arial';
+      context.fillText(text, 10, 40);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(material);
+
+      sprite.position.set(x, y, z);
+      sprite.scale.set(2, 0.5, 1);
+
+      this.scene.add(sprite);
+    }
+
+    setupControls() {
+      // View buttons
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          this.setView(e.target.dataset.view);
+        });
+      });
+
+      // Auto rotate toggle
+      const autoRotateCheckbox = document.getElementById('auto-rotate');
+      autoRotateCheckbox?.addEventListener('change', (e) => {
+        this.autoRotate = e.target.checked;
+      });
+
+      // Rotation speed
+      const speedSlider = document.getElementById('rotation-speed');
+      speedSlider?.addEventListener('input', (e) => {
+        this.rotationSpeed = parseFloat(e.target.value);
+      });
+    }
+
+    setupEventListeners() {
+      // Mouse interaction for camera rotation
+      this.canvas.addEventListener('mousedown', (e) => {
+        this.isDragging = true;
+        this.previousMousePosition = { x: e.clientX, y: e.clientY };
+      });
+
+      this.canvas.addEventListener('mousemove', (e) => {
+        if (!this.isDragging) return;
+
+        const deltaX = e.clientX - this.previousMousePosition.x;
+        const deltaY = e.clientY - this.previousMousePosition.y;
+
+        if (this.currentView === 'perspective') {
+          const rotationSpeed = 0.005;
+
+          // Rotate camera around the scene
+          const radius = Math.sqrt(
+            this.camera.position.x ** 2 +
+            this.camera.position.y ** 2 +
+            this.camera.position.z ** 2
+          );
+
+          const theta = Math.atan2(this.camera.position.z, this.camera.position.x);
+          const phi = Math.acos(this.camera.position.y / radius);
+
+          const newTheta = theta - deltaX * rotationSpeed;
+          const newPhi = Math.max(0.1, Math.min(Math.PI - 0.1, phi - deltaY * rotationSpeed));
+
+          this.camera.position.x = radius * Math.sin(newPhi) * Math.cos(newTheta);
+          this.camera.position.y = radius * Math.cos(newPhi);
+          this.camera.position.z = radius * Math.sin(newPhi) * Math.sin(newTheta);
+          this.camera.lookAt(0, 0, 0);
+        }
+
+        this.previousMousePosition = { x: e.clientX, y: e.clientY };
+      });
+
+      this.canvas.addEventListener('mouseup', () => {
+        this.isDragging = false;
+      });
+
+      this.canvas.addEventListener('mouseleave', () => {
+        this.isDragging = false;
+      });
+
+      // Listen for parameter updates from MoogLooper
+      window.addEventListener('moog-params-update', (e) => {
+        this.updateFromParams(e.detail);
+      });
+    }
+
+    setView(view) {
+      this.currentView = view;
+
+      switch (view) {
+        case 'left':
+          this.camera.position.set(-8, 0, 0);
+          break;
+        case 'top':
+          this.camera.position.set(0, 8, 0);
+          break;
+        case 'front':
+          this.camera.position.set(0, 0, 8);
+          break;
+        case 'perspective':
+        default:
+          this.camera.position.set(5, 5, 5);
+          break;
+      }
+
+      this.camera.lookAt(0, 0, 0);
+    }
+
+    updateFromParams(params) {
+      // Map parameters to 3D space
+      // Frequency: 20-2000 Hz -> X: 0-5
+      // Intensity: 0-1 -> Y: 0-2
+      // Modulation: 0-200 Hz -> Z: 0-2
+      // Duration affects the curve length
+
+      const freqNorm = (params.frequency - 20) / (2000 - 20);
+      const intNorm = params.intensity;
+      const modNorm = params.modulation / 200;
+      const durNorm = (params.duration - 0.1) / (15 - 0.1);
+
+      // Update control points based on params
+      this.controlPoints[1].set(
+        freqNorm * 5 * 0.4,
+        intNorm * 2,
+        modNorm * 2 * 0.5
+      );
+
+      this.controlPoints[2].set(
+        freqNorm * 5 * 0.7,
+        intNorm * 2 * 0.8,
+        modNorm * 2
+      );
+
+      this.controlPoints[3].set(
+        freqNorm * 5,
+        intNorm * 2 * 0.1,
+        modNorm * 2 * 0.3
+      );
+
+      // Recreate the path
+      this.createSoundPath();
+
+      // Update control spheres
+      this.controlSpheres.forEach((sphere, index) => {
+        sphere.position.copy(this.controlPoints[index]);
+      });
+    }
+
+    animate() {
+      requestAnimationFrame(() => this.animate());
+
+      // Auto rotation
+      if (this.autoRotate && this.currentView === 'perspective') {
+        const radius = Math.sqrt(
+          this.camera.position.x ** 2 +
+          this.camera.position.y ** 2 +
+          this.camera.position.z ** 2
+        );
+
+        const theta = Math.atan2(this.camera.position.z, this.camera.position.x);
+        const phi = Math.acos(this.camera.position.y / radius);
+
+        const newTheta = theta + 0.01 * this.rotationSpeed;
+
+        this.camera.position.x = radius * Math.sin(phi) * Math.cos(newTheta);
+        this.camera.position.y = radius * Math.cos(phi);
+        this.camera.position.z = radius * Math.sin(phi) * Math.sin(newTheta);
+        this.camera.lookAt(0, 0, 0);
+      }
+
+      this.renderer.render(this.scene, this.camera);
+    }
+  }
+
+  // Initialize
+  if (document.getElementById('moog-3d-canvas')) {
+    window.moogVisualizer3D = new MoogVisualizer3D();
+  }
+</script>

@@ -1,0 +1,930 @@
+---
+/**
+ * workflows.astro
+ * User Workflows Explainer & Checker
+ *
+ * Visual dashboard showing all user journeys and system flows.
+ * Color-coded blocks with status indicators to ensure everything works.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="User Workflows & System Checker"
+  description="Visual guide to all user journeys and page status"
+  activeSection="workflows"
+>
+
+<div class="workflows-container">
+  <div class="container mx-auto">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h1 class="page-title">User Workflows & System Status</h1>
+      <p class="page-subtitle">Visual map of all user journeys • Click blocks to test pages • Check status indicators</p>
+      <div class="status-legend">
+        <span class="legend-item"><span class="status-dot working"></span> Working</span>
+        <span class="legend-item"><span class="status-dot testing"></span> Testing</span>
+        <span class="legend-item"><span class="status-dot planned"></span> Planned</span>
+      </div>
+    </div>
+
+    <!-- Core User Journeys -->
+    <section class="workflow-section">
+      <h2 class="section-title">🎯 Core User Journeys</h2>
+
+      <div class="blocks-grid">
+        <!-- Block 1: New User Onboarding -->
+        <a href="/" class="workflow-block purple" data-status="working">
+          <div class="block-header">
+            <span class="block-icon">🚀</span>
+            <span class="status-indicator working"></span>
+          </div>
+          <h3 class="block-title">New User Landing</h3>
+          <p class="block-desc">Hero → How It Works → Start Battle</p>
+          <div class="block-link">Test Homepage →</div>
+        </a>
+
+        <!-- Block 2: Battle Flow -->
+        <a href="/music#beatmaker" class="workflow-block red" data-status="working">
+          <div class="block-header">
+            <span class="block-icon">⚔️</span>
+            <span class="status-indicator working"></span>
+          </div>
+          <h3 class="block-title">Rap Battle Flow</h3>
+          <p class="block-desc">Create → Record → Vote → Earn NFT</p>
+          <div class="block-link">Test Battle →</div>
+        </a>
+
+        <!-- Block 3: Profile & Progress -->
+        <a href="/profile" class="workflow-block blue" data-status="working">
+          <div class="block-header">
+            <span class="block-icon">👤</span>
+            <span class="status-indicator working"></span>
+          </div>
+          <h3 class="block-title">Profile & Stats</h3>
+          <p class="block-desc">Settings → Stats → NFTs → History</p>
+          <div class="block-link">Test Profile →</div>
+        </a>
+
+        <!-- Block 4: Music Creation -->
+        <a href="/music" class="workflow-block green" data-status="working">
+          <div class="block-header">
+            <span class="block-icon">🎵</span>
+            <span class="status-indicator working"></span>
+          </div>
+          <h3 class="block-title">Music Creation</h3>
+          <p class="block-desc">Moog Synth → Sampler → Looper</p>
+          <div class="block-link">Test Music →</div>
+        </a>
+
+        <!-- Block 5: NFT Collection -->
+        <a href="/#collection" class="workflow-block orange" data-status="working">
+          <div class="block-header">
+            <span class="block-icon">🖼️</span>
+            <span class="status-indicator working"></span>
+          </div>
+          <h3 class="block-title">NFT Collection</h3>
+          <p class="block-desc">View 55 Animals → Browse Cards</p>
+          <div class="block-link">Test Collection →</div>
+        </a>
+
+        <!-- Block 6: Kakuma Impact -->
+        <a href="/kakuma" class="workflow-block teal" data-status="working">
+          <div class="block-header">
+            <span class="block-icon">🏕️</span>
+            <span class="status-indicator working"></span>
+          </div>
+          <h3 class="block-title">Kakuma Connection</h3>
+          <p class="block-desc">Impact → Stories → Support</p>
+          <div class="block-link">Test Kakuma →</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Detailed Battle Workflow (Accordion) -->
+    <section class="workflow-section">
+      <h2 class="section-title">🎤 Battle Workflow Breakdown</h2>
+
+      <div class="accordion-container">
+
+        <!-- Accordion 1: Pre-Battle -->
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="accordion-icon">🎵</span>
+            <span class="accordion-title">Phase 1: Beat Creation</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="phase-blocks">
+              <div class="phase-block">
+                <div class="phase-number">1.1</div>
+                <div class="phase-icon">🎹</div>
+                <h4>Choose Instrument</h4>
+                <p>User selects Moog synth, sampler, or looper</p>
+                <a href="/music#moog" class="phase-link">Test Moog →</a>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">1.2</div>
+                <div class="phase-icon">🎛️</div>
+                <h4>Create Loop</h4>
+                <p>Record/layer sounds, adjust filters, build beat</p>
+                <a href="/sampler" class="phase-link">Test Sampler →</a>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">1.3</div>
+                <div class="phase-icon">💾</div>
+                <h4>Save Beat</h4>
+                <p>Export audio, save to library for battle use</p>
+                <span class="phase-status planned">Planned</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion 2: During Battle -->
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="accordion-icon">🎤</span>
+            <span class="accordion-title">Phase 2: Battle Participation</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="phase-blocks">
+              <div class="phase-block">
+                <div class="phase-number">2.1</div>
+                <div class="phase-icon">🆚</div>
+                <h4>Join/Create Battle</h4>
+                <p>Browse open battles or create new challenge</p>
+                <a href="/battle" class="phase-link">Test Battle List →</a>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">2.2</div>
+                <div class="phase-icon">🎙️</div>
+                <h4>Record Rap</h4>
+                <p>Rap over beat, record performance, preview</p>
+                <span class="phase-status testing">Testing</span>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">2.3</div>
+                <div class="phase-icon">📤</div>
+                <h4>Submit Entry</h4>
+                <p>Upload recording, set metadata, enter battle</p>
+                <span class="phase-status testing">Testing</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion 3: Post-Battle -->
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="accordion-icon">🏆</span>
+            <span class="accordion-title">Phase 3: Results & Rewards</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="phase-blocks">
+              <div class="phase-block">
+                <div class="phase-number">3.1</div>
+                <div class="phase-icon">🗳️</div>
+                <h4>Community Voting</h4>
+                <p>Users vote on performances, accumulate scores</p>
+                <span class="phase-status planned">Planned</span>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">3.2</div>
+                <div class="phase-icon">📊</div>
+                <h4>See Results</h4>
+                <p>View rankings, stats, performance feedback</p>
+                <span class="phase-status planned">Planned</span>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">3.3</div>
+                <div class="phase-icon">💎</div>
+                <h4>Earn NFT Card</h4>
+                <p>Mint PFP with rapper persona + bling badges</p>
+                <a href="/#battle-cards" class="phase-link">See Cards →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Learning & Training Workflows (Accordion) -->
+    <section class="workflow-section">
+      <h2 class="section-title">📚 Learning & Training System</h2>
+
+      <div class="accordion-container">
+
+        <!-- Accordion: Quiz System -->
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="accordion-icon">❓</span>
+            <span class="accordion-title">Training Quiz System</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="phase-blocks">
+              <div class="phase-block">
+                <div class="phase-number">Q1</div>
+                <div class="phase-icon">📝</div>
+                <h4>Quiz Categories</h4>
+                <p>Music theory, sustainability, history, culture</p>
+                <a href="/training-quiz" class="phase-link">Test Quiz →</a>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">Q2</div>
+                <div class="phase-icon">⭐</div>
+                <h4>Earn XP</h4>
+                <p>Correct answers award XP, unlock levels</p>
+                <span class="phase-status working">Working</span>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">Q3</div>
+                <div class="phase-icon">🎓</div>
+                <h4>Certificates</h4>
+                <p>Complete courses to earn NFT certificates</p>
+                <span class="phase-status planned">Planned</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion: Animal Mentors -->
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="accordion-icon">🐓</span>
+            <span class="accordion-title">Animal Mentor Progression</span>
+            <span class="accordion-arrow">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="phase-blocks">
+              <div class="phase-block">
+                <div class="phase-number">M1</div>
+                <div class="phase-icon">🐔</div>
+                <h4>Chicken (Lv 1-10)</h4>
+                <p>Starter mentor: Community building, basics</p>
+                <span class="phase-status working">Working</span>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">M2</div>
+                <div class="phase-icon">🐱🐐</div>
+                <h4>Cat/Goat (Lv 11+)</h4>
+                <p>Choose specialization: Speed or Resilience</p>
+                <span class="phase-status planned">Planned</span>
+              </div>
+              <div class="phase-block">
+                <div class="phase-number">M3</div>
+                <div class="phase-icon">🕊️</div>
+                <h4>Pigeon (Lv 21+)</h4>
+                <p>Advanced mentor: Messaging, networking</p>
+                <span class="phase-status planned">Planned</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Technical/Admin Workflows -->
+    <section class="workflow-section">
+      <h2 class="section-title">⚙️ Technical & Admin Flows</h2>
+
+      <div class="blocks-grid">
+        <!-- Block: Web3 Integration -->
+        <div class="workflow-block cyan" data-status="testing">
+          <div class="block-header">
+            <span class="block-icon">🔗</span>
+            <span class="status-indicator testing"></span>
+          </div>
+          <h3 class="block-title">Web3 Connection</h3>
+          <p class="block-desc">Wallet connect → Sign → Verify</p>
+          <div class="block-tech">Solana + Polkadot</div>
+        </div>
+
+        <!-- Block: NFT Minting -->
+        <div class="workflow-block pink" data-status="planned">
+          <div class="block-header">
+            <span class="block-icon">⚡</span>
+            <span class="status-indicator planned"></span>
+          </div>
+          <h3 class="block-title">NFT Minting</h3>
+          <p class="block-desc">Generate card → Upload → Mint</p>
+          <div class="block-tech">Metaplex + Arweave</div>
+        </div>
+
+        <!-- Block: Database -->
+        <div class="workflow-block yellow" data-status="testing">
+          <div class="block-header">
+            <span class="block-icon">💾</span>
+            <span class="status-indicator testing"></span>
+          </div>
+          <h3 class="block-title">Database Operations</h3>
+          <p class="block-desc">User data → Progress → Stats</p>
+          <div class="block-tech">Vercel Postgres</div>
+        </div>
+
+        <!-- Block: API Endpoints -->
+        <div class="workflow-block indigo" data-status="working">
+          <div class="block-header">
+            <span class="block-icon">🔌</span>
+            <span class="status-indicator working"></span>
+          </div>
+          <h3 class="block-title">API Endpoints</h3>
+          <p class="block-desc">XP award → Profile → Stats</p>
+          <div class="block-tech">Astro API Routes</div>
+        </div>
+
+        <!-- Block: File Storage -->
+        <div class="workflow-block brown" data-status="planned">
+          <div class="block-header">
+            <span class="block-icon">📁</span>
+            <span class="status-indicator planned"></span>
+          </div>
+          <h3 class="block-title">File Storage</h3>
+          <p class="block-desc">Audio → Images → Metadata</p>
+          <div class="block-tech">IPFS/Arweave</div>
+        </div>
+
+        <!-- Block: Analytics -->
+        <div class="workflow-block gray" data-status="planned">
+          <div class="block-header">
+            <span class="block-icon">📊</span>
+            <span class="status-indicator planned"></span>
+          </div>
+          <h3 class="block-title">Analytics & Tracking</h3>
+          <p class="block-desc">Events → Metrics → Insights</p>
+          <div class="block-tech">Custom Analytics</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Test Checklist -->
+    <section class="workflow-section">
+      <h2 class="section-title">✅ Quick Test Checklist</h2>
+
+      <div class="checklist-grid">
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">Homepage loads and hero CTA works</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">Music page - Moog synth plays sounds</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">Sampler pads trigger audio correctly</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">Profile page loads without errors</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">NFT collection displays 55 animals</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">Kakuma page shows impact stories</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">Training quiz loads questions</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">Battle cards showcase visible</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">Mobile responsive on all pages</span>
+        </label>
+        <label class="checklist-item">
+          <input type="checkbox" />
+          <span class="checklist-text">No console errors in dev tools</span>
+        </label>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  // Accordion toggle functionality
+  window.toggleAccordion = function(button) {
+    const item = button.parentElement;
+    const content = item.querySelector('.accordion-content');
+    const arrow = button.querySelector('.accordion-arrow');
+
+    // Close other accordions
+    const allItems = document.querySelectorAll('.accordion-item');
+    allItems.forEach(otherItem => {
+      if (otherItem !== item) {
+        otherItem.classList.remove('active');
+        const otherContent = otherItem.querySelector('.accordion-content');
+        const otherArrow = otherItem.querySelector('.accordion-arrow');
+        if (otherContent) otherContent.style.maxHeight = '0';
+        if (otherArrow) otherArrow.textContent = '▼';
+      }
+    });
+
+    // Toggle current accordion
+    item.classList.toggle('active');
+
+    if (item.classList.contains('active')) {
+      content.style.maxHeight = content.scrollHeight + 'px';
+      arrow.textContent = '▲';
+    } else {
+      content.style.maxHeight = '0';
+      arrow.textContent = '▼';
+    }
+  };
+
+  // Add click animation to workflow blocks
+  document.querySelectorAll('.workflow-block').forEach(block => {
+    block.addEventListener('click', function(e) {
+      this.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        this.style.transform = '';
+      }, 150);
+    });
+  });
+
+  // Initialize checklist from localStorage
+  document.addEventListener('DOMContentLoaded', () => {
+    const checkboxes = document.querySelectorAll('.checklist-item input');
+    checkboxes.forEach((checkbox, index) => {
+      const saved = localStorage.getItem(`checklist-${index}`);
+      if (saved === 'true') {
+        checkbox.checked = true;
+      }
+
+      checkbox.addEventListener('change', () => {
+        localStorage.setItem(`checklist-${index}`, checkbox.checked);
+      });
+    });
+  });
+</script>
+
+<style>
+  .workflows-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    padding: 3rem 2rem;
+  }
+
+  /* Header */
+  .page-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .page-title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-subtitle {
+    font-size: 1.25rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+  }
+
+  .status-legend {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4b5563;
+  }
+
+  .status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .status-dot.working {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  }
+
+  .status-dot.testing {
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+  }
+
+  .status-dot.planned {
+    background: #6b7280;
+    box-shadow: 0 0 8px rgba(107, 114, 128, 0.5);
+  }
+
+  /* Sections */
+  .workflow-section {
+    margin-bottom: 4rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    color: #1f2937;
+  }
+
+  /* Workflow Blocks Grid */
+  .blocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .workflow-block {
+    width: 100%;
+    min-width: 200px;
+    height: 200px;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+
+  .workflow-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .workflow-block:hover::before {
+    opacity: 1;
+  }
+
+  .workflow-block:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Block Colors */
+  .workflow-block.purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .workflow-block.red { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+  .workflow-block.blue { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+  .workflow-block.green { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+  .workflow-block.orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+  .workflow-block.teal { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+  .workflow-block.cyan { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #1f2937; }
+  .workflow-block.pink { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #1f2937; }
+  .workflow-block.yellow { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #1f2937; }
+  .workflow-block.indigo { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+  .workflow-block.brown { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); color: #1f2937; }
+  .workflow-block.gray { background: linear-gradient(135deg, #e0e0e0 0%, #a0a0a0 100%); color: #1f2937; }
+
+  .block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .block-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+
+  .status-indicator.working {
+    background: #10b981;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .status-indicator.testing {
+    background: #f59e0b;
+  }
+
+  .status-indicator.planned {
+    background: #6b7280;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+    }
+  }
+
+  .block-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .block-desc {
+    font-size: 0.875rem;
+    opacity: 0.95;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .block-link,
+  .block-tech {
+    font-size: 0.875rem;
+    font-weight: 600;
+    opacity: 0.9;
+    letter-spacing: 0.5px;
+  }
+
+  /* Accordions */
+  .accordion-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .accordion-item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .accordion-item:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .accordion-header {
+    width: 100%;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .accordion-item.active .accordion-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .accordion-icon {
+    font-size: 1.75rem;
+  }
+
+  .accordion-title {
+    flex: 1;
+    text-align: left;
+  }
+
+  .accordion-arrow {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+  }
+
+  .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    background: #f9fafb;
+  }
+
+  /* Phase Blocks */
+  .phase-blocks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+  }
+
+  .phase-block {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 2px solid transparent;
+  }
+
+  .phase-block:hover {
+    transform: translateY(-4px);
+    border-color: #667eea;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+  }
+
+  .phase-number {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 0.875rem;
+  }
+
+  .phase-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .phase-block h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+  }
+
+  .phase-block p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .phase-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .phase-link:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .phase-status {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .phase-status.working {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .phase-status.testing {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .phase-status.planned {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  /* Checklist */
+  .checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+  }
+
+  .checklist-item:hover {
+    background: #f9fafb;
+    border-color: #667eea;
+  }
+
+  .checklist-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #667eea;
+  }
+
+  .checklist-text {
+    font-size: 0.95rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .checklist-item input:checked + .checklist-text {
+    color: #10b981;
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .workflows-container {
+      padding: 2rem 1rem;
+    }
+
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+    }
+
+    .blocks-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
+    .workflow-block {
+      min-width: 160px;
+      height: 180px;
+      padding: 1.25rem;
+    }
+
+    .block-icon {
+      font-size: 2rem;
+    }
+
+    .block-title {
+      font-size: 1.125rem;
+    }
+
+    .accordion-header {
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+    }
+
+    .phase-blocks {
+      grid-template-columns: 1fr;
+      padding: 1.5rem;
+    }
+
+    .checklist-grid {
+      grid-template-columns: 1fr;
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+</BaseLayout>

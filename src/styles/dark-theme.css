@@ -1,0 +1,463 @@
+/**
+ * Dark Theme: Space Invaders meets Ska Two-Tone
+ * Black & White with Neon Green Accents
+ * Retro Arcade Aesthetic
+ */
+
+:root {
+  /* Base Colors - Monochrome */
+  --color-black: #000000;
+  --color-near-black: #0a0a0a;
+  --color-dark-gray: #1a1a1a;
+  --color-gray: #333333;
+  --color-mid-gray: #666666;
+  --color-light-gray: #999999;
+  --color-off-white: #e0e0e0;
+  --color-white: #ffffff;
+
+  /* Accent Colors - Arcade/Neon */
+  --color-neon-green: #00ff00;
+  --color-neon-green-dark: #00cc00;
+  --color-neon-green-glow: rgba(0, 255, 0, 0.5);
+  --color-neon-cyan: #00ffff;
+  --color-neon-yellow: #ffff00;
+  --color-neon-pink: #ff00ff;
+
+  /* Semantic Colors */
+  --color-primary: var(--color-white);
+  --color-primary-dark: var(--color-off-white);
+  --color-primary-light: var(--color-white);
+  --color-secondary: var(--color-neon-green);
+  --color-accent: var(--color-neon-cyan);
+  --color-background: var(--color-black);
+  --color-background-alt: var(--color-near-black);
+  --color-surface: var(--color-dark-gray);
+  --color-border: var(--color-white);
+  --color-text: var(--color-white);
+  --color-text-muted: var(--color-light-gray);
+
+  /* Status Colors */
+  --color-success: var(--color-neon-green);
+  --color-warning: var(--color-neon-yellow);
+  --color-error: var(--color-neon-pink);
+  --color-info: var(--color-neon-cyan);
+
+  /* Shadows - Sharp, not blurred */
+  --shadow-sharp-sm: 4px 4px 0 var(--color-white);
+  --shadow-sharp-md: 6px 6px 0 var(--color-white);
+  --shadow-sharp-lg: 8px 8px 0 var(--color-white);
+  --shadow-sharp-neon: 0 0 10px var(--color-neon-green-glow);
+  --shadow-inset: inset 2px 2px 0 rgba(255, 255, 255, 0.3);
+
+  /* Border Styles */
+  --border-thin: 2px solid var(--color-white);
+  --border-thick: 4px solid var(--color-white);
+  --border-neon: 2px solid var(--color-neon-green);
+  --border-dashed: 2px dashed var(--color-white);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Border Radius - Minimal/Geometric */
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+
+  /* Fonts */
+  --font-mono: 'Courier New', 'Courier', monospace;
+  --font-arcade: 'Press Start 2P', 'Courier New', monospace;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+/* Global Resets with Dark Theme */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+body {
+  background: var(--color-black);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ska Checkerboard Pattern */
+.ska-pattern {
+  background-image:
+    linear-gradient(45deg, var(--color-dark-gray) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-dark-gray) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-dark-gray) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-dark-gray) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+/* Arcade Grid Pattern */
+.arcade-grid {
+  background-image:
+    linear-gradient(var(--color-dark-gray) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-dark-gray) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Scanline Effect */
+.scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanlines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    transparent 2px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Retro Buttons */
+.btn-retro {
+  position: relative;
+  padding: 0.75rem 2rem;
+  background: var(--color-white);
+  color: var(--color-black);
+  border: var(--border-thick);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-sharp-md);
+  font-family: var(--font-body);
+}
+
+.btn-retro:hover {
+  background: var(--color-neon-green);
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0 var(--color-white);
+}
+
+.btn-retro:active {
+  transform: translate(6px, 6px);
+  box-shadow: 0 0 0 var(--color-white);
+}
+
+.btn-retro-neon {
+  background: var(--color-black);
+  color: var(--color-neon-green);
+  border: 2px solid var(--color-neon-green);
+  box-shadow: 0 0 10px var(--color-neon-green-glow),
+              inset 0 0 10px var(--color-neon-green-glow);
+  text-shadow: 0 0 5px var(--color-neon-green);
+}
+
+.btn-retro-neon:hover {
+  background: var(--color-neon-green);
+  color: var(--color-black);
+  box-shadow: 0 0 20px var(--color-neon-green),
+              0 0 40px var(--color-neon-green-glow);
+  text-shadow: none;
+}
+
+/* Pixel Border */
+.pixel-border {
+  border: none;
+  background: var(--color-black);
+  position: relative;
+  padding: 2px;
+}
+
+.pixel-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    linear-gradient(var(--color-white) 2px, transparent 2px) 0 0,
+    linear-gradient(90deg, var(--color-white) 2px, transparent 2px) 0 0,
+    linear-gradient(var(--color-white) 2px, transparent 2px) 0 100%,
+    linear-gradient(90deg, var(--color-white) 2px, transparent 2px) 0 100%,
+    linear-gradient(var(--color-white) 2px, transparent 2px) 100% 0,
+    linear-gradient(90deg, var(--color-white) 2px, transparent 2px) 100% 0,
+    linear-gradient(var(--color-white) 2px, transparent 2px) 100% 100%,
+    linear-gradient(90deg, var(--color-white) 2px, transparent 2px) 100% 100%;
+  background-repeat: no-repeat;
+  background-size: 8px 8px;
+}
+
+/* Neon Text */
+.neon-text {
+  color: var(--color-neon-green);
+  text-shadow:
+    0 0 5px var(--color-neon-green),
+    0 0 10px var(--color-neon-green),
+    0 0 20px var(--color-neon-green),
+    0 0 40px var(--color-neon-green-glow);
+  animation: neonPulse 2s ease-in-out infinite;
+}
+
+@keyframes neonPulse {
+  0%, 100% {
+    opacity: 1;
+    text-shadow:
+      0 0 5px var(--color-neon-green),
+      0 0 10px var(--color-neon-green),
+      0 0 20px var(--color-neon-green),
+      0 0 40px var(--color-neon-green-glow);
+  }
+  50% {
+    opacity: 0.8;
+    text-shadow:
+      0 0 2px var(--color-neon-green),
+      0 0 5px var(--color-neon-green),
+      0 0 10px var(--color-neon-green),
+      0 0 20px var(--color-neon-green-glow);
+  }
+}
+
+/* Card Styles */
+.card-retro {
+  background: var(--color-black);
+  border: var(--border-thick);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sharp-lg);
+  transition: var(--transition-base);
+}
+
+.card-retro:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 10px 10px 0 var(--color-white);
+}
+
+.card-retro-neon {
+  background: var(--color-near-black);
+  border: 2px solid var(--color-neon-green);
+  box-shadow:
+    0 0 10px var(--color-neon-green-glow),
+    inset 0 0 20px rgba(0, 255, 0, 0.1);
+}
+
+/* Arcade Screen Effect */
+.arcade-screen {
+  background: var(--color-near-black);
+  border: 8px solid var(--color-dark-gray);
+  box-shadow:
+    inset 0 0 50px rgba(0, 255, 0, 0.1),
+    0 0 20px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+.arcade-screen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+}
+
+/* Glitch Effect */
+.glitch {
+  position: relative;
+  animation: glitchAnim 3s infinite;
+}
+
+@keyframes glitchAnim {
+  0%, 90%, 100% {
+    transform: translate(0);
+  }
+  92% {
+    transform: translate(-2px, 1px);
+  }
+  94% {
+    transform: translate(2px, -1px);
+  }
+  96% {
+    transform: translate(-1px, 2px);
+  }
+  98% {
+    transform: translate(1px, -2px);
+  }
+}
+
+/* Pixel Fade In */
+.pixel-fade-in {
+  animation: pixelFadeIn 0.5s steps(4) forwards;
+  opacity: 0;
+}
+
+@keyframes pixelFadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Utilities */
+.text-white { color: var(--color-white); }
+.text-black { color: var(--color-black); }
+.text-neon { color: var(--color-neon-green); }
+.text-cyan { color: var(--color-neon-cyan); }
+.text-yellow { color: var(--color-neon-yellow); }
+
+.bg-black { background: var(--color-black); }
+.bg-white { background: var(--color-white); }
+.bg-neon { background: var(--color-neon-green); }
+.bg-dark-gray { background: var(--color-dark-gray); }
+
+.border-white { border: var(--border-thick); }
+.border-neon { border: var(--border-neon); }
+
+/* Retro HR */
+hr.retro {
+  border: none;
+  height: 2px;
+  background: var(--color-white);
+  box-shadow: var(--shadow-sharp-sm);
+  margin: 2rem 0;
+}
+
+/* Mono Text */
+.mono {
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+}
+
+.arcade-text {
+  font-family: var(--font-arcade);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Selection Color */
+::selection {
+  background: var(--color-neon-green);
+  color: var(--color-black);
+}
+
+::-moz-selection {
+  background: var(--color-neon-green);
+  color: var(--color-black);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-black);
+  border-left: 2px solid var(--color-white);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-white);
+  border: 2px solid var(--color-black);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neon-green);
+}
+
+/* Links */
+a {
+  color: var(--color-neon-green);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-neon-cyan);
+  border-bottom-color: var(--color-neon-cyan);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  color: var(--color-white);
+}
+
+/* Input Styles */
+input, textarea, select {
+  background: var(--color-black);
+  color: var(--color-white);
+  border: var(--border-thin);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+  transition: var(--transition-fast);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-neon-green);
+  box-shadow: 0 0 10px var(--color-neon-green-glow);
+}
+
+/* Loading Animation - Space Invader Style */
+.loading-invader {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background:
+    linear-gradient(var(--color-white) 8px, transparent 8px) 8px 0,
+    linear-gradient(var(--color-white) 8px, transparent 8px) 24px 0,
+    linear-gradient(var(--color-white) 8px, transparent 8px) 0 8px,
+    linear-gradient(var(--color-white) 8px, transparent 8px) 32px 8px;
+  background-size: 8px 8px;
+  background-repeat: no-repeat;
+  animation: invaderMove 1s steps(2) infinite;
+}
+
+@keyframes invaderMove {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}

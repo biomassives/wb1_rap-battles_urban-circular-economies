@@ -1,0 +1,587 @@
+---
+/**
+ * EnhancedBeatmakerControls.astro
+ * Professional Beatmaker Control Panel with Circular Dials
+ *
+ * Features:
+ * - Rotary dials for BPM, Master Volume, Swing
+ * - VU Meters for audio levels
+ * - Enhanced transport controls
+ * - Pattern visualization
+ */
+
+import MusicDial from './MusicDial.astro';
+---
+
+<div class="enhanced-beatmaker-controls">
+
+  <!-- Main Control Panel -->
+  <div class="control-panel-grid">
+
+    <!-- LEFT: Transport Controls -->
+    <div class="transport-section">
+      <div class="transport-title">Transport</div>
+
+      <div class="transport-buttons-enhanced">
+        <button
+          id="seq-play-btn-enhanced"
+          class="transport-btn play-btn"
+          onclick="window.beatMaker?.togglePlayback()"
+          title="Play/Pause (Space)"
+        >
+          <svg class="btn-icon" width="24" height="24" viewBox="0 0 24 24">
+            <path id="play-icon-enhanced" fill="currentColor" d="M8 5v14l11-7z"/>
+          </svg>
+          <span class="btn-label">Play</span>
+        </button>
+
+        <button
+          class="transport-btn stop-btn"
+          onclick="window.beatMaker?.stop()"
+          title="Stop"
+        >
+          <svg class="btn-icon" width="24" height="24" viewBox="0 0 24 24">
+            <rect fill="currentColor" x="6" y="6" width="12" height="12"/>
+          </svg>
+          <span class="btn-label">Stop</span>
+        </button>
+
+        <button
+          class="transport-btn record-btn"
+          onclick="window.beatMaker?.toggleRecord()"
+          title="Record"
+        >
+          <svg class="btn-icon" width="24" height="24" viewBox="0 0 24 24">
+            <circle fill="currentColor" cx="12" cy="12" r="6"/>
+          </svg>
+          <span class="btn-label">Rec</span>
+        </button>
+      </div>
+
+      <!-- Position Display -->
+      <div class="position-display-enhanced">
+        <div class="position-label">Position</div>
+        <div class="position-readout">
+          <span id="current-bar-display">1</span>:<span id="current-beat-display">1</span>:<span id="current-step-display-enhanced">0</span>
+        </div>
+        <div class="position-bar-enhanced">
+          <div class="position-fill" id="seq-position-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: Rotary Dials -->
+    <div class="dials-section">
+      <div class="dials-row">
+        <MusicDial
+          id="tempo"
+          label="Tempo"
+          min={60}
+          max={180}
+          value={120}
+          unit="BPM"
+          color="#00ff88"
+          size={90}
+        />
+
+        <MusicDial
+          id="master-volume"
+          label="Master"
+          min={0}
+          max={100}
+          value={70}
+          unit="%"
+          color="#667eea"
+          size={90}
+        />
+
+        <MusicDial
+          id="swing"
+          label="Swing"
+          min={0}
+          max={100}
+          value={0}
+          unit="%"
+          color="#f093fb"
+          size={90}
+        />
+      </div>
+    </div>
+
+    <!-- RIGHT: VU Meters & Effects -->
+    <div class="meters-section">
+      <div class="vu-meter-container">
+        <div class="vu-label">L</div>
+        <div class="vu-meter">
+          <div class="vu-meter-fill" id="vu-meter-left" style="height: 0%;"></div>
+          <div class="vu-meter-segments">
+            {[...Array(12)].map((_, i) => (
+              <div class="vu-segment" data-segment={i}></div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div class="vu-meter-container">
+        <div class="vu-label">R</div>
+        <div class="vu-meter">
+          <div class="vu-meter-fill" id="vu-meter-right" style="height: 0%;"></div>
+          <div class="vu-meter-segments">
+            {[...Array(12)].map((_, i) => (
+              <div class="vu-segment" data-segment={i}></div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Effects -->
+      <div class="quick-effects">
+        <button class="fx-btn" title="Reverb" data-fx="reverb">
+          <span class="fx-icon">🌊</span>
+        </button>
+        <button class="fx-btn" title="Delay" data-fx="delay">
+          <span class="fx-icon">⏱️</span>
+        </button>
+        <button class="fx-btn" title="Filter" data-fx="filter">
+          <span class="fx-icon">🎛️</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pattern Actions Bar -->
+  <div class="pattern-actions-bar">
+    <div class="pattern-actions-left">
+      <button class="action-btn" onclick="window.beatMaker?.undo()" title="Undo (Ctrl+Z)" id="undo-btn-enhanced" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/>
+        </svg>
+        Undo
+      </button>
+      <button class="action-btn" onclick="window.beatMaker?.redo()" title="Redo (Ctrl+Y)" id="redo-btn-enhanced" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/>
+        </svg>
+        Redo
+      </button>
+    </div>
+
+    <div class="pattern-actions-center">
+      <button class="action-btn primary" onclick="window.beatMaker?.randomizeAll()" title="Randomize Pattern">
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+        </svg>
+        Random
+      </button>
+      <button class="action-btn" onclick="window.beatMaker?.clearPattern()" title="Clear All">
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+        Clear
+      </button>
+    </div>
+
+    <div class="pattern-actions-right">
+      <button class="action-btn" onclick="window.beatMaker?.savePattern()" title="Save Pattern">
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+        </svg>
+        Save
+      </button>
+      <button class="action-btn secondary" onclick="window.beatMaker?.exportBeat()">
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"/>
+        </svg>
+        Export
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .enhanced-beatmaker-controls {
+    background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .control-panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Transport Section */
+  .transport-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .transport-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888;
+    margin-bottom: 0.5rem;
+  }
+
+  .transport-buttons-enhanced {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .transport-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .transport-btn:hover {
+    background: linear-gradient(145deg, #333, #222);
+    border-color: #444;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .transport-btn:active {
+    transform: translateY(0);
+  }
+
+  .transport-btn.play-btn:hover {
+    border-color: #00ff88;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+  }
+
+  .transport-btn.play-btn.playing {
+    background: linear-gradient(145deg, #00ff88, #00dd77);
+    color: #000;
+    border-color: #00ff88;
+  }
+
+  .transport-btn.stop-btn:hover {
+    border-color: #ff4444;
+  }
+
+  .transport-btn.record-btn:hover {
+    border-color: #ff0000;
+  }
+
+  .transport-btn.record-btn.recording {
+    background: #ff0000;
+    animation: record-pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes record-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .btn-icon {
+    flex-shrink: 0;
+  }
+
+  .btn-label {
+    flex: 1;
+  }
+
+  /* Position Display */
+  .position-display-enhanced {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .position-label {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .position-readout {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #00ff88;
+    text-align: center;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  }
+
+  .position-bar-enhanced {
+    height: 8px;
+    background: #1a1a1a;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #333;
+  }
+
+  .position-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    transition: width 0.05s linear;
+  }
+
+  /* Dials Section */
+  .dials-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dials-row {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  /* VU Meters Section */
+  .meters-section {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .vu-meter-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .vu-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #888;
+  }
+
+  .vu-meter {
+    position: relative;
+    width: 24px;
+    height: 200px;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .vu-meter-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(0deg,
+      #00ff00 0%,
+      #88ff00 40%,
+      #ffff00 70%,
+      #ff8800 85%,
+      #ff0000 100%
+    );
+    transition: height 0.05s ease-out;
+  }
+
+  .vu-meter-segments {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .vu-segment {
+    flex: 1;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  /* Quick Effects */
+  .quick-effects {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .fx-btn {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    border: 1px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.25rem;
+  }
+
+  .fx-btn:hover {
+    background: linear-gradient(145deg, #333, #222);
+    border-color: #667eea;
+    transform: scale(1.05);
+  }
+
+  .fx-btn.active {
+    background: linear-gradient(145deg, #667eea, #764ba2);
+    border-color: #667eea;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Pattern Actions Bar */
+  .pattern-actions-bar {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #333;
+  }
+
+  .pattern-actions-left,
+  .pattern-actions-center,
+  .pattern-actions-right {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .pattern-actions-center {
+    justify-content: center;
+  }
+
+  .pattern-actions-right {
+    justify-content: flex-end;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    color: #fff;
+    font-size: 0.813rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .action-btn:hover:not(:disabled) {
+    background: #333;
+    border-color: #444;
+    transform: translateY(-1px);
+  }
+
+  .action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .action-btn.primary {
+    background: linear-gradient(145deg, #667eea, #764ba2);
+    border-color: #667eea;
+  }
+
+  .action-btn.primary:hover {
+    background: linear-gradient(145deg, #7789ff, #8756c3);
+  }
+
+  .action-btn.secondary {
+    background: linear-gradient(145deg, #00ff88, #00dd77);
+    color: #000;
+    border-color: #00ff88;
+  }
+
+  .action-btn.secondary:hover {
+    background: linear-gradient(145deg, #11ff99, #11ee88);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .control-panel-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .dials-row {
+      gap: 1rem;
+    }
+
+    .meters-section {
+      justify-content: center;
+    }
+
+    .pattern-actions-bar {
+      grid-template-columns: 1fr;
+    }
+
+    .pattern-actions-left,
+    .pattern-actions-center,
+    .pattern-actions-right {
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  // VU Meter Animation
+  function animateVUMeters() {
+    const leftMeter = document.getElementById('vu-meter-left');
+    const rightMeter = document.getElementById('vu-meter-right');
+
+    if (!leftMeter || !rightMeter) return;
+
+    // Simulate audio levels (replace with actual audio analysis)
+    function updateMeters() {
+      const leftLevel = Math.random() * 100;
+      const rightLevel = Math.random() * 100;
+
+      leftMeter.style.height = `${leftLevel}%`;
+      rightMeter.style.height = `${rightLevel}%`;
+
+      requestAnimationFrame(updateMeters);
+    }
+
+    // Only animate when playing
+    if (window.beatMaker?.isPlaying) {
+      updateMeters();
+    }
+  }
+
+  // Connect dials to beatmaker
+  document.addEventListener('DOMContentLoaded', () => {
+    const tempoInput = document.querySelector('[data-dial-id="music-dial-tempo"] .dial-input-hidden');
+    const volumeInput = document.querySelector('[data-dial-id="music-dial-master-volume"] .dial-input-hidden');
+    const swingInput = document.querySelector('[data-dial-id="music-dial-swing"] .dial-input-hidden');
+
+    if (tempoInput) {
+      tempoInput.addEventListener('input', (e) => {
+        window.beatMaker?.setTempo(e.target.value);
+      });
+    }
+
+    if (volumeInput) {
+      volumeInput.addEventListener('input', (e) => {
+        window.beatMaker?.setVolume(e.target.value);
+      });
+    }
+
+    if (swingInput) {
+      swingInput.addEventListener('input', (e) => {
+        window.beatMaker?.setSwing(e.target.value);
+      });
+    }
+  });
+</script>

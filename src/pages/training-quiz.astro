@@ -1,0 +1,706 @@
+---
+/**
+ * training-quiz.astro
+ * Worldbridger One Training Quiz
+ *
+ * Features:
+ * - 15 question quiz covering platform features
+ * - 80% passing score requirement
+ * - 15 minute time limit
+ * - Cooldown period between attempts
+ * - Certificate NFT minting for passing
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Training Quiz"
+  description="Test your knowledge of Worldbridger One and earn your certificate NFT"
+  activeSection="learn"
+>
+
+  <div class="quiz-container">
+    <div class="container mx-auto">
+
+      <!-- Quiz Intro Screen -->
+      <div id="quiz-intro" class="quiz-screen active">
+        <div class="quiz-header-card">
+          <div class="quiz-icon">📝</div>
+          <h1 class="quiz-title">Worldbridger One Training Quiz</h1>
+          <p class="quiz-subtitle">
+            Test your knowledge of platform features, battle protocols, music tools,
+            NFT systems, and community guidelines.
+          </p>
+        </div>
+
+        <div class="quiz-info-grid">
+          <div class="info-card">
+            <div class="info-icon">❓</div>
+            <div class="info-content">
+              <h3>15 Questions</h3>
+              <p>Covering 5 categories</p>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">⏱️</div>
+            <div class="info-content">
+              <h3>15 Minutes</h3>
+              <p>Time limit to complete</p>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">🎯</div>
+            <div class="info-content">
+              <h3>80% to Pass</h3>
+              <p>12+ correct answers</p>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">🏆</div>
+            <div class="info-content">
+              <h3>NFT Certificate</h3>
+              <p>Minted on passing</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz-categories">
+          <h3>Quiz Categories</h3>
+          <div class="category-tags">
+            <span class="category-tag">Platform Basics (20%)</span>
+            <span class="category-tag">Rap Battles (27%)</span>
+            <span class="category-tag">Music Studio (20%)</span>
+            <span class="category-tag">NFT & Cards (20%)</span>
+            <span class="category-tag">Community (13%)</span>
+          </div>
+        </div>
+
+        <div class="quiz-requirements">
+          <h3>⚠️ Requirements</h3>
+          <ul>
+            <li>Max 3 attempts per day</li>
+            <li>4 hour cooldown between attempts</li>
+            <li>Must connect wallet to receive certificate</li>
+            <li>All 15 questions must be answered</li>
+          </ul>
+        </div>
+
+        <div class="quiz-actions">
+          <button id="start-quiz-btn" class="btn-primary btn-large">
+            Start Quiz
+          </button>
+          <a href="/" class="btn-secondary">Back to Home</a>
+        </div>
+
+        <!-- Attempt Status -->
+        <div id="attempt-status" class="attempt-status" style="display: none;">
+          <div class="status-message"></div>
+        </div>
+      </div>
+
+      <!-- Quiz Questions Screen -->
+      <div id="quiz-questions" class="quiz-screen">
+
+        <!-- Progress Bar -->
+        <div class="quiz-progress">
+          <div class="progress-info">
+            <span class="question-counter">Question <span id="current-question">1</span> of <span id="total-questions">15</span></span>
+            <span class="time-remaining">Time: <span id="timer">15:00</span></span>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card">
+          <div class="question-category-badge" id="question-category">
+            Loading...
+          </div>
+
+          <h2 class="question-text" id="question-text">
+            Loading question...
+          </h2>
+
+          <div class="answer-choices" id="answer-choices">
+            <!-- Answer choices will be populated by JavaScript -->
+          </div>
+
+          <div class="question-navigation">
+            <button id="prev-btn" class="btn-secondary" disabled>
+              ← Previous
+            </button>
+            <button id="next-btn" class="btn-primary">
+              Next →
+            </button>
+          </div>
+
+          <!-- Question Footer -->
+          <div class="question-footer">
+            <div class="difficulty-indicator">
+              <span class="difficulty-label">Difficulty:</span>
+              <span id="question-difficulty" class="difficulty-badge">Medium</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quiz Results Screen -->
+      <div id="quiz-results" class="quiz-screen">
+
+        <div class="results-card">
+
+          <!-- Pass/Fail Icon -->
+          <div id="results-icon" class="results-icon">
+            ✅
+          </div>
+
+          <!-- Results Header -->
+          <h2 id="results-title" class="results-title">
+            Congratulations!
+          </h2>
+          <p id="results-message" class="results-message">
+            You passed the Worldbridger One Training Quiz!
+          </p>
+
+          <!-- Score Display -->
+          <div class="score-display">
+            <div class="score-circle">
+              <div class="score-value" id="final-score">0%</div>
+              <div class="score-label">Final Score</div>
+            </div>
+            <div class="score-details">
+              <div class="score-stat">
+                <span class="stat-label">Correct Answers:</span>
+                <span class="stat-value" id="correct-count">0</span>
+              </div>
+              <div class="score-stat">
+                <span class="stat-label">Total Questions:</span>
+                <span class="stat-value">15</span>
+              </div>
+              <div class="score-stat">
+                <span class="stat-label">Time Taken:</span>
+                <span class="stat-value" id="time-taken">0:00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Breakdown -->
+          <div class="category-breakdown">
+            <h3>Performance by Category</h3>
+            <div id="category-scores" class="category-scores">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Certificate Section (if passed) -->
+          <div id="certificate-section" class="certificate-section" style="display: none;">
+            <div class="certificate-preview">
+              <div class="certificate-icon">🎓</div>
+              <h3>Claim Your Certificate NFT</h3>
+              <p>You've earned a Worldbridger One training certificate!</p>
+
+              <div class="certificate-type-badge" id="certificate-type">
+                Standard Certificate
+              </div>
+
+              <button id="mint-certificate-btn" class="btn-primary btn-large">
+                Mint Certificate NFT
+              </button>
+
+              <div id="minting-status" class="minting-status" style="display: none;">
+                <div class="status-spinner"></div>
+                <p>Minting your certificate to Solana testnet...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Retry Section (if failed) -->
+          <div id="retry-section" class="retry-section" style="display: none;">
+            <h3>Keep Learning!</h3>
+            <p>Review the areas where you need improvement and try again.</p>
+
+            <div class="retry-info">
+              <p>
+                <strong>Attempts remaining today:</strong>
+                <span id="attempts-remaining">2</span> of 3
+              </p>
+              <p id="cooldown-message" style="display: none;">
+                <strong>Next attempt available in:</strong>
+                <span id="cooldown-timer">3:45:12</span>
+              </p>
+            </div>
+
+            <button id="retake-quiz-btn" class="btn-primary">
+              Try Again
+            </button>
+          </div>
+
+          <!-- Actions -->
+          <div class="results-actions">
+            <a href="/profile" class="btn-secondary">View Profile</a>
+            <a href="/" class="btn-secondary">Back to Home</a>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</BaseLayout>
+
+<!-- Quiz Manager Script -->
+<script src="/scripts/training-quiz-manager.js"></script>
+
+<script>
+  // Initialize quiz when page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.TrainingQuizManager) {
+      window.quizManager = new TrainingQuizManager();
+      window.quizManager.init();
+    }
+  });
+</script>
+
+<style>
+  .quiz-container {
+    padding: 3rem 0;
+    min-height: 80vh;
+  }
+
+  .quiz-screen {
+    display: none;
+  }
+
+  .quiz-screen.active {
+    display: block;
+  }
+
+  /* Quiz Intro */
+  .quiz-header-card {
+    text-align: center;
+    background: white;
+    border-radius: 1.5rem;
+    padding: 3rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .quiz-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .quiz-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .quiz-subtitle {
+    font-size: 1.125rem;
+    color: var(--color-gray-600);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .quiz-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--color-gray-100);
+    transition: all 0.3s ease;
+  }
+
+  .info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+  }
+
+  .info-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .info-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--color-gray-900);
+  }
+
+  .info-content p {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+  }
+
+  .quiz-categories,
+  .quiz-requirements {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .quiz-categories h3,
+  .quiz-requirements h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .category-tag {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    color: var(--color-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+  }
+
+  .quiz-requirements ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .quiz-requirements li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-gray-100);
+    color: var(--color-gray-700);
+  }
+
+  .quiz-requirements li:last-child {
+    border-bottom: none;
+  }
+
+  .quiz-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .btn-large {
+    padding: 1rem 3rem;
+    font-size: 1.125rem;
+  }
+
+  /* Quiz Questions */
+  .quiz-progress {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: var(--color-gray-700);
+  }
+
+  .time-remaining {
+    color: var(--color-primary);
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: var(--color-gray-200);
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 1rem;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .question-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 3rem 2rem;
+    box-shadow: var(--shadow-lg);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .question-category-badge {
+    display: inline-block;
+    background: var(--color-primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .question-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    color: var(--color-gray-900);
+    line-height: 1.5;
+  }
+
+  .answer-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .answer-choice {
+    background: var(--color-gray-50);
+    border: 2px solid var(--color-gray-200);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .answer-choice:hover {
+    background: rgba(102, 126, 234, 0.05);
+    border-color: var(--color-primary);
+  }
+
+  .answer-choice.selected {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: var(--color-primary);
+    border-width: 3px;
+  }
+
+  .choice-letter {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--color-gray-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--color-gray-700);
+    flex-shrink: 0;
+  }
+
+  .answer-choice.selected .choice-letter {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+  }
+
+  .choice-text {
+    flex: 1;
+    font-size: 1rem;
+    color: var(--color-gray-800);
+  }
+
+  .question-navigation {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+
+  .question-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-gray-200);
+  }
+
+  .difficulty-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .difficulty-badge.easy {
+    background: #d1fae5;
+    color: #047857;
+  }
+
+  .difficulty-badge.medium {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  .difficulty-badge.hard {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  /* Quiz Results */
+  .results-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 3rem 2rem;
+    box-shadow: var(--shadow-lg);
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .results-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+  }
+
+  .results-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .results-message {
+    font-size: 1.25rem;
+    color: var(--color-gray-600);
+    margin-bottom: 2rem;
+  }
+
+  .score-display {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--color-gray-50);
+    border-radius: 1rem;
+  }
+
+  .score-circle {
+    text-align: center;
+  }
+
+  .score-value {
+    font-size: 4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .score-label {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    margin-top: 0.5rem;
+  }
+
+  .score-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: left;
+  }
+
+  .score-stat {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .stat-label {
+    color: var(--color-gray-600);
+  }
+
+  .stat-value {
+    font-weight: 700;
+    color: var(--color-gray-900);
+  }
+
+  .certificate-section,
+  .retry-section {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    border-radius: 1rem;
+  }
+
+  .certificate-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .certificate-type-badge {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 2rem;
+    font-weight: 700;
+    margin: 1.5rem 0;
+  }
+
+  .results-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .quiz-title {
+      font-size: 2rem;
+    }
+
+    .quiz-info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .score-display {
+      flex-direction: column;
+    }
+
+    .question-card {
+      padding: 2rem 1.5rem;
+    }
+
+    .quiz-actions,
+    .results-actions {
+      flex-direction: column;
+    }
+  }
+</style>

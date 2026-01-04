@@ -1,287 +1,449 @@
-# 🌾 Hobby Farm NFT Collection
+# Purple Point - Rap Battle NFT Platform
 
-This is a project dedicated to increasing appreciation of the amazing art forms of freestyle rhyme and rap battles, beat production, fan art, and urban youth culture as these art forms intersect with the critical plannning and maintenance needs our modern cities present environmental engineers with as they work to safeguard water supplies, reduce/eliminate cross connections and contamination dangers among other critical work provided by environmental engineers and citizen scientists that support them.
+**WorldBridger One Ecosystem**
+A retro-arcade themed rap battle platform where artists create beats, battle with rhymes, earn NFTs, and support communities like Kakuma refugee camp.
 
-A sustainable hobby farm NFT collection on Solana with automatic theme cycling, user profiles, and Postgres storage.
+## Vision
 
-## 🎨 Amazing Features
+Purple Point combines hip-hop culture, Web3 technology, and environmental engineering awareness to create an engaging platform where freestyle rap battles intersect with critical urban infrastructure education. Battle, create, learn—and support refugee communities through music.
 
-### NFT Collection
-- **55 Total NFTs**: 40 Chickens, 5 Cats, 4 Goats, 4 Pigeons, 1 Dog, 1 Rabbit
-- **Rarity Tiers**: Common, Uncommon, Rare, Legendary
-- **Unique Traits**: Each animal has breed, color, personality, and special attributes
+---
 
-### Always Beautiful Dynamic Theming
-- **6 Farm Themes**: Auto-cycle through themes every 4 hours
-  - 🌱 Green Meadow (00:00-03:59)
-  - 🌅 Sunset Farm (04:00-07:59)
-  - 🍂 Autumn Harvest (08:00-11:59)
-  - 🌸 Spring Bloom (12:00-15:59)
-  - 🌙 Night Pasture (16:00-19:59)
-  - ❄️ Winter Frost (20:00-23:59)
-- **Hourly Featured Animals**: Different animals featured each hour
-- **Manual Override**: Users can select any theme
+## Role-Based Workflows
 
-### Solana Integration
-- **Wallet Connection**: Phantom wallet or auto-generated testnet wallet
-- **Testnet Support**: Includes automatic SOL airdrop for testing
-- **Transaction Ready**: Built for NFT minting and transfers
+### 🎤 **New User Journey**
+**Goal:** Onboard quickly and understand what Purple Point offers
 
-### User Profiles
-- **Postgres Storage**: User data stored in Vercel Postgres
-- **Profile Management**: Username, email, bio, avatar
-- **NFT Tracking**: Owned NFTs linked to wallet address
-- **Theme Preferences**: Save favorite theme settings
+1. **Land on Homepage** → [View Homepage](/)
+   - See hero section: "SHOW SKILLS. WIN BATTLES. EARN NFTS."
+   - Understand 3-step flow: Create Beats → Battle → Earn NFTs
+   - Browse NFT card showcase (Legendary & Common rapper cards)
 
-### Tech Stack
-- **Frontend**: Vanilla JavaScript with class structure
-- **Blockchain**: Solana Web3.js
-- **Backend**: Vercel Serverless Functions
-- **Database**: Vercel Postgres (PostgreSQL)
-- **Styling**: Custom CSS with CSS variables for theming
+2. **Explore Music Tools** → [Visit Music Studio](/music)
+   - Try the Moog Synth for analog sound creation
+   - Test the Sampler for beat making
+   - Experiment with the Looper for layered compositions
 
-## 📁 Project Structure
+3. **Learn the Basics** → [Take Training Quiz](/training-quiz)
+   - Answer questions about hip-hop, sustainability, and culture
+   - Earn XP for correct answers
+   - Track progress toward certificate NFTs
 
-```
-hobby-farm-nft-collection/
-├── hobby-farm-nft.html          # Main application
-├── api/
-│   └── profile/
-│       ├── get.js               # GET user profile
-│       ├── upsert.js            # POST create/update profile
-│       └── update-nfts.js       # POST update NFT collection
-├── database-schema.sql          # Database schema
-├── package.json                 # Dependencies
-├── vercel.json                  # Deployment config
-├── DEPLOYMENT_GUIDE.md          # Deployment instructions
-├── theme-schedule-reference.md  # Theme cycling details
-└── README.md                    # This file
-```
+4. **Create Profile** → [Set Up Profile](/profile)
+   - Connect wallet or use testnet wallet
+   - Customize username, bio, avatar
+   - View stats dashboard with XP, level, badges
 
-## 🚀 Quick Start
+**Status:** ✅ Working
+
+---
+
+### 🎵 **Music Creator / Rapper Workflow**
+**Goal:** Create beats and rap performances for battles
+
+#### Phase 1: Beat Creation
+
+1. **Choose Your Instrument** → [Music Studio](/music)
+   - **Moog Synthesizer** → [#moog](/music#moog)
+     - Analog-style oscillators with frequency control
+     - Adjustable filter, attack, decay, sustain, release
+     - Real-time waveform visualization
+   - **Enhanced Sampler** → [Sampler Page](/sampler)
+     - 16-pad drum machine with sound library
+     - Volume, pitch, and effect adjustments
+     - Save/load patterns
+   - **Moog Looper** → [#looper](/music#looper)
+     - Layer multiple loops
+     - Record, overdub, playback controls
+
+2. **Create & Save Beat**
+   - Record/layer sounds to build your track
+   - Export audio file or save to library
+   - ⚠️ Status: Save/Export feature **Planned**
+
+3. **Optional: Use Beatmaker** → [Beatmaker Demo](/music#beatmaker)
+   - Quick beat generation with presets
+   - Visual beat timeline
+   - Status: ⚠️ **Testing**
+
+#### Phase 2: Battle Recording
+
+4. **Record Your Rap** → [Battle Recorder Demo](/battle-recorder-demo)
+   - **Mode 1: Record Live**
+     - Browser-based audio recording (Web Audio API)
+     - Real-time waveform visualization
+     - Level meter with color-coded feedback (green = optimal)
+     - Max duration: 2 minutes
+   - **Mode 2: Upload File**
+     - Drag-and-drop or file browser
+     - Supported formats: MP3, WAV, M4A, OGG
+     - Max file size: 10MB
+   - **Mode 3: Use Sampler**
+     - Create backing beats with sampler integration
+     - Record vocals over sampler output
+
+5. **Submit to Battle** → [Battle Page](/battle)
+   - Review your recording with playback preview
+   - Add metadata (battle ID, rapper name)
+   - Submit entry to active battle
+   - Status: ⚠️ **Testing**
+
+**Status:** ✅ Recording Tools Working | ⚠️ Battle Submission Testing
+
+---
+
+### 🏆 **Judge / Voter Workflow**
+**Goal:** Vote on rap battles and influence results
+
+1. **Browse Active Battles** → [Battle List](/battle)
+   - View list of ongoing battles
+   - See participant count and deadline
+
+2. **Listen to Performances**
+   - Play each rapper's submission
+   - Compare lyrics, flow, beat choice
+
+3. **Cast Your Vote**
+   - Vote for your favorite performance
+   - Earn voting badges/XP
+
+4. **View Results**
+   - See final rankings after voting closes
+   - Track popular battles and trending rappers
+
+**Status:** 🔜 **Planned**
+
+---
+
+### 🎨 **NFT Collector Workflow**
+**Goal:** Earn and collect rapper persona NFT cards
+
+1. **View NFT Collection** → [Homepage Collection](/##collection)
+   - Browse 55 unique animal NFTs:
+     - 40 Chickens, 5 Cats, 4 Goats, 4 Pigeons, 1 Dog, 1 Rabbit
+   - See rarity tiers: Common, Uncommon, Rare, Legendary
+
+2. **Earn Battle Cards** → [Battle Cards Showcase](/#battle-cards)
+   - Participate in rap battles to earn commemorative PFP cards
+   - Each card shows:
+     - Rapper persona with animal spirit (10 types available)
+     - Geodesic face styling (angular, male/female variations)
+     - Bling badges showing achievements (MIC, BEAT, VOTE, etc.)
+     - Battle stats and performance metrics
+   - View card examples:
+     - [Legendary Card](/images/nft/rapper-card-legendary.svg)
+     - [Common Card](/images/nft/rapper-card-common.svg)
+
+3. **Customize Rapper Persona** → [Rapper Template Builder](/rapper-template-builder)
+   - Choose gender (Male/Female)
+   - Select animal spirit:
+     - **Farm:** Chicken, Cat, Goat, Dog, Bunny
+     - **Sky:** Pigeon, Cooper's Hawk, Eagle
+     - **Wild:** Lion, Coywolf
+   - Pick skin tone (6 options)
+   - Select hairstyle: Dreads, Fade, Afro, Braids, Bun, Waves
+   - Add accessories: Sunglasses, Chain, Earrings, Hat
+   - Preview live SVG rendering
+
+4. **Mint Your Card** (After Battle Win)
+   - Generate unique rapper card with stats
+   - Mint to Solana blockchain via Metaplex
+   - Stored on Arweave for permanence
+
+**Status:** ✅ Template Builder Working | 🔜 Minting System Planned
+
+---
+
+### 🏕️ **Impact Supporter Workflow**
+**Goal:** Learn about and support Kakuma refugee camp
+
+1. **Visit Kakuma Page** → [Kakuma Impact](/kakuma)
+   - Read stories from the camp
+   - Understand how platform supports community
+
+2. **Battle for a Cause**
+   - Participate in special "Impact Battles"
+   - Portion of NFT sales goes to Kakuma support
+
+3. **Track Contributions**
+   - View total funds raised
+   - See impact metrics and stories
+
+**Status:** ✅ Kakuma Page Working | 🔜 Impact Battles Planned
+
+---
+
+### ⚙️ **Developer / Admin Workflow**
+**Goal:** Monitor system, review code, test features
+
+1. **Check System Status** → [Workflows Dashboard](/workflows)
+   - Visual map of all user journeys
+   - Color-coded status indicators:
+     - 🟢 Working | 🟡 Testing | ⚪ Planned
+   - Interactive checklist for testing pages
+   - Accordion sections for detailed battle phases
+
+2. **Review Technical Docs**
+   - [API Reference](/API_Reference.md) - Endpoint documentation
+   - [Astro Files README](/Astro_Files_README.md) - File structure
+   - [Forms Reference](/Forms_Reference.md) - Form components
+   - [Deployment Guide](/DEPLOYMENT.md) - Production deployment
+
+3. **Check Feature Plans**
+   - [Battle PFP System Plan](BATTLE_PFP_SYSTEM_PLAN.md)
+   - [Training Quiz System](TRAINING_QUIZ_SYSTEM_PLAN.md)
+   - [Sampler Integration](SAMPLER_INTEGRATION_GUIDE.md)
+   - [Music Page Fixes](MUSIC_PAGE_FIXES.md)
+   - [Profile Stats Enhancement](PROFILE_STATS_ENHANCEMENT_PLAN.md)
+
+4. **Test Pages**
+   - Run through quick test checklist
+   - Verify no console errors
+   - Check mobile responsiveness
+
+**Status:** ✅ Working
+
+---
+
+## Tech Stack
+
+### Frontend
+- **Framework:** Astro v5+ (Static Site Generation)
+- **Styling:** Custom CSS with CSS variables
+- **Theme:** Dark retro arcade (Space Invaders × Ska two-tone)
+  - Black & white base with neon green accents
+  - Scanline effects, pixel borders, glitch animations
+  - Sharp shadows, geometric shapes
+
+### Audio/Music
+- **Web Audio API:** Real-time audio recording and playback
+- **MediaRecorder:** Browser-based vocal recording
+- **AnalyserNode:** Waveform visualization
+- **Tone.js:** Moog synthesizer implementation (planned)
+
+### Web3/Blockchain
+- **Solana Web3.js:** Wallet connection and transactions
+- **Phantom Wallet:** Primary wallet integration
+- **Metaplex:** NFT minting (planned)
+- **Arweave:** Permanent storage (planned)
+- **Polkadot:** Cross-chain support (planned)
+
+### Backend/Database
+- **Vercel Serverless Functions:** API endpoints
+- **Vercel Postgres:** User profiles, progress, stats
+- **Astro API Routes:** XP system, battle management
+
+### File Storage (Planned)
+- **IPFS/Arweave:** Audio files, images, metadata
+
+---
+
+## Page Directory
+
+### Core Pages
+- `/` - Homepage (battle funnel hero, NFT showcase)
+- `/music` - Music Studio (Moog, Sampler, Looper)
+- `/battle` - Battle List (browse/create battles)
+- `/battle/[id]` - Individual Battle Page
+- `/profile` - User Profile (stats, NFTs, settings)
+- `/kakuma` - Kakuma Impact Page
+
+### Tools & Features
+- `/sampler` - Enhanced Sampler Interface
+- `/battle-recorder-demo` - Audio Recording Demo
+- `/rapper-template-builder` - NFT Card Generator
+- `/training-quiz` - Educational Quiz System
+
+### Documentation & Admin
+- `/workflows` - User Workflows Dashboard (this doc as interactive page)
+- `/email-template` - Email templates
+
+---
+
+## API Endpoints
+
+### Gamification
+- `POST /api/gamification/award-xp` - Award XP to user
+  ```json
+  {
+    "userId": "wallet_address",
+    "xp": 50,
+    "reason": "Completed quiz"
+  }
+  ```
+
+### User Profile
+- `GET /api/profile/get?walletAddress=...` - Fetch user profile
+- `POST /api/profile/upsert` - Create/update profile
+  ```json
+  {
+    "walletAddress": "...",
+    "username": "...",
+    "email": "...",
+    "bio": "..."
+  }
+  ```
+
+### Stats (Planned)
+- `GET /api/stats/user?walletAddress=...` - User statistics
+- `GET /api/stats/battle?battleId=...` - Battle statistics
+
+### Quiz (Working)
+- `GET /api/quiz/questions` - Fetch quiz questions
+- `POST /api/quiz/submit` - Submit quiz answers
+
+---
+
+## Feature Status Matrix
+
+### ✅ Fully Working
+- [x] Homepage with rap battle funnel
+- [x] Dark retro theme (arcade aesthetic)
+- [x] Moog Synthesizer interface
+- [x] Basic Sampler (16 pads)
+- [x] Audio recorder (3 modes: record, upload, sampler)
+- [x] Rapper template builder (geodesic faces, animal spirits)
+- [x] Profile page with stats
+- [x] Training quiz system
+- [x] XP award system
+- [x] Kakuma impact page
+- [x] NFT collection display (55 animals)
+- [x] Workflows dashboard
+
+### ⚠️ Testing/In Progress
+- [ ] Battle audio submission
+- [ ] Moog Looper functionality
+- [ ] Enhanced sampler (save/load patterns)
+- [ ] Web3 wallet integration (Phantom)
+- [ ] Database operations (user profiles)
+- [ ] Battle list browsing
+
+### 🔜 Planned
+- [ ] Community voting on battles
+- [ ] Battle results & rankings
+- [ ] NFT card minting (Metaplex)
+- [ ] POAP certificate NFTs
+- [ ] File storage (IPFS/Arweave)
+- [ ] Impact battles for Kakuma
+- [ ] Animal mentor progression system
+- [ ] Analytics & tracking
+- [ ] Marketplace for NFT trading
+
+---
+
+## Quick Start
 
 ### Prerequisites
-- Node.js 18+ (for local development)
-- Vercel account
-- GitHub/GitLab account (recommended)
+- Node.js 18+
+- npm or pnpm
+- Vercel account (for deployment)
 
 ### Local Development
 
-1. **Clone Repository**
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/hobby-farm-nft.git
-   cd hobby-farm-nft
-   ```
+```bash
+# Clone repository
+git clone https://github.com/YOUR_USERNAME/purple-point.git
+cd purple-point/pp
 
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+# Install dependencies
+npm install
 
-3. **Set Environment Variables**
-   Create `.env` file with Postgres connection:
-   ```env
-   POSTGRES_URL="your_postgres_connection_string"
-   ```
+# Set environment variables
+# Create .env file with:
+# POSTGRES_URL="your_postgres_connection_string"
 
-4. **Run Development Server**
-   ```bash
-   vercel dev
-   ```
+# Run dev server
+npm run dev
 
-5. **Open Browser**
-   ```
-   http://localhost:3000
-   ```
+# Open browser
+# http://localhost:4321
+```
+
+### Build for Production
+
+```bash
+npm run build
+```
 
 ### Deploy to Vercel
 
-See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed instructions.
-
-**Quick Deploy:**
 ```bash
 vercel --prod
 ```
 
-## 🎮 Usage
+See [DEPLOYMENT.md](/DEPLOYMENT.md) for detailed deployment instructions.
 
-### Connect Wallet
+---
 
-1. Click "Connect Wallet" button
-2. **With Phantom**: Approve connection in Phantom wallet
-3. **Without Phantom**: Application generates testnet wallet and airdrops 2 SOL
+## Database Schema
 
-### View Profile
+### user_profiles
+- `wallet_address` (PRIMARY KEY)
+- `username`
+- `email`
+- `bio`
+- `avatar_url`
+- `level` (from XP)
+- `total_xp`
+- `owned_nfts` (JSON array)
+- `badges` (JSON array)
+- `created_at`
+- `updated_at`
 
-1. After connecting, click "Profile" button
-2. View your NFT collection stats
-3. Edit profile information
-4. Save changes to Postgres database
+### battles (Planned)
+- `battle_id` (PRIMARY KEY)
+- `creator_wallet`
+- `beat_url`
+- `status` (open/voting/closed)
+- `deadline`
+- `participants` (JSON array)
+- `votes` (JSON array)
+- `winner_wallet`
 
-### Browse Collection
+### quiz_progress
+- `wallet_address`
+- `category`
+- `score`
+- `completed_questions` (JSON array)
+- `certificates_earned` (JSON array)
 
-1. Use filters to view specific animal types
-2. View featured animals that rotate hourly
-3. See rarity tiers and trait details
+See database schema files for full structure.
 
-### Change Theme
+---
 
-1. Use dropdown in top-right to manually select theme
-2. Or let it auto-cycle through themes every 4 hours
-3. Featured animals update every hour
+## Design System
 
-## 🗄️ Database Schema
-
-### Tables
-
-#### user_profiles
-- Wallet address (primary key)
-- Username, email, bio, avatar
-- Favorite animals (JSON array)
-- Owned NFTs (JSON array)
-- Theme preference
-- Timestamps
-
-#### nft_transactions (optional)
-- Transaction signatures
-- From/to wallets
-- NFT details
-- Price in SOL
-- Block/slot numbers
-
-#### activity_log (optional)
-- User activity tracking
-- Activity types and data
-- IP and user agent
-
-#### collection_stats (optional)
-- Total minted/holders
-- Floor price
-- Volume tracking
-
-See `database-schema.sql` for complete schema.
-
-## 🔌 API Endpoints
-
-### GET `/api/profile/get`
-Get user profile by wallet address
-
-**Query Parameters:**
-- `walletAddress`: Solana wallet public key
-
-**Response:**
-```json
-{
-  "success": true,
-  "profile": {
-    "wallet_address": "...",
-    "username": "...",
-    "owned_nfts": [],
-    ...
-  }
-}
+### Colors
+```css
+--color-black: #000000
+--color-white: #ffffff
+--color-neon-green: #00ff00
+--color-neon-cyan: #00ffff
+--color-neon-yellow: #ffff00
+--color-neon-pink: #ff00ff
 ```
 
-### POST `/api/profile/upsert`
-Create or update user profile
-
-**Body:**
-```json
-{
-  "walletAddress": "...",
-  "username": "...",
-  "email": "...",
-  "bio": "...",
-  "avatarUrl": "..."
-}
+### Typography
+```css
+--font-mono: 'Courier New', Courier, monospace
+--font-arcade: 'Press Start 2P', monospace
+--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI'
 ```
 
-### POST `/api/profile/update-nfts`
-Update user's owned NFTs
+### Components
+- `.btn-retro` - White button with sharp shadow
+- `.btn-retro-neon` - Neon green glowing button
+- `.card-retro` - White border card with sharp shadow
+- `.neon-text` - Green glowing text with pulse animation
+- `.scanlines` - CRT scanline overlay effect
+- `.ska-pattern` - Checkerboard background
+- `.arcade-screen` - Retro screen bezel effect
 
-**Body:**
-```json
-{
-  "walletAddress": "...",
-  "nftTokens": [...]
-}
-```
+See [/src/styles/dark-theme.css](/src/styles/dark-theme.css) for full design system.
 
-## 🎨 Theme System
+---
 
-### Automatic Cycling
-- Changes every 4 hours
-- 6 themes cover 24 hours
-- Featured animals rotate hourly within each theme
-
-### Theme Configuration
-Located in `THEME_SCHEDULE` constant:
-```javascript
-{
-  name: 'meadow',
-  hours: [0, 1, 2, 3],
-  emoji: '🌱',
-  label: 'Green Meadow',
-  animalTypes: ['goat', 'chicken', 'cat', 'rabbit']
-}
-```
-
-See `theme-schedule-reference.md` for complete schedule.
-
-## 🔐 Security
-
-- Environment variables for sensitive data
-- Parameterized SQL queries prevent injection
-- No private keys stored in database
-- Testnet only (for now)
-- CORS configured for Vercel domains
-
-## 🛠️ Development
-
-### Class Structure
-
-- **WalletManager**: Handles Solana wallet operations
-- **ProfileManager**: Manages user profile CRUD
-- **ThemeManager**: Controls theme cycling and featured animals
-- **CollectionManager**: Manages NFT gallery and filters
-- **NFTCard**: Individual NFT card component
-
-### Adding New Features
-
-1. Create new class or extend existing
-2. Add API endpoint in `/api` folder
-3. Update database schema if needed
-4. Test locally with `vercel dev`
-5. Deploy to production
-
-## 📊 Analytics (Future)
-
-Plan to add:
-- View tracking per NFT
-- Popular animals metrics
-- Theme preference analytics
-- User engagement stats
-
-## 🐛 Troubleshooting
-
-### Wallet Issues
-- Ensure Phantom is unlocked
-- Try clearing browser cache
-- Check testnet selection in wallet
-
-### Database Issues
-- Verify environment variables
-- Check Vercel storage connection
-- Review function logs
-
-### API Issues
-- Check Network tab in DevTools
-- Verify endpoint URLs
-- Review serverless function logs
-
-See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md#troubleshooting) for detailed troubleshooting.
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create feature branch (`git checkout -b feature/amazing-feature`)
@@ -289,22 +451,72 @@ See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md#troubleshooting) for detailed trou
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open Pull Request
 
-## 📄 License
-
-GPL-3.0 License - see LICENSE file
-
-## 🌟 Acknowledgments
-
-- Built for WorldBridger One ecosystem
-- Inspired by sustainable farming practices
-- Part of SparkHope.space mycological innovation platform
-
-## 📞 Support
-
-- Create issue on GitHub
-- Check [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
-- Review [theme-schedule-reference.md](theme-schedule-reference.md)
+### Commit Message Style
+Follow repository convention:
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation update
+- `style:` Code style changes
+- `refactor:` Code refactoring
+- `test:` Add/update tests
 
 ---
 
-Made with 🌾 by [Mupy](https://hub.approvideo.org) | Powered by Solana & Vercel
+## Security
+
+- Environment variables for sensitive data
+- Parameterized SQL queries (prevent injection)
+- No private keys stored in database
+- Testnet only (Solana devnet for now)
+- CORS configured for Vercel domains
+- Content Security Policy headers
+
+---
+
+## Support & Resources
+
+### Documentation
+- [API Reference](API_REFERENCE.md)
+- [Astro Files Guide](Astro_Files_README.md)
+- [Forms Reference](Forms_Reference.md)
+- [Deployment Guide](DEPLOYMENT.md)
+
+### Interactive Tools
+- [Workflows Dashboard](/workflows) - Visual user journeys
+- [Rapper Template Builder](/rapper-template-builder) - NFT card preview
+- [Training Quiz](/training-quiz) - Learn and earn XP
+
+### External Links
+- [Astro Documentation](https://docs.astro.build)
+- [Solana Web3.js](https://solana-labs.github.io/solana-web3.js/)
+- [Metaplex Docs](https://docs.metaplex.com/)
+- [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+
+### Issues & Feedback
+- Create issue on GitHub
+- Check `/workflows` page for system status
+- Review plan documents for roadmap
+
+---
+
+## License
+
+GPL-3.0 License - see LICENSE file
+
+---
+
+## Acknowledgments
+
+- Built for **WorldBridger One** ecosystem
+- Supporting **Kakuma refugee camp** through music
+- Part of **SparkHope.space** mycological innovation platform
+- Inspired by classic arcade games (Space Invaders, Pac-Man)
+- Honoring hip-hop culture and freestyle rap battles
+- Raising awareness for environmental engineering and water safety
+
+---
+
+**Made with ⚡ by [Mupy](https://hub.approvideo.org)**
+**Powered by Solana, Astro, Vercel & Web Audio API**
+
+🎤 Battle • 🎵 Create • 🏆 Earn • 🌍 Impact

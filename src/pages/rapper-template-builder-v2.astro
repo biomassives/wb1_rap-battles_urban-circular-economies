@@ -1,0 +1,958 @@
+---
+/**
+ * rapper-template-builder-v2.astro
+ * IMPROVED: SVG Template Builder for Rapper PFP Cards
+ *
+ * Enhancements:
+ * - Dark retro arcade theme
+ * - Real-time reactive updates
+ * - Refined geodesic character design
+ * - Better organized controls
+ * - Visual feedback for all interactions
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Rapper Card Builder"
+  description="Create custom geodesic rapper PFP cards with animal spirits"
+  activeSection="gallery"
+>
+
+<div class="builder-page scanlines">
+  <div class="container mx-auto">
+
+    <!-- Header -->
+    <header class="builder-header pixel-border arcade-screen">
+      <div class="header-badge">
+        <span class="neon-text blink">🎨 CHARACTER FORGE 🎨</span>
+      </div>
+      <h1 class="builder-title glitch">
+        <span class="block">RAPPER CARD</span>
+        <span class="block neon-text">BUILDER</span>
+      </h1>
+      <p class="builder-subtitle mono">
+        > CUSTOMIZE_CHARACTER()<br/>
+        > GENERATE_CARD()<br/>
+        > EXPORT_SVG()<br/>
+        <span class="text-cyan blink">█</span>
+      </p>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+
+      <!-- Left: Controls -->
+      <aside class="controls-panel card-retro">
+        <h2 class="panel-title mono neon-text">[ CONTROLS ]</h2>
+
+        <!-- Gender -->
+        <div class="control-section">
+          <h3 class="section-label mono">GENDER:</h3>
+          <div class="button-group">
+            <button class="toggle-btn active" data-gender="male" onclick="setGender('male')">
+              <span class="btn-icon">👨</span>
+              <span class="btn-label">MALE</span>
+            </button>
+            <button class="toggle-btn" data-gender="female" onclick="setGender('female')">
+              <span class="btn-icon">👩</span>
+              <span class="btn-label">FEMALE</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Animal Spirit -->
+        <div class="control-section">
+          <h3 class="section-label mono">ANIMAL SPIRIT:</h3>
+
+          <details class="spirit-category" open>
+            <summary class="category-header mono">🐓 FARM (5)</summary>
+            <div class="spirit-grid">
+              <button class="spirit-btn active" data-animal="chicken" onclick="setAnimal('chicken')">
+                🐓<span>Chicken</span>
+              </button>
+              <button class="spirit-btn" data-animal="cat" onclick="setAnimal('cat')">
+                🐱<span>Cat</span>
+              </button>
+              <button class="spirit-btn" data-animal="goat" onclick="setAnimal('goat')">
+                🐐<span>Goat</span>
+              </button>
+              <button class="spirit-btn" data-animal="dog" onclick="setAnimal('dog')">
+                🐕<span>Dog</span>
+              </button>
+              <button class="spirit-btn" data-animal="bunny" onclick="setAnimal('bunny')">
+                🐰<span>Bunny</span>
+              </button>
+            </div>
+          </details>
+
+          <details class="spirit-category">
+            <summary class="category-header mono">🦅 SKY (3)</summary>
+            <div class="spirit-grid">
+              <button class="spirit-btn" data-animal="pigeon" onclick="setAnimal('pigeon')">
+                🕊️<span>Pigeon</span>
+              </button>
+              <button class="spirit-btn" data-animal="cooperhawk" onclick="setAnimal('cooperhawk')">
+                🦅<span>Hawk</span>
+              </button>
+              <button class="spirit-btn" data-animal="eagle" onclick="setAnimal('eagle')">
+                🦅<span>Eagle</span>
+              </button>
+            </div>
+          </details>
+
+          <details class="spirit-category">
+            <summary class="category-header mono">🦁 WILD (2)</summary>
+            <div class="spirit-grid">
+              <button class="spirit-btn" data-animal="lion" onclick="setAnimal('lion')">
+                🦁<span>Lion</span>
+              </button>
+              <button class="spirit-btn" data-animal="coywolf" onclick="setAnimal('coywolf')">
+                🐺<span>Coywolf</span>
+              </button>
+            </div>
+          </details>
+        </div>
+
+        <!-- Hairstyle -->
+        <div class="control-section">
+          <h3 class="section-label mono">HAIRSTYLE:</h3>
+          <select id="hairstyle" class="control-select mono" onchange="updatePreview()">
+            <option value="dreads">Dreadlocks</option>
+            <option value="fade">Fade Cut</option>
+            <option value="afro">Afro</option>
+            <option value="braids">Braids</option>
+            <option value="bun">Top Bun</option>
+            <option value="waves">Waves</option>
+          </select>
+        </div>
+
+        <!-- Skin Tone -->
+        <div class="control-section">
+          <h3 class="section-label mono">SKIN TONE:</h3>
+          <div class="color-grid">
+            <button class="color-swatch" style="background: #3d2817" data-color="#3d2817" onclick="setSkinTone(this)"></button>
+            <button class="color-swatch" style="background: #5c3d2e" data-color="#5c3d2e" onclick="setSkinTone(this)"></button>
+            <button class="color-swatch active" style="background: #8d5524" data-color="#8d5524" onclick="setSkinTone(this)"></button>
+            <button class="color-swatch" style="background: #c68642" data-color="#c68642" onclick="setSkinTone(this)"></button>
+            <button class="color-swatch" style="background: #e0ac69" data-color="#e0ac69" onclick="setSkinTone(this)"></button>
+            <button class="color-swatch" style="background: #f1c27d" data-color="#f1c27d" onclick="setSkinTone(this)"></button>
+          </div>
+        </div>
+
+        <!-- Accessories -->
+        <div class="control-section">
+          <h3 class="section-label mono">ACCESSORIES:</h3>
+          <label class="checkbox-label mono">
+            <input type="checkbox" id="sunglasses" checked onchange="updatePreview()">
+            <span class="checkbox-custom"></span>
+            <span>😎 Sunglasses</span>
+          </label>
+          <label class="checkbox-label mono">
+            <input type="checkbox" id="chain" checked onchange="updatePreview()">
+            <span class="checkbox-custom"></span>
+            <span>📿 Gold Chain</span>
+          </label>
+          <label class="checkbox-label mono">
+            <input type="checkbox" id="earrings" checked onchange="updatePreview()">
+            <span class="checkbox-custom"></span>
+            <span>💎 Earrings</span>
+          </label>
+          <label class="checkbox-label mono">
+            <input type="checkbox" id="hat" onchange="updatePreview()">
+            <span class="checkbox-custom"></span>
+            <span>🧢 Hat</span>
+          </label>
+        </div>
+
+        <!-- Actions -->
+        <div class="control-section">
+          <button class="btn-action btn-retro mono" onclick="randomize()">
+            <span class="btn-icon">🎲</span>
+            <span>RANDOM</span>
+          </button>
+          <button class="btn-action btn-retro-neon mono" onclick="exportSVG()">
+            <span class="btn-icon">💾</span>
+            <span>EXPORT SVG</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Center: Preview -->
+      <main class="preview-panel card-retro-neon">
+        <h2 class="panel-title mono neon-text">[ PREVIEW ]</h2>
+        <div id="svgPreview" class="svg-preview">
+          <!-- SVG injected here -->
+        </div>
+        <div class="preview-info mono">
+          <div class="info-row">
+            <span class="info-label">Spirit:</span>
+            <span class="info-value text-neon" id="infoAnimal">Chicken</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Gender:</span>
+            <span class="info-value" id="infoGender">Male</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Style:</span>
+            <span class="info-value" id="infoHair">Dreadlocks</span>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right: Presets -->
+      <aside class="presets-panel card-retro ska-pattern">
+        <h2 class="panel-title mono neon-text">[ PRESETS ]</h2>
+        <div class="presets-grid" id="presetsGrid">
+          <!-- Presets loaded here -->
+        </div>
+        <button class="btn-action btn-retro mono" onclick="savePreset()">
+          <span class="btn-icon">💾</span>
+          <span>SAVE PRESET</span>
+        </button>
+      </aside>
+
+    </div>
+
+    <!-- Tips -->
+    <section class="tips-section card-retro-neon">
+      <h3 class="tips-title mono">💡 QUICK TIPS:</h3>
+      <ul class="tips-list mono">
+        <li>→ Click animal spirits to see different overlay effects</li>
+        <li>→ Toggle accessories on/off for different looks</li>
+        <li>→ Use Random button for inspiration</li>
+        <li>→ Export as SVG for high-quality NFT cards</li>
+        <li>→ Presets are saved to your browser</li>
+      </ul>
+    </section>
+
+    <!-- Nav -->
+    <nav class="builder-nav">
+      <a href="/nft-gallery" class="btn-retro">← NFT GALLERY</a>
+      <a href="/rapper-threejs-template-builder" class="btn-retro-neon">3D BUILDER (COMING SOON)</a>
+      <a href="/" class="btn-retro">HOME →</a>
+    </nav>
+
+  </div>
+</div>
+
+<script>
+  // Current configuration
+  let config = {
+    gender: 'male',
+    animal: 'chicken',
+    hairstyle: 'dreads',
+    skinTone: '#8d5524',
+    accessories: {
+      sunglasses: true,
+      chain: true,
+      earrings: true,
+      hat: false
+    }
+  };
+
+  // Set gender
+  function setGender(gender) {
+    config.gender = gender;
+
+    // Update button states
+    document.querySelectorAll('[data-gender]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.gender === gender);
+    });
+
+    updatePreview();
+  }
+
+  // Set animal spirit
+  function setAnimal(animal) {
+    config.animal = animal;
+
+    // Update button states
+    document.querySelectorAll('[data-animal]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.animal === animal);
+    });
+
+    updatePreview();
+  }
+
+  // Set skin tone
+  function setSkinTone(btn) {
+    config.skinTone = btn.dataset.color;
+
+    // Update button states
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.classList.remove('active');
+    });
+    btn.classList.add('active');
+
+    updatePreview();
+  }
+
+  // Update preview
+  function updatePreview() {
+    config.hairstyle = document.getElementById('hairstyle').value;
+    config.accessories = {
+      sunglasses: document.getElementById('sunglasses').checked,
+      chain: document.getElementById('chain').checked,
+      earrings: document.getElementById('earrings').checked,
+      hat: document.getElementById('hat').checked
+    };
+
+    // Generate and display SVG
+    const svg = generateSVG(config);
+    document.getElementById('svgPreview').innerHTML = svg;
+
+    // Update info
+    document.getElementById('infoAnimal').textContent = config.animal.charAt(0).toUpperCase() + config.animal.slice(1);
+    document.getElementById('infoGender').textContent = config.gender.charAt(0).toUpperCase() + config.gender.slice(1);
+    document.getElementById('infoHair').textContent = {
+      'dreads': 'Dreadlocks',
+      'fade': 'Fade Cut',
+      'afro': 'Afro',
+      'braids': 'Braids',
+      'bun': 'Top Bun',
+      'waves': 'Waves'
+    }[config.hairstyle];
+  }
+
+  // Generate SVG (simplified version - full implementation would be much longer)
+  function generateSVG(cfg) {
+    const skinColor = cfg.skinTone;
+    const shadowColor = adjustBrightness(skinColor, -30);
+    const highlightColor = adjustBrightness(skinColor, 20);
+
+    // Simplified SVG generation
+    return `
+<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:${highlightColor}" />
+      <stop offset="100%" style="stop-color:${skinColor}" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="500" fill="#0a0a0a"/>
+  <rect width="400" height="500" fill="url(#skinGrad)" opacity="0.1"/>
+
+  <!-- Face (geodesic polygon) -->
+  <g transform="translate(200, 250)">
+    ${cfg.gender === 'male' ? `
+      <polygon points="0,-120 60,-100 80,-50 75,20 50,80 0,95 -50,80 -75,20 -80,-50 -60,-100"
+               fill="url(#skinGrad)" stroke="${shadowColor}" stroke-width="3"/>
+    ` : `
+      <polygon points="0,-120 55,-105 70,-55 70,15 45,75 0,90 -45,75 -70,15 -70,-55 -55,-105"
+               fill="url(#skinGrad)" stroke="${shadowColor}" stroke-width="3"/>
+    `}
+
+    <!-- Eyes -->
+    <ellipse cx="-25" cy="-20" rx="8" ry="12" fill="white"/>
+    <ellipse cx="25" cy="-20" rx="8" ry="12" fill="white"/>
+    <circle cx="-25" cy="-20" r="5" fill="black"/>
+    <circle cx="25" cy="-20" r="5" fill="black"/>
+
+    <!-- Nose -->
+    <polygon points="-5,0 5,0 3,20 -3,20" fill="${shadowColor}" opacity="0.6"/>
+
+    <!-- Mouth -->
+    <path d="M -20,40 Q 0,50 20,40" stroke="${shadowColor}" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- Hair (simplified) -->
+    ${getHairSVG(cfg.hairstyle, cfg.gender)}
+
+    <!-- Accessories -->
+    ${cfg.accessories.sunglasses ? `
+      <rect x="-40" y="-30" width="30" height="15" fill="black" opacity="0.8" rx="3"/>
+      <rect x="10" y="-30" width="30" height="15" fill="black" opacity="0.8" rx="3"/>
+      <line x1="-10" y1="-22" x2="10" y2="-22" stroke="black" stroke-width="2"/>
+    ` : ''}
+
+    ${cfg.accessories.chain ? `
+      <g transform="translate(0, 95)">
+        <circle cx="-15" cy="10" r="4" fill="gold"/>
+        <circle cx="0" cy="15" r="5" fill="gold"/>
+        <circle cx="15" cy="10" r="4" fill="gold"/>
+        <path d="M -15,10 L 0,15 L 15,10" stroke="gold" stroke-width="2" fill="none"/>
+      </g>
+    ` : ''}
+
+    ${cfg.accessories.earrings ? `
+      <circle cx="-70" cy="0" r="5" fill="#00ffff" filter="url(#glow)"/>
+      <circle cx="70" cy="0" r="5" fill="#00ffff" filter="url(#glow)"/>
+    ` : ''}
+
+    ${cfg.accessories.hat ? `
+      <g transform="translate(0, -120)">
+        <ellipse cx="0" cy="0" rx="65" ry="15" fill="#333"/>
+        <rect x="-40" y="-40" width="80" height="40" fill="#444" rx="5"/>
+      </g>
+    ` : ''}
+  </g>
+
+  <!-- Animal Spirit Indicator -->
+  <text x="200" y="480" font-family="monospace" font-size="24" fill="#00ff00" text-anchor="middle" filter="url(#glow)">
+    ${getAnimalEmoji(cfg.animal)} ${cfg.animal.toUpperCase()}
+  </text>
+</svg>
+    `.trim();
+  }
+
+  // Get hair SVG
+  function getHairSVG(style, gender) {
+    const hairStyles = {
+      'dreads': `<g fill="#1a1a1a">
+        <rect x="-50" y="-130" width="12" height="60" rx="6"/>
+        <rect x="-30" y="-135" width="12" height="65" rx="6"/>
+        <rect x="-10" y="-135" width="12" height="65" rx="6"/>
+        <rect x="10" y="-135" width="12" height="65" rx="6"/>
+        <rect x="30" y="-130" width="12" height="60" rx="6"/>
+      </g>`,
+      'fade': `<ellipse cx="0" cy="-100" rx="70" ry="40" fill="#1a1a1a"/>`,
+      'afro': `<circle cx="0" cy="-80" r="70" fill="#1a1a1a"/>`,
+      'braids': `<g fill="#1a1a1a">
+        <path d="M -60,-120 L -55,-80" stroke="#1a1a1a" stroke-width="8"/>
+        <path d="M -40,-125 L -35,-85" stroke="#1a1a1a" stroke-width="8"/>
+        <path d="M -20,-125 L -15,-85" stroke="#1a1a1a" stroke-width="8"/>
+        <path d="M 0,-125 L 0,-85" stroke="#1a1a1a" stroke-width="8"/>
+        <path d="M 20,-125 L 15,-85" stroke="#1a1a1a" stroke-width="8"/>
+        <path d="M 40,-125 L 35,-85" stroke="#1a1a1a" stroke-width="8"/>
+        <path d="M 60,-120 L 55,-80" stroke="#1a1a1a" stroke-width="8"/>
+      </g>`,
+      'bun': `<g>
+        <ellipse cx="0" cy="-100" rx="70" ry="35" fill="#1a1a1a"/>
+        <circle cx="0" cy="-140" r="30" fill="#1a1a1a"/>
+      </g>`,
+      'waves': `<ellipse cx="0" cy="-95" rx="75" ry="45" fill="#1a1a1a"/>`
+    };
+    return hairStyles[style] || hairStyles['dreads'];
+  }
+
+  // Get animal emoji
+  function getAnimalEmoji(animal) {
+    const emojis = {
+      'chicken': '🐓', 'cat': '🐱', 'goat': '🐐', 'dog': '🐕', 'bunny': '🐰',
+      'pigeon': '🕊️', 'cooperhawk': '🦅', 'eagle': '🦅', 'lion': '🦁', 'coywolf': '🐺'
+    };
+    return emojis[animal] || '🐓';
+  }
+
+  // Adjust brightness
+  function adjustBrightness(hex, percent) {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = Math.min(255, Math.max(0, (num >> 16) + amt));
+    const G = Math.min(255, Math.max(0, (num >> 8 & 0x00FF) + amt));
+    const B = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+    return `#${(0x1000000 + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
+  }
+
+  // Randomize
+  function randomize() {
+    const animals = ['chicken', 'cat', 'goat', 'dog', 'bunny', 'pigeon', 'cooperhawk', 'eagle', 'lion', 'coywolf'];
+    const hairstyles = ['dreads', 'fade', 'afro', 'braids', 'bun', 'waves'];
+    const skinTones = ['#3d2817', '#5c3d2e', '#8d5524', '#c68642', '#e0ac69', '#f1c27d'];
+
+    setGender(Math.random() > 0.5 ? 'male' : 'female');
+    setAnimal(animals[Math.floor(Math.random() * animals.length)]);
+    document.getElementById('hairstyle').value = hairstyles[Math.floor(Math.random() * hairstyles.length)];
+
+    const randomSkin = skinTones[Math.floor(Math.random() * skinTones.length)];
+    setSkinTone(document.querySelector(`[data-color="${randomSkin}"]`));
+
+    document.getElementById('sunglasses').checked = Math.random() > 0.5;
+    document.getElementById('chain').checked = Math.random() > 0.5;
+    document.getElementById('earrings').checked = Math.random() > 0.5;
+    document.getElementById('hat').checked = Math.random() > 0.3;
+
+    updatePreview();
+  }
+
+  // Export SVG
+  function exportSVG() {
+    const svg = document.getElementById('svgPreview').innerHTML;
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rapper-${config.animal}-${config.gender}-${Date.now()}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Save preset
+  function savePreset() {
+    const presets = JSON.parse(localStorage.getItem('rapperPresets') || '[]');
+    presets.push({ ...config, timestamp: Date.now() });
+    localStorage.setItem('rapperPresets', JSON.stringify(presets.slice(-10))); // Keep last 10
+    loadPresets();
+  }
+
+  // Load presets
+  function loadPresets() {
+    const presets = JSON.parse(localStorage.getItem('rapperPresets') || '[]');
+    const grid = document.getElementById('presetsGrid');
+    grid.innerHTML = presets.slice(-6).map((preset, i) => `
+      <div class="preset-card" onclick='applyPreset(${JSON.stringify(preset)})'>
+        <div class="preset-preview">${getAnimalEmoji(preset.animal)}</div>
+        <div class="preset-label mono">#${presets.length - i}</div>
+      </div>
+    `).join('');
+  }
+
+  // Apply preset
+  window.applyPreset = function(preset) {
+    config = { ...preset };
+    setGender(preset.gender);
+    setAnimal(preset.animal);
+    document.getElementById('hairstyle').value = preset.hairstyle;
+    setSkinTone(document.querySelector(`[data-color="${preset.skinTone}"]`));
+    document.getElementById('sunglasses').checked = preset.accessories.sunglasses;
+    document.getElementById('chain').checked = preset.accessories.chain;
+    document.getElementById('earrings').checked = preset.accessories.earrings;
+    document.getElementById('hat').checked = preset.accessories.hat;
+    updatePreview();
+  };
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    updatePreview();
+    loadPresets();
+  });
+</script>
+
+<style>
+  .builder-page {
+    min-height: 100vh;
+    background: var(--color-black);
+    padding: 3rem 2rem;
+  }
+
+  /* Header */
+  .builder-header {
+    text-align: center;
+    padding: 3rem 2rem;
+    margin-bottom: 3rem;
+    background: var(--color-near-black);
+  }
+
+  .header-badge {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  .builder-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-mono);
+    letter-spacing: 4px;
+    line-height: 1.1;
+  }
+
+  .builder-subtitle {
+    font-size: 1.25rem;
+    line-height: 2;
+  }
+
+  /* Workspace */
+  .workspace {
+    display: grid;
+    grid-template-columns: 300px 1fr 250px;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .panel-title {
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  /* Controls */
+  .controls-panel {
+    padding: 2rem;
+  }
+
+  .control-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--color-dark-gray);
+  }
+
+  .control-section:last-child {
+    border-bottom: none;
+  }
+
+  .section-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-white);
+    letter-spacing: 1px;
+  }
+
+  /* Button Groups */
+  .button-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 0.75rem;
+    background: var(--color-dark-gray);
+    color: var(--color-white);
+    border: 2px solid var(--color-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .toggle-btn .btn-icon {
+    font-size: 1.5rem;
+  }
+
+  .toggle-btn:hover {
+    background: var(--color-gray);
+    transform: translateY(-2px);
+  }
+
+  .toggle-btn.active {
+    background: var(--color-neon-green);
+    color: var(--color-black);
+    box-shadow: 0 0 20px var(--color-neon-green-glow);
+  }
+
+  /* Spirit Categories */
+  .spirit-category {
+    margin-bottom: 1rem;
+  }
+
+  .category-header {
+    padding: 0.75rem;
+    background: var(--color-dark-gray);
+    border: 2px solid var(--color-white);
+    cursor: pointer;
+    font-weight: 700;
+    list-style: none;
+  }
+
+  .category-header:hover {
+    background: var(--color-gray);
+  }
+
+  .spirit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .spirit-btn {
+    padding: 0.75rem 0.5rem;
+    background: var(--color-dark-gray);
+    color: var(--color-white);
+    border: 2px solid var(--color-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .spirit-btn span {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+  }
+
+  .spirit-btn:hover {
+    transform: scale(1.05);
+    background: var(--color-gray);
+  }
+
+  .spirit-btn.active {
+    background: var(--color-neon-green);
+    color: var(--color-black);
+    box-shadow: 0 0 15px var(--color-neon-green-glow);
+  }
+
+  /* Select */
+  .control-select {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--color-black);
+    color: var(--color-white);
+    border: 2px solid var(--color-white);
+    font-family: var(--font-mono);
+    cursor: pointer;
+  }
+
+  .control-select:focus {
+    outline: none;
+    border-color: var(--color-neon-green);
+    box-shadow: 0 0 10px var(--color-neon-green-glow);
+  }
+
+  /* Color Grid */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .color-swatch {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 3px solid var(--color-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .color-swatch:hover {
+    transform: scale(1.1);
+  }
+
+  .color-swatch.active {
+    border-color: var(--color-neon-green);
+    box-shadow: 0 0 15px var(--color-neon-green-glow);
+  }
+
+  .color-swatch.active::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    text-shadow: 0 0 5px black;
+  }
+
+  /* Checkboxes */
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-white);
+    background: var(--color-black);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .checkbox-label input:checked + .checkbox-custom {
+    background: var(--color-neon-green);
+  }
+
+  .checkbox-label input:checked + .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-black);
+    font-weight: 900;
+  }
+
+  /* Action Buttons */
+  .btn-action {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .btn-action .btn-icon {
+    font-size: 1.25rem;
+  }
+
+  /* Preview */
+  .preview-panel {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .svg-preview {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-black);
+    border: 2px solid var(--color-white);
+    margin-bottom: 2rem;
+    min-height: 500px;
+  }
+
+  .svg-preview svg {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .preview-info {
+    padding: 1.5rem;
+    background: var(--color-black);
+    border: 2px solid var(--color-neon-green);
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-dark-gray);
+  }
+
+  .info-row:last-child {
+    border-bottom: none;
+  }
+
+  .info-label {
+    color: var(--color-light-gray);
+  }
+
+  .info-value {
+    font-weight: 700;
+  }
+
+  /* Presets */
+  .presets-panel {
+    padding: 2rem;
+  }
+
+  .presets-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .preset-card {
+    aspect-ratio: 1;
+    background: var(--color-black);
+    border: 2px solid var(--color-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .preset-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-neon-green);
+    box-shadow: 0 0 15px var(--color-neon-green-glow);
+  }
+
+  .preset-preview {
+    font-size: 3rem;
+  }
+
+  .preset-label {
+    font-size: 0.75rem;
+    color: var(--color-light-gray);
+  }
+
+  /* Tips */
+  .tips-section {
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .tips-title {
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: var(--color-neon-green);
+  }
+
+  .tips-list {
+    list-style: none;
+    padding: 0;
+    line-height: 2;
+  }
+
+  .tips-list li {
+    color: var(--color-off-white);
+  }
+
+  /* Navigation */
+  .builder-nav {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Mobile */
+  @media (max-width: 1024px) {
+    .workspace {
+      grid-template-columns: 1fr;
+    }
+
+    .builder-title {
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .button-group {
+      flex-direction: column;
+    }
+
+    .spirit-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .presets-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .builder-nav {
+      flex-direction: column;
+    }
+
+    .builder-nav a {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+
+</BaseLayout>

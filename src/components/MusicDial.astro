@@ -1,0 +1,411 @@
+---
+/**
+ * MusicDial.astro
+ * Professional Circular Dial/Knob Component
+ *
+ * Features:
+ * - Rotary knob with visual feedback
+ * - SVG-based rendering with Canvas fallback
+ * - Touch and mouse support
+ * - Value display with units
+ * - Customizable colors and ranges
+ *
+ * Props:
+ * - id: string
+ * - label: string
+ * - min: number
+ * - max: number
+ * - value: number
+ * - unit: string (%, BPM, dB, etc.)
+ * - color: string (accent color)
+ * - size: number (dial diameter in pixels)
+ */
+
+const {
+  id = 'dial',
+  label = 'Control',
+  min = 0,
+  max = 100,
+  value = 50,
+  unit = '%',
+  color = '#667eea',
+  size = 80,
+  onChange = 'updateDial'
+} = Astro.props;
+
+const dialId = `music-dial-${id}`;
+const valueId = `${dialId}-value`;
+const displayId = `${dialId}-display`;
+---
+
+<div class="music-dial-container" data-dial-id={dialId}>
+  <label class="dial-label">{label}</label>
+
+  <!-- SVG Dial -->
+  <div class="dial-wrapper" style={`width: ${size}px; height: ${size}px;`}>
+    <svg
+      class="dial-svg"
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      data-dial-svg={dialId}
+    >
+      <defs>
+        <!-- Gradient for dial face -->
+        <radialGradient id={`${dialId}-gradient`} cx="50%" cy="50%">
+          <stop offset="0%" style="stop-color:#2a2a2a;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+        </radialGradient>
+
+        <!-- Glow effect -->
+        <filter id={`${dialId}-glow`}>
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- Outer ring -->
+      <circle
+        cx="50"
+        cy="50"
+        r="48"
+        fill="none"
+        stroke="#333"
+        stroke-width="2"
+      />
+
+      <!-- Dial face -->
+      <circle
+        cx="50"
+        cy="50"
+        r="42"
+        fill={`url(#${dialId}-gradient)`}
+        stroke="#444"
+        stroke-width="1"
+      />
+
+      <!-- Value arc (shows current value) -->
+      <path
+        id={`${dialId}-arc`}
+        class="dial-arc"
+        fill="none"
+        stroke={color}
+        stroke-width="4"
+        stroke-linecap="round"
+        filter={`url(#${dialId}-glow)`}
+      />
+
+      <!-- Center dot -->
+      <circle
+        cx="50"
+        cy="50"
+        r="4"
+        fill="#666"
+      />
+
+      <!-- Indicator line -->
+      <line
+        id={`${dialId}-indicator`}
+        class="dial-indicator"
+        x1="50"
+        y1="50"
+        x2="50"
+        y2="20"
+        stroke="white"
+        stroke-width="3"
+        stroke-linecap="round"
+      />
+
+      <!-- Tick marks -->
+      {[0, 45, 90, 135, 180, 225, 270].map((angle) => {
+        const radians = (angle - 135) * (Math.PI / 180);
+        const innerR = 34;
+        const outerR = 38;
+        const x1 = 50 + innerR * Math.cos(radians);
+        const y1 = 50 + innerR * Math.sin(radians);
+        const x2 = 50 + outerR * Math.cos(radians);
+        const y2 = 50 + outerR * Math.sin(radians);
+
+        return (
+          <line
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="#555"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        );
+      })}
+    </svg>
+
+    <!-- Hidden range input for accessibility -->
+    <input
+      type="range"
+      id={dialId}
+      class="dial-input-hidden"
+      min={min}
+      max={max}
+      value={value}
+      data-unit={unit}
+      data-color={color}
+      aria-label={label}
+    />
+  </div>
+
+  <!-- Value display -->
+  <div class="dial-value-display" id={displayId}>
+    <span id={valueId} class="dial-value">{value}</span>
+    <span class="dial-unit">{unit}</span>
+  </div>
+</div>
+
+<style>
+  .music-dial-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    user-select: none;
+  }
+
+  .dial-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #999;
+  }
+
+  .dial-wrapper {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+
+  .dial-wrapper:hover {
+    transform: scale(1.05);
+  }
+
+  .dial-wrapper:active {
+    transform: scale(0.98);
+  }
+
+  .dial-svg {
+    display: block;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  }
+
+  .dial-arc {
+    transition: stroke 0.2s ease;
+  }
+
+  .dial-indicator {
+    transition: transform 0.1s ease-out;
+    transform-origin: 50px 50px;
+  }
+
+  .dial-input-hidden {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dial-value-display {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dial-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .dial-unit {
+    font-size: 0.875rem;
+    color: #888;
+  }
+</style>
+
+<script>
+  // Dial interaction manager
+  class MusicDialController {
+    constructor(dialElement) {
+      this.container = dialElement;
+      this.dialId = dialElement.dataset.dialId;
+      this.svg = dialElement.querySelector('.dial-svg');
+      this.indicator = dialElement.querySelector('.dial-indicator');
+      this.arc = dialElement.querySelector('.dial-arc');
+      this.input = dialElement.querySelector('.dial-input-hidden');
+      this.valueDisplay = dialElement.querySelector('.dial-value');
+
+      this.min = parseFloat(this.input.min);
+      this.max = parseFloat(this.input.max);
+      this.value = parseFloat(this.input.value);
+      this.unit = this.input.dataset.unit;
+      this.color = this.input.dataset.color;
+
+      this.isDragging = false;
+      this.startAngle = -135; // -135 to 135 degrees (270 degree range)
+      this.endAngle = 135;
+      this.angleRange = this.endAngle - this.startAngle;
+
+      this.init();
+    }
+
+    init() {
+      // Mouse events
+      this.svg.addEventListener('mousedown', this.onStart.bind(this));
+      document.addEventListener('mousemove', this.onMove.bind(this));
+      document.addEventListener('mouseup', this.onEnd.bind(this));
+
+      // Touch events
+      this.svg.addEventListener('touchstart', this.onStart.bind(this), { passive: false });
+      document.addEventListener('touchmove', this.onMove.bind(this), { passive: false });
+      document.addEventListener('touchend', this.onEnd.bind(this));
+
+      // Mouse wheel
+      this.svg.addEventListener('wheel', this.onWheel.bind(this), { passive: false });
+
+      // Initialize visual
+      this.updateVisual();
+    }
+
+    onStart(e) {
+      e.preventDefault();
+      this.isDragging = true;
+      this.svg.style.cursor = 'grabbing';
+      this.handleMove(e);
+    }
+
+    onMove(e) {
+      if (!this.isDragging) return;
+      e.preventDefault();
+      this.handleMove(e);
+    }
+
+    onEnd(e) {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      this.svg.style.cursor = 'pointer';
+
+      // Dispatch change event
+      this.input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    onWheel(e) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -1 : 1;
+      const step = (this.max - this.min) / 100;
+      this.setValue(this.value + delta * step);
+    }
+
+    handleMove(e) {
+      const rect = this.svg.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      let clientX, clientY;
+      if (e.type.startsWith('touch')) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      const dx = clientX - centerX;
+      const dy = clientY - centerY;
+
+      // Calculate angle (-180 to 180)
+      let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+      // Adjust to start from top (-90 offset)
+      angle = angle + 90;
+
+      // Normalize to -135 to 135
+      if (angle < -135) angle += 360;
+      if (angle > 225) angle -= 360;
+
+      // Clamp to range
+      angle = Math.max(this.startAngle, Math.min(this.endAngle, angle));
+
+      // Convert angle to value
+      const normalizedAngle = (angle - this.startAngle) / this.angleRange;
+      const newValue = this.min + normalizedAngle * (this.max - this.min);
+
+      this.setValue(newValue);
+    }
+
+    setValue(value) {
+      // Clamp value
+      value = Math.max(this.min, Math.min(this.max, value));
+
+      // Round to 1 decimal place
+      value = Math.round(value * 10) / 10;
+
+      this.value = value;
+      this.input.value = value;
+      this.updateVisual();
+
+      // Dispatch input event for real-time updates
+      this.input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    updateVisual() {
+      // Update value display
+      const displayValue = this.unit === 'BPM' ? Math.round(this.value) : this.value;
+      this.valueDisplay.textContent = displayValue;
+
+      // Calculate angle
+      const normalizedValue = (this.value - this.min) / (this.max - this.min);
+      const angle = this.startAngle + normalizedValue * this.angleRange;
+
+      // Update indicator rotation
+      this.indicator.style.transform = `rotate(${angle}deg)`;
+
+      // Update arc path
+      this.updateArc(angle);
+    }
+
+    updateArc(angle) {
+      const startAngleRad = this.startAngle * (Math.PI / 180);
+      const endAngleRad = angle * (Math.PI / 180);
+      const radius = 38;
+      const cx = 50;
+      const cy = 50;
+
+      const startX = cx + radius * Math.cos(startAngleRad);
+      const startY = cy + radius * Math.sin(startAngleRad);
+      const endX = cx + radius * Math.cos(endAngleRad);
+      const endY = cy + radius * Math.sin(endAngleRad);
+
+      const largeArc = (angle - this.startAngle) > 180 ? 1 : 0;
+
+      const pathData = [
+        `M ${startX} ${startY}`,
+        `A ${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY}`
+      ].join(' ');
+
+      this.arc.setAttribute('d', pathData);
+    }
+  }
+
+  // Initialize all dials on page
+  document.addEventListener('DOMContentLoaded', () => {
+    const dials = document.querySelectorAll('.music-dial-container');
+    window.musicDials = [];
+
+    dials.forEach(dial => {
+      const controller = new MusicDialController(dial);
+      window.musicDials.push(controller);
+    });
+  });
+</script>

@@ -2,7 +2,7 @@
 /**
  * profile.astro
  * User Profile Settings & Customization
- * 
+ *
  * Features:
  * - Edit profile information
  * - Manage NFT collection
@@ -12,6 +12,7 @@
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import OracleStatusBand from '../components/OracleStatusBand.astro';
 ---
 
 <BaseLayout 
@@ -144,11 +145,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </div>
 
+      <!-- E8 Oracle Status Band -->
+      <OracleStatusBand />
+
       <!-- Profile Tabs -->
       <div class="profile-tabs">
         <button class="profile-tab active" data-tab="info">
           <span class="tab-icon">👤</span>
           <span>Profile Info</span>
+        </button>
+        <button class="profile-tab" data-tab="stats">
+          <span class="tab-icon">📊</span>
+          <span>Stats</span>
         </button>
         <button class="profile-tab" data-tab="preferences">
           <span class="tab-icon">⚙️</span>
@@ -330,6 +338,121 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </div>
 
         </form>
+
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB 2: STATS DASHBOARD -->
+      <!-- ============================================ -->
+      <div id="tab-stats" class="profile-tab-content" style="display: none;">
+
+        <h2 class="tab-title">Your Stats Dashboard</h2>
+        <p class="tab-description">Track your progress across music, battles, learning, and community impact</p>
+
+        <div id="profile-stats-dashboard">
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+
+            <!-- Music Stats Section -->
+            <div class="stats-section">
+              <h3 class="section-title">🎵 Music Creation</h3>
+              <div class="stat-cards-row">
+                <div class="stat-card" id="music-tracks">
+                  <!-- Populated by profile-stats.js -->
+                </div>
+                <div class="stat-card" id="music-time">
+                  <!-- Populated by profile-stats.js -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Battle Stats Section -->
+            <div class="stats-section">
+              <h3 class="section-title">⚔️ Battle Record</h3>
+              <div class="stat-cards-row">
+                <div class="stat-card" id="battle-record">
+                  <!-- Populated by profile-stats.js -->
+                </div>
+                <div class="stat-card" id="battle-streak">
+                  <!-- Populated by profile-stats.js -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Learning Stats Section -->
+            <div class="stats-section">
+              <h3 class="section-title">📚 Learning Progress</h3>
+              <div class="stat-cards-row">
+                <div class="stat-card" id="courses-completed">
+                  <!-- Populated by profile-stats.js -->
+                </div>
+                <div class="stat-card" id="quiz-score">
+                  <!-- Populated by profile-stats.js -->
+                </div>
+              </div>
+            </div>
+
+            <!-- NFT Collection Stats -->
+            <div class="stats-section">
+              <h3 class="section-title">💎 NFT Collection</h3>
+              <div class="stat-cards-row">
+                <div class="stat-card" id="nft-collection">
+                  <!-- Populated by profile-stats.js -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Community Impact -->
+            <div class="stats-section">
+              <h3 class="section-title">🏕️ Community Impact</h3>
+              <div class="stat-cards-row">
+                <div class="stat-card" id="community-impact">
+                  <!-- Populated by profile-stats.js -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Charts Section -->
+          <div class="charts-section">
+
+            <!-- XP Over Time -->
+            <div class="chart-container">
+              <h3 class="chart-title">XP Progress Over Time</h3>
+              <div class="chart-wrapper">
+                <canvas id="xp-chart"></canvas>
+              </div>
+            </div>
+
+            <!-- Battle Performance -->
+            <div class="chart-container">
+              <h3 class="chart-title">Battle Performance</h3>
+              <div class="chart-wrapper">
+                <canvas id="battle-chart"></canvas>
+              </div>
+            </div>
+
+            <!-- Weekly Activity -->
+            <div class="chart-container full-width">
+              <h3 class="chart-title">Weekly Activity Breakdown</h3>
+              <div class="chart-wrapper">
+                <canvas id="weekly-activity-chart"></canvas>
+              </div>
+            </div>
+
+            <!-- Activity Heatmap -->
+            <div class="chart-container full-width">
+              <h3 class="chart-title">Activity Heatmap (Last Year)</h3>
+              <div id="activity-heatmap" class="heatmap-container">
+                <!-- Populated by profile-stats.js -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 
@@ -825,6 +948,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 </BaseLayout>
 
+<!-- Chart.js for visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" is:inline></script>
+
+<!-- Profile Stats Manager -->
+<script src="/scripts/profile-stats.js" is:inline></script>
+
 <script>
   /**
    * Profile Page Manager
@@ -1073,9 +1202,119 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   window.profilePageManager = new ProfilePageManager();
 
+  /**
+   * E8 Oracle Manager - Connects OracleStatusBand to E8 Lattice system
+   */
+  class OracleManager {
+    constructor() {
+      this.initialized = false;
+    }
+
+    async initialize() {
+      const walletAddress = window.walletManager?.connectedWallet;
+      if (!walletAddress) return;
+
+      try {
+        // Initialize E8 secure storage if available
+        if (window.secureStorage) {
+          await window.secureStorage.initialize(walletAddress);
+          this.initialized = true;
+
+          // Update oracle UI with actual keys
+          this.updateOracleUI();
+
+          console.log('✅ Oracle Manager initialized');
+        } else {
+          console.log('⚠️ E8 Oracle not loaded yet - will retry');
+          // Retry after E8 script loads
+          setTimeout(() => this.initialize(), 1000);
+        }
+      } catch (error) {
+        console.error('Failed to initialize Oracle:', error);
+      }
+    }
+
+    updateOracleUI() {
+      if (!window.secureStorage || !this.initialized) return;
+
+      // Update public key display
+      const publicKeyElement = document.getElementById('oracle-public-key');
+      if (publicKeyElement && window.secureStorage.keyPair) {
+        const pubKey = window.secureStorage.keyPair.publicKey.toString();
+        publicKeyElement.textContent = pubKey;
+      }
+
+      // Update consent token ID
+      const tokenIdElement = document.getElementById('oracle-token-id');
+      if (tokenIdElement && window.secureStorage.consentToken) {
+        const tokenId = window.secureStorage.consentToken.tokenId;
+        tokenIdElement.textContent = `${tokenId.substring(0, 8)}...${tokenId.substring(tokenId.length - 8)}`;
+      }
+
+      // Wire up permission toggles
+      this.setupPermissionToggles();
+    }
+
+    setupPermissionToggles() {
+      const toggles = document.querySelectorAll('.permission-toggle input[type="checkbox"]');
+      toggles.forEach(toggle => {
+        const permission = toggle.dataset.permission;
+
+        // Set initial state from consent token
+        if (window.secureStorage.consentToken) {
+          toggle.checked = window.secureStorage.consentToken.hasPermission(permission);
+        }
+
+        // Listen for changes
+        toggle.addEventListener('change', async (e) => {
+          await this.updatePermission(permission, e.target.checked);
+        });
+      });
+    }
+
+    async updatePermission(permission, granted) {
+      if (!window.secureStorage?.consentToken) return;
+
+      try {
+        if (granted) {
+          window.secureStorage.consentToken.grantPermission(permission);
+        } else {
+          window.secureStorage.consentToken.revokePermission(permission);
+        }
+
+        // Save to localStorage
+        const walletAddress = window.walletManager?.connectedWallet;
+        if (walletAddress) {
+          localStorage.setItem(
+            `consent_${walletAddress}`,
+            JSON.stringify(window.secureStorage.consentToken)
+          );
+        }
+
+        // Send to API
+        await fetch('/api/oracle/consent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress,
+            action: granted ? 'GRANT_PERMISSION' : 'REVOKE_PERMISSION',
+            permission
+          })
+        });
+
+        console.log(`${granted ? '✅ Granted' : '❌ Revoked'} permission: ${permission}`);
+      } catch (error) {
+        console.error('Failed to update permission:', error);
+      }
+    }
+  }
+
+  window.oracleManager = new OracleManager();
+
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       window.profilePageManager.initialize();
+      window.oracleManager.initialize();
     }, 500);
   });
 
@@ -1654,6 +1893,219 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
   }
 
+  /* ============================================ */
+  /* STATS DASHBOARD STYLES */
+  /* ============================================ */
+
+  .stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .stats-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-gray-900);
+  }
+
+  .stat-cards-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    border: 2px solid rgba(102, 126, 234, 0.1);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.15);
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+
+  .stat-trend.positive {
+    color: #10b981;
+  }
+
+  .stat-trend.negative {
+    color: #ef4444;
+  }
+
+  .stat-trend.neutral {
+    color: var(--color-gray-500);
+  }
+
+  .trend-arrow {
+    font-size: 1rem;
+  }
+
+  .stat-subtext {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    margin-top: 0.5rem;
+  }
+
+  /* Charts Section */
+  .charts-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .chart-container {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .chart-container.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .chart-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--color-gray-900);
+  }
+
+  .chart-wrapper {
+    position: relative;
+    height: 300px;
+  }
+
+  .chart-container.full-width .chart-wrapper {
+    height: 400px;
+  }
+
+  /* Heatmap Styles */
+  .heatmap-container {
+    padding: 1rem 0;
+    overflow-x: auto;
+  }
+
+  .heatmap-grid {
+    display: flex;
+    gap: 3px;
+    padding: 1rem 0;
+  }
+
+  .heatmap-week {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .heatmap-day {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background: var(--color-gray-100);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .heatmap-day:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .heatmap-day.level-0 {
+    background: var(--color-gray-100);
+  }
+
+  .heatmap-day.level-1 {
+    background: rgba(102, 126, 234, 0.2);
+  }
+
+  .heatmap-day.level-2 {
+    background: rgba(102, 126, 234, 0.4);
+  }
+
+  .heatmap-day.level-3 {
+    background: rgba(102, 126, 234, 0.6);
+  }
+
+  .heatmap-day.level-4 {
+    background: rgba(102, 126, 234, 0.9);
+  }
+
+  .heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--color-gray-600);
+  }
+
+  .legend-square {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 1024px) {
+    .charts-section {
+      grid-template-columns: 1fr;
+    }
+  }
+
   @media (max-width: 768px) {
     .profile-header {
       flex-direction: column;
@@ -1694,6 +2146,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     .life-stage {
       font-size: 0.75rem;
+    }
+
+    .stat-cards-row {
+      grid-template-columns: 1fr;
     }
   }
 </style>

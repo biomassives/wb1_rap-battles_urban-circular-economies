@@ -12,6 +12,7 @@
     "astro": "^5.16.6"
   },
   "dependencies": {
+    "@tonejs/midi": "^2.0.28",
     "@vercel/postgres": "^0.10.0"
   }
 }

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Legendary Gradient Border -->
+    <linearGradient id="legendary-border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9b59b6;stop-opacity:1">
+        <animate attributeName="stop-color" values="#9b59b6;#3498db;#e74c3c;#9b59b6" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#3498db;stop-opacity:1">
+        <animate attributeName="stop-color" values="#3498db;#e74c3c;#9b59b6;#3498db" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#e74c3c;stop-opacity:1">
+        <animate attributeName="stop-color" values="#e74c3c;#9b59b6;#3498db;#e74c3c" dur="3s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+
+    <!-- Card Background Gradient -->
+    <linearGradient id="card-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0f1e;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Bling Shine -->
+    <radialGradient id="bling-shine">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#ffd700;stop-opacity:0.3" />
+    </radialGradient>
+  </defs>
+
+  <!-- Outer Border (Legendary Holographic) -->
+  <rect x="0" y="0" width="400" height="600" rx="24" fill="url(#legendary-border)" opacity="0.8">
+    <animateTransform attributeName="transform" type="rotate" from="0 200 300" to="360 200 300" dur="20s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Main Card Background -->
+  <rect x="6" y="6" width="388" height="588" rx="20" fill="url(#card-bg)" stroke="#9b59b6" stroke-width="2"/>
+
+  <!-- Decorative Corner Accent -->
+  <path d="M 30 30 L 80 30 L 30 80 Z" fill="#9b59b6" opacity="0.3"/>
+  <path d="M 370 30 L 320 30 L 370 80 Z" fill="#3498db" opacity="0.3"/>
+  <path d="M 30 570 L 80 570 L 30 520 Z" fill="#e74c3c" opacity="0.3"/>
+  <path d="M 370 570 L 320 570 L 370 520 Z" fill="#9b59b6" opacity="0.3"/>
+
+  <!-- Rarity Badge (Top Right) -->
+  <g transform="translate(330, 40)">
+    <circle cx="0" cy="0" r="30" fill="#9b59b6" opacity="0.9" filter="url(#glow)"/>
+    <text x="0" y="8" text-anchor="middle" font-size="28" font-weight="bold" fill="#fff">💎</text>
+  </g>
+
+  <!-- Card Number (Top Left) -->
+  <text x="40" y="50" font-family="'Courier New', monospace" font-size="20" font-weight="bold" fill="#fff" opacity="0.7">#0042</text>
+
+  <!-- Avatar Frame -->
+  <g transform="translate(200, 180)">
+    <!-- Avatar Circle Background -->
+    <circle cx="0" cy="0" r="90" fill="#2c2c3e" stroke="url(#legendary-border)" stroke-width="4" filter="url(#glow)"/>
+
+    <!-- Rapper Avatar (Stylized) -->
+    <g id="rapper-avatar">
+      <!-- Face -->
+      <circle cx="0" cy="0" r="70" fill="#8d5524"/>
+
+      <!-- Headwear (Snapback) -->
+      <ellipse cx="0" cy="-55" rx="60" ry="20" fill="#1a1a1a"/>
+      <rect x="-50" y="-65" width="100" height="15" rx="3" fill="#c41e3a"/>
+      <circle cx="0" cy="-57" r="8" fill="#ffd700"/>
+
+      <!-- Eyes -->
+      <ellipse cx="-25" cy="-5" rx="8" ry="12" fill="#fff"/>
+      <ellipse cx="25" cy="-5" rx="8" ry="12" fill="#fff"/>
+      <circle cx="-25" cy="-2" r="5" fill="#1a1a1a"/>
+      <circle cx="25" cy="-2" r="5" fill="#1a1a1a"/>
+
+      <!-- Nose -->
+      <ellipse cx="0" cy="15" rx="8" ry="10" fill="#6b3e1a"/>
+
+      <!-- Mouth (Confident Smirk) -->
+      <path d="M -20 35 Q 0 45 20 35" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+      <!-- Goatee -->
+      <ellipse cx="0" cy="55" rx="15" ry="10" fill="#1a1a1a"/>
+
+      <!-- Gold Chain -->
+      <g transform="translate(0, 70)">
+        <ellipse cx="0" cy="0" rx="35" ry="8" fill="none" stroke="#ffd700" stroke-width="6"/>
+        <circle cx="0" cy="15" r="12" fill="#ffd700" filter="url(#glow)">
+          <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a1a1a">W</text>
+      </g>
+
+      <!-- Diamond Earrings -->
+      <g transform="translate(-40, 20)">
+        <polygon points="0,-5 -3,0 0,5 3,0" fill="#00ffff" filter="url(#glow)">
+          <animate attributeName="opacity" values="0.8;1;0.8" dur="1.5s" repeatCount="indefinite"/>
+        </polygon>
+      </g>
+      <g transform="translate(40, 20)">
+        <polygon points="0,-5 -3,0 0,5 3,0" fill="#00ffff" filter="url(#glow)">
+          <animate attributeName="opacity" values="1;0.8;1" dur="1.5s" repeatCount="indefinite"/>
+        </polygon>
+      </g>
+
+      <!-- Sunglasses -->
+      <rect x="-40" y="-12" width="30" height="18" rx="3" fill="#1a1a1a" opacity="0.7"/>
+      <rect x="10" y="-12" width="30" height="18" rx="3" fill="#1a1a1a" opacity="0.7"/>
+      <rect x="-10" y="-6" width="20" height="3" fill="#1a1a1a"/>
+    </g>
+  </g>
+
+  <!-- Username -->
+  <text x="200" y="320" text-anchor="middle" font-family="'Impact', sans-serif" font-size="32" font-weight="bold" fill="#fff" filter="url(#glow)">
+    FLOW KING
+  </text>
+
+  <!-- Battle Record -->
+  <text x="200" y="355" text-anchor="middle" font-size="18" fill="#9b59b6" font-weight="bold">
+    Record: 24-3-1
+  </text>
+
+  <!-- Bling Badges Section -->
+  <g id="bling-badges" transform="translate(200, 400)">
+    <!-- Badge Background Bar -->
+    <rect x="-150" y="-25" width="300" height="50" rx="8" fill="rgba(155, 89, 182, 0.2)" stroke="#9b59b6" stroke-width="2"/>
+
+    <!-- Badges -->
+    <g transform="translate(-120, 0)">
+      <circle r="18" fill="rgba(255, 215, 0, 0.3)" stroke="gold" stroke-width="2"/>
+      <text x="0" y="8" text-anchor="middle" font-size="24" filter="url(#glow)">🏆</text>
+    </g>
+
+    <g transform="translate(-60, 0)">
+      <circle r="18" fill="rgba(255, 69, 0, 0.3)" stroke="#ff4500" stroke-width="2"/>
+      <text x="0" y="8" text-anchor="middle" font-size="24" filter="url(#glow)">🔥</text>
+    </g>
+
+    <g transform="translate(0, 0)">
+      <circle r="18" fill="rgba(0, 255, 255, 0.3)" stroke="#00ffff" stroke-width="2"/>
+      <text x="0" y="8" text-anchor="middle" font-size="24" filter="url(#glow)">💎</text>
+    </g>
+
+    <g transform="translate(60, 0)">
+      <circle r="18" fill="rgba(255, 215, 0, 0.3)" stroke="gold" stroke-width="2"/>
+      <text x="0" y="8" text-anchor="middle" font-size="24" filter="url(#glow)">⚡</text>
+    </g>
+
+    <g transform="translate(120, 0)">
+      <circle r="18" fill="rgba(255, 0, 0, 0.3)" stroke="#ff0000" stroke-width="2"/>
+      <text x="0" y="8" text-anchor="middle" font-size="24" filter="url(#glow)">👑</text>
+    </g>
+  </g>
+
+  <!-- Battle Info -->
+  <g transform="translate(200, 480)">
+    <text x="0" y="0" text-anchor="middle" font-size="16" fill="#aaa">
+      Battle: Championship Finals
+    </text>
+    <text x="0" y="25" text-anchor="middle" font-size="14" fill="#888">
+      January 3, 2026
+    </text>
+    <text x="0" y="50" text-anchor="middle" font-size="22" font-weight="bold" fill="#00ff00" filter="url(#glow)">
+      VICTORY
+    </text>
+  </g>
+
+  <!-- Bottom: DVG Logo and Edition -->
+  <g transform="translate(50, 560)">
+    <circle cx="0" cy="0" r="15" fill="none" stroke="#9b59b6" stroke-width="2"/>
+    <path d="M -10,-10 L 0,0 L 10,-10 L 0,10 Z" fill="#9b59b6" opacity="0.8"/>
+    <circle cx="0" cy="-5" r="3" fill="#00ffff"/>
+  </g>
+
+  <text x="350" y="570" text-anchor="end" font-size="14" fill="#666" font-family="monospace">
+    Edition 42/100
+  </text>
+
+  <!-- Legendary Label -->
+  <text x="200" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#9b59b6" letter-spacing="3">
+    LEGENDARY
+  </text>
+</svg>
