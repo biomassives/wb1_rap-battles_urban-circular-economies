@@ -2,13 +2,19 @@
 /**
  * BaseLayout.astro
  * Central template for all pages in the Hobby Farm Gamification System
- * 
+ *
  * Props:
  * - title: Page title
  * - description: Meta description
  * - includeMusicPlayer: Boolean to include music player component
  * - activeSection: String for navigation highlighting
  */
+
+// Wallet Security Components
+import SecurityEducationModal from '../components/SecurityEducationModal.astro';
+import RecoveryPhraseModal from '../components/RecoveryPhraseModal.astro';
+import RecoveryPhraseVerification from '../components/RecoveryPhraseVerification.astro';
+import WalletPINSetup from '../components/WalletPINSetup.astro';
 
 interface Props {
   title: string;
@@ -49,6 +55,13 @@ const currentYear = new Date().getFullYear();
   <!-- Web3 Dependencies (Solana) -->
   <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 
+  <!-- BIP39 for wallet generation -->
+  <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/index.js"></script>
+
+  <!-- Wallet Security Utilities -->
+  <script is:inline src="/scripts/wallet-crypto.js"></script>
+  <script is:inline src="/scripts/wallet-generator.js"></script>
+
   <!-- E8 Lattice Oracle - Post-Quantum Encryption -->
   <script is:inline src="/scripts/e8-lattice-oracle.js"></script>
 </head>
@@ -70,52 +83,71 @@ const currentYear = new Date().getFullYear();
           </a>
         </div>
 
-        <!-- Main Navigation -->
+        <!-- Main Navigation - Zen Minimal -->
         <ul class="nav-menu">
-          <li class={activeSection === 'home' ? 'active' : ''}>
-            <a href="/">Collection</a>
-          </li>
-          <li class={activeSection === 'gallery' ? 'active' : ''}>
-            <a href="/nft-gallery">
-              <span class="nav-icon">🎨</span>
-              <span>NFT Gallery</span>
-            </a>
-          </li>
-          <li class={activeSection === 'progress' ? 'active' : ''}>
-            <a href="/progress">
-              <span class="nav-icon">📊</span>
-              <span>Progress</span>
-            </a>
-          </li>
-          <li class={activeSection === 'music' ? 'active' : ''}>
-            <a href="/music">
+          <!-- Music Dropdown -->
+          <li class="nav-dropdown">
+            <button class="nav-dropdown-btn">
               <span class="nav-icon">🎵</span>
-              <span>Music Studio</span>
-            </a>
+              <span>MUSIC</span>
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-menu">
+              <a href="/music" class="dropdown-item">
+                <span class="item-icon">🎹</span>
+                <span>Music Studio</span>
+              </a>
+              <a href="/audio-remix-lab" class="dropdown-item">
+                <span class="item-icon">🎛️</span>
+                <span>Remix Lab</span>
+              </a>
+            </div>
           </li>
-          <li class={activeSection === 'remix' ? 'active' : ''}>
-            <a href="/audio-remix-lab">
-              <span class="nav-icon">🎛️</span>
-              <span>Remix Lab</span>
-            </a>
+
+          <!-- Learn Dropdown -->
+          <li class="nav-dropdown">
+            <button class="nav-dropdown-btn">
+              <span class="nav-icon">📚</span>
+              <span>LEARN</span>
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-menu">
+              <a href="/learning" class="dropdown-item">
+                <span class="item-icon">🌍</span>
+                <span>Learning Hub</span>
+              </a>
+              <a href="/kakuma" class="dropdown-item">
+                <span class="item-icon">🏕️</span>
+                <span>Kakuma Impact</span>
+              </a>
+            </div>
           </li>
-          <li class={activeSection === 'learning' ? 'active' : ''}>
-            <a href="/learning">
-              <span class="nav-icon">🌍</span>
-              <span>Learning Hub</span>
-            </a>
-          </li>
-          <li class={activeSection === 'kakuma' ? 'active' : ''}>
-            <a href="/kakuma">
-              <span class="nav-icon">🏕️</span>
-              <span>Kakuma Impact</span>
-            </a>
-          </li>
-          <li class={activeSection === 'leaderboard' ? 'active' : ''}>
-            <a href="/leaderboard">
-              <span class="nav-icon">🏆</span>
-              <span>Leaderboard</span>
-            </a>
+
+          <!-- Community Dropdown -->
+          <li class="nav-dropdown">
+            <button class="nav-dropdown-btn">
+              <span class="nav-icon">🎮</span>
+              <span>COMMUNITY</span>
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-menu">
+              <a href="/" class="dropdown-item">
+                <span class="item-icon">🌾</span>
+                <span>Collection</span>
+              </a>
+              <a href="/nft-gallery" class="dropdown-item">
+                <span class="item-icon">🎨</span>
+                <span>NFT Gallery</span>
+              </a>
+              <a href="/progress" class="dropdown-item">
+                <span class="item-icon">📊</span>
+                <span>Progress</span>
+              </a>
+              <a href="/leaderboard" class="dropdown-item">
+                <span class="item-icon">🏆</span>
+                <span>Leaderboard</span>
+              </a>
+            </div>
           </li>
         </ul>
 
@@ -246,6 +278,14 @@ const currentYear = new Date().getFullYear();
   <main class="main-content">
     <slot />
   </main>
+
+  <!-- ============================================ -->
+  <!-- WALLET SECURITY MODALS -->
+  <!-- ============================================ -->
+  <SecurityEducationModal />
+  <RecoveryPhraseModal />
+  <RecoveryPhraseVerification />
+  <WalletPINSetup />
 
   <!-- ============================================ -->
   <!-- FOOTER -->
@@ -1019,6 +1059,40 @@ const currentYear = new Date().getFullYear();
         if (!languageBtn?.contains(e.target) && !languageDropdown?.contains(e.target)) {
           languageDropdown.style.display = 'none';
         }
+      });
+
+      // Dropdown menus - close on click outside
+      document.addEventListener('click', (e) => {
+        const dropdowns = document.querySelectorAll('.nav-dropdown');
+        dropdowns.forEach(dropdown => {
+          if (!dropdown.contains(e.target)) {
+            const menu = dropdown.querySelector('.nav-dropdown-menu');
+            if (menu) {
+              menu.style.display = 'none';
+            }
+          }
+        });
+      });
+
+      // Dropdown buttons - toggle on click (for mobile/touch)
+      document.querySelectorAll('.nav-dropdown-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const dropdown = btn.closest('.nav-dropdown');
+          const menu = dropdown.querySelector('.nav-dropdown-menu');
+
+          // Close other dropdowns
+          document.querySelectorAll('.nav-dropdown-menu').forEach(m => {
+            if (m !== menu) m.style.display = 'none';
+          });
+
+          // Toggle current dropdown
+          if (menu.style.display === 'block') {
+            menu.style.display = 'none';
+          } else {
+            menu.style.display = 'block';
+          }
+        });
       });
 
       // Mobile menu

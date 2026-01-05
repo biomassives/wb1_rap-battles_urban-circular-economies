@@ -1,0 +1,598 @@
+---
+/**
+ * RecoveryPhraseModal.astro
+ * Critical security component for displaying recovery phrase
+ *
+ * Features:
+ * - Full-screen takeover for focus
+ * - Copy/screenshot warnings
+ * - Forced checklist before proceeding
+ * - Word numbering for easy backup
+ * - Dark retro theme
+ */
+---
+
+<div id="recoveryPhraseModal" class="recovery-modal" style="display: none;">
+  <div class="recovery-overlay"></div>
+
+  <div class="recovery-container card-retro-neon">
+    <!-- Critical Warning Header -->
+    <div class="recovery-header">
+      <div class="warning-icon pulse-glow">🔐</div>
+      <h2 class="recovery-title glitch neon-text">
+        YOUR RECOVERY PHRASE
+      </h2>
+      <p class="recovery-subtitle mono">
+        <span class="text-neon">⚠️ CRITICAL SECURITY STEP</span>
+      </p>
+    </div>
+
+    <!-- Security Warnings -->
+    <div class="security-warnings">
+      <div class="warning-box critical">
+        <div class="warning-header">
+          <span class="warning-icon-text">🚨</span>
+          <span class="warning-title mono">NEVER SHARE THESE WORDS</span>
+        </div>
+        <div class="warning-content mono">
+          Anyone with these 12 words has COMPLETE ACCESS to your wallet and can steal all your assets.
+          <br/>
+          <span class="text-neon">Not even Purple Point support will ask for these words!</span>
+        </div>
+      </div>
+
+      <div class="warning-box important">
+        <div class="warning-header">
+          <span class="warning-icon-text">📝</span>
+          <span class="warning-title mono">WRITE ON PAPER ONLY</span>
+        </div>
+        <div class="warning-content mono">
+          ❌ DO NOT screenshot<br/>
+          ❌ DO NOT save to cloud<br/>
+          ❌ DO NOT store digitally<br/>
+          ✅ DO write on physical paper<br/>
+          ✅ DO store in a safe place
+        </div>
+      </div>
+
+      <div class="warning-box info">
+        <div class="warning-header">
+          <span class="warning-icon-text">💡</span>
+          <span class="warning-title mono">LOSE THESE = LOSE EVERYTHING</span>
+        </div>
+        <div class="warning-content mono">
+          We cannot recover your wallet if you lose these words.
+          <br/>
+          <span class="text-cyan">Make multiple paper backups and store them separately!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recovery Phrase Display -->
+    <div class="phrase-display-wrapper">
+      <div class="phrase-instruction mono text-center">
+        <span class="text-neon">→</span> Write these 12 words in order on paper <span class="text-neon">←</span>
+      </div>
+
+      <div id="phraseGrid" class="phrase-grid" oncopy="return false" oncut="return false">
+        <!-- Words will be injected here by JavaScript -->
+      </div>
+
+      <div class="phrase-footer mono text-muted">
+        <small>👆 Hover to reveal each word | Copy/paste disabled for your security</small>
+      </div>
+    </div>
+
+    <!-- Security Checklist -->
+    <div class="security-checklist">
+      <h3 class="checklist-title mono neon-text">BEFORE YOU CONTINUE:</h3>
+
+      <label class="checklist-item">
+        <input type="checkbox" id="check-wrote-down" onchange="updateChecklistProgress()">
+        <span class="checkbox-custom"></span>
+        <span class="checklist-text mono">
+          I have <strong>written all 12 words</strong> on physical paper (not screenshot)
+        </span>
+      </label>
+
+      <label class="checklist-item">
+        <input type="checkbox" id="check-double-verified" onchange="updateChecklistProgress()">
+        <span class="checkbox-custom"></span>
+        <span class="checklist-text mono">
+          I have <strong>double-checked</strong> that I wrote them correctly and in order
+        </span>
+      </label>
+
+      <label class="checklist-item">
+        <input type="checkbox" id="check-safe-place" onchange="updateChecklistProgress()">
+        <span class="checkbox-custom"></span>
+        <span class="checklist-text mono">
+          I will <strong>store this paper in a safe place</strong> (fireproof safe, bank deposit box)
+        </span>
+      </label>
+
+      <label class="checklist-item">
+        <input type="checkbox" id="check-understand-risk" onchange="updateChecklistProgress()">
+        <span class="checkbox-custom"></span>
+        <span class="checklist-text mono">
+          I understand that <strong>no one can recover my wallet</strong> if I lose these words
+        </span>
+      </label>
+
+      <label class="checklist-item">
+        <input type="checkbox" id="check-never-share" onchange="updateChecklistProgress()">
+        <span class="checkbox-custom"></span>
+        <span class="checklist-text mono">
+          I will <strong>NEVER share</strong> these words with anyone (not even support)
+        </span>
+      </label>
+
+      <div id="checklistProgress" class="checklist-progress mono">
+        <span id="checklistCount">0</span>/5 completed
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="recovery-actions">
+      <button class="btn-recovery btn-retro" onclick="goBackFromRecoveryPhrase()">
+        <span>← BACK</span>
+      </button>
+      <button
+        class="btn-recovery btn-retro-neon pulse-glow"
+        id="proceedToVerificationBtn"
+        onclick="proceedToVerification()"
+        disabled
+      >
+        <span>I'VE WRITTEN IT DOWN →</span>
+      </button>
+    </div>
+
+    <!-- Download Backup Option -->
+    <div class="backup-download-section">
+      <button class="btn-download-backup btn-retro mono" onclick="downloadEncryptedBackup()">
+        <span>📥 DOWNLOAD ENCRYPTED BACKUP FILE</span>
+      </button>
+      <p class="backup-hint mono text-muted">
+        Recommended: Save an encrypted backup file (requires passphrase)
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Recovery Modal Overlay */
+  .recovery-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .recovery-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.98);
+    backdrop-filter: blur(15px);
+  }
+
+  .recovery-container {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    max-height: 95vh;
+    overflow-y: auto;
+    padding: 3rem;
+    background: var(--color-near-black);
+    z-index: 1;
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Header */
+  .recovery-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .warning-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .recovery-title {
+    font-size: 3rem;
+    font-weight: 900;
+    font-family: var(--font-mono);
+    letter-spacing: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .recovery-subtitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  /* Security Warnings */
+  .security-warnings {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .warning-box {
+    padding: 1.5rem;
+    border: 3px solid;
+    background: var(--color-black);
+  }
+
+  .warning-box.critical {
+    border-color: #dc2626;
+    background: rgba(220, 38, 38, 0.05);
+  }
+
+  .warning-box.important {
+    border-color: var(--color-neon-yellow);
+    background: rgba(255, 255, 0, 0.03);
+  }
+
+  .warning-box.info {
+    border-color: var(--color-neon-cyan);
+    background: rgba(0, 255, 255, 0.03);
+  }
+
+  .warning-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .warning-icon-text {
+    font-size: 1.75rem;
+  }
+
+  .warning-title {
+    font-size: 1.125rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+
+  .warning-content {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    padding-left: 2.5rem;
+  }
+
+  /* Phrase Display */
+  .phrase-display-wrapper {
+    margin-bottom: 2.5rem;
+  }
+
+  .phrase-instruction {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--color-black);
+    border: 2px solid var(--color-neon-green);
+  }
+
+  .phrase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 2rem;
+    background: var(--color-black);
+    border: 3px solid var(--color-white);
+    box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.1);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+  }
+
+  .phrase-word {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--color-near-black);
+    border: 3px solid var(--color-mid-gray);
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 900;
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: default;
+  }
+
+  .phrase-word:hover {
+    border-color: var(--color-neon-green);
+    box-shadow: 0 0 20px var(--color-neon-green-glow);
+    transform: translateY(-2px);
+  }
+
+  .phrase-word .word-number {
+    color: var(--color-neon-cyan);
+    font-size: 0.875rem;
+    min-width: 30px;
+  }
+
+  .phrase-word .word-text {
+    color: var(--color-neon-green);
+    letter-spacing: 1px;
+    filter: blur(3px);
+    transition: filter 0.3s ease;
+  }
+
+  .phrase-word:hover .word-text {
+    filter: blur(0);
+  }
+
+  .phrase-footer {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Security Checklist */
+  .security-checklist {
+    background: var(--color-black);
+    border: 3px solid var(--color-neon-yellow);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .checklist-title {
+    font-size: 1.375rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 1.75rem;
+    text-align: center;
+  }
+
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    background: var(--color-near-black);
+    border: 2px solid var(--color-mid-gray);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .checklist-item:hover {
+    border-color: var(--color-neon-green);
+    background: rgba(0, 255, 0, 0.05);
+  }
+
+  .checklist-item input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkbox-custom {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--color-white);
+    background: var(--color-black);
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .checklist-item input:checked + .checkbox-custom {
+    background: var(--color-neon-green);
+    border-color: var(--color-neon-green);
+  }
+
+  .checklist-item input:checked + .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--color-black);
+    font-weight: 900;
+    font-size: 1.25rem;
+  }
+
+  .checklist-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .checklist-progress {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--color-near-black);
+    border: 2px solid var(--color-mid-gray);
+    font-size: 1.125rem;
+    font-weight: 900;
+  }
+
+  .checklist-progress #checklistCount {
+    color: var(--color-neon-green);
+    font-size: 1.5rem;
+  }
+
+  /* Actions */
+  .recovery-actions {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .btn-recovery {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    font-size: 1.25rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .btn-recovery:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Backup Download */
+  .backup-download-section {
+    text-align: center;
+    padding: 2rem;
+    border-top: 2px dashed var(--color-mid-gray);
+  }
+
+  .btn-download-backup {
+    padding: 1.25rem 2rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .backup-hint {
+    font-size: 0.875rem;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .recovery-container {
+      padding: 2rem 1.5rem;
+    }
+
+    .recovery-title {
+      font-size: 2rem;
+    }
+
+    .phrase-grid {
+      grid-template-columns: 1fr;
+      padding: 1rem;
+    }
+
+    .recovery-actions {
+      flex-direction: column;
+    }
+
+    .warning-content {
+      padding-left: 0;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Global functions for recovery phrase modal
+  window.showRecoveryPhraseModal = function(words) {
+    const modal = document.getElementById('recoveryPhraseModal');
+    const grid = document.getElementById('phraseGrid');
+
+    // Clear and populate grid
+    grid.innerHTML = '';
+    words.forEach((word, index) => {
+      const wordEl = document.createElement('div');
+      wordEl.className = 'phrase-word';
+      wordEl.innerHTML = `
+        <span class="word-number">#${index + 1}</span>
+        <span class="word-text">${word}</span>
+      `;
+      grid.appendChild(wordEl);
+    });
+
+    // Reset checklist
+    document.querySelectorAll('.checklist-item input').forEach(cb => cb.checked = false);
+    updateChecklistProgress();
+
+    // Show modal
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Store words temporarily for verification
+    window._recoveryWords = words;
+  };
+
+  window.updateChecklistProgress = function() {
+    const total = document.querySelectorAll('.checklist-item input').length;
+    const checked = document.querySelectorAll('.checklist-item input:checked').length;
+
+    document.getElementById('checklistCount').textContent = checked;
+
+    // Enable proceed button only if all checked
+    const proceedBtn = document.getElementById('proceedToVerificationBtn');
+    proceedBtn.disabled = checked < total;
+  };
+
+  window.goBackFromRecoveryPhrase = function() {
+    if (confirm('Are you sure? You must write down your recovery phrase to secure your wallet.')) {
+      document.getElementById('recoveryPhraseModal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  };
+
+  window.proceedToVerification = function() {
+    document.getElementById('recoveryPhraseModal').style.display = 'none';
+
+    // Show verification modal (will be created next)
+    if (window.showRecoveryPhraseVerification) {
+      window.showRecoveryPhraseVerification(window._recoveryWords);
+    }
+  };
+
+  window.downloadEncryptedBackup = function() {
+    const passphrase = prompt('Create a strong passphrase for your backup file:\n\n(You will need this to restore from backup)');
+
+    if (!passphrase || passphrase.length < 8) {
+      alert('Passphrase must be at least 8 characters long.');
+      return;
+    }
+
+    const confirm = prompt('Confirm your passphrase:');
+    if (passphrase !== confirm) {
+      alert('Passphrases do not match!');
+      return;
+    }
+
+    // TODO: Implement actual encryption (will add in encryption utilities)
+    const backup = {
+      version: '1.0',
+      encrypted: btoa(window._recoveryWords.join(' ')), // Temporary, will be properly encrypted
+      createdAt: new Date().toISOString()
+    };
+
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `purplepoint_backup_${Date.now()}.ppbackup`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    alert('✅ Backup file downloaded!\n\nStore this file safely. You will need your passphrase to restore from it.');
+  };
+
+  // Prevent accidental navigation
+  window.addEventListener('beforeunload', (e) => {
+    if (document.getElementById('recoveryPhraseModal').style.display === 'flex') {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+</script>

@@ -201,14 +201,33 @@ import WelcomeWizard from '../components/WelcomeWizard.astro';
   </section>
 
   <!-- Card Design Showcase Section -->
-  <!-- Battle PFP Cards Showcase -->
-  <section class="battle-cards-section">
+  <!-- Battle PFP Cards Showcase - RETRO ASCII EDITION -->
+  <section class="battle-cards-section retro-ascii-section">
     <div class="container mx-auto">
-      <div class="section-header">
-        <h2 class="section-title">Rap Battle Commemorative PFPs</h2>
-        <p class="section-subtitle">
-          Every battle earns you a unique NFT card with your rapper persona and earned bling badges
-        </p>
+      <!-- ASCII Header Box -->
+      <div class="ascii-header-box">
+        <pre class="ascii-border-top">
+╔═══════════════════════════════════════════════════════════════════════════╗</pre>
+        <div class="section-header-retro">
+          <h2 class="section-title-glitch" data-text="RAP BATTLE COMMEMORATIVE PFPs">
+            <span class="glitch-layer">RAP BATTLE COMMEMORATIVE PFPs</span>
+            <span class="glitch-layer">RAP BATTLE COMMEMORATIVE PFPs</span>
+            <span class="glitch-layer">RAP BATTLE COMMEMORATIVE PFPs</span>
+          </h2>
+          <div class="ascii-divider">
+            <pre>├─────────────────────────────────────────────────────────────────────────┤</pre>
+          </div>
+          <p class="section-subtitle-retro">
+            <span class="ascii-bracket">[ </span>
+            <span class="neon-text">EVERY BATTLE EARNS YOU A UNIQUE NFT CARD</span>
+            <span class="ascii-bracket"> ]</span><br/>
+            <span class="ascii-bracket">[ </span>
+            <span class="neon-text">RAPPER PERSONA + EARNED BLING BADGES</span>
+            <span class="ascii-bracket"> ]</span>
+          </p>
+        </div>
+        <pre class="ascii-border-bottom">
+╚═══════════════════════════════════════════════════════════════════════════╝</pre>
       </div>
 
       <div class="cards-showcase-grid">
@@ -504,6 +523,32 @@ import WelcomeWizard from '../components/WelcomeWizard.astro';
       border: 2px solid var(--color-white);
       box-shadow: 4px 4px 0 var(--color-neon-green);
       text-align: left;
+    }
+
+    /* Preserve neon text effects inside hero elements */
+    .hero-title .neon-text,
+    .hero-tagline .neon-text,
+    .hero-badge .neon-text,
+    .showcase-title .neon-text,
+    .showcase-subtitle .neon-text,
+    .showcase-badge .neon-text {
+      color: var(--color-neon-green) !important;
+      text-shadow:
+        0 0 10px var(--color-neon-green-glow),
+        0 0 20px var(--color-neon-green-glow),
+        0 0 30px var(--color-neon-green-glow),
+        0 0 40px var(--color-neon-green) !important;
+    }
+
+    .hero-title .text-cyan,
+    .hero-tagline .text-cyan,
+    .showcase-subtitle .text-cyan {
+      color: var(--color-neon-cyan) !important;
+      text-shadow:
+        0 0 10px var(--color-neon-cyan-glow),
+        0 0 20px var(--color-neon-cyan-glow),
+        0 0 30px var(--color-neon-cyan-glow),
+        0 0 40px var(--color-neon-cyan) !important;
     }
 
     .hero-actions {
@@ -1629,6 +1674,238 @@ import WelcomeWizard from '../components/WelcomeWizard.astro';
         width: 100%;
         font-size: 0.95rem;
         padding: 1rem 1.5rem;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       RETRO ASCII PFP SECTION - SPACE INVADERS STYLE
+       ═══════════════════════════════════════════════════════════ */
+
+    .retro-ascii-section {
+      background: #000;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .retro-ascii-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 255, 0, 0.03) 2px,
+          rgba(0, 255, 0, 0.03) 4px
+        );
+      pointer-events: none;
+      animation: scanlines 8s linear infinite;
+    }
+
+    @keyframes scanlines {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(4px);
+      }
+    }
+
+    /* ASCII Header Box */
+    .ascii-header-box {
+      max-width: 1200px;
+      margin: 0 auto 4rem;
+      padding: 0;
+    }
+
+    .ascii-border-top,
+    .ascii-border-bottom,
+    .ascii-divider pre {
+      font-family: 'Courier New', monospace;
+      color: var(--color-neon-green);
+      font-size: 0.75rem;
+      line-height: 1;
+      margin: 0;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+      letter-spacing: -0.5px;
+    }
+
+    .section-header-retro {
+      background: #000;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* GLITCH TITLE EFFECT */
+    .section-title-glitch {
+      position: relative;
+      font-family: 'Courier New', monospace;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--color-neon-green);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin: 0;
+      padding: 1rem 0;
+      text-shadow:
+        0 0 10px rgba(0, 255, 0, 0.8),
+        0 0 20px rgba(0, 255, 0, 0.5),
+        0 0 30px rgba(0, 255, 0, 0.3);
+      animation: glitchPulse 3s ease-in-out infinite;
+    }
+
+    .glitch-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      opacity: 0;
+    }
+
+    .glitch-layer:nth-child(1) {
+      color: #00ff00;
+      animation: glitch1 2s infinite;
+      z-index: 1;
+    }
+
+    .glitch-layer:nth-child(2) {
+      color: #00ffff;
+      animation: glitch2 2.5s infinite;
+      z-index: 2;
+    }
+
+    .glitch-layer:nth-child(3) {
+      color: #ff00ff;
+      animation: glitch3 3s infinite;
+      z-index: 3;
+    }
+
+    @keyframes glitchPulse {
+      0%, 100% {
+        text-shadow:
+          0 0 10px rgba(0, 255, 0, 0.8),
+          0 0 20px rgba(0, 255, 0, 0.5),
+          0 0 30px rgba(0, 255, 0, 0.3);
+      }
+      50% {
+        text-shadow:
+          0 0 20px rgba(0, 255, 0, 1),
+          0 0 40px rgba(0, 255, 0, 0.8),
+          0 0 60px rgba(0, 255, 0, 0.5);
+      }
+    }
+
+    @keyframes glitch1 {
+      0%, 90%, 100% {
+        opacity: 0;
+        transform: translate(0);
+      }
+      91%, 93% {
+        opacity: 0.8;
+        transform: translate(-2px, 2px);
+      }
+      92% {
+        opacity: 1;
+        transform: translate(2px, -2px);
+      }
+    }
+
+    @keyframes glitch2 {
+      0%, 85%, 100% {
+        opacity: 0;
+        transform: translate(0);
+      }
+      86%, 88% {
+        opacity: 0.7;
+        transform: translate(3px, -3px);
+      }
+      87% {
+        opacity: 0.9;
+        transform: translate(-3px, 3px);
+      }
+    }
+
+    @keyframes glitch3 {
+      0%, 80%, 100% {
+        opacity: 0;
+        transform: translate(0);
+      }
+      81%, 84% {
+        opacity: 0.6;
+        transform: translate(-4px, -2px);
+      }
+      82% {
+        opacity: 0.8;
+        transform: translate(4px, 2px);
+      }
+    }
+
+    /* ASCII Divider */
+    .ascii-divider {
+      margin: 1.5rem 0;
+    }
+
+    /* Subtitle Retro Style */
+    .section-subtitle-retro {
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      line-height: 2;
+      color: var(--color-white);
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .ascii-bracket {
+      color: var(--color-neon-green);
+      font-weight: 900;
+      text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+    }
+
+    .neon-text {
+      color: var(--color-neon-green);
+      font-weight: 700;
+      text-shadow:
+        0 0 10px rgba(0, 255, 0, 0.8),
+        0 0 20px rgba(0, 255, 0, 0.5);
+      animation: neonFlicker 4s ease-in-out infinite;
+    }
+
+    @keyframes neonFlicker {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.95;
+      }
+      51% {
+        opacity: 1;
+      }
+      52% {
+        opacity: 0.98;
+      }
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .section-title-glitch {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+      }
+
+      .section-subtitle-retro {
+        font-size: 0.875rem;
+      }
+
+      .ascii-border-top,
+      .ascii-border-bottom,
+      .ascii-divider pre {
+        font-size: 0.5rem;
       }
     }
   </style>

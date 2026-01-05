@@ -1,0 +1,878 @@
+---
+/**
+ * SecurityEducationModal.astro
+ * Interactive tutorial about wallet security
+ *
+ * Usability Features:
+ * - Simple explanations with analogies
+ * - Visual examples
+ * - Interactive quiz
+ * - Progress tracking
+ * - Can't skip until completed
+ */
+---
+
+<div id="securityEducationModal" class="education-modal" style="display: none;">
+  <div class="education-overlay"></div>
+
+  <div class="education-container card-retro-neon">
+    <!-- Header -->
+    <div class="education-header">
+      <div class="education-icon animated-bounce">🎓</div>
+      <h2 class="education-title glitch neon-text">
+        WALLET SECURITY 101
+      </h2>
+      <p class="education-subtitle mono">
+        Learn the basics before creating your wallet
+      </p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="education-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="educationProgress"></div>
+      </div>
+      <div class="progress-text mono">
+        Lesson <span id="currentLesson">1</span> of 5
+      </div>
+    </div>
+
+    <!-- Lesson 1: What is a Wallet? -->
+    <div class="lesson active" id="lesson1">
+      <div class="lesson-header">
+        <h3 class="lesson-title mono neon-text">
+          💼 WHAT IS A CRYPTO WALLET?
+        </h3>
+      </div>
+
+      <div class="lesson-content">
+        <div class="analogy-box card-retro">
+          <h4 class="analogy-title mono">🏠 Think of it like your house:</h4>
+          <div class="analogy-items">
+            <div class="analogy-item">
+              <div class="item-icon">🏠</div>
+              <div class="item-text">
+                <strong>Your House = Your Wallet</strong><br/>
+                <span class="text-muted">Stores your valuables (NFTs, tokens, etc.)</span>
+              </div>
+            </div>
+            <div class="analogy-item">
+              <div class="item-icon">📍</div>
+              <div class="item-text">
+                <strong>House Address = Public Key</strong><br/>
+                <span class="text-muted">Safe to share - people send you things here</span>
+              </div>
+            </div>
+            <div class="analogy-item">
+              <div class="item-icon">🔑</div>
+              <div class="item-text">
+                <strong>House Key = Private Key</strong><br/>
+                <span class="text-muted">NEVER SHARE - only you should have this!</span>
+              </div>
+            </div>
+            <div class="analogy-item">
+              <div class="item-icon">📝</div>
+              <div class="item-text">
+                <strong>Spare Key Hidden Under Mat = Recovery Phrase</strong><br/>
+                <span class="text-muted">Backup in case you lose your main key</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="key-point dialogue-box">
+          <div class="dialogue-speaker">KEY POINT</div>
+          <div class="dialogue-text">
+            <strong class="text-neon">You are your own bank.</strong><br/>
+            No customer support can reset your password or recover your wallet.<br/>
+            <strong>You are 100% responsible for keeping it safe.</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lesson 2: Recovery Phrase -->
+    <div class="lesson" id="lesson2">
+      <div class="lesson-header">
+        <h3 class="lesson-title mono neon-text">
+          📝 WHAT IS A RECOVERY PHRASE?
+        </h3>
+      </div>
+
+      <div class="lesson-content">
+        <div class="explanation-box mono">
+          <p>
+            Your <strong class="text-neon">recovery phrase</strong> is 12 random words that act as a master key to your wallet.
+          </p>
+          <p>
+            Example: <span class="text-cyan">apple forest guitar laptop ocean sunset piano ...etc</span>
+          </p>
+        </div>
+
+        <div class="do-dont-grid">
+          <div class="do-column">
+            <h4 class="column-title mono text-neon">✅ DO:</h4>
+            <ul class="column-list mono">
+              <li>Write it on paper (pen & paper)</li>
+              <li>Store in a fireproof safe</li>
+              <li>Make 2-3 copies in different locations</li>
+              <li>Keep it completely private</li>
+              <li>Treat it like gold bars</li>
+            </ul>
+          </div>
+
+          <div class="dont-column">
+            <h4 class="column-title mono" style="color: #dc2626;">❌ DON'T:</h4>
+            <ul class="column-list mono">
+              <li>Screenshot it</li>
+              <li>Save to cloud (iCloud, Google Drive)</li>
+              <li>Email it to yourself</li>
+              <li>Tell anyone (not even family)</li>
+              <li>Type it into websites/apps</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="warning-box critical">
+          <strong>⚠️ CRITICAL WARNING:</strong><br/>
+          If someone gets your recovery phrase, they can steal EVERYTHING in your wallet.
+          There is NO way to undo this or get your money back.
+        </div>
+      </div>
+    </div>
+
+    <!-- Lesson 3: Phishing & Scams -->
+    <div class="lesson" id="lesson3">
+      <div class="lesson-header">
+        <h3 class="lesson-title mono neon-text">
+          🎣 AVOIDING PHISHING & SCAMS
+        </h3>
+      </div>
+
+      <div class="lesson-content">
+        <div class="scam-examples">
+          <h4 class="examples-title mono text-neon">Common Scams to Watch For:</h4>
+
+          <div class="scam-card">
+            <div class="scam-header">
+              <span class="scam-icon">📧</span>
+              <strong class="scam-title mono">Fake Support Emails</strong>
+            </div>
+            <div class="scam-content mono">
+              <p class="scam-trick">"Your wallet was hacked! Click here to secure it!"</p>
+              <p class="scam-reality">
+                <strong class="text-neon">REALITY:</strong> Purple Point will NEVER email asking for your recovery phrase or PIN.
+              </p>
+            </div>
+          </div>
+
+          <div class="scam-card">
+            <div class="scam-header">
+              <span class="scam-icon">🎁</span>
+              <strong class="scam-title mono">Free NFT Giveaways</strong>
+            </div>
+            <div class="scam-content mono">
+              <p class="scam-trick">"You won a free NFT! Connect your wallet to claim!"</p>
+              <p class="scam-reality">
+                <strong class="text-neon">REALITY:</strong> Malicious sites can drain your wallet if you sign transactions.
+              </p>
+            </div>
+          </div>
+
+          <div class="scam-card">
+            <div class="scam-header">
+              <span class="scam-icon">💬</span>
+              <strong class="scam-title mono">Discord/Telegram DMs</strong>
+            </div>
+            <div class="scam-content mono">
+              <p class="scam-trick">"Admin here. We need to verify your wallet."</p>
+              <p class="scam-reality">
+                <strong class="text-neon">REALITY:</strong> Real admins never DM first. This is always a scam.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="protection-tips card-retro">
+          <h4 class="tips-title mono text-neon">🛡️ Protection Tips:</h4>
+          <ul class="tips-list mono">
+            <li>Always verify URLs (check for https://purplepoint.io)</li>
+            <li>Never click links in DMs</li>
+            <li>If it sounds too good to be true, it is</li>
+            <li>When in doubt, ask in public channels</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lesson 4: Security Quiz -->
+    <div class="lesson" id="lesson4">
+      <div class="lesson-header">
+        <h3 class="lesson-title mono neon-text">
+          📋 KNOWLEDGE CHECK
+        </h3>
+        <p class="lesson-subtitle mono">Answer these questions to test your understanding</p>
+      </div>
+
+      <div class="lesson-content">
+        <div class="quiz-question" id="q1">
+          <h4 class="question-text mono">
+            <span class="question-number">Q1:</span>
+            Can Purple Point support recover your wallet if you lose your recovery phrase?
+          </h4>
+          <div class="quiz-options">
+            <button class="quiz-option" data-correct="false" onclick="answerQuiz(1, false)">
+              <span class="option-letter">A</span>
+              <span class="option-text">Yes, if I contact support</span>
+            </button>
+            <button class="quiz-option" data-correct="false" onclick="answerQuiz(1, false)">
+              <span class="option-letter">B</span>
+              <span class="option-text">Yes, using my email</span>
+            </button>
+            <button class="quiz-option" data-correct="true" onclick="answerQuiz(1, true)">
+              <span class="option-letter">C</span>
+              <span class="option-text">No, it's impossible - no one can recover it</span>
+            </button>
+          </div>
+          <div class="quiz-feedback" id="feedback1"></div>
+        </div>
+
+        <div class="quiz-question" id="q2">
+          <h4 class="question-text mono">
+            <span class="question-number">Q2:</span>
+            Where should you store your recovery phrase?
+          </h4>
+          <div class="quiz-options">
+            <button class="quiz-option" data-correct="false" onclick="answerQuiz(2, false)">
+              <span class="option-letter">A</span>
+              <span class="option-text">Screenshot on my phone</span>
+            </button>
+            <button class="quiz-option" data-correct="true" onclick="answerQuiz(2, true)">
+              <span class="option-letter">B</span>
+              <span class="option-text">Written on paper in a safe place</span>
+            </button>
+            <button class="quiz-option" data-correct="false" onclick="answerQuiz(2, false)">
+              <span class="option-letter">C</span>
+              <span class="option-text">In my email drafts</span>
+            </button>
+          </div>
+          <div class="quiz-feedback" id="feedback2"></div>
+        </div>
+
+        <div class="quiz-question" id="q3">
+          <h4 class="question-text mono">
+            <span class="question-number">Q3:</span>
+            Someone DMs you saying they're from Purple Point support. What do you do?
+          </h4>
+          <div class="quiz-options">
+            <button class="quiz-option" data-correct="false" onclick="answerQuiz(3, false)">
+              <span class="option-letter">A</span>
+              <span class="option-text">Share my recovery phrase to prove it's my wallet</span>
+            </button>
+            <button class="quiz-option" data-correct="false" onclick="answerQuiz(3, false)">
+              <span class="option-letter">B</span>
+              <span class="option-text">Click their link to verify my account</span>
+            </button>
+            <button class="quiz-option" data-correct="true" onclick="answerQuiz(3, true)">
+              <span class="option-letter">C</span>
+              <span class="option-text">Ignore them - real support never DMs first</span>
+            </button>
+          </div>
+          <div class="quiz-feedback" id="feedback3"></div>
+        </div>
+
+        <div class="quiz-score" id="quizScore">
+          <div class="score-text mono">
+            Score: <span id="scoreCount">0</span>/3
+          </div>
+          <div class="score-message" id="scoreMessage"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lesson 5: Final Summary -->
+    <div class="lesson" id="lesson5">
+      <div class="lesson-header">
+        <h3 class="lesson-title mono neon-text">
+          ✓ YOU'RE READY!
+        </h3>
+      </div>
+
+      <div class="lesson-content">
+        <div class="success-animation">
+          <div class="success-icon pulse-glow">🎓</div>
+          <h3 class="success-title mono neon-text">EDUCATION COMPLETE!</h3>
+        </div>
+
+        <div class="summary-box card-retro">
+          <h4 class="summary-title mono text-neon">📚 What You Learned:</h4>
+          <ul class="summary-list mono">
+            <li>✓ What a crypto wallet is (your own bank)</li>
+            <li>✓ How recovery phrases work (12 magic words)</li>
+            <li>✓ Where to store them safely (paper in safe)</li>
+            <li>✓ How to avoid scams (verify, never share)</li>
+            <li>✓ That no one can recover your wallet but you</li>
+          </ul>
+        </div>
+
+        <div class="final-reminder dialogue-box">
+          <div class="dialogue-speaker">FINAL REMINDER</div>
+          <div class="dialogue-text">
+            <strong class="text-neon">Remember:</strong><br/>
+            • Write your recovery phrase on PAPER<br/>
+            • Store it in a SAFE place<br/>
+            • NEVER share it with anyone<br/>
+            • You are YOUR OWN BANK 🏦<br/>
+            <br/>
+            <span class="text-cyan">You've got this! 💪</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="education-actions">
+      <button
+        class="btn-education btn-retro"
+        id="prevLessonBtn"
+        onclick="previousLesson()"
+        style="display: none;"
+      >
+        <span>← BACK</span>
+      </button>
+      <button
+        class="btn-education btn-retro-neon pulse-glow"
+        id="nextLessonBtn"
+        onclick="nextLesson()"
+      >
+        <span id="nextLessonText">NEXT LESSON →</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Education Modal */
+  .education-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .education-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.98);
+    backdrop-filter: blur(15px);
+  }
+
+  .education-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    max-height: 95vh;
+    overflow-y: auto;
+    padding: 3rem;
+    background: var(--color-near-black);
+    z-index: 1;
+  }
+
+  /* Header */
+  .education-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .education-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .education-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .education-subtitle {
+    font-size: 1rem;
+    color: var(--color-light-gray);
+  }
+
+  /* Progress */
+  .education-progress {
+    margin-bottom: 2.5rem;
+  }
+
+  .progress-bar {
+    height: 10px;
+    background: var(--color-dark-gray);
+    border: 3px solid var(--color-white);
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--color-neon-green);
+    width: 20%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px var(--color-neon-green-glow);
+  }
+
+  .progress-text {
+    text-align: center;
+    font-weight: 900;
+  }
+
+  /* Lessons */
+  .lesson {
+    display: none;
+  }
+
+  .lesson.active {
+    display: block;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .lesson-header {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .lesson-title {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+  }
+
+  .lesson-subtitle {
+    font-size: 0.95rem;
+    color: var(--color-light-gray);
+    margin-top: 0.5rem;
+  }
+
+  .lesson-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  /* Analogy Box */
+  .analogy-box {
+    padding: 2rem;
+  }
+
+  .analogy-title {
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: var(--color-neon-green);
+  }
+
+  .analogy-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .analogy-item {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+
+  .item-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+  }
+
+  .item-text {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* Do/Don't Grid */
+  .do-dont-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .do-column,
+  .dont-column {
+    padding: 1.75rem;
+    background: var(--color-black);
+    border: 3px solid var(--color-white);
+  }
+
+  .do-column {
+    border-color: var(--color-neon-green);
+  }
+
+  .dont-column {
+    border-color: #dc2626;
+  }
+
+  .column-title {
+    font-size: 1.125rem;
+    font-weight: 900;
+    margin-bottom: 1.25rem;
+  }
+
+  .column-list {
+    list-style: none;
+    padding: 0;
+    font-size: 0.925rem;
+    line-height: 2;
+  }
+
+  .column-list li::before {
+    margin-right: 0.5rem;
+  }
+
+  /* Scam Examples */
+  .scam-examples {
+    background: var(--color-black);
+    border: 2px solid var(--color-mid-gray);
+    padding: 2rem;
+  }
+
+  .examples-title {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .scam-card {
+    background: var(--color-near-black);
+    border: 2px solid #dc2626;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .scam-card:last-child {
+    margin-bottom: 0;
+  }
+
+  .scam-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .scam-icon {
+    font-size: 1.5rem;
+  }
+
+  .scam-title {
+    font-size: 1rem;
+  }
+
+  .scam-content {
+    padding-left: 2.25rem;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .scam-trick {
+    font-style: italic;
+    color: var(--color-light-gray);
+    margin-bottom: 0.75rem;
+  }
+
+  /* Quiz */
+  .quiz-question {
+    background: var(--color-black);
+    border: 3px solid var(--color-white);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .question-text {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .question-number {
+    color: var(--color-neon-cyan);
+    margin-right: 0.5rem;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem;
+    background: var(--color-near-black);
+    border: 3px solid var(--color-mid-gray);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+  }
+
+  .quiz-option:hover:not(.correct):not(.incorrect) {
+    border-color: var(--color-neon-cyan);
+    transform: translateX(10px);
+  }
+
+  .quiz-option.correct {
+    border-color: var(--color-neon-green);
+    background: rgba(0, 255, 0, 0.1);
+    pointer-events: none;
+  }
+
+  .quiz-option.incorrect {
+    border-color: #dc2626;
+    background: rgba(220, 38, 38, 0.1);
+    pointer-events: none;
+    animation: shake 0.5s ease-in-out;
+  }
+
+  .option-letter {
+    width: 35px;
+    height: 35px;
+    background: var(--color-black);
+    border: 2px solid var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .quiz-option.correct .option-letter {
+    background: var(--color-neon-green);
+    color: var(--color-black);
+  }
+
+  .option-text {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .quiz-feedback {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    min-height: 1.5rem;
+  }
+
+  .quiz-feedback.correct {
+    color: var(--color-neon-green);
+  }
+
+  .quiz-feedback.incorrect {
+    color: #dc2626;
+  }
+
+  .quiz-score {
+    text-align: center;
+    padding: 2rem;
+    background: var(--color-black);
+    border: 3px solid var(--color-white);
+  }
+
+  .score-text {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+  }
+
+  .score-message {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  /* Actions */
+  .education-actions {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .btn-education {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .education-container {
+      padding: 2rem 1.5rem;
+    }
+
+    .education-title {
+      font-size: 2rem;
+    }
+
+    .do-dont-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Education state
+  let educationState = {
+    currentLesson: 1,
+    quizAnswers: [false, false, false],
+    quizScore: 0
+  };
+
+  window.showSecurityEducation = function() {
+    const modal = document.getElementById('securityEducationModal');
+
+    // Reset state
+    educationState = {
+      currentLesson: 1,
+      quizAnswers: [false, false, false],
+      quizScore: 0
+    };
+
+    // Show modal
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    updateEducationUI();
+  };
+
+  function updateEducationUI() {
+    const { currentLesson } = educationState;
+
+    // Hide all lessons
+    document.querySelectorAll('.lesson').forEach(l => l.classList.remove('active'));
+
+    // Show current lesson
+    document.getElementById(`lesson${currentLesson}`).classList.add('active');
+
+    // Update progress
+    const progress = (currentLesson / 5) * 100;
+    document.getElementById('educationProgress').style.width = `${progress}%`;
+    document.getElementById('currentLesson').textContent = currentLesson;
+
+    // Update buttons
+    const prevBtn = document.getElementById('prevLessonBtn');
+    const nextBtn = document.getElementById('nextLessonBtn');
+    const nextText = document.getElementById('nextLessonText');
+
+    prevBtn.style.display = currentLesson > 1 ? 'flex' : 'none';
+
+    if (currentLesson === 4) {
+      // Quiz lesson - check if all answered correctly
+      nextBtn.disabled = educationState.quizScore < 3;
+      nextText.textContent = 'CONTINUE →';
+    } else if (currentLesson === 5) {
+      nextText.textContent = 'START CREATING WALLET →';
+      nextBtn.disabled = false;
+    } else {
+      nextText.textContent = 'NEXT LESSON →';
+      nextBtn.disabled = false;
+    }
+  }
+
+  window.nextLesson = function() {
+    if (educationState.currentLesson < 5) {
+      educationState.currentLesson++;
+      updateEducationUI();
+    } else {
+      // Complete education
+      completeEducation();
+    }
+  };
+
+  window.previousLesson = function() {
+    if (educationState.currentLesson > 1) {
+      educationState.currentLesson--;
+      updateEducationUI();
+    }
+  };
+
+  window.answerQuiz = function(questionNum, isCorrect) {
+    const question = document.getElementById(`q${questionNum}`);
+    const options = question.querySelectorAll('.quiz-option');
+    const feedback = document.getElementById(`feedback${questionNum}`);
+
+    // Disable all options for this question
+    options.forEach(option => {
+      if (option.dataset.correct === 'true') {
+        option.classList.add('correct');
+      } else if (!isCorrect && option === event.target.closest('.quiz-option')) {
+        option.classList.add('incorrect');
+      }
+      option.style.pointerEvents = 'none';
+    });
+
+    // Show feedback
+    if (isCorrect) {
+      feedback.textContent = '✓ Correct!';
+      feedback.className = 'quiz-feedback correct';
+      if (!educationState.quizAnswers[questionNum - 1]) {
+        educationState.quizAnswers[questionNum - 1] = true;
+        educationState.quizScore++;
+      }
+    } else {
+      feedback.textContent = '✗ Incorrect - try again!';
+      feedback.className = 'quiz-feedback incorrect';
+    }
+
+    // Update score
+    updateQuizScore();
+  };
+
+  function updateQuizScore() {
+    const { quizScore } = educationState;
+    document.getElementById('scoreCount').textContent = quizScore;
+
+    const scoreMessage = document.getElementById('scoreMessage');
+    if (quizScore === 3) {
+      scoreMessage.innerHTML = '<strong class="text-neon">Perfect score! 🎉</strong><br/>You\'re ready to create your wallet safely.';
+      document.getElementById('nextLessonBtn').disabled = false;
+    } else {
+      scoreMessage.innerHTML = `You need to answer all questions correctly to continue.<br/><span class="text-muted">Review the incorrect answers above.</span>`;
+    }
+  }
+
+  function completeEducation() {
+    document.getElementById('securityEducationModal').style.display = 'none';
+    document.body.style.overflow = '';
+
+    // Mark as completed
+    localStorage.setItem('securityEducationCompleted', 'true');
+
+    // Award XP
+    if (window.progressManager) {
+      window.progressManager.awardXP(100, 'security_education', 'Completed security education');
+    }
+
+    // Start wallet creation flow
+    if (window.generateNewWallet) {
+      window.generateNewWallet();
+    }
+  }
+</script>

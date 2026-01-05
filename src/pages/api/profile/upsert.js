@@ -6,8 +6,42 @@ import { neon } from '@neondatabase/serverless';
 
 export async function POST({ request }) {
   try {
+    // Check if request has body
+    const contentType = request.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      return new Response(JSON.stringify({
+        error: 'Invalid content type',
+        message: 'Request must have Content-Type: application/json'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     // Parse request body
-    const body = await request.json();
+    let body;
+    try {
+      const text = await request.text();
+      if (!text || text.trim() === '') {
+        return new Response(JSON.stringify({
+          error: 'Empty request body',
+          message: 'Request body cannot be empty'
+        }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      body = JSON.parse(text);
+    } catch (parseError) {
+      return new Response(JSON.stringify({
+        error: 'Invalid JSON',
+        message: 'Request body must be valid JSON: ' + parseError.message
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     const {
       walletAddress,
       username,

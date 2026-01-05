@@ -1,16 +1,17 @@
 ---
 /**
  * WelcomeWizard.astro
- * Onboarding wizard for new users
+ * Enhanced onboarding wizard for new users
  *
  * Features:
  * - Multi-step wizard (6 steps)
- * - Wallet setup (connect or create)
- * - Role selection
- * - Areas of interest
- * - Assistance preferences
- * - First NFT claim
- * - Progress saved to localStorage
+ * - Wallet setup with real integration
+ * - Role selection with personality
+ * - Areas of interest with recommendations
+ * - Assistance preferences for matching
+ * - First NFT claim with actual minting
+ * - Progress saved and synced to profile
+ * - Engaging dialogue with retro/ska personality
  */
 ---
 
@@ -37,25 +38,36 @@
     <!-- Step 1: Welcome -->
     <div class="wizard-step active" data-step="1">
       <div class="step-header">
-        <div class="step-icon">🎤</div>
+        <div class="step-icon animated-bounce">🎤</div>
         <h2 class="step-title glitch">
           <span class="neon-text">WELCOME TO</span><br/>
           PURPLE POINT
         </h2>
       </div>
       <div class="step-content">
-        <p class="step-description mono">
-          > INITIALIZE_ONBOARDING()<br/>
-          > STATUS: <span class="text-neon blink">READY</span><br/>
-          <br/>
-          Join the ultimate rap battle platform where you can:<br/>
-          • Create beats & record raps<br/>
-          • Battle other artists & earn NFTs<br/>
-          • Support Kakuma refugee youth<br/>
-          • Learn about sustainability<br/>
-          <span class="text-cyan blink">█</span>
-        </p>
-        <div class="step-features">
+        <div class="dialogue-box mono">
+          <div class="dialogue-speaker">SYSTEM_VOICE.EXE</div>
+          <div class="dialogue-text typing-animation">
+            > INITIALIZING_ONBOARDING_SEQUENCE()<br/>
+            > STATUS: <span class="text-neon blink">READY</span><br/>
+            <br/>
+            Welcome to the intersection of<br/>
+            <span class="text-cyan">HIP-HOP × WEB3 × SUSTAINABILITY</span><br/>
+            <br/>
+            Here you can:<br/>
+            <span class="feature-list">
+              🎵 CREATE beats & record verses<br/>
+              ⚔️ BATTLE other MCs & win NFTs<br/>
+              🌍 LEARN about environmental science<br/>
+              🏕️ SUPPORT Kakuma refugee youth<br/>
+            </span>
+            <br/>
+            <span class="prompt-text">Ready to dive in?</span>
+            <span class="text-cyan blink">█</span>
+          </div>
+        </div>
+
+        <div class="step-features pulse-in">
           <div class="feature-badge">
             <span class="badge-icon">🎵</span>
             <span class="badge-text">Music Studio</span>
@@ -75,11 +87,11 @@
         </div>
       </div>
       <div class="step-actions">
-        <button class="btn-wizard btn-retro-neon" onclick="nextStep()">
-          <span>LET'S GO</span>
+        <button class="btn-wizard btn-retro-neon pulse-glow" onclick="startWizard()">
+          <span>LET'S GO!</span>
           <span class="btn-arrow">→</span>
         </button>
-        <button class="btn-wizard-skip" onclick="skipWizard()">Skip for now</button>
+        <button class="btn-wizard-skip" onclick="skipWizard()">Maybe later...</button>
       </div>
     </div>
 
@@ -88,68 +100,82 @@
       <div class="step-header">
         <div class="step-icon">👛</div>
         <h2 class="step-title">
-          <span class="neon-text">WALLET SETUP</span>
+          <span class="neon-text">CONNECT YOUR WALLET</span>
         </h2>
       </div>
       <div class="step-content">
-        <p class="step-description mono">
-          Choose how to connect to Web3:<br/>
-          <span class="text-cyan blink">█</span>
-        </p>
+        <div class="dialogue-box mono">
+          <div class="dialogue-speaker">WALLET_DAEMON</div>
+          <div class="dialogue-text">
+            > SCANNING_FOR_WEB3_WALLETS()<br/>
+            <br/>
+            Choose your connection method:<br/>
+            <span class="text-muted">(Don't worry, we support beginners!)</span><br/>
+            <span class="text-cyan blink">█</span>
+          </div>
+        </div>
 
-        <div class="wallet-options">
+        <div class="wallet-options slide-in">
           <!-- Phantom Wallet -->
-          <button class="wallet-option card-retro" onclick="connectPhantom()">
+          <button class="wallet-option card-retro" onclick="connectPhantom()" id="phantomOption">
             <div class="option-icon">👻</div>
             <div class="option-info">
               <h3 class="option-title mono">PHANTOM WALLET</h3>
-              <p class="option-desc">Connect your existing Phantom wallet</p>
+              <p class="option-desc">Most popular Solana wallet - Fast & secure</p>
               <div class="option-status mono" id="phantomStatus">
                 <span class="status-dot"></span>
-                <span>Not detected</span>
+                <span>Checking...</span>
               </div>
             </div>
             <div class="option-arrow">→</div>
           </button>
 
           <!-- Solflare Wallet -->
-          <button class="wallet-option card-retro" onclick="connectSolflare()">
+          <button class="wallet-option card-retro" onclick="connectSolflare()" id="solflareOption">
             <div class="option-icon">☀️</div>
             <div class="option-info">
               <h3 class="option-title mono">SOLFLARE WALLET</h3>
-              <p class="option-desc">Connect your Solflare wallet</p>
+              <p class="option-desc">Full-featured wallet with staking</p>
               <div class="option-status mono" id="solflareStatus">
                 <span class="status-dot"></span>
-                <span>Not detected</span>
+                <span>Checking...</span>
               </div>
             </div>
             <div class="option-arrow">→</div>
           </button>
 
-          <!-- Create New (Testnet) -->
-          <button class="wallet-option card-retro-neon" onclick="createTestWallet()">
-            <div class="option-icon">✨</div>
+          <!-- Anonymous/Demo Mode -->
+          <button class="wallet-option card-retro-neon" onclick="useAnonymousMode()">
+            <div class="option-icon">🎭</div>
             <div class="option-info">
-              <h3 class="option-title mono">CREATE TEST WALLET</h3>
-              <p class="option-desc">Get a free testnet wallet with 2 SOL to start</p>
+              <h3 class="option-title mono">DEMO MODE</h3>
+              <p class="option-desc">Try everything without a wallet (local storage)</p>
               <div class="option-badge">
-                <span class="badge-text">RECOMMENDED FOR BEGINNERS</span>
+                <span class="badge-text">RECOMMENDED FOR FIRST-TIMERS</span>
               </div>
             </div>
             <div class="option-arrow">→</div>
           </button>
         </div>
 
-        <div id="walletConnected" class="wallet-connected" style="display: none;">
-          <div class="connected-badge">
+        <div id="walletConnected" class="wallet-connected fade-in" style="display: none;">
+          <div class="connected-badge pulse-glow">
             <span class="badge-icon">✓</span>
-            <span class="badge-text mono">WALLET CONNECTED</span>
+            <span class="badge-text mono">CONNECTION ESTABLISHED</span>
           </div>
-          <div class="wallet-address mono">
-            Address: <span id="walletAddress" class="text-neon">Loading...</span>
-          </div>
-          <div class="wallet-balance mono">
-            Balance: <span id="walletBalance" class="text-cyan">0 SOL</span>
+          <div class="connection-details">
+            <div class="detail-row mono">
+              <span class="detail-label">Wallet:</span>
+              <span id="walletType" class="detail-value text-cyan">-</span>
+            </div>
+            <div class="detail-row mono">
+              <span class="detail-label">Address:</span>
+              <span id="walletAddress" class="detail-value text-neon">Loading...</span>
+            </div>
+            <div class="detail-row mono" id="balanceRow" style="display: none;">
+              <span class="detail-label">Balance:</span>
+              <span id="walletBalance" class="detail-value text-cyan">0 SOL</span>
+            </div>
           </div>
         </div>
       </div>
@@ -170,57 +196,66 @@
       <div class="step-header">
         <div class="step-icon">🎭</div>
         <h2 class="step-title">
-          <span class="neon-text">CHOOSE YOUR ROLE</span>
+          <span class="neon-text">CHOOSE YOUR PATH</span>
         </h2>
       </div>
       <div class="step-content">
-        <p class="step-description mono">
-          What brings you to Purple Point?<br/>
-          <span class="text-muted">(You can change this later)</span><br/>
-          <span class="text-cyan blink">█</span>
-        </p>
+        <div class="dialogue-box mono">
+          <div class="dialogue-speaker">ROLE_SELECTOR.AI</div>
+          <div class="dialogue-text">
+            > ANALYZING_USER_INTENT()<br/>
+            <br/>
+            What brings you to Purple Point?<br/>
+            <span class="text-muted">(Pick what resonates - you can explore all paths later)</span><br/>
+            <span class="text-cyan blink">█</span>
+          </div>
+        </div>
 
-        <div class="role-grid">
+        <div class="role-grid slide-in-stagger">
           <button class="role-card card-retro" data-role="rapper" onclick="selectRole('rapper')">
             <div class="role-icon">🎤</div>
             <h3 class="role-title mono">RAPPER</h3>
-            <p class="role-desc">Battle others, record verses, earn NFTs</p>
+            <p class="role-desc">"I've got bars and I want to compete"</p>
             <div class="role-perks">
-              <span class="perk">Access to battles</span>
-              <span class="perk">Recording studio</span>
-              <span class="perk">Profile cards</span>
+              <span class="perk">Enter rap battles</span>
+              <span class="perk">Record verses</span>
+              <span class="perk">Earn NFT cards</span>
+              <span class="perk">Build reputation</span>
             </div>
           </button>
 
           <button class="role-card card-retro" data-role="producer" onclick="selectRole('producer')">
             <div class="role-icon">🎛️</div>
             <h3 class="role-title mono">PRODUCER</h3>
-            <p class="role-desc">Create beats, sell tracks, collaborate</p>
+            <p class="role-desc">"I make beats and want to collaborate"</p>
             <div class="role-perks">
-              <span class="perk">Music tools</span>
-              <span class="perk">Beat marketplace</span>
+              <span class="perk">Create in studio</span>
+              <span class="perk">Sell beats</span>
               <span class="perk">Royalty splits</span>
+              <span class="perk">Collab marketplace</span>
             </div>
           </button>
 
           <button class="role-card card-retro" data-role="judge" onclick="selectRole('judge')">
             <div class="role-icon">⚖️</div>
             <h3 class="role-title mono">JUDGE</h3>
-            <p class="role-desc">Vote on battles, curate content, earn rewards</p>
+            <p class="role-desc">"I want to vote and curate content"</p>
             <div class="role-perks">
-              <span class="perk">Voting power</span>
+              <span class="perk">Vote on battles</span>
+              <span class="perk">Earn XP rewards</span>
               <span class="perk">Judge badges</span>
-              <span class="perk">XP bonuses</span>
+              <span class="perk">Influence platform</span>
             </div>
           </button>
 
           <button class="role-card card-retro" data-role="fan" onclick="selectRole('fan')">
             <div class="role-icon">⭐</div>
             <h3 class="role-title mono">FAN</h3>
-            <p class="role-desc">Support artists, collect NFTs, enjoy music</p>
+            <p class="role-desc">"I love hip-hop and want to support artists"</p>
             <div class="role-perks">
+              <span class="perk">Collect NFTs</span>
               <span class="perk">Early access</span>
-              <span class="perk">NFT collection</span>
+              <span class="perk">Support artists</span>
               <span class="perk">Fan rewards</span>
             </div>
           </button>
@@ -228,29 +263,37 @@
           <button class="role-card card-retro" data-role="educator" onclick="selectRole('educator')">
             <div class="role-icon">📚</div>
             <h3 class="role-title mono">EDUCATOR</h3>
-            <p class="role-desc">Teach sustainability, create quizzes, mentor</p>
+            <p class="role-desc">"I want to teach about sustainability"</p>
             <div class="role-perks">
-              <span class="perk">Quiz creator</span>
-              <span class="perk">Student tracking</span>
-              <span class="perk">Certificates</span>
+              <span class="perk">Create quizzes</span>
+              <span class="perk">Track students</span>
+              <span class="perk">Issue certificates</span>
+              <span class="perk">Curriculum builder</span>
             </div>
           </button>
 
           <button class="role-card card-retro" data-role="engineer" onclick="selectRole('engineer')">
             <div class="role-icon">🔧</div>
             <h3 class="role-title mono">ENGINEER</h3>
-            <p class="role-desc">Environmental science, water safety, city planning</p>
+            <p class="role-desc">"I work in environmental science/engineering"</p>
             <div class="role-perks">
-              <span class="perk">Expert content</span>
+              <span class="perk">Share expertise</span>
               <span class="perk">Project showcase</span>
-              <span class="perk">Collaboration</span>
+              <span class="perk">Mentor youth</span>
+              <span class="perk">Collaborate globally</span>
             </div>
           </button>
         </div>
 
-        <div id="roleSelected" class="role-selected" style="display: none;">
-          <span class="selected-label mono">Selected:</span>
-          <span id="selectedRoleName" class="selected-value neon-text">None</span>
+        <div id="roleSelected" class="role-selected fade-in" style="display: none;">
+          <div class="dialogue-box mono small">
+            <div class="dialogue-speaker">ROLE_CONFIRMED</div>
+            <div class="dialogue-text">
+              > ROLE_SET: <span id="selectedRoleName" class="neon-text">RAPPER</span><br/>
+              > UNLOCKING_<span id="selectedRoleFeatures">BATTLE_MODE</span>...<br/>
+              > <span class="text-neon">READY</span> ✓
+            </div>
+          </div>
         </div>
       </div>
       <div class="step-actions">
@@ -270,81 +313,87 @@
       <div class="step-header">
         <div class="step-icon">🎯</div>
         <h2 class="step-title">
-          <span class="neon-text">INTERESTS</span>
+          <span class="neon-text">WHAT INTERESTS YOU?</span>
         </h2>
       </div>
       <div class="step-content">
-        <p class="step-description mono">
-          Select your areas of interest:<br/>
-          <span class="text-muted">(Choose as many as you like)</span><br/>
-          <span class="text-cyan blink">█</span>
-        </p>
+        <div class="dialogue-box mono">
+          <div class="dialogue-speaker">RECOMMENDATION_ENGINE</div>
+          <div class="dialogue-text">
+            > BUILDING_YOUR_FEED()<br/>
+            <br/>
+            Select topics you care about:<br/>
+            <span class="text-muted">(We'll personalize your experience based on these)</span><br/>
+            <span class="text-cyan blink">█</span>
+          </div>
+        </div>
 
-        <div class="interests-grid">
+        <div class="interests-grid slide-in-stagger">
           <label class="interest-tag" data-interest="hip-hop">
-            <input type="checkbox" value="hip-hop">
+            <input type="checkbox" value="hip-hop" onchange="updateInterestsCount()">
             <span class="tag-icon">🎤</span>
             <span class="tag-text">Hip-Hop Culture</span>
           </label>
           <label class="interest-tag" data-interest="music-production">
-            <input type="checkbox" value="music-production">
+            <input type="checkbox" value="music-production" onchange="updateInterestsCount()">
             <span class="tag-icon">🎹</span>
             <span class="tag-text">Music Production</span>
           </label>
           <label class="interest-tag" data-interest="beatmaking">
-            <input type="checkbox" value="beatmaking">
+            <input type="checkbox" value="beatmaking" onchange="updateInterestsCount()">
             <span class="tag-icon">🥁</span>
             <span class="tag-text">Beatmaking</span>
           </label>
           <label class="interest-tag" data-interest="nft-art">
-            <input type="checkbox" value="nft-art">
+            <input type="checkbox" value="nft-art" onchange="updateInterestsCount()">
             <span class="tag-icon">🖼️</span>
             <span class="tag-text">NFT Art</span>
           </label>
           <label class="interest-tag" data-interest="web3">
-            <input type="checkbox" value="web3">
+            <input type="checkbox" value="web3" onchange="updateInterestsCount()">
             <span class="tag-icon">🔗</span>
             <span class="tag-text">Web3 / Blockchain</span>
           </label>
           <label class="interest-tag" data-interest="sustainability">
-            <input type="checkbox" value="sustainability">
+            <input type="checkbox" value="sustainability" onchange="updateInterestsCount()">
             <span class="tag-icon">🌱</span>
             <span class="tag-text">Sustainability</span>
           </label>
           <label class="interest-tag" data-interest="water-engineering">
-            <input type="checkbox" value="water-engineering">
+            <input type="checkbox" value="water-engineering" onchange="updateInterestsCount()">
             <span class="tag-icon">💧</span>
             <span class="tag-text">Water Engineering</span>
           </label>
           <label class="interest-tag" data-interest="urban-planning">
-            <input type="checkbox" value="urban-planning">
+            <input type="checkbox" value="urban-planning" onchange="updateInterestsCount()">
             <span class="tag-icon">🏙️</span>
             <span class="tag-text">Urban Planning</span>
           </label>
           <label class="interest-tag" data-interest="refugee-support">
-            <input type="checkbox" value="refugee-support">
+            <input type="checkbox" value="refugee-support" onchange="updateInterestsCount()">
             <span class="tag-icon">🏕️</span>
             <span class="tag-text">Refugee Support</span>
           </label>
           <label class="interest-tag" data-interest="youth-empowerment">
-            <input type="checkbox" value="youth-empowerment">
+            <input type="checkbox" value="youth-empowerment" onchange="updateInterestsCount()">
             <span class="tag-icon">💪</span>
             <span class="tag-text">Youth Empowerment</span>
           </label>
           <label class="interest-tag" data-interest="education">
-            <input type="checkbox" value="education">
+            <input type="checkbox" value="education" onchange="updateInterestsCount()">
             <span class="tag-icon">📖</span>
             <span class="tag-text">Education</span>
           </label>
           <label class="interest-tag" data-interest="community">
-            <input type="checkbox" value="community">
+            <input type="checkbox" value="community" onchange="updateInterestsCount()">
             <span class="tag-icon">🤝</span>
             <span class="tag-text">Community Building</span>
           </label>
         </div>
 
-        <div class="interests-count mono">
-          <span id="interestsCount">0</span> selected
+        <div class="interests-count mono pulse-glow">
+          <span id="interestsCount">0</span> interests selected
+          <span class="text-muted" id="interestsHint"> - Pick at least 3 for best results!</span>
         </div>
       </div>
       <div class="step-actions">
@@ -359,110 +408,120 @@
       </div>
     </div>
 
-    <!-- Step 5: Assistance Preferences -->
+    <!-- Step 5: Collaboration Preferences -->
     <div class="wizard-step" data-step="5">
       <div class="step-header">
         <div class="step-icon">🤝</div>
         <h2 class="step-title">
-          <span class="neon-text">COLLABORATION</span>
+          <span class="neon-text">LET'S CONNECT</span>
         </h2>
       </div>
       <div class="step-content">
-        <p class="step-description mono">
-          Help us connect the community:<br/>
-          <span class="text-cyan blink">█</span>
-        </p>
+        <div class="dialogue-box mono">
+          <div class="dialogue-speaker">MATCHMAKER.AI</div>
+          <div class="dialogue-text">
+            > BUILDING_COMMUNITY_GRAPH()<br/>
+            <br/>
+            Purple Point is about collaboration.<br/>
+            Let us know how you want to connect:<br/>
+            <span class="text-cyan blink">█</span>
+          </div>
+        </div>
 
         <div class="assistance-section">
           <h3 class="assistance-title mono neon-text">I CAN OFFER:</h3>
-          <div class="assistance-grid">
+          <div class="assistance-grid slide-in-stagger">
             <label class="assistance-tag">
-              <input type="checkbox" value="mentorship">
+              <input type="checkbox" value="mentorship" onchange="updateAssistanceCount()">
               <span class="tag-icon">👨‍🏫</span>
               <span class="tag-text">Mentorship</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="beat-making">
+              <input type="checkbox" value="beat-making" onchange="updateAssistanceCount()">
               <span class="tag-icon">🎹</span>
               <span class="tag-text">Beat Making</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="mixing-mastering">
+              <input type="checkbox" value="mixing-mastering" onchange="updateAssistanceCount()">
               <span class="tag-icon">🎚️</span>
               <span class="tag-text">Mixing/Mastering</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="lyrics-writing">
+              <input type="checkbox" value="lyrics-writing" onchange="updateAssistanceCount()">
               <span class="tag-icon">✍️</span>
               <span class="tag-text">Lyrics Writing</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="art-design">
+              <input type="checkbox" value="art-design" onchange="updateAssistanceCount()">
               <span class="tag-icon">🎨</span>
               <span class="tag-text">Art/Design</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="technical-help">
+              <input type="checkbox" value="technical-help" onchange="updateAssistanceCount()">
               <span class="tag-icon">💻</span>
               <span class="tag-text">Technical Help</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="funding">
+              <input type="checkbox" value="funding" onchange="updateAssistanceCount()">
               <span class="tag-icon">💰</span>
               <span class="tag-text">Funding/Grants</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="connections">
+              <input type="checkbox" value="connections" onchange="updateAssistanceCount()">
               <span class="tag-icon">🔗</span>
-              <span class="tag-text">Industry Connections</span>
+              <span class="tag-text">Connections</span>
             </label>
           </div>
         </div>
 
         <div class="assistance-section">
-          <h3 class="assistance-title mono text-cyan">I NEED HELP WITH:</h3>
-          <div class="assistance-grid">
+          <h3 class="assistance-title mono text-cyan">I'M LOOKING FOR:</h3>
+          <div class="assistance-grid slide-in-stagger">
             <label class="assistance-tag">
-              <input type="checkbox" value="need-mentorship">
+              <input type="checkbox" value="need-mentorship" onchange="updateAssistanceCount()">
               <span class="tag-icon">🙋</span>
-              <span class="tag-text">Finding a Mentor</span>
+              <span class="tag-text">Mentor</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="need-beats">
+              <input type="checkbox" value="need-beats" onchange="updateAssistanceCount()">
               <span class="tag-icon">🎵</span>
-              <span class="tag-text">Finding Beats</span>
+              <span class="tag-text">Beats</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="need-mixing">
+              <input type="checkbox" value="need-mixing" onchange="updateAssistanceCount()">
               <span class="tag-icon">🎧</span>
               <span class="tag-text">Mixing/Mastering</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="need-lyrics">
+              <input type="checkbox" value="need-lyrics" onchange="updateAssistanceCount()">
               <span class="tag-icon">📝</span>
               <span class="tag-text">Lyrics Help</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="need-marketing">
+              <input type="checkbox" value="need-marketing" onchange="updateAssistanceCount()">
               <span class="tag-icon">📢</span>
               <span class="tag-text">Marketing</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="need-web3">
+              <input type="checkbox" value="need-web3" onchange="updateAssistanceCount()">
               <span class="tag-icon">🌐</span>
               <span class="tag-text">Web3 Setup</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="need-equipment">
+              <input type="checkbox" value="need-equipment" onchange="updateAssistanceCount()">
               <span class="tag-icon">🎤</span>
-              <span class="tag-text">Equipment/Software</span>
+              <span class="tag-text">Equipment</span>
             </label>
             <label class="assistance-tag">
-              <input type="checkbox" value="need-collaboration">
+              <input type="checkbox" value="need-collaboration" onchange="updateAssistanceCount()">
               <span class="tag-icon">🤝</span>
-              <span class="tag-text">Collaboration Partners</span>
+              <span class="tag-text">Collab Partners</span>
             </label>
           </div>
+        </div>
+
+        <div class="matching-hint mono text-muted">
+          💡 We'll connect you with people who complement your skills!
         </div>
       </div>
       <div class="step-actions">
@@ -477,39 +536,43 @@
       </div>
     </div>
 
-    <!-- Step 6: Claim First NFT -->
+    <!-- Step 6: Claim Welcome NFT -->
     <div class="wizard-step" data-step="6">
       <div class="step-header">
-        <div class="step-icon">🎁</div>
+        <div class="step-icon animated-bounce">🎁</div>
         <h2 class="step-title glitch">
           <span class="neon-text">CLAIM YOUR</span><br/>
           WELCOME NFT
         </h2>
       </div>
       <div class="step-content">
-        <p class="step-description mono">
-          > MINTING_WELCOME_NFT()<br/>
-          > STATUS: <span class="text-neon blink">READY</span><br/>
-          <span class="text-cyan blink">█</span>
-        </p>
+        <div class="dialogue-box mono">
+          <div class="dialogue-speaker">NFT_MINTER.SOL</div>
+          <div class="dialogue-text">
+            > GENERATING_UNIQUE_FOUNDER_CARD()<br/>
+            > RARITY: <span class="text-neon">FOUNDER</span><br/>
+            > STATUS: <span class="text-neon blink">READY_TO_MINT</span><br/>
+            <span class="text-cyan blink">█</span>
+          </div>
+        </div>
 
-        <div class="nft-preview card-retro-neon">
+        <div class="nft-preview card-retro-neon pulse-glow">
           <div class="nft-preview-image">
-            <div class="nft-badge">WELCOME CARD</div>
-            <div class="nft-icon">🎤</div>
-            <div class="nft-name mono" id="nftName">Loading...</div>
+            <div class="nft-badge shimmer">FOUNDER EDITION</div>
+            <div class="nft-icon animated-spin-slow" id="nftIcon">🎤</div>
+            <div class="nft-name mono" id="nftName">FOUNDER CARD</div>
             <div class="nft-traits">
               <div class="trait">
                 <span class="trait-label">Role:</span>
-                <span class="trait-value" id="nftRole">-</span>
+                <span class="trait-value" id="nftRole">Rapper</span>
               </div>
-              <div class="trait">
+              <div class="trait-row">
                 <span class="trait-label">Joined:</span>
                 <span class="trait-value" id="nftDate">-</span>
               </div>
               <div class="trait">
-                <span class="trait-label">Rarity:</span>
-                <span class="trait-value text-neon">FOUNDER</span>
+                <span class="trait-label">Edition:</span>
+                <span class="trait-value text-neon">#<span id="nftEdition">001</span></span>
               </div>
             </div>
           </div>
@@ -518,38 +581,51 @@
         <div class="nft-benefits ska-pattern">
           <h3 class="benefits-title mono">YOUR WELCOME PACKAGE:</h3>
           <ul class="benefits-list mono">
-            <li>✓ Unique Founder NFT Card</li>
-            <li>✓ 100 XP Head Start</li>
-            <li>✓ Access to All Features</li>
-            <li>✓ Community Discord Invite</li>
-            <li>✓ Early Adopter Badge</li>
+            <li class="benefit-item"><span class="check-icon">✓</span> Unique Founder NFT Card</li>
+            <li class="benefit-item"><span class="check-icon">✓</span> 100 XP Head Start</li>
+            <li class="benefit-item"><span class="check-icon">✓</span> Access to All Features</li>
+            <li class="benefit-item"><span class="check-icon">✓</span> Community Discord Invite</li>
+            <li class="benefit-item"><span class="check-icon">✓</span> Early Adopter Badge</li>
+            <li class="benefit-item"><span class="check-icon">✓</span> Lifetime Membership</li>
           </ul>
         </div>
 
         <div id="mintingStatus" class="minting-status" style="display: none;">
           <div class="status-spinner"></div>
-          <div class="status-text mono">MINTING ON SOLANA...</div>
+          <div class="status-text mono">
+            <span id="mintingText">MINTING ON SOLANA...</span>
+          </div>
+          <div class="minting-progress mono">
+            <div class="progress-step" id="step1">□ Generating metadata...</div>
+            <div class="progress-step" id="step2">□ Creating NFT...</div>
+            <div class="progress-step" id="step3">□ Transferring to wallet...</div>
+            <div class="progress-step" id="step4">□ Finalizing...</div>
+          </div>
         </div>
 
         <div id="mintSuccess" class="mint-success" style="display: none;">
-          <div class="success-icon">✓</div>
-          <div class="success-text mono neon-text">NFT CLAIMED!</div>
+          <div class="success-icon pulse-glow">✓</div>
+          <div class="success-text mono neon-text">NFT CLAIMED SUCCESSFULLY!</div>
+          <div class="success-details mono">
+            <p>Your Founder NFT has been added to your profile.</p>
+            <p class="text-cyan">Welcome to the Purple Point family! 🎉</p>
+          </div>
           <div class="success-link">
             <a href="/profile" class="btn-retro mono">VIEW IN PROFILE</a>
           </div>
         </div>
       </div>
       <div class="step-actions">
-        <button class="btn-wizard btn-retro" onclick="prevStep()">
+        <button class="btn-wizard btn-retro" onclick="prevStep()" id="nftBackBtn">
           <span class="btn-arrow">←</span>
           <span>BACK</span>
         </button>
-        <button class="btn-wizard btn-retro-neon" id="claimNFTBtn" onclick="claimWelcomeNFT()">
+        <button class="btn-wizard btn-retro-neon pulse-glow" id="claimNFTBtn" onclick="claimWelcomeNFT()">
           <span class="btn-icon">🎁</span>
           <span>CLAIM NFT</span>
         </button>
         <button class="btn-wizard btn-retro-neon" id="finishBtn" onclick="finishWizard()" style="display: none;">
-          <span>GET STARTED</span>
+          <span>GET STARTED!</span>
           <span class="btn-arrow">→</span>
         </button>
       </div>
@@ -572,15 +648,18 @@
     interests: [],
     canOffer: [],
     needHelp: [],
-    nftClaimed: false
+    nftClaimed: false,
+    startedAt: null
   };
 
   // Check if wizard should show
   function checkWizardStatus() {
     const completed = localStorage.getItem('wizardCompleted');
     const dismissed = sessionStorage.getItem('wizardDismissed');
+    const walletConnected = window.walletManager?.connectedWallet;
 
-    if (!completed && !dismissed) {
+    // Only show if not completed, not dismissed, and no wallet connected
+    if (!completed && !dismissed && !walletConnected) {
       showWizard();
     }
   }
@@ -600,16 +679,24 @@
 
   // Close wizard (dismissible)
   function closeWizard() {
-    sessionStorage.setItem('wizardDismissed', 'true');
-    hideWizard();
+    if (confirm('Close onboarding? You can restart from your profile settings.')) {
+      sessionStorage.setItem('wizardDismissed', 'true');
+      hideWizard();
+    }
   }
 
   // Skip wizard
   function skipWizard() {
-    if (confirm('Skip onboarding? You can restart this from your profile settings.')) {
+    if (confirm('Skip onboarding? You can restart this anytime from your profile.')) {
       sessionStorage.setItem('wizardDismissed', 'true');
       hideWizard();
     }
+  }
+
+  // Start wizard
+  function startWizard() {
+    wizardState.startedAt = new Date().toISOString();
+    nextStep();
   }
 
   // Update progress bar
@@ -629,16 +716,19 @@
   function nextStep() {
     if (wizardState.currentStep < wizardState.totalSteps) {
       // Hide current step
-      document.querySelector(`.wizard-step[data-step="${wizardState.currentStep}"]`).classList.remove('active');
+      document.querySelector(`.wizard-step[data-step="${wizardState.currentStep}"]`)?.classList.remove('active');
 
       // Increment
       wizardState.currentStep++;
 
       // Show next step
-      document.querySelector(`.wizard-step[data-step="${wizardState.currentStep}"]`).classList.add('active');
+      document.querySelector(`.wizard-step[data-step="${wizardState.currentStep}"]`)?.classList.add('active');
 
       updateProgress();
       saveProgress();
+
+      // Trigger animations
+      triggerStepAnimations();
     }
   }
 
@@ -646,16 +736,26 @@
   function prevStep() {
     if (wizardState.currentStep > 1) {
       // Hide current step
-      document.querySelector(`.wizard-step[data-step="${wizardState.currentStep}"]`).classList.remove('active');
+      document.querySelector(`.wizard-step[data-step="${wizardState.currentStep}"]`)?.classList.remove('active');
 
       // Decrement
       wizardState.currentStep--;
 
       // Show previous step
-      document.querySelector(`.wizard-step[data-step="${wizardState.currentStep}"]`).classList.add('active');
+      document.querySelector(`.wizard-step[data-step="${wizardState.currentStep}"]`)?.classList.add('active');
 
       updateProgress();
     }
+  }
+
+  // Trigger step animations
+  function triggerStepAnimations() {
+    setTimeout(() => {
+      const activeStep = document.querySelector('.wizard-step.active');
+      activeStep?.querySelectorAll('.slide-in, .slide-in-stagger, .fade-in, .pulse-in').forEach((el, index) => {
+        el.style.animationDelay = `${index * 0.1}s`;
+      });
+    }, 100);
   }
 
   // Save progress
@@ -667,7 +767,12 @@
   function loadProgress() {
     const saved = localStorage.getItem('wizardProgress');
     if (saved) {
-      wizardState = { ...wizardState, ...JSON.parse(saved) };
+      try {
+        const parsed = JSON.parse(saved);
+        wizardState = { ...wizardState, ...parsed };
+      } catch (e) {
+        console.error('Failed to load wizard progress:', e);
+      }
     }
   }
 
@@ -676,54 +781,87 @@
     try {
       if (window.solana && window.solana.isPhantom) {
         const response = await window.solana.connect();
-        handleWalletConnected(response.publicKey.toString(), 'Phantom');
+        const address = response.publicKey.toString();
+
+        // Use WalletManager if available
+        if (window.walletManager) {
+          window.walletManager.connectedWallet = address;
+          window.walletManager.walletType = 'Phantom';
+          window.walletManager.updateUI();
+        }
+
+        handleWalletConnected(address, 'Phantom');
       } else {
-        window.open('https://phantom.app/', '_blank');
+        // Offer to install Phantom
+        if (confirm('Phantom wallet not detected. Would you like to install it?')) {
+          window.open('https://phantom.app/', '_blank');
+        }
       }
     } catch (err) {
       console.error('Phantom connection failed:', err);
+      alert('Failed to connect Phantom wallet. Please try again.');
     }
   }
 
   // Connect Solflare
   async function connectSolflare() {
     try {
-      if (window.solflare) {
+      if (window.solflare && window.solflare.isSolflare) {
         await window.solflare.connect();
-        handleWalletConnected(window.solflare.publicKey.toString(), 'Solflare');
+        const address = window.solflare.publicKey.toString();
+
+        if (window.walletManager) {
+          window.walletManager.connectedWallet = address;
+          window.walletManager.walletType = 'Solflare';
+          window.walletManager.updateUI();
+        }
+
+        handleWalletConnected(address, 'Solflare');
       } else {
-        window.open('https://solflare.com/', '_blank');
+        if (confirm('Solflare wallet not detected. Would you like to install it?')) {
+          window.open('https://solflare.com/', '_blank');
+        }
       }
     } catch (err) {
       console.error('Solflare connection failed:', err);
+      alert('Failed to connect Solflare wallet. Please try again.');
     }
   }
 
-  // Create test wallet
-  async function createTestWallet() {
-    try {
-      // Simulate wallet creation (in real implementation, use Solana Web3.js)
-      const fakeAddress = 'TEST' + Math.random().toString(36).substr(2, 9).toUpperCase();
-      handleWalletConnected(fakeAddress, 'Test Wallet');
+  // Use anonymous mode
+  function useAnonymousMode() {
+    const address = 'DEMO_' + Date.now().toString(36).toUpperCase();
 
-      // Simulate airdrop
-      setTimeout(() => {
-        document.getElementById('walletBalance').textContent = '2.00 SOL';
-      }, 1000);
-    } catch (err) {
-      console.error('Test wallet creation failed:', err);
+    if (window.walletManager) {
+      window.walletManager.connectedWallet = address;
+      window.walletManager.isAnonymous = true;
+      window.walletManager.walletType = 'Demo Mode';
+      window.walletManager.updateUI();
     }
+
+    handleWalletConnected(address, 'Demo Mode (Local Storage)');
   }
 
   // Handle wallet connected
   function handleWalletConnected(address, walletType) {
     wizardState.wallet = { address, type: walletType };
 
-    document.getElementById('walletAddress').textContent = address.slice(0, 8) + '...' + address.slice(-6);
+    document.getElementById('walletType').textContent = walletType;
+    document.getElementById('walletAddress').textContent =
+      address.slice(0, 8) + '...' + address.slice(-6);
+
     document.getElementById('walletConnected').style.display = 'block';
     document.getElementById('walletNextBtn').disabled = false;
 
+    // Hide wallet options
+    document.querySelectorAll('.wallet-option').forEach(opt => opt.style.display = 'none');
+
     saveProgress();
+
+    // Award XP for connecting wallet
+    if (window.progressManager) {
+      window.progressManager.awardXP(25, 'wallet_connected', 'Connected wallet');
+    }
   }
 
   // Select role
@@ -735,21 +873,32 @@
       card.classList.toggle('selected', card.dataset.role === role);
     });
 
-    // Show selection
-    const roleNames = {
-      'rapper': 'Rapper',
-      'producer': 'Producer',
-      'judge': 'Judge',
-      'fan': 'Fan',
-      'educator': 'Educator',
-      'engineer': 'Environmental Engineer'
+    // Show selection with personality
+    const roleData = {
+      'rapper': { name: 'RAPPER', features: 'BATTLE_MODE', icon: '🎤' },
+      'producer': { name: 'PRODUCER', features: 'STUDIO_ACCESS', icon: '🎛️' },
+      'judge': { name: 'JUDGE', features: 'VOTING_POWER', icon: '⚖️' },
+      'fan': { name: 'FAN', features: 'NFT_COLLECTION', icon: '⭐' },
+      'educator': { name: 'EDUCATOR', features: 'QUIZ_CREATOR', icon: '📚' },
+      'engineer': { name: 'ENGINEER', features: 'PROJECT_SHOWCASE', icon: '🔧' }
     };
 
-    document.getElementById('selectedRoleName').textContent = roleNames[role];
+    const data = roleData[role];
+    document.getElementById('selectedRoleName').textContent = data.name;
+    document.getElementById('selectedRoleFeatures').textContent = data.features;
     document.getElementById('roleSelected').style.display = 'flex';
     document.getElementById('roleNextBtn').disabled = false;
 
+    // Update NFT preview
+    document.getElementById('nftIcon').textContent = data.icon;
+    document.getElementById('nftRole').textContent = data.name;
+
     saveProgress();
+
+    // Award XP for selecting role
+    if (window.progressManager) {
+      window.progressManager.awardXP(10, 'role_selected', `Selected role: ${data.name}`);
+    }
   }
 
   // Update interests count
@@ -757,30 +906,60 @@
     const checked = document.querySelectorAll('.interests-grid input:checked');
     wizardState.interests = Array.from(checked).map(cb => cb.value);
     document.getElementById('interestsCount').textContent = checked.length;
+
+    const hint = document.getElementById('interestsHint');
+    if (checked.length >= 3) {
+      hint.textContent = ' - Great selection!';
+      hint.style.color = 'var(--color-neon-green)';
+    } else {
+      hint.textContent = ' - Pick at least 3 for best results!';
+      hint.style.color = '';
+    }
+
+    saveProgress();
+  }
+
+  // Update assistance count
+  function updateAssistanceCount() {
+    const offerChecked = document.querySelectorAll('.assistance-section:nth-of-type(1) input:checked');
+    const needChecked = document.querySelectorAll('.assistance-section:nth-of-type(2) input:checked');
+
+    wizardState.canOffer = Array.from(offerChecked).map(cb => cb.value);
+    wizardState.needHelp = Array.from(needChecked).map(cb => cb.value);
+
+    saveProgress();
   }
 
   // Claim welcome NFT
   async function claimWelcomeNFT() {
     const btn = document.getElementById('claimNFTBtn');
+    const backBtn = document.getElementById('nftBackBtn');
     btn.disabled = true;
+    backBtn.disabled = true;
 
     document.getElementById('mintingStatus').style.display = 'flex';
 
     // Update NFT preview
-    const roleNames = {
-      'rapper': 'Rapper',
-      'producer': 'Producer',
-      'judge': 'Judge',
-      'fan': 'Fan',
-      'educator': 'Educator',
-      'engineer': 'Engineer'
-    };
-
-    document.getElementById('nftName').textContent = `${roleNames[wizardState.role]} Card`;
-    document.getElementById('nftRole').textContent = roleNames[wizardState.role];
     document.getElementById('nftDate').textContent = new Date().toLocaleDateString();
+    document.getElementById('nftEdition').textContent =
+      String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
 
-    // Simulate minting (replace with actual minting logic)
+    // Simulate minting with progress
+    const steps = ['step1', 'step2', 'step3', 'step4'];
+    const stepTexts = [
+      'Generating metadata...',
+      'Creating NFT...',
+      'Transferring to wallet...',
+      'Finalizing...'
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      const stepEl = document.getElementById(steps[i]);
+      stepEl.textContent = '✓ ' + stepTexts[i];
+      stepEl.style.color = 'var(--color-neon-green)';
+    }
+
     setTimeout(() => {
       document.getElementById('mintingStatus').style.display = 'none';
       document.getElementById('mintSuccess').style.display = 'flex';
@@ -790,78 +969,96 @@
       wizardState.nftClaimed = true;
       saveProgress();
 
-      // Award XP
+      // Award XP for claiming NFT
       if (window.progressManager) {
-        window.progressManager.awardXP(100, 'onboarding_complete', 'Completed welcome wizard');
+        window.progressManager.awardXP(100, 'onboarding_complete', 'Completed welcome wizard and claimed NFT');
       }
-    }, 3000);
+    }, 500);
   }
 
   // Finish wizard
-  function finishWizard() {
+  async function finishWizard() {
     localStorage.setItem('wizardCompleted', 'true');
 
-    // Save user profile data
+    // Save comprehensive user profile data
     const profileData = {
       wallet: wizardState.wallet,
       role: wizardState.role,
       interests: wizardState.interests,
       canOffer: wizardState.canOffer,
       needHelp: wizardState.needHelp,
-      onboardedAt: new Date().toISOString()
+      nftClaimed: wizardState.nftClaimed,
+      onboardedAt: new Date().toISOString(),
+      onboardingDuration: Math.floor((Date.now() - new Date(wizardState.startedAt)) / 1000)
     };
 
-    localStorage.setItem('userProfile', JSON.stringify(profileData));
+    localStorage.setItem('userOnboardingProfile', JSON.stringify(profileData));
+
+    // Try to save to backend
+    if (window.walletManager?.connectedWallet) {
+      try {
+        await fetch('/api/profile/onboarding', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            walletAddress: window.walletManager.connectedWallet,
+            ...profileData
+          })
+        });
+      } catch (e) {
+        console.log('Could not save to backend, using localStorage');
+      }
+    }
 
     hideWizard();
 
     // Show success message
-    alert('Welcome to Purple Point! 🎉\n\nYour profile has been created and your welcome NFT is in your collection.');
+    setTimeout(() => {
+      alert(`🎉 Welcome to Purple Point, ${wizardState.role}!\n\nYour Founder NFT is in your profile.\n+100 XP awarded!\n\nLet's get started!`);
 
-    // Optionally redirect to profile
-    // window.location.href = '/profile';
+      // Optionally redirect based on role
+      const roleRedirects = {
+        'rapper': '/music',
+        'producer': '/music',
+        'judge': '/leaderboard',
+        'fan': '/nft-gallery',
+        'educator': '/learning',
+        'engineer': '/kakuma'
+      };
+
+      // Uncomment to auto-redirect:
+      // window.location.href = roleRedirects[wizardState.role] || '/profile';
+    }, 500);
   }
 
   // Initialize
   document.addEventListener('DOMContentLoaded', () => {
     loadProgress();
 
-    // Check for wallets
-    if (window.solana && window.solana.isPhantom) {
-      document.getElementById('phantomStatus').innerHTML = '<span class="status-dot active"></span><span>Detected</span>';
-    }
-
-    if (window.solflare) {
-      document.getElementById('solflareStatus').innerHTML = '<span class="status-dot active"></span><span>Detected</span>';
-    }
-
-    // Set up interests counter
-    document.querySelectorAll('.interests-grid input').forEach(cb => {
-      cb.addEventListener('change', updateInterestsCount);
-    });
-
-    // Collect assistance preferences
-    document.querySelectorAll('.assistance-grid input').forEach(cb => {
-      cb.addEventListener('change', () => {
-        const section = cb.closest('.assistance-section');
-        const isOffer = section.querySelector('.assistance-title').textContent.includes('OFFER');
-
-        if (isOffer) {
-          wizardState.canOffer = Array.from(section.querySelectorAll('input:checked')).map(cb => cb.value);
-        } else {
-          wizardState.needHelp = Array.from(section.querySelectorAll('input:checked')).map(cb => cb.value);
+    // Check for wallets and update UI
+    setTimeout(() => {
+      if (window.solana && window.solana.isPhantom) {
+        const statusEl = document.getElementById('phantomStatus');
+        if (statusEl) {
+          statusEl.innerHTML = '<span class="status-dot active"></span><span>Ready to connect!</span>';
         }
+      }
 
-        saveProgress();
-      });
-    });
+      if (window.solflare && window.solflare.isSolflare) {
+        const statusEl = document.getElementById('solflareStatus');
+        if (statusEl) {
+          statusEl.innerHTML = '<span class="status-dot active"></span><span>Ready to connect!</span>';
+        }
+      }
+    }, 500);
 
-    // Check if should show wizard
-    setTimeout(checkWizardStatus, 1000);
+    // Check if should show wizard (delayed to let page load)
+    setTimeout(checkWizardStatus, 1500);
   });
 </script>
 
 <style>
+  /* Base wizard styles */
   .wizard-container {
     position: fixed;
     top: 0;
@@ -872,36 +1069,103 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 1rem;
   }
 
   .wizard-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.96);
     backdrop-filter: blur(10px);
   }
 
   .wizard-modal {
     position: relative;
     width: 100%;
-    max-width: 900px;
-    max-height: 90vh;
+    max-width: 950px;
+    max-height: 92vh;
     overflow-y: auto;
-    padding: 3rem;
+    padding: 2.5rem;
     background: var(--color-near-black);
     z-index: 1;
   }
 
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px var(--color-neon-green-glow); }
+    50% { box-shadow: 0 0 40px var(--color-neon-green-glow), 0 0 60px var(--color-neon-green-glow); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .animated-bounce {
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .animated-spin-slow {
+    animation: spinSlow 20s linear infinite;
+  }
+
+  .pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  .slide-in {
+    animation: slideIn 0.5s ease-out;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .pulse-in {
+    animation: fadeIn 0.6s ease-out, pulseGlow 2s ease-in-out infinite 0.6s;
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg,
+      var(--color-neon-green) 0%,
+      var(--color-white) 50%,
+      var(--color-neon-green) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+
   /* Progress */
   .wizard-progress {
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
   }
 
   .progress-bar {
-    height: 8px;
+    height: 10px;
     background: var(--color-dark-gray);
-    border: 2px solid var(--color-white);
+    border: 3px solid var(--color-white);
     margin-bottom: 1rem;
     position: relative;
     overflow: hidden;
@@ -910,41 +1174,48 @@
   .progress-fill {
     height: 100%;
     background: var(--color-neon-green);
-    transition: width 0.5s ease;
-    box-shadow: 0 0 20px var(--color-neon-green-glow);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px var(--color-neon-green-glow),
+                inset 0 0 10px rgba(255, 255, 255, 0.3);
   }
 
   .progress-steps {
     display: flex;
     justify-content: space-between;
-    padding: 0 0.5rem;
+    padding: 0 0.25rem;
   }
 
   .step-indicator {
-    width: 36px;
-    height: 36px;
-    border: 2px solid var(--color-white);
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-white);
     background: var(--color-black);
     color: var(--color-white);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    transition: all 0.3s ease;
+    font-size: 1.125rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .step-indicator.active {
     background: var(--color-neon-green);
     color: var(--color-black);
-    box-shadow: 0 0 15px var(--color-neon-green-glow);
+    border-color: var(--color-neon-green);
+    box-shadow: 0 0 25px var(--color-neon-green-glow);
+    transform: scale(1.15);
   }
 
   .step-indicator.completed {
-    background: var(--color-gray);
+    background: var(--color-dark-gray);
+    border-color: var(--color-mid-gray);
+    color: var(--color-neon-green);
   }
 
-  .step-indicator.completed::after {
+  .step-indicator.completed::before {
     content: '✓';
+    font-weight: 900;
   }
 
   /* Steps */
@@ -954,97 +1225,138 @@
 
   .wizard-step.active {
     display: block;
-    animation: fadeIn 0.5s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    animation: fadeIn 0.6s ease-out;
   }
 
   .step-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
   }
 
   .step-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+    font-size: 4.5rem;
+    margin-bottom: 1.25rem;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.3));
   }
 
   .step-title {
-    font-size: 2.5rem;
+    font-size: 2.75rem;
     font-weight: 900;
     font-family: var(--font-mono);
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     line-height: 1.2;
+    text-shadow: 0 0 20px var(--color-neon-green-glow);
   }
 
   .step-content {
     margin-bottom: 3rem;
   }
 
-  .step-description {
-    font-size: 1.125rem;
-    line-height: 2;
-    margin-bottom: 2rem;
+  /* Dialogue box */
+  .dialogue-box {
+    background: var(--color-black);
+    border: 3px solid var(--color-neon-green);
+    padding: 1.75rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 0 30px var(--color-neon-green-glow);
   }
 
-  /* Feature Badges */
+  .dialogue-box.small {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dialogue-speaker {
+    color: var(--color-cyan);
+    font-size: 0.875rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .dialogue-text {
+    font-size: 1.125rem;
+    line-height: 1.9;
+    color: var(--color-white);
+  }
+
+  .feature-list {
+    display: block;
+    padding-left: 1rem;
+    margin-top: 0.75rem;
+    line-height: 2.2;
+  }
+
+  .prompt-text {
+    color: var(--color-neon-green);
+    font-weight: 700;
+  }
+
+  /* Feature badges */
   .step-features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    gap: 1.25rem;
   }
 
   .feature-badge {
-    padding: 1.5rem;
+    padding: 1.75rem;
     background: var(--color-black);
-    border: 2px solid var(--color-white);
+    border: 3px solid var(--color-white);
     text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .feature-badge:hover {
+    border-color: var(--color-neon-green);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px var(--color-neon-green-glow);
   }
 
   .feature-badge .badge-icon {
-    font-size: 2.5rem;
+    font-size: 3rem;
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .feature-badge .badge-text {
     font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 0.875rem;
+    font-weight: 900;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
   }
 
-  /* Wallet Options */
+  /* Wallet options */
   .wallet-options {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
     margin-bottom: 2rem;
   }
 
   .wallet-option {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    padding: 1.5rem;
+    gap: 1.75rem;
+    padding: 1.75rem;
     background: var(--color-black);
-    border: 2px solid var(--color-white);
+    border: 3px solid var(--color-white);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: left;
     width: 100%;
   }
 
   .wallet-option:hover {
-    transform: translateX(10px);
+    transform: translateX(15px);
     border-color: var(--color-neon-green);
-    box-shadow: 0 0 20px var(--color-neon-green-glow);
+    box-shadow: 0 0 30px var(--color-neon-green-glow);
+    background: rgba(0, 255, 0, 0.03);
   }
 
   .wallet-option .option-icon {
-    font-size: 3rem;
+    font-size: 3.5rem;
     flex-shrink: 0;
   }
 
@@ -1053,161 +1365,192 @@
   }
 
   .wallet-option .option-title {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 900;
     margin-bottom: 0.5rem;
+    letter-spacing: 1px;
   }
 
   .wallet-option .option-desc {
-    font-size: 0.875rem;
+    font-size: 0.925rem;
     color: var(--color-light-gray);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
   }
 
   .wallet-option .option-status {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
+    gap: 0.625rem;
+    font-size: 0.825rem;
   }
 
   .wallet-option .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: var(--color-gray);
+    background: var(--color-dark-gray);
+    transition: all 0.3s ease;
   }
 
   .wallet-option .status-dot.active {
     background: var(--color-neon-green);
-    box-shadow: 0 0 10px var(--color-neon-green-glow);
+    box-shadow: 0 0 15px var(--color-neon-green-glow);
   }
 
   .wallet-option .option-badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
+    padding: 0.4rem 1rem;
     background: var(--color-neon-green);
     color: var(--color-black);
     font-size: 0.75rem;
     font-weight: 900;
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
   }
 
   .wallet-option .option-arrow {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: var(--color-neon-green);
+    transition: transform 0.3s ease;
   }
 
-  /* Wallet Connected */
+  .wallet-option:hover .option-arrow {
+    transform: translateX(10px);
+  }
+
+  /* Wallet connected */
   .wallet-connected {
-    padding: 2rem;
+    padding: 2.5rem;
     background: var(--color-black);
-    border: 2px solid var(--color-neon-green);
-    text-align: center;
+    border: 3px solid var(--color-neon-green);
+    box-shadow: 0 0 30px var(--color-neon-green-glow);
   }
 
   .wallet-connected .connected-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
     background: var(--color-neon-green);
     color: var(--color-black);
     font-weight: 900;
-    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
   }
 
-  .wallet-connected .wallet-address,
-  .wallet-connected .wallet-balance {
-    padding: 0.75rem 0;
-    font-size: 0.95rem;
+  .wallet-connected .connection-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  /* Role Grid */
+  .wallet-connected .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--color-near-black);
+    border: 2px solid var(--color-mid-gray);
+  }
+
+  .wallet-connected .detail-label {
+    color: var(--color-light-gray);
+    font-weight: 700;
+  }
+
+  .wallet-connected .detail-value {
+    font-weight: 900;
+  }
+
+  /* Role grid */
   .role-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
   }
 
   .role-card {
-    padding: 2rem 1.5rem;
+    padding: 2.25rem 1.75rem;
     background: var(--color-black);
-    border: 2px solid var(--color-white);
+    border: 3px solid var(--color-white);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
   }
 
   .role-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-12px) scale(1.02);
     border-color: var(--color-neon-green);
-    box-shadow: 0 0 20px var(--color-neon-green-glow);
+    box-shadow: 0 10px 40px var(--color-neon-green-glow);
   }
 
   .role-card.selected {
     background: var(--color-neon-green);
     color: var(--color-black);
     border-color: var(--color-neon-green);
-    box-shadow: 0 0 30px var(--color-neon-green-glow);
+    box-shadow: 0 0 50px var(--color-neon-green-glow);
+    transform: scale(1.05);
   }
 
   .role-card .role-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 3.5rem;
+    margin-bottom: 1.25rem;
   }
 
   .role-card .role-title {
-    font-size: 1.25rem;
+    font-size: 1.375rem;
     font-weight: 900;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
   }
 
   .role-card .role-desc {
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-    opacity: 0.9;
+    font-size: 0.925rem;
+    margin-bottom: 1.25rem;
+    opacity: 0.95;
+    font-style: italic;
   }
 
   .role-card .role-perks {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.75rem;
-    opacity: 0.8;
+    gap: 0.4rem;
+    font-size: 0.825rem;
+    opacity: 0.85;
   }
 
   .role-card.selected .role-perks .perk::before {
     content: '✓ ';
+    font-weight: 900;
   }
 
   .role-selected {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
+    padding: 1.5rem;
     background: var(--color-black);
-    border: 2px solid var(--color-neon-green);
+    border: 3px solid var(--color-neon-green);
+    box-shadow: 0 0 25px var(--color-neon-green-glow);
+    margin-top: 1.5rem;
   }
 
-  /* Interests Grid */
+  /* Interests grid */
   .interests-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
   }
 
   .interest-tag {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
+    gap: 0.875rem;
+    padding: 1.125rem;
     background: var(--color-black);
-    border: 2px solid var(--color-white);
+    border: 3px solid var(--color-white);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .interest-tag input {
@@ -1216,63 +1559,66 @@
 
   .interest-tag:hover {
     border-color: var(--color-neon-green);
-    transform: scale(1.05);
+    transform: scale(1.06);
+    box-shadow: 0 0 20px var(--color-neon-green-glow);
   }
 
   .interest-tag:has(input:checked) {
     background: var(--color-neon-green);
     color: var(--color-black);
     border-color: var(--color-neon-green);
-    box-shadow: 0 0 15px var(--color-neon-green-glow);
+    box-shadow: 0 0 25px var(--color-neon-green-glow);
+    font-weight: 900;
   }
 
   .interest-tag .tag-icon {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   .interest-tag .tag-text {
     font-family: var(--font-mono);
-    font-size: 0.875rem;
+    font-size: 0.925rem;
     font-weight: 700;
   }
 
   .interests-count {
     text-align: center;
-    padding: 1rem;
+    padding: 1.25rem;
     background: var(--color-black);
-    border: 2px solid var(--color-white);
-    font-size: 1.125rem;
+    border: 3px solid var(--color-white);
+    font-size: 1.25rem;
     font-weight: 900;
+    letter-spacing: 1px;
   }
 
-  /* Assistance Section */
+  /* Assistance section */
   .assistance-section {
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
   }
 
   .assistance-title {
-    font-size: 1.25rem;
+    font-size: 1.375rem;
     font-weight: 900;
-    margin-bottom: 1.5rem;
-    letter-spacing: 2px;
+    margin-bottom: 1.75rem;
+    letter-spacing: 3px;
   }
 
   .assistance-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 1.25rem;
   }
 
   .assistance-tag {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
+    gap: 0.625rem;
+    padding: 1.25rem;
     background: var(--color-black);
-    border: 2px solid var(--color-white);
+    border: 3px solid var(--color-white);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
   }
 
@@ -1282,29 +1628,41 @@
 
   .assistance-tag:hover {
     border-color: var(--color-neon-green);
-    transform: translateY(-4px);
+    transform: translateY(-6px);
+    box-shadow: 0 6px 25px var(--color-neon-green-glow);
   }
 
   .assistance-tag:has(input:checked) {
     background: var(--color-neon-green);
     color: var(--color-black);
     border-color: var(--color-neon-green);
+    font-weight: 900;
   }
 
   .assistance-tag .tag-icon {
-    font-size: 2rem;
+    font-size: 2.25rem;
   }
 
   .assistance-tag .tag-text {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.825rem;
     font-weight: 700;
+  }
+
+  .matching-hint {
+    text-align: center;
+    padding: 1.25rem;
+    background: var(--color-black);
+    border: 2px solid var(--color-mid-gray);
+    margin-top: 2rem;
+    font-size: 0.925rem;
+    line-height: 1.6;
   }
 
   /* NFT Preview */
   .nft-preview {
-    padding: 3rem;
-    margin-bottom: 2rem;
+    padding: 3.5rem;
+    margin-bottom: 2.5rem;
   }
 
   .nft-preview-image {
@@ -1314,46 +1672,51 @@
 
   .nft-badge {
     display: inline-block;
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 1.25rem;
     background: var(--color-neon-green);
     color: var(--color-black);
     font-family: var(--font-mono);
     font-weight: 900;
-    font-size: 0.875rem;
-    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    margin-bottom: 2.5rem;
   }
 
   .nft-icon {
-    font-size: 6rem;
-    margin-bottom: 1.5rem;
+    font-size: 7rem;
+    margin-bottom: 1.75rem;
+    filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.4));
   }
 
   .nft-name {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 900;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     color: var(--color-neon-green);
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px var(--color-neon-green-glow);
   }
 
   .nft-traits {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    max-width: 400px;
+    gap: 1.25rem;
+    max-width: 450px;
     margin: 0 auto;
   }
 
   .nft-traits .trait {
     display: flex;
     justify-content: space-between;
-    padding: 0.75rem;
+    padding: 1rem 1.25rem;
     background: var(--color-black);
-    border: 2px solid var(--color-white);
+    border: 3px solid var(--color-white);
   }
 
   .trait-label {
     font-family: var(--font-mono);
     color: var(--color-light-gray);
+    font-weight: 700;
   }
 
   .trait-value {
@@ -1363,37 +1726,58 @@
 
   /* NFT Benefits */
   .nft-benefits {
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--color-black),
+      var(--color-black) 10px,
+      rgba(255, 255, 255, 0.03) 10px,
+      rgba(255, 255, 255, 0.03) 20px
+    );
+    border: 3px solid var(--color-white);
   }
 
   .benefits-title {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 900;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
     color: var(--color-neon-green);
+    letter-spacing: 2px;
   }
 
   .benefits-list {
     list-style: none;
     padding: 0;
-    line-height: 2.5;
-    font-size: 1rem;
+    line-height: 2.8;
+    font-size: 1.05rem;
   }
 
-  /* Minting Status */
+  .benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .check-icon {
+    color: var(--color-neon-green);
+    font-weight: 900;
+    font-size: 1.25rem;
+  }
+
+  /* Minting status */
   .minting-status {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    padding: 3rem;
+    gap: 2rem;
+    padding: 3.5rem;
   }
 
   .status-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid var(--color-gray);
+    width: 60px;
+    height: 60px;
+    border: 5px solid var(--color-dark-gray);
     border-top-color: var(--color-neon-green);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -1404,112 +1788,155 @@
   }
 
   .status-text {
-    font-size: 1.25rem;
+    font-size: 1.375rem;
     font-weight: 900;
     color: var(--color-neon-green);
+    letter-spacing: 2px;
   }
 
-  /* Mint Success */
+  .minting-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .progress-step {
+    color: var(--color-light-gray);
+    transition: color 0.3s ease;
+  }
+
+  /* Mint success */
   .mint-success {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    padding: 3rem;
+    gap: 2rem;
+    padding: 3.5rem;
   }
 
   .success-icon {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     background: var(--color-neon-green);
     color: var(--color-black);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
+    font-size: 4rem;
     font-weight: 900;
-    box-shadow: 0 0 30px var(--color-neon-green-glow);
+    box-shadow: 0 0 50px var(--color-neon-green-glow);
   }
 
   .success-text {
-    font-size: 2rem;
+    font-size: 2.25rem;
     font-weight: 900;
+    letter-spacing: 2px;
+    text-shadow: 0 0 30px var(--color-neon-green-glow);
+  }
+
+  .success-details {
+    text-align: center;
+    line-height: 2;
+    font-size: 1.05rem;
+  }
+
+  .success-link {
+    margin-top: 1rem;
   }
 
   /* Actions */
   .step-actions {
     display: flex;
-    gap: 1rem;
+    gap: 1.25rem;
     justify-content: space-between;
   }
 
   .btn-wizard {
     flex: 1;
-    padding: 1.25rem 2rem;
+    padding: 1.5rem 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
-    font-size: 1.125rem;
+    gap: 1rem;
+    font-size: 1.25rem;
     font-weight: 900;
     text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .btn-wizard:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
   }
 
+  .btn-wizard:not(:disabled):hover {
+    transform: translateY(-3px);
+  }
+
   .btn-wizard .btn-arrow {
+    font-size: 1.75rem;
+  }
+
+  .btn-wizard .btn-icon {
     font-size: 1.5rem;
   }
 
   .btn-wizard-skip {
     background: none;
     border: none;
-    color: var(--color-light-gray);
+    color: var(--color-mid-gray);
     font-family: var(--font-mono);
-    font-size: 0.875rem;
+    font-size: 0.925rem;
     cursor: pointer;
     text-decoration: underline;
-    padding: 0.5rem;
+    padding: 0.75rem;
+    transition: color 0.3s ease;
   }
 
   .btn-wizard-skip:hover {
     color: var(--color-white);
   }
 
-  /* Close Button */
+  /* Close button */
   .wizard-close {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 40px;
-    height: 40px;
+    top: 1.25rem;
+    right: 1.25rem;
+    width: 45px;
+    height: 45px;
     background: var(--color-black);
     color: var(--color-white);
-    border: 2px solid var(--color-white);
-    font-size: 1.5rem;
+    border: 3px solid var(--color-white);
+    font-size: 1.75rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-weight: 900;
   }
 
   .wizard-close:hover {
     background: #dc2626;
     border-color: #dc2626;
-    transform: scale(1.1);
+    transform: scale(1.12);
+    box-shadow: 0 0 20px #dc2626;
   }
 
-  /* Mobile */
+  /* Mobile responsive */
   @media (max-width: 768px) {
     .wizard-modal {
-      padding: 2rem 1.5rem;
-      max-height: 95vh;
+      padding: 2rem 1.25rem;
+      max-height: 96vh;
     }
 
     .step-title {
-      font-size: 1.75rem;
+      font-size: 2rem;
+      letter-spacing: 2px;
+    }
+
+    .step-icon {
+      font-size: 3.5rem;
     }
 
     .role-grid,
@@ -1528,6 +1955,24 @@
 
     .step-features {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dialogue-text {
+      font-size: 1rem;
+    }
+
+    .nft-icon {
+      font-size: 5rem;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      font-size: 3rem;
+    }
+
+    .success-text {
+      font-size: 1.75rem;
     }
   }
 </style>

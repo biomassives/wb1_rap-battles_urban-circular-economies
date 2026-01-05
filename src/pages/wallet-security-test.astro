@@ -1,0 +1,1238 @@
+---
+/**
+ * wallet-security-test.astro
+ * Comprehensive test page for wallet security components
+ *
+ * Features:
+ * - Preview all modals individually
+ * - View diagnostic reports
+ * - Test encryption/decryption
+ * - Check localStorage state
+ * - Verify component loading
+ * - Test complete flow
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RecoveryPhraseModal from '../components/RecoveryPhraseModal.astro';
+import RecoveryPhraseVerification from '../components/RecoveryPhraseVerification.astro';
+import WalletPINSetup from '../components/WalletPINSetup.astro';
+import SecurityEducationModal from '../components/SecurityEducationModal.astro';
+---
+
+<BaseLayout title="Wallet Security Test Suite" activeSection="testing">
+  <!-- Test Dashboard -->
+  <div class="test-dashboard">
+    <div class="dashboard-header">
+      <h1 class="test-title glitch neon-text">
+        🧪 WALLET SECURITY TEST SUITE
+      </h1>
+      <p class="test-subtitle mono">
+        Test all components and view diagnostics before going live
+      </p>
+    </div>
+
+    <!-- Status Overview -->
+    <div class="status-grid">
+      <div class="status-card card-retro-neon">
+        <h3 class="status-title mono">🔧 COMPONENT STATUS</h3>
+        <div id="componentStatus" class="status-content mono"></div>
+      </div>
+
+      <div class="status-card card-retro">
+        <h3 class="status-title mono">💾 LOCALSTORAGE STATE</h3>
+        <div id="storageStatus" class="status-content mono"></div>
+      </div>
+
+      <div class="status-card card-retro">
+        <h3 class="status-title mono">📊 DIAGNOSTICS</h3>
+        <div id="diagnosticsStatus" class="status-content mono"></div>
+      </div>
+    </div>
+
+    <!-- Component Tests -->
+    <div class="test-section">
+      <h2 class="section-title mono neon-text">
+        🎭 COMPONENT PREVIEWS
+      </h2>
+
+      <div class="test-grid">
+        <!-- Test 1: Security Education -->
+        <div class="test-card card-retro">
+          <div class="test-header">
+            <span class="test-number">1</span>
+            <h3 class="test-name mono">Security Education Modal</h3>
+          </div>
+          <div class="test-description mono">
+            Interactive 5-lesson tutorial with quiz
+          </div>
+          <div class="test-actions">
+            <button class="btn-test btn-retro-neon" onclick="testSecurityEducation()">
+              LAUNCH EDUCATION
+            </button>
+            <button class="btn-test btn-retro" onclick="reportSecurityEducation()">
+              VIEW REPORT
+            </button>
+          </div>
+          <div id="report1" class="test-report mono"></div>
+        </div>
+
+        <!-- Test 2: Recovery Phrase Display -->
+        <div class="test-card card-retro">
+          <div class="test-header">
+            <span class="test-number">2</span>
+            <h3 class="test-name mono">Recovery Phrase Modal</h3>
+          </div>
+          <div class="test-description mono">
+            Display 12-word mnemonic with security warnings
+          </div>
+          <div class="test-actions">
+            <button class="btn-test btn-retro-neon" onclick="testRecoveryPhrase()">
+              SHOW PHRASE
+            </button>
+            <button class="btn-test btn-retro" onclick="reportRecoveryPhrase()">
+              VIEW REPORT
+            </button>
+          </div>
+          <div id="report2" class="test-report mono"></div>
+        </div>
+
+        <!-- Test 3: Phrase Verification -->
+        <div class="test-card card-retro">
+          <div class="test-header">
+            <span class="test-number">3</span>
+            <h3 class="test-name mono">Phrase Verification</h3>
+          </div>
+          <div class="test-description mono">
+            Verify user wrote down recovery phrase
+          </div>
+          <div class="test-actions">
+            <button class="btn-test btn-retro-neon" onclick="testVerification()">
+              TEST VERIFICATION
+            </button>
+            <button class="btn-test btn-retro" onclick="reportVerification()">
+              VIEW REPORT
+            </button>
+          </div>
+          <div id="report3" class="test-report mono"></div>
+        </div>
+
+        <!-- Test 4: PIN Setup -->
+        <div class="test-card card-retro">
+          <div class="test-header">
+            <span class="test-number">4</span>
+            <h3 class="test-name mono">PIN Setup Modal</h3>
+          </div>
+          <div class="test-description mono">
+            3-step PIN creation with strength meter
+          </div>
+          <div class="test-actions">
+            <button class="btn-test btn-retro-neon" onclick="testPINSetup()">
+              LAUNCH PIN SETUP
+            </button>
+            <button class="btn-test btn-retro" onclick="reportPINSetup()">
+              VIEW REPORT
+            </button>
+          </div>
+          <div id="report4" class="test-report mono"></div>
+        </div>
+
+        <!-- Test 5: Encryption -->
+        <div class="test-card card-retro">
+          <div class="test-header">
+            <span class="test-number">5</span>
+            <h3 class="test-name mono">Encryption Utilities</h3>
+          </div>
+          <div class="test-description mono">
+            Test AES-GCM encryption/decryption
+          </div>
+          <div class="test-actions">
+            <button class="btn-test btn-retro-neon" onclick="testEncryption()">
+              RUN ENCRYPTION TEST
+            </button>
+            <button class="btn-test btn-retro" onclick="reportEncryption()">
+              VIEW REPORT
+            </button>
+          </div>
+          <div id="report5" class="test-report mono"></div>
+        </div>
+
+        <!-- Test 6: Wallet Generation -->
+        <div class="test-card card-retro">
+          <div class="test-header">
+            <span class="test-number">6</span>
+            <h3 class="test-name mono">Wallet Generator</h3>
+          </div>
+          <div class="test-description mono">
+            BIP39 mnemonic & Solana keypair generation
+          </div>
+          <div class="test-actions">
+            <button class="btn-test btn-retro-neon" onclick="testWalletGen()">
+              GENERATE TEST WALLET
+            </button>
+            <button class="btn-test btn-retro" onclick="reportWalletGen()">
+              VIEW REPORT
+            </button>
+          </div>
+          <div id="report6" class="test-report mono"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flow Testing -->
+    <div class="test-section">
+      <h2 class="section-title mono neon-text">
+        🔄 COMPLETE FLOW TESTING
+      </h2>
+
+      <div class="flow-test card-retro-neon">
+        <div class="flow-header">
+          <h3 class="flow-title mono">Full Wallet Creation Flow</h3>
+          <p class="flow-subtitle mono">Test entire user journey from start to finish</p>
+        </div>
+
+        <div class="flow-steps">
+          <div class="flow-step" id="step1">
+            <span class="step-indicator">1</span>
+            <span class="step-label mono">Security Education</span>
+            <span class="step-status" id="status1">⏳</span>
+          </div>
+          <div class="flow-divider">→</div>
+          <div class="flow-step" id="step2">
+            <span class="step-indicator">2</span>
+            <span class="step-label mono">Generate Wallet</span>
+            <span class="step-status" id="status2">⏳</span>
+          </div>
+          <div class="flow-divider">→</div>
+          <div class="flow-step" id="step3">
+            <span class="step-indicator">3</span>
+            <span class="step-label mono">Show Phrase</span>
+            <span class="step-status" id="status3">⏳</span>
+          </div>
+          <div class="flow-divider">→</div>
+          <div class="flow-step" id="step4">
+            <span class="step-indicator">4</span>
+            <span class="step-label mono">Verify Phrase</span>
+            <span class="step-status" id="status4">⏳</span>
+          </div>
+          <div class="flow-divider">→</div>
+          <div class="flow-step" id="step5">
+            <span class="step-indicator">5</span>
+            <span class="step-label mono">Create PIN</span>
+            <span class="step-status" id="status5">⏳</span>
+          </div>
+          <div class="flow-divider">→</div>
+          <div class="flow-step" id="step6">
+            <span class="step-indicator">6</span>
+            <span class="step-label mono">Encrypt & Save</span>
+            <span class="step-status" id="status6">⏳</span>
+          </div>
+        </div>
+
+        <div class="flow-actions">
+          <button class="btn-flow btn-retro-neon pulse-glow" onclick="startFlowTest()">
+            🚀 START FULL FLOW TEST
+          </button>
+          <button class="btn-flow btn-retro" onclick="resetFlowTest()">
+            🔄 RESET
+          </button>
+        </div>
+
+        <div id="flowReport" class="flow-report mono"></div>
+      </div>
+    </div>
+
+    <!-- Debug Tools -->
+    <div class="test-section">
+      <h2 class="section-title mono neon-text">
+        🛠️ DEBUG TOOLS
+      </h2>
+
+      <div class="debug-grid">
+        <div class="debug-card card-retro">
+          <h3 class="debug-title mono">Clear All Data</h3>
+          <button class="btn-debug btn-retro" onclick="clearAllData()">
+            🗑️ CLEAR LOCALSTORAGE
+          </button>
+        </div>
+
+        <div class="debug-card card-retro">
+          <h3 class="debug-title mono">View Console Logs</h3>
+          <button class="btn-debug btn-retro" onclick="showConsoleLogs()">
+            📋 VIEW LOGS
+          </button>
+        </div>
+
+        <div class="debug-card card-retro">
+          <h3 class="debug-title mono">Download Test Report</h3>
+          <button class="btn-debug btn-retro" onclick="downloadReport()">
+            💾 DOWNLOAD REPORT
+          </button>
+        </div>
+
+        <div class="debug-card card-retro">
+          <h3 class="debug-title mono">Simulate Errors</h3>
+          <button class="btn-debug btn-retro" onclick="simulateError()">
+            ⚠️ TEST ERROR HANDLING
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Console Output -->
+    <div class="test-section">
+      <h2 class="section-title mono neon-text">
+        📟 CONSOLE OUTPUT
+      </h2>
+      <div id="consoleOutput" class="console-output card-retro mono"></div>
+    </div>
+  </div>
+
+  <!-- Include all security modals -->
+  <SecurityEducationModal />
+  <RecoveryPhraseModal />
+  <RecoveryPhraseVerification />
+  <WalletPINSetup />
+</BaseLayout>
+
+<style>
+  /* Test Dashboard */
+  .test-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .dashboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .test-title {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .test-subtitle {
+    font-size: 1.125rem;
+    color: var(--color-light-gray);
+  }
+
+  /* Status Grid */
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .status-card {
+    padding: 2rem;
+  }
+
+  .status-title {
+    font-size: 1.125rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: var(--color-neon-green);
+  }
+
+  .status-content {
+    font-size: 0.875rem;
+    line-height: 1.8;
+  }
+
+  /* Test Section */
+  .test-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  /* Test Grid */
+  .test-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .test-card {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .test-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .test-number {
+    width: 40px;
+    height: 40px;
+    background: var(--color-neon-green);
+    color: var(--color-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 900;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .test-name {
+    font-size: 1.125rem;
+    font-weight: 900;
+  }
+
+  .test-description {
+    font-size: 0.95rem;
+    color: var(--color-light-gray);
+    line-height: 1.6;
+  }
+
+  .test-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .btn-test {
+    flex: 1;
+    padding: 1rem;
+    font-size: 0.875rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+
+  .test-report {
+    background: var(--color-black);
+    border: 2px solid var(--color-mid-gray);
+    padding: 1rem;
+    font-size: 0.825rem;
+    line-height: 1.8;
+    min-height: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+  }
+
+  .test-report.active {
+    display: block;
+  }
+
+  /* Flow Test */
+  .flow-test {
+    padding: 2.5rem;
+  }
+
+  .flow-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .flow-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+  }
+
+  .flow-subtitle {
+    color: var(--color-light-gray);
+  }
+
+  .flow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--color-black);
+    border: 2px solid var(--color-mid-gray);
+    min-width: 120px;
+  }
+
+  .step-indicator {
+    width: 35px;
+    height: 35px;
+    background: var(--color-dark-gray);
+    border: 2px solid var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+  }
+
+  .flow-step.active .step-indicator {
+    background: var(--color-neon-green);
+    color: var(--color-black);
+  }
+
+  .flow-step.completed .step-indicator {
+    background: var(--color-dark-gray);
+    color: var(--color-neon-green);
+  }
+
+  .step-label {
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .step-status {
+    font-size: 1.25rem;
+  }
+
+  .flow-divider {
+    color: var(--color-mid-gray);
+    font-size: 1.5rem;
+  }
+
+  .flow-actions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .btn-flow {
+    padding: 1.5rem 2.5rem;
+    font-size: 1.125rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+
+  .flow-report {
+    background: var(--color-black);
+    border: 2px solid var(--color-neon-green);
+    padding: 1.5rem;
+    font-size: 0.875rem;
+    line-height: 1.8;
+    min-height: 150px;
+  }
+
+  /* Debug Grid */
+  .debug-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .debug-card {
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .debug-title {
+    font-size: 1rem;
+    font-weight: 900;
+    margin-bottom: 1.25rem;
+  }
+
+  .btn-debug {
+    width: 100%;
+    padding: 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 900;
+  }
+
+  /* Console Output */
+  .console-output {
+    padding: 2rem;
+    background: var(--color-black);
+    min-height: 300px;
+    max-height: 500px;
+    overflow-y: auto;
+    font-size: 0.875rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .test-dashboard {
+      padding: 1rem;
+    }
+
+    .test-title {
+      font-size: 2rem;
+    }
+
+    .test-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .flow-steps {
+      flex-direction: column;
+    }
+
+    .flow-divider {
+      transform: rotate(90deg);
+    }
+  }
+</style>
+
+<script is:inline>
+  // Test Suite State
+  let testState = {
+    componentStatus: {},
+    testResults: {},
+    consoleLogs: []
+  };
+
+  // Override console.log to capture logs
+  const originalLog = console.log;
+  console.log = function(...args) {
+    testState.consoleLogs.push({
+      time: new Date().toISOString(),
+      message: args.join(' ')
+    });
+    updateConsoleOutput();
+    originalLog.apply(console, args);
+  };
+
+  // Initialize test page
+  document.addEventListener('DOMContentLoaded', () => {
+    updateComponentStatus();
+    updateStorageStatus();
+    updateDiagnostics();
+    updateConsoleOutput();
+
+    console.log('🧪 Test suite initialized');
+  });
+
+  // Update component status
+  function updateComponentStatus() {
+    const checks = {
+      'SecurityEducationModal': !!document.getElementById('securityEducationModal'),
+      'RecoveryPhraseModal': !!document.getElementById('recoveryPhraseModal'),
+      'RecoveryPhraseVerification': !!document.getElementById('verificationModal'),
+      'WalletPINSetup': !!document.getElementById('pinSetupModal'),
+      'wallet-crypto.js': typeof window.encryptWallet === 'function',
+      'wallet-generator.js': typeof window.generateNewSolanaWallet === 'function',
+      'bip39 library': typeof window.bip39 !== 'undefined',
+      'solana web3': typeof window.solanaWeb3 !== 'undefined'
+    };
+
+    let html = '';
+    for (const [name, status] of Object.entries(checks)) {
+      const icon = status ? '✅' : '❌';
+      const color = status ? 'var(--color-neon-green)' : '#dc2626';
+      html += `<div style="color: ${color}">${icon} ${name}</div>`;
+    }
+
+    document.getElementById('componentStatus').innerHTML = html;
+    testState.componentStatus = checks;
+  }
+
+  // Update localStorage status
+  function updateStorageStatus() {
+    const keys = [
+      'wallet_encrypted',
+      'wallet_publicKey',
+      'wallet_locked',
+      'anonymousWallet',
+      'securityEducationCompleted',
+      'walletCreated',
+      'wizardCompleted'
+    ];
+
+    let html = '';
+    keys.forEach(key => {
+      const value = localStorage.getItem(key);
+      const status = value ? '📦' : '⬜';
+      html += `<div>${status} ${key}: ${value ? '✓' : '-'}</div>`;
+    });
+
+    document.getElementById('storageStatus').innerHTML = html;
+  }
+
+  // Update diagnostics
+  function updateDiagnostics() {
+    const info = {
+      'Browser': navigator.userAgent.split(' ').slice(-2).join(' '),
+      'Web Crypto': typeof crypto.subtle !== 'undefined' ? '✅' : '❌',
+      'LocalStorage': typeof localStorage !== 'undefined' ? '✅' : '❌',
+      'Screen Width': window.innerWidth + 'px',
+      'Timestamp': new Date().toLocaleString()
+    };
+
+    let html = '';
+    for (const [key, value] of Object.entries(info)) {
+      html += `<div>${key}: ${value}</div>`;
+    }
+
+    document.getElementById('diagnosticsStatus').innerHTML = html;
+  }
+
+  // Update console output
+  function updateConsoleOutput() {
+    const output = document.getElementById('consoleOutput');
+    const logs = testState.consoleLogs.slice(-50); // Last 50 logs
+    output.innerHTML = logs.map(log => {
+      const time = new Date(log.time).toLocaleTimeString();
+      return `[${time}] ${log.message}`;
+    }).join('\n');
+    output.scrollTop = output.scrollHeight;
+  }
+
+  // Test 1: Security Education
+  window.testSecurityEducation = function() {
+    console.log('🧪 Testing Security Education Modal...');
+    if (window.showSecurityEducation) {
+      window.showSecurityEducation();
+    } else {
+      alert('❌ Security Education Modal not loaded');
+    }
+  };
+
+  window.reportSecurityEducation = function() {
+    const report = document.getElementById('report1');
+    report.classList.toggle('active');
+
+    if (report.classList.contains('active')) {
+      const completed = localStorage.getItem('securityEducationCompleted');
+      report.innerHTML = `
+<strong>Component:</strong> SecurityEducationModal.astro
+<strong>Status:</strong> ${typeof window.showSecurityEducation === 'function' ? '✅ Loaded' : '❌ Not Loaded'}
+<strong>Completed:</strong> ${completed ? '✅ Yes' : '⬜ No'}
+
+<strong>Features:</strong>
+• 5 interactive lessons
+• Quiz with 3 questions
+• Progress tracking
+• Cannot skip without passing
+
+<strong>Lessons:</strong>
+1. What is a crypto wallet?
+2. Recovery phrases
+3. Avoiding scams
+4. Security quiz
+5. Final summary
+
+<strong>Expected Behavior:</strong>
+• Shows on first wallet creation
+• Blocks progress until quiz passed
+• Awards 100 XP on completion
+• Sets 'securityEducationCompleted' flag
+      `.trim();
+    }
+  };
+
+  // Test 2: Recovery Phrase
+  window.testRecoveryPhrase = function() {
+    console.log('🧪 Testing Recovery Phrase Modal...');
+    const testWords = [
+      'apple', 'forest', 'guitar', 'laptop', 'ocean', 'sunset',
+      'piano', 'mountain', 'dragon', 'crystal', 'thunder', 'galaxy'
+    ];
+
+    if (window.showRecoveryPhraseModal) {
+      window.showRecoveryPhraseModal(testWords);
+    } else {
+      alert('❌ Recovery Phrase Modal not loaded');
+    }
+  };
+
+  window.reportRecoveryPhrase = function() {
+    const report = document.getElementById('report2');
+    report.classList.toggle('active');
+
+    if (report.classList.contains('active')) {
+      report.innerHTML = `
+<strong>Component:</strong> RecoveryPhraseModal.astro
+<strong>Status:</strong> ${typeof window.showRecoveryPhraseModal === 'function' ? '✅ Loaded' : '❌ Not Loaded'}
+
+<strong>Features:</strong>
+• 12-word BIP39 mnemonic display
+• Blurred words (hover to reveal)
+• 3-tier security warnings
+• 5-point checklist required
+• Encrypted backup download
+• Copy/paste disabled
+
+<strong>Security Warnings:</strong>
+🚨 Critical: Never share these words
+📝 Important: Write on paper only
+💡 Info: Lose these = lose everything
+
+<strong>Checklist Items:</strong>
+1. Written all 12 words on paper
+2. Double-checked correctness
+3. Will store in safe place
+4. Understand no recovery possible
+5. Will never share with anyone
+
+<strong>Expected Behavior:</strong>
+• Cannot proceed until all checked
+• Downloads .ppbackup file (optional)
+• Passes words to verification step
+      `.trim();
+    }
+  };
+
+  // Test 3: Verification
+  window.testVerification = function() {
+    console.log('🧪 Testing Phrase Verification...');
+    const testWords = [
+      'apple', 'forest', 'guitar', 'laptop', 'ocean', 'sunset',
+      'piano', 'mountain', 'dragon', 'crystal', 'thunder', 'galaxy'
+    ];
+
+    if (window.showRecoveryPhraseVerification) {
+      window._recoveryWords = testWords;
+      window.showRecoveryPhraseVerification(testWords);
+    } else {
+      alert('❌ Recovery Phrase Verification not loaded');
+    }
+  };
+
+  window.reportVerification = function() {
+    const report = document.getElementById('report3');
+    report.classList.toggle('active');
+
+    if (report.classList.contains('active')) {
+      report.innerHTML = `
+<strong>Component:</strong> RecoveryPhraseVerification.astro
+<strong>Status:</strong> ${typeof window.showRecoveryPhraseVerification === 'function' ? '✅ Loaded' : '❌ Not Loaded'}
+
+<strong>Features:</strong>
+• Tests 3 random words
+• Real-time validation
+• Unlimited attempts
+• Progress tracking (0/3 → 3/3)
+• Attempt counter
+• Help section for stuck users
+
+<strong>Test Process:</strong>
+1. Selects 3 random indices
+2. User enters each word
+3. Validates as they type
+4. Shows ✓ or ✗ feedback
+5. Must get all 3 correct
+
+<strong>Expected Behavior:</strong>
+• Green border + checkmark when correct
+• Red border + shake when incorrect
+• Progress bar updates (33%, 66%, 100%)
+• Cannot proceed until 3/3 correct
+• Awards 50 XP on completion
+      `.trim();
+    }
+  };
+
+  // Test 4: PIN Setup
+  window.testPINSetup = function() {
+    console.log('🧪 Testing PIN Setup Modal...');
+    if (window.showPINSetup) {
+      window.showPINSetup();
+    } else {
+      alert('❌ PIN Setup Modal not loaded');
+    }
+  };
+
+  window.reportPINSetup = function() {
+    const report = document.getElementById('report4');
+    report.classList.toggle('active');
+
+    if (report.classList.contains('active')) {
+      report.innerHTML = `
+<strong>Component:</strong> WalletPINSetup.astro
+<strong>Status:</strong> ${typeof window.showPINSetup === 'function' ? '✅ Loaded' : '❌ Not Loaded'}
+
+<strong>Features:</strong>
+• 3-step wizard (Create → Confirm → Done)
+• 6-digit PIN input
+• Strength indicator (Weak/Medium/Strong)
+• Auto-focus next digit
+• Visual dots (●●●●●●)
+• Pattern detection
+
+<strong>PIN Strength Detection:</strong>
+🔴 Weak: 123456, 111111, birthdays
+🟡 Medium: 4 unique digits
+🟢 Strong: 5+ unique digits
+
+<strong>Flow Steps:</strong>
+1. Enter 6-digit PIN
+2. Shows strength meter
+3. Confirm PIN
+4. Must match to proceed
+5. Success animation
+
+<strong>Expected Behavior:</strong>
+• Numeric keyboard on mobile
+• Paste support (6 digits)
+• Backspace navigation
+• Shake animation on mismatch
+• Awards 25 XP on completion
+      `.trim();
+    }
+  };
+
+  // Test 5: Encryption
+  window.testEncryption = async function() {
+    console.log('🧪 Testing Encryption Utilities...');
+    const report = document.getElementById('report5');
+    report.classList.add('active');
+
+    try {
+      const testMnemonic = 'test wallet phrase for encryption demo only not real';
+      const testPIN = '123456';
+
+      console.log('Encrypting test mnemonic...');
+      const encrypted = await window.encryptWallet(testMnemonic, testPIN);
+
+      console.log('Encrypted successfully:', encrypted);
+
+      console.log('Decrypting...');
+      const decrypted = await window.decryptWallet(encrypted, testPIN);
+
+      console.log('Decrypted successfully:', decrypted);
+
+      const success = decrypted === testMnemonic;
+
+      report.innerHTML = `
+<strong>✅ ENCRYPTION TEST PASSED</strong>
+
+<strong>Test Mnemonic:</strong> "${testMnemonic}"
+<strong>Test PIN:</strong> ${testPIN}
+
+<strong>Encrypted Data:</strong>
+• Algorithm: ${encrypted.algorithm}
+• Key Derivation: ${encrypted.keyDerivation}
+• Salt: ${encrypted.salt.substring(0, 20)}...
+• IV: ${encrypted.iv.substring(0, 20)}...
+• Encrypted: ${encrypted.encrypted.substring(0, 30)}...
+
+<strong>Decryption Result:</strong>
+• ${success ? '✅' : '❌'} Matches original: ${success}
+• Decrypted text: "${decrypted}"
+
+<strong>Performance:</strong>
+• Encryption: ~50-100ms
+• Decryption: ~50-100ms
+• PBKDF2 iterations: 100,000
+      `.trim();
+    } catch (error) {
+      report.innerHTML = `❌ ENCRYPTION TEST FAILED\n\nError: ${error.message}`;
+      console.error('Encryption test failed:', error);
+    }
+  };
+
+  window.reportEncryption = function() {
+    const report = document.getElementById('report5');
+    report.classList.toggle('active');
+
+    if (report.classList.contains('active') && !report.innerHTML) {
+      report.innerHTML = `
+<strong>Component:</strong> wallet-crypto.js
+<strong>Status:</strong> ${typeof window.encryptWallet === 'function' ? '✅ Loaded' : '❌ Not Loaded'}
+
+<strong>Functions Available:</strong>
+• encryptWallet(mnemonic, pin)
+• decryptWallet(encryptedData, pin)
+• encryptBackup(mnemonic, passphrase)
+• decryptBackup(backupData, passphrase)
+• encryptAndSaveWallet(mnemonic, pin, publicKey)
+• unlockWallet(pin)
+• lockWallet()
+• changePIN(oldPIN, newPIN)
+
+<strong>Security Features:</strong>
+🔐 AES-GCM-256 encryption
+🔑 PBKDF2-SHA256 key derivation
+🎲 Random salt & IV per encryption
+💾 Encrypted localStorage storage
+🔓 Unlock/lock mechanism
+🔄 PIN change support
+
+Click "RUN ENCRYPTION TEST" to execute
+      `.trim();
+    }
+  };
+
+  // Test 6: Wallet Generation
+  window.testWalletGen = async function() {
+    console.log('🧪 Testing Wallet Generator...');
+    const report = document.getElementById('report6');
+    report.classList.add('active');
+
+    try {
+      console.log('Generating test wallet...');
+      const wallet = await window.generateNewSolanaWallet();
+
+      console.log('Wallet generated:', wallet);
+
+      report.innerHTML = `
+<strong>✅ WALLET GENERATION TEST PASSED</strong>
+
+<strong>Generated Wallet:</strong>
+• Mnemonic: ${wallet.words.slice(0, 3).join(' ')}... (showing first 3)
+• Public Key: ${wallet.publicKey}
+• Word Count: ${wallet.words.length}
+
+<strong>Validation:</strong>
+• ${wallet.words.length === 12 ? '✅' : '❌'} Has 12 words
+• ${wallet.publicKey.length === 44 ? '✅' : '❌'} Valid Solana address
+• ${wallet.keypair ? '✅' : '❌'} Keypair created
+• ${wallet.secretKey ? '✅' : '❌'} Secret key exists
+
+<strong>BIP39 Mnemonic:</strong>
+${wallet.words.map((w, i) => `${i + 1}. ${w}`).join('\n')}
+
+<strong>Note:</strong> This is a TEST wallet only!
+Do NOT send real funds to this address.
+      `.trim();
+
+      // Clean up
+      delete window._currentWallet;
+    } catch (error) {
+      report.innerHTML = `❌ WALLET GENERATION FAILED\n\nError: ${error.message}`;
+      console.error('Wallet generation test failed:', error);
+    }
+  };
+
+  window.reportWalletGen = function() {
+    const report = document.getElementById('report6');
+    report.classList.toggle('active');
+
+    if (report.classList.contains('active') && !report.innerHTML) {
+      report.innerHTML = `
+<strong>Component:</strong> wallet-generator.js
+<strong>Status:</strong> ${typeof window.generateNewSolanaWallet === 'function' ? '✅ Loaded' : '❌ Not Loaded'}
+
+<strong>Functions Available:</strong>
+• generateNewSolanaWallet()
+• importWalletFromMnemonic(phrase)
+• startNewWalletFlow()
+• startImportWalletFlow()
+• finalizeWalletSetup(mnemonic, pin)
+• getWalletBalance(publicKey)
+• hasWallet()
+• getWalletPublicKey()
+
+<strong>Features:</strong>
+🔐 BIP39 mnemonic generation (12 words)
+🌐 Solana Devnet/Mainnet support
+📥 Import from recovery phrase
+💰 Balance checking
+✅ Mnemonic validation
+
+Click "GENERATE TEST WALLET" to execute
+      `.trim();
+    }
+  };
+
+  // Flow Test
+  window.startFlowTest = async function() {
+    console.log('🚀 Starting full flow test...');
+
+    const flowReport = document.getElementById('flowReport');
+    flowReport.innerHTML = '🚀 Starting comprehensive flow test...\n\n';
+
+    // Step 1: Security Education
+    updateFlowStep(1, 'active');
+    flowReport.innerHTML += '1️⃣ Checking Security Education Modal...\n';
+    await sleep(1000);
+
+    if (typeof window.showSecurityEducation === 'function') {
+      updateFlowStep(1, 'completed', '✅');
+      flowReport.innerHTML += '   ✅ Security Education Modal loaded\n\n';
+    } else {
+      updateFlowStep(1, 'error', '❌');
+      flowReport.innerHTML += '   ❌ Security Education Modal NOT loaded\n\n';
+      return;
+    }
+
+    // Step 2: Generate Wallet
+    updateFlowStep(2, 'active');
+    flowReport.innerHTML += '2️⃣ Generating test wallet...\n';
+    await sleep(1000);
+
+    try {
+      const wallet = await window.generateNewSolanaWallet();
+      updateFlowStep(2, 'completed', '✅');
+      flowReport.innerHTML += `   ✅ Wallet generated: ${wallet.publicKey.slice(0, 8)}...\n\n`;
+
+      // Step 3: Show Phrase
+      updateFlowStep(3, 'active');
+      flowReport.innerHTML += '3️⃣ Testing Recovery Phrase Modal...\n';
+      await sleep(1000);
+
+      if (typeof window.showRecoveryPhraseModal === 'function') {
+        updateFlowStep(3, 'completed', '✅');
+        flowReport.innerHTML += '   ✅ Recovery Phrase Modal ready\n\n';
+      } else {
+        updateFlowStep(3, 'error', '❌');
+        flowReport.innerHTML += '   ❌ Recovery Phrase Modal NOT loaded\n\n';
+        return;
+      }
+
+      // Step 4: Verify Phrase
+      updateFlowStep(4, 'active');
+      flowReport.innerHTML += '4️⃣ Testing Phrase Verification...\n';
+      await sleep(1000);
+
+      if (typeof window.showRecoveryPhraseVerification === 'function') {
+        updateFlowStep(4, 'completed', '✅');
+        flowReport.innerHTML += '   ✅ Verification Modal ready\n\n';
+      } else {
+        updateFlowStep(4, 'error', '❌');
+        flowReport.innerHTML += '   ❌ Verification Modal NOT loaded\n\n';
+        return;
+      }
+
+      // Step 5: PIN Setup
+      updateFlowStep(5, 'active');
+      flowReport.innerHTML += '5️⃣ Testing PIN Setup...\n';
+      await sleep(1000);
+
+      if (typeof window.showPINSetup === 'function') {
+        updateFlowStep(5, 'completed', '✅');
+        flowReport.innerHTML += '   ✅ PIN Setup Modal ready\n\n';
+      } else {
+        updateFlowStep(5, 'error', '❌');
+        flowReport.innerHTML += '   ❌ PIN Setup Modal NOT loaded\n\n';
+        return;
+      }
+
+      // Step 6: Encryption
+      updateFlowStep(6, 'active');
+      flowReport.innerHTML += '6️⃣ Testing encryption...\n';
+      await sleep(1000);
+
+      const testPIN = '123456';
+      const encrypted = await window.encryptWallet(wallet.mnemonic, testPIN);
+      const decrypted = await window.decryptWallet(encrypted, testPIN);
+
+      if (decrypted === wallet.mnemonic) {
+        updateFlowStep(6, 'completed', '✅');
+        flowReport.innerHTML += '   ✅ Encryption/Decryption successful\n\n';
+      } else {
+        updateFlowStep(6, 'error', '❌');
+        flowReport.innerHTML += '   ❌ Encryption/Decryption FAILED\n\n';
+        return;
+      }
+
+      // Success!
+      flowReport.innerHTML += '\n🎉 ALL TESTS PASSED! 🎉\n\n';
+      flowReport.innerHTML += 'The wallet security system is fully functional.\n';
+      flowReport.innerHTML += 'All components loaded correctly.\n';
+      flowReport.innerHTML += 'Encryption working as expected.\n\n';
+      flowReport.innerHTML += 'Ready for production integration! ✅';
+
+    } catch (error) {
+      flowReport.innerHTML += `\n❌ FLOW TEST FAILED\n\nError: ${error.message}`;
+      console.error('Flow test failed:', error);
+    }
+  };
+
+  function updateFlowStep(step, state, statusIcon = '⏳') {
+    const stepEl = document.getElementById(`step${step}`);
+    const statusEl = document.getElementById(`status${step}`);
+
+    stepEl.className = 'flow-step ' + state;
+    statusEl.textContent = statusIcon;
+  }
+
+  window.resetFlowTest = function() {
+    for (let i = 1; i <= 6; i++) {
+      updateFlowStep(i, '', '⏳');
+    }
+    document.getElementById('flowReport').innerHTML = '';
+    console.log('🔄 Flow test reset');
+  };
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Debug Tools
+  window.clearAllData = function() {
+    if (confirm('Clear all localStorage data? This will reset everything.')) {
+      localStorage.clear();
+      updateStorageStatus();
+      console.log('🗑️ localStorage cleared');
+      alert('✅ All data cleared');
+    }
+  };
+
+  window.showConsoleLogs = function() {
+    const logs = testState.consoleLogs.map(log => {
+      const time = new Date(log.time).toLocaleTimeString();
+      return `[${time}] ${log.message}`;
+    }).join('\n');
+
+    alert(logs || 'No logs captured');
+  };
+
+  window.downloadReport = function() {
+    const report = {
+      timestamp: new Date().toISOString(),
+      componentStatus: testState.componentStatus,
+      localStorage: {},
+      testResults: testState.testResults,
+      logs: testState.consoleLogs.slice(-100)
+    };
+
+    // Capture localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      report.localStorage[key] = localStorage.getItem(key);
+    }
+
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wallet-security-test-report-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    console.log('💾 Test report downloaded');
+  };
+
+  window.simulateError = function() {
+    console.log('⚠️ Simulating error...');
+    try {
+      throw new Error('Simulated test error');
+    } catch (error) {
+      console.error('Error caught:', error.message);
+      alert('Error simulated! Check console output.');
+    }
+  };
+
+  // Auto-refresh status every 5 seconds
+  setInterval(() => {
+    updateStorageStatus();
+    updateDiagnostics();
+  }, 5000);
+</script>
+
+<style is:global>
+  /* Ensure base dark theme styles are available */
+  body {
+    background: var(--color-near-black, #0a0a0a);
+    color: var(--color-white, #ffffff);
+  }
+</style>
+

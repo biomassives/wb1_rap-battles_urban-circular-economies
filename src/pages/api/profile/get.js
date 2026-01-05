@@ -42,12 +42,15 @@ export async function GET({ request }) {
       LIMIT 1
     `;
 
+    // If profile doesn't exist, return empty profile (useful for new/demo wallets)
     if (result.length === 0) {
       return new Response(JSON.stringify({
-        error: 'Profile not found',
+        success: true,
+        profile: null,
+        message: 'Profile not found - this is a new wallet',
         walletAddress
       }), {
-        status: 404,
+        status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
     }

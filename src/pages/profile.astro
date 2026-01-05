@@ -287,6 +287,18 @@ import OracleStatusBand from '../components/OracleStatusBand.astro';
                 <input type="checkbox" name="favoriteAnimals" value="rabbit" />
                 <span>🐰 Rabbit</span>
               </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="favoriteAnimals" value="cow" />
+                <span>🕊️ Pigeon</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="favoriteAnimals" value="pitbull-pog" />
+                <span>🐕 Dog</span>
+              </label>
+              <label class="form-checkbox">
+                <input type="checkbox" name="favoriteAnimals" value="australian-shepherd-dog" />
+                <span>🐰 Rabbit</span>
+              </label>
             </div>
           </div>
 
@@ -460,8 +472,8 @@ import OracleStatusBand from '../components/OracleStatusBand.astro';
     <div class="brutalist-card action">
         <h3>MINT_DATA_ASSET</h3>
         <div class="button-stack">
-            <button class="mint-btn sol" onclick="window.wbWeb3.mintSolana()">MINT_TO_SOLANA_DEVNET</button>
-            <button class="mint-btn dot" onclick="window.wbWeb3.mintPolkadot()">MINT_TO_DOT_TESTNET</button>
+            <button class="mint-btn sol" onclick="handleMintSolana()">MINT_TO_SOLANA_DEVNET</button>
+            <button class="mint-btn dot" onclick="handleMintPolkadot()">MINT_TO_DOT_TESTNET</button>
         </div>
     </div>
 
@@ -1139,13 +1151,19 @@ import OracleStatusBand from '../components/OracleStatusBand.astro';
 
     async saveProfileInfo() {
       const walletAddress = window.walletManager?.connectedWallet;
+
+      // Don't save if no wallet connected
+      if (!walletAddress) {
+        this.showError('Please connect your wallet first');
+        return;
+      }
+
       const formData = {
         walletAddress,
-        username: document.getElementById('username').value,
-        email: document.getElementById('email').value,
-        bio: document.getElementById('bio').value,
-        location: document.getElementById('location').value,
-        // TODO: Gather all form fields
+        username: document.getElementById('username')?.value || null,
+        email: document.getElementById('email')?.value || null,
+        bio: document.getElementById('bio')?.value || null,
+        location: document.getElementById('location')?.value || null,
       };
 
       try {
@@ -1156,10 +1174,12 @@ import OracleStatusBand from '../components/OracleStatusBand.astro';
         });
 
         const data = await response.json();
-        
+
         if (data.success) {
           this.showSuccess('Profile updated successfully!');
           await window.progressManager?.awardXP(25, 'profile_updated', 'Updated profile information');
+        } else {
+          this.showError(data.message || 'Failed to save profile');
         }
       } catch (error) {
         console.error('Failed to save profile:', error);
@@ -1430,6 +1450,29 @@ import OracleStatusBand from '../components/OracleStatusBand.astro';
       // TODO: Implement account deletion
       console.log('Delete account');
     }
+  }
+
+  // Minting handlers (global)
+  window.handleMintSolana = function() {
+    if (!window.walletManager?.connectedWallet) {
+      alert('⚠️ Please connect your wallet first');
+      return;
+    }
+
+    // TODO: Implement Solana minting
+    console.log('🚀 Minting to Solana Devnet...');
+    alert('🚀 Solana minting coming soon!\n\nThis will mint your profile data as an NFT on Solana Devnet.');
+  }
+
+  window.handleMintPolkadot = function() {
+    if (!window.walletManager?.connectedWallet) {
+      alert('⚠️ Please connect your wallet first');
+      return;
+    }
+
+    // TODO: Implement Polkadot minting
+    console.log('🚀 Minting to Polkadot Testnet...');
+    alert('🚀 Polkadot minting coming soon!\n\nThis will mint your profile data as an NFT on Polkadot Testnet.');
   }
 </script>
 

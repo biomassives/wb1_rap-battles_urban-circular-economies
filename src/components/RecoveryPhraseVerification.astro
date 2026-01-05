@@ -1,0 +1,597 @@
+---
+/**
+ * RecoveryPhraseVerification.astro
+ * Verifies user wrote down recovery phrase correctly
+ *
+ * Features:
+ * - Tests 3 random words from the phrase
+ * - Prevents proceeding until all correct
+ * - Clear feedback on incorrect answers
+ * - Retro gaming theme
+ */
+---
+
+<div id="verificationModal" class="verification-modal" style="display: none;">
+  <div class="verification-overlay"></div>
+
+  <div class="verification-container card-retro-neon">
+    <!-- Header -->
+    <div class="verification-header">
+      <div class="verification-icon animated-bounce">✓</div>
+      <h2 class="verification-title glitch neon-text">
+        VERIFY YOUR PHRASE
+      </h2>
+      <p class="verification-subtitle mono">
+        Let's make sure you wrote it down correctly
+      </p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="verification-instructions dialogue-box mono">
+      <div class="dialogue-speaker">SECURITY_CHECK.EXE</div>
+      <div class="dialogue-text">
+        > INITIATING_PHRASE_VERIFICATION()<br/>
+        <br/>
+        Enter the correct words from your recovery phrase to verify you wrote them down correctly.
+        <br/><br/>
+        <span class="text-cyan">Don't worry - you can try as many times as needed!</span>
+        <span class="text-neon blink">█</span>
+      </div>
+    </div>
+
+    <!-- Verification Form -->
+    <div class="verification-form">
+      <div class="verification-field" id="field1">
+        <label class="field-label mono">
+          <span class="field-number neon-text">WORD #<span id="wordIndex1">-</span></span>
+          <span class="field-hint text-muted">(Enter the word at this position)</span>
+        </label>
+        <input
+          type="text"
+          id="wordInput1"
+          class="word-input mono"
+          placeholder="Type word here..."
+          autocomplete="off"
+          spellcheck="false"
+          onkeyup="checkWord(1)"
+        />
+        <div class="field-feedback" id="feedback1"></div>
+      </div>
+
+      <div class="verification-field" id="field2">
+        <label class="field-label mono">
+          <span class="field-number neon-text">WORD #<span id="wordIndex2">-</span></span>
+          <span class="field-hint text-muted">(Enter the word at this position)</span>
+        </label>
+        <input
+          type="text"
+          id="wordInput2"
+          class="word-input mono"
+          placeholder="Type word here..."
+          autocomplete="off"
+          spellcheck="false"
+          onkeyup="checkWord(2)"
+        />
+        <div class="field-feedback" id="feedback2"></div>
+      </div>
+
+      <div class="verification-field" id="field3">
+        <label class="field-label mono">
+          <span class="field-number neon-text">WORD #<span id="wordIndex3">-</span></span>
+          <span class="field-hint text-muted">(Enter the word at this position)</span>
+        </label>
+        <input
+          type="text"
+          id="wordInput3"
+          class="word-input mono"
+          placeholder="Type word here..."
+          autocomplete="off"
+          spellcheck="false"
+          onkeyup="checkWord(3)"
+        />
+        <div class="field-feedback" id="feedback3"></div>
+      </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="verification-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="verificationProgress"></div>
+      </div>
+      <div class="progress-text mono">
+        <span id="correctCount">0</span>/3 words verified
+      </div>
+    </div>
+
+    <!-- Need Help Section -->
+    <div class="help-section">
+      <details class="help-accordion">
+        <summary class="help-summary mono">
+          ❓ Can't remember what you wrote?
+        </summary>
+        <div class="help-content mono">
+          <p>
+            If you can't remember or didn't write down your phrase correctly,
+            you'll need to start over and generate a new wallet.
+          </p>
+          <p class="text-neon">
+            This is why it's critical to write down your recovery phrase carefully!
+          </p>
+          <button class="btn-retro mono" onclick="startOverRecoveryPhrase()">
+            ← START OVER (Generate New Phrase)
+          </button>
+        </div>
+      </details>
+    </div>
+
+    <!-- Actions -->
+    <div class="verification-actions">
+      <button class="btn-verification btn-retro" onclick="goBackToPhrase()">
+        <span>← VIEW PHRASE AGAIN</span>
+      </button>
+      <button
+        class="btn-verification btn-retro-neon pulse-glow"
+        id="proceedToPINBtn"
+        onclick="proceedToPINSetup()"
+        disabled
+      >
+        <span>VERIFIED! CONTINUE →</span>
+      </button>
+    </div>
+
+    <!-- Attempts Counter -->
+    <div class="attempts-counter mono text-muted">
+      <small id="attemptsText">Attempts: <span id="attemptCount">0</span></small>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Verification Modal */
+  .verification-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .verification-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.98);
+    backdrop-filter: blur(15px);
+  }
+
+  .verification-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    max-height: 95vh;
+    overflow-y: auto;
+    padding: 3rem;
+    background: var(--color-near-black);
+    z-index: 1;
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Header */
+  .verification-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .verification-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    color: var(--color-neon-green);
+    text-shadow: 0 0 30px var(--color-neon-green-glow);
+  }
+
+  .verification-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    font-family: var(--font-mono);
+    letter-spacing: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .verification-subtitle {
+    font-size: 1.125rem;
+    color: var(--color-light-gray);
+  }
+
+  /* Instructions */
+  .verification-instructions {
+    margin-bottom: 2.5rem;
+  }
+
+  .dialogue-box {
+    background: var(--color-black);
+    border: 3px solid var(--color-neon-green);
+    padding: 1.75rem;
+    box-shadow: 0 0 30px var(--color-neon-green-glow);
+  }
+
+  .dialogue-speaker {
+    color: var(--color-neon-cyan);
+    font-size: 0.875rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 0.75rem;
+  }
+
+  .dialogue-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--color-white);
+  }
+
+  /* Verification Form */
+  .verification-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .verification-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .field-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .field-number {
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+
+  .field-hint {
+    font-size: 0.875rem;
+  }
+
+  .word-input {
+    width: 100%;
+    padding: 1.5rem;
+    background: var(--color-black);
+    color: var(--color-white);
+    border: 3px solid var(--color-white);
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: lowercase;
+    transition: all 0.3s ease;
+  }
+
+  .word-input:focus {
+    outline: none;
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 20px var(--color-neon-cyan-glow);
+  }
+
+  .word-input.correct {
+    border-color: var(--color-neon-green);
+    box-shadow: 0 0 20px var(--color-neon-green-glow);
+    pointer-events: none;
+  }
+
+  .word-input.incorrect {
+    border-color: #dc2626;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  .field-feedback {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    min-height: 1.5rem;
+  }
+
+  .field-feedback.correct {
+    color: var(--color-neon-green);
+  }
+
+  .field-feedback.correct::before {
+    content: '✓ ';
+  }
+
+  .field-feedback.incorrect {
+    color: #dc2626;
+  }
+
+  .field-feedback.incorrect::before {
+    content: '✗ ';
+  }
+
+  /* Progress */
+  .verification-progress {
+    margin-bottom: 2rem;
+  }
+
+  .progress-bar {
+    height: 12px;
+    background: var(--color-dark-gray);
+    border: 3px solid var(--color-white);
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--color-neon-green);
+    width: 0%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px var(--color-neon-green-glow);
+  }
+
+  .progress-text {
+    text-align: center;
+    font-size: 1.125rem;
+    font-weight: 900;
+  }
+
+  .progress-text #correctCount {
+    color: var(--color-neon-green);
+    font-size: 1.5rem;
+  }
+
+  /* Help Section */
+  .help-section {
+    margin-bottom: 2rem;
+  }
+
+  .help-accordion {
+    background: var(--color-black);
+    border: 2px solid var(--color-mid-gray);
+    padding: 0;
+  }
+
+  .help-summary {
+    padding: 1.25rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-neon-cyan);
+    list-style: none;
+    user-select: none;
+  }
+
+  .help-summary:hover {
+    background: rgba(0, 255, 255, 0.05);
+  }
+
+  .help-content {
+    padding: 1.5rem;
+    border-top: 2px solid var(--color-mid-gray);
+    line-height: 1.8;
+  }
+
+  .help-content p {
+    margin-bottom: 1rem;
+  }
+
+  .help-content button {
+    margin-top: 1rem;
+  }
+
+  /* Actions */
+  .verification-actions {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .btn-verification {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .btn-verification:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Attempts Counter */
+  .attempts-counter {
+    text-align: center;
+    font-size: 0.875rem;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .verification-container {
+      padding: 2rem 1.5rem;
+    }
+
+    .verification-title {
+      font-size: 2rem;
+    }
+
+    .word-input {
+      font-size: 1.25rem;
+      padding: 1.25rem;
+    }
+
+    .verification-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Verification state
+  let verificationState = {
+    words: [],
+    indices: [],
+    attempts: 0,
+    correctCount: 0
+  };
+
+  window.showRecoveryPhraseVerification = function(words) {
+    const modal = document.getElementById('verificationModal');
+
+    // Store words and select 3 random indices to test
+    verificationState.words = words;
+    verificationState.indices = selectRandomIndices(words.length, 3);
+    verificationState.attempts = 0;
+    verificationState.correctCount = 0;
+
+    // Display the indices
+    verificationState.indices.forEach((index, i) => {
+      document.getElementById(`wordIndex${i + 1}`).textContent = index + 1;
+    });
+
+    // Reset inputs
+    for (let i = 1; i <= 3; i++) {
+      const input = document.getElementById(`wordInput${i}`);
+      input.value = '';
+      input.className = 'word-input mono';
+      document.getElementById(`feedback${i}`).textContent = '';
+      document.getElementById(`feedback${i}`).className = 'field-feedback';
+    }
+
+    // Reset progress
+    updateVerificationProgress();
+    document.getElementById('attemptCount').textContent = '0';
+    document.getElementById('proceedToPINBtn').disabled = true;
+
+    // Show modal
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Focus first input
+    setTimeout(() => document.getElementById('wordInput1').focus(), 300);
+  };
+
+  function selectRandomIndices(length, count) {
+    const indices = [];
+    while (indices.length < count) {
+      const rand = Math.floor(Math.random() * length);
+      if (!indices.includes(rand)) {
+        indices.push(rand);
+      }
+    }
+    return indices.sort((a, b) => a - b);
+  }
+
+  window.checkWord = function(fieldNum) {
+    const input = document.getElementById(`wordInput${fieldNum}`);
+    const feedback = document.getElementById(`feedback${fieldNum}`);
+    const expectedIndex = verificationState.indices[fieldNum - 1];
+    const expectedWord = verificationState.words[expectedIndex];
+    const userWord = input.value.trim().toLowerCase();
+
+    // Don't check until user types something
+    if (!userWord) {
+      input.className = 'word-input mono';
+      feedback.textContent = '';
+      feedback.className = 'field-feedback';
+      return;
+    }
+
+    // Check if correct
+    if (userWord === expectedWord.toLowerCase()) {
+      input.className = 'word-input mono correct';
+      feedback.textContent = 'Correct!';
+      feedback.className = 'field-feedback correct';
+    } else {
+      input.className = 'word-input mono incorrect';
+      feedback.textContent = 'Incorrect - try again';
+      feedback.className = 'field-feedback incorrect';
+      verificationState.attempts++;
+      document.getElementById('attemptCount').textContent = verificationState.attempts;
+    }
+
+    updateVerificationProgress();
+  };
+
+  function updateVerificationProgress() {
+    let correctCount = 0;
+
+    for (let i = 1; i <= 3; i++) {
+      const input = document.getElementById(`wordInput${i}`);
+      if (input.classList.contains('correct')) {
+        correctCount++;
+      }
+    }
+
+    verificationState.correctCount = correctCount;
+
+    // Update progress bar
+    const progress = (correctCount / 3) * 100;
+    document.getElementById('verificationProgress').style.width = `${progress}%`;
+    document.getElementById('correctCount').textContent = correctCount;
+
+    // Enable proceed button if all correct
+    const proceedBtn = document.getElementById('proceedToPINBtn');
+    proceedBtn.disabled = correctCount < 3;
+
+    if (correctCount === 3) {
+      proceedBtn.classList.add('pulse-glow');
+    } else {
+      proceedBtn.classList.remove('pulse-glow');
+    }
+  }
+
+  window.goBackToPhrase = function() {
+    document.getElementById('verificationModal').style.display = 'none';
+
+    if (window.showRecoveryPhraseModal && window._recoveryWords) {
+      window.showRecoveryPhraseModal(window._recoveryWords);
+    }
+  };
+
+  window.startOverRecoveryPhrase = function() {
+    if (confirm('Generate a new recovery phrase? Your current phrase will be discarded.')) {
+      document.getElementById('verificationModal').style.display = 'none';
+      document.body.style.overflow = '';
+
+      // Trigger new wallet generation
+      if (window.generateNewWallet) {
+        window.generateNewWallet();
+      }
+    }
+  };
+
+  window.proceedToPINSetup = function() {
+    document.getElementById('verificationModal').style.display = 'none';
+
+    // Show PIN setup modal (will be created next)
+    if (window.showPINSetup) {
+      window.showPINSetup();
+    } else {
+      alert('✓ Verification complete!\n\nYour recovery phrase has been verified.');
+      document.body.style.overflow = '';
+    }
+
+    // Award XP for completing verification
+    if (window.progressManager) {
+      window.progressManager.awardXP(50, 'wallet_verified', 'Verified recovery phrase');
+    }
+  };
+</script>
