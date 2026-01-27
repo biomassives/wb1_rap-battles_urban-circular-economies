@@ -1,0 +1,227 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Record Your Music NFT">
+
+<style>
+/* Critical mobile-first UI only */
+
+body {
+  background: #05070a;
+  color: #e6f1ff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+main {
+  max-width: 420px;
+  margin: auto;
+  padding: 1rem;
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.step {
+  background: #0b0f17;
+  border: 1px solid #1e2a44;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.step h2 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+button {
+  width: 100%;
+  padding: 0.9rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid #00ff9c;
+  background: #05070a;
+  color: #00ff9c;
+  margin-top: 0.5rem;
+}
+
+button.secondary {
+  border-color: #4cc9f0;
+  color: #4cc9f0;
+}
+
+button.danger {
+  border-color: #ff4d6d;
+  color: #ff4d6d;
+}
+
+button:disabled {
+  opacity: 0.4;
+}
+
+audio {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+small {
+  opacity: 0.7;
+}
+</style>
+
+<main>
+  <h1>🎙️ Record Your Music NFT</h1>
+
+  <!-- STEP 1: Load Beat -->
+  <section class="step">
+    <h2>1️⃣ Load a Beat</h2>
+    <input type="file" id="beat-nft" accept="application/json" />
+    <small>Select a Beat / Sampler NFT file</small>
+
+    <button id="play-beat" class="secondary" disabled>
+      ▶ Play Beat
+    </button>
+  </section>
+
+  <!-- STEP 2: Record -->
+  <section class="step">
+    <h2>2️⃣ Record Your Voice</h2>
+
+    <button id="start-record" disabled>
+      🎙️ Start Recording
+    </button>
+
+    <button id="stop-record" class="danger" disabled>
+      ⏹ Stop
+    </button>
+
+    <audio id="recording-preview" controls></audio>
+  </section>
+
+  <!-- STEP 3: Save / Mint -->
+  <section class="step">
+    <h2>3️⃣ Save as NFT</h2>
+
+    <input id="nft-name" placeholder="Track name" />
+    <textarea id="nft-desc" placeholder="Description"></textarea>
+
+    <button id="save-nft" disabled>
+      💾 Save / Mint NFT
+    </button>
+  </section>
+</main>
+
+<script>
+/* -------------------------------------------------
+ * State
+ * ------------------------------------------------- */
+
+let beatMetadata = null;
+let recorder;
+let recordedChunks = [];
+let recordedBlob;
+
+/* -------------------------------------------------
+ * Load Beat NFT
+ * ------------------------------------------------- */
+
+document.getElementById('beat-nft').onchange = async e => {
+  const text = await e.target.files[0].text();
+  beatMetadata = JSON.parse(text);
+
+  // Load sampler sequence if present
+  const sequence =
+    window.enhancedSamplerManager.loadFromMetadata(beatMetadata);
+
+  // Load Strudel if present
+  if (beatMetadata.strudelPattern) {
+    await window.nftStrudelPlayer.initialize();
+    window.nftStrudelPlayer.loadFromMetadata(beatMetadata);
+  }
+
+  document.getElementById('play-beat').disabled = false;
+  document.getElementById('start-record').disabled = false;
+};
+
+/* -------------------------------------------------
+ * Play Beat
+ * ------------------------------------------------- */
+
+document.getElementById('play-beat').onclick = () => {
+  // Prefer sampler
+  if (beatMetadata?.sampler) {
+    window.enhancedSamplerManager.playSequence(
+      beatMetadata.sampler.sequence,
+      { bpm: beatMetadata.sampler.bpm }
+    );
+  }
+
+  // Also play Strudel if present
+  if (beatMetadata?.strudelPattern) {
+    window.nftStrudelPlayer.playStrudelPattern(
+      beatMetadata.strudelPattern
+    );
+  }
+};
+
+/* -------------------------------------------------
+ * Recording
+ * ------------------------------------------------- */
+
+document.getElementById('start-record').onclick = async () => {
+  recordedChunks = [];
+
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  recorder = new MediaRecorder(stream);
+
+  recorder.ondataavailable = e => recordedChunks.push(e.data);
+  recorder.onstop = () => {
+    recordedBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+    document.getElementById('recording-preview').src =
+      URL.createObjectURL(recordedBlob);
+    document.getElementById('save-nft').disabled = false;
+  };
+
+  document.getElementById('stop-record').disabled = false;
+  recorder.start();
+
+  // Auto-play beat while recording
+  document.getElementById('play-beat').click();
+};
+
+/* -------------------------------------------------
+ * Stop
+ * ------------------------------------------------- */
+
+document.getElementById('stop-record').onclick = () => {
+  recorder.stop();
+  window.enhancedSamplerManager.stopAll();
+  window.nftStrudelPlayer.stop();
+};
+
+/* -------------------------------------------------
+ * Save / Mint (mock)
+ * ------------------------------------------------- */
+
+document.getElementById('save-nft').onclick = async () => {
+  const metadata = {
+    name: document.getElementById('nft-name').value,
+    description: document.getElementById('nft-desc').value,
+    sources: {
+      beatNFT: beatMetadata,
+      vocals: 'recorded.webm'
+    },
+    type: 'vocal-remix'
+  };
+
+  console.log('NFT READY:', metadata, recordedBlob);
+  alert('✅ Your Music NFT is ready!');
+};
+</script>
+
+</BaseLayout>
+

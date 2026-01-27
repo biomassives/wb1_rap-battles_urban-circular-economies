@@ -1,0 +1,4017 @@
+---
+/**
+ * beat-playground.astro - Beat Exploration & Mixing
+ *
+ * Standalone environment for:
+ * - Exploring all beat sources (Sampler, Strudel, AutoMoog, Upload)
+ * - Mixing and layering beats
+ * - Adjusting BPM and effects
+ * - Saving presets for battles
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Beat Playground"
+  description="Explore, mix, and create beats for your rap battles"
+  activeSection="music"
+>
+
+<!-- Strudel Web Audio Library -->
+<script is:inline src="https://unpkg.com/@strudel/web@1.0.3"></script>
+
+<style>
+:root {
+  --bg-dark: #05070a;
+  --panel-bg: #0b0f17;
+  --text: #e6f1ff;
+  --muted: #8aa2c1;
+  --neon-green: #00ff9c;
+  --neon-cyan: #00e5ff;
+  --neon-magenta: #ff4fd8;
+  --neon-orange: #ff9770;
+  --danger: #ff3864;
+  --border: #1e2a44;
+}
+
+.playground {
+  min-height: 100vh;
+  background: radial-gradient(ellipse at top, #0d1525, #05070a 70%);
+  padding: 2rem 1rem;
+}
+
+.playground-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Header */
+.playground-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.playground-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.playground-subtitle {
+  color: var(--muted);
+  font-family: monospace;
+  margin-top: 0.5rem;
+}
+
+/* Main Grid */
+.playground-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.5rem;
+}
+
+/* Panels */
+.panel {
+  background: linear-gradient(180deg, var(--panel-bg), #070b12);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--border);
+}
+
+.panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Beat Layers Section */
+.beat-layers {
+  margin-bottom: 1.5rem;
+}
+
+.layer {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s;
+}
+
+.layer:hover {
+  border-color: var(--neon-cyan);
+}
+
+.layer.active {
+  border-color: var(--neon-green);
+  background: rgba(0, 255, 156, 0.05);
+  animation: layerPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes layerPulse {
+  from {
+    box-shadow: 0 0 5px rgba(0, 255, 156, 0.3), inset 0 0 10px rgba(0, 255, 156, 0.05);
+  }
+  to {
+    box-shadow: 0 0 15px rgba(0, 255, 156, 0.5), inset 0 0 20px rgba(0, 255, 156, 0.1);
+  }
+}
+
+/* Transport button playing animation */
+.transport-btn.play.playing {
+  animation: transportPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes transportPulse {
+  from {
+    box-shadow: 0 0 10px rgba(0, 255, 156, 0.4);
+  }
+  to {
+    box-shadow: 0 0 25px rgba(0, 255, 156, 0.8);
+  }
+}
+
+/* Beat step indicator */
+.beat-indicator {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.5rem;
+}
+
+.beat-step {
+  width: 12px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  transition: background 0.1s;
+}
+
+.beat-step.active {
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.layer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.layer-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.layer-icon {
+  font-size: 1.25rem;
+}
+
+.layer-label {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.layer-source {
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+}
+
+.layer-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.layer-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.layer-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.layer-btn.play {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+
+.layer-btn.play.playing {
+  background: var(--neon-green);
+  color: #000;
+}
+
+.layer-btn.mute.muted {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.layer-btn.delete {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Volume Slider */
+.layer-volume {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.volume-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  width: 50px;
+}
+
+.volume-slider {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.volume-value {
+  font-size: 0.75rem;
+  color: var(--neon-cyan);
+  width: 35px;
+  text-align: right;
+}
+
+/* Add Layer Button */
+.add-layer-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(112, 214, 255, 0.1);
+  border: 2px dashed rgba(112, 214, 255, 0.3);
+  border-radius: 10px;
+  color: var(--neon-cyan);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.add-layer-btn:hover {
+  background: rgba(112, 214, 255, 0.15);
+  border-color: var(--neon-cyan);
+}
+
+/* Source Selector Popup */
+.source-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.source-popup.active {
+  display: flex;
+}
+
+.source-popup-content {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+}
+
+.source-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.source-popup-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.source-popup-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.source-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.source-option {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.source-option:hover {
+  border-color: var(--neon-cyan);
+  background: rgba(112, 214, 255, 0.05);
+}
+
+.source-option-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.source-option-name {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.source-option-desc {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* Transport Controls */
+.transport-panel {
+  margin-bottom: 1.5rem;
+}
+
+.transport-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.transport-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: all 0.2s;
+}
+
+.transport-btn.play {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  width: 64px;
+  height: 64px;
+  font-size: 1.5rem;
+}
+
+.transport-btn.play:hover {
+  background: rgba(0, 255, 156, 0.2);
+}
+
+.transport-btn.play.playing {
+  background: var(--neon-green);
+  color: #000;
+}
+
+.transport-btn.stop {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.transport-btn.stop:hover {
+  background: rgba(255, 56, 100, 0.2);
+}
+
+.transport-btn.record {
+  border-color: var(--neon-orange);
+  color: var(--neon-orange);
+}
+
+.transport-btn.record:hover {
+  background: rgba(255, 151, 112, 0.2);
+}
+
+/* BPM Control */
+.bpm-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.bpm-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.bpm-value {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: var(--neon-orange);
+  min-width: 80px;
+  text-align: center;
+}
+
+.bpm-adjust {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bpm-btn {
+  width: 28px;
+  height: 20px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.bpm-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+/* Presets Panel */
+.presets-panel {
+  margin-bottom: 1.5rem;
+}
+
+.preset-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-item:hover {
+  border-color: var(--neon-cyan);
+}
+
+.preset-icon {
+  font-size: 1.25rem;
+}
+
+.preset-info {
+  flex: 1;
+}
+
+.preset-name {
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.preset-meta {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.preset-load-btn {
+  padding: 0.4rem 0.75rem;
+  background: var(--neon-cyan);
+  border: none;
+  border-radius: 6px;
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Save Preset */
+.save-preset-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.save-preset-input {
+  flex: 1;
+  padding: 0.6rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.save-preset-input:focus {
+  outline: none;
+  border-color: var(--neon-green);
+}
+
+.save-preset-btn {
+  padding: 0.6rem 1rem;
+  background: var(--neon-green);
+  border: none;
+  border-radius: 6px;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Actions Panel */
+.actions-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+  border: none;
+  color: #000;
+}
+
+.action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 255, 156, 0.3);
+}
+
+.action-btn.secondary {
+  background: transparent;
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.action-btn.secondary:hover {
+  background: rgba(0, 229, 255, 0.1);
+}
+
+/* Beat Selector (within popup) */
+.beat-selector {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 1rem;
+}
+
+.beat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.beat-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.beat-item:hover {
+  border-color: var(--neon-cyan);
+}
+
+.beat-item.selected {
+  border-color: var(--neon-green);
+  background: rgba(0, 255, 156, 0.1);
+}
+
+.beat-item-name {
+  color: var(--text);
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.beat-item-meta {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+/* ==========================================
+   STRUDEL LAYER BUILDER STYLES
+   ========================================== */
+
+/* Instrument Palette */
+.instrument-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.instrument-palette-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.palette-title {
+  color: var(--neon-cyan);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.palette-category {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.palette-category-name {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.instrument-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: grab;
+  transition: all 0.2s;
+  font-size: 1.2rem;
+}
+
+.instrument-icon:hover {
+  background: rgba(0, 229, 255, 0.1);
+  border-color: var(--neon-cyan);
+  transform: scale(1.05);
+}
+
+.instrument-icon:active {
+  cursor: grabbing;
+}
+
+.instrument-icon.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.instrument-icon-label {
+  font-size: 0.55rem;
+  color: var(--muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+/* Pattern Layer */
+.strudel-layer {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.05), rgba(255, 79, 216, 0.05));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.strudel-layer.playing {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 15px rgba(0, 255, 156, 0.2);
+}
+
+.layer-pattern-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-height: 50px;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  margin-top: 0.75rem;
+}
+
+.layer-pattern-display.drop-target {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 229, 255, 0.1);
+}
+
+.pattern-element {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem;
+  background: rgba(0, 229, 255, 0.15);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pattern-element:hover {
+  background: rgba(255, 56, 100, 0.2);
+  border-color: var(--danger);
+}
+
+.pattern-element .remove-btn {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-left: 0.25rem;
+}
+
+.pattern-element:hover .remove-btn {
+  color: var(--danger);
+}
+
+/* Pattern Code Display */
+.pattern-code {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--neon-green);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Genre Presets Grid */
+.genre-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.genre-preset-btn {
+  padding: 0.6rem 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.genre-preset-btn:hover {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 229, 255, 0.1);
+}
+
+.genre-preset-btn.active {
+  border-color: var(--neon-green);
+  background: rgba(0, 255, 156, 0.15);
+  color: var(--neon-green);
+}
+
+.genre-preset-btn .emoji {
+  display: block;
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Layer Controls Row */
+.layer-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.layer-effect-btn {
+  padding: 0.35rem 0.6rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.layer-effect-btn:hover {
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+}
+
+.layer-effect-btn.active {
+  background: rgba(255, 79, 216, 0.2);
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+}
+
+/* Loading Indicator */
+.sample-loading-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(0, 255, 156, 0.15));
+  border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+  z-index: 1000;
+  transition: opacity 0.3s;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 229, 255, 0.3);
+  border-top-color: var(--neon-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: var(--neon-cyan);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+.loading-bar {
+  width: 150px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.loading-progress {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+  border-radius: 3px;
+  transition: width 0.2s;
+}
+
+/* Sample status badge */
+.samples-ready-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  background: rgba(0, 255, 156, 0.15);
+  border: 1px solid rgba(0, 255, 156, 0.3);
+  border-radius: 12px;
+  font-size: 0.7rem;
+  color: var(--neon-green);
+}
+
+.samples-ready-badge.loading {
+  background: rgba(255, 151, 112, 0.15);
+  border-color: rgba(255, 151, 112, 0.3);
+  color: var(--neon-orange);
+}
+
+.samples-ready-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Upload trigger */
+.instrument-icon.upload-trigger {
+  border-style: dashed;
+  border-color: var(--neon-orange);
+  color: var(--neon-orange);
+  cursor: pointer;
+}
+
+.instrument-icon.upload-trigger:hover {
+  background: rgba(255, 151, 112, 0.15);
+  border-color: var(--neon-orange);
+}
+
+/* Uploaded sample icons */
+.instrument-icon.user-sample {
+  border-color: var(--neon-magenta);
+  position: relative;
+}
+
+.instrument-icon.user-sample:hover {
+  border-color: var(--neon-magenta);
+  background: rgba(255, 79, 216, 0.15);
+}
+
+.instrument-icon.user-sample .sample-remove {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 14px;
+  height: 14px;
+  background: var(--danger);
+  border-radius: 50%;
+  font-size: 0.6rem;
+  color: #fff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.instrument-icon.user-sample:hover .sample-remove {
+  display: flex;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .playground-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sample-loading-indicator {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .loading-bar {
+    width: 100%;
+    order: 3;
+  }
+}
+</style>
+
+<script is:inline>
+console.log('🎵🎵🎵 BEAT PLAYGROUND - CORE AUDIO ENGINE 🎵🎵🎵');
+
+// ============================================
+// CORE AUDIO ENGINE (in early script to ensure it loads)
+// ============================================
+
+(function() {
+  // Audio context singleton
+  let audioCtx = null;
+  let masterGain = null;
+
+  // Initialize audio
+  async function initAudio() {
+    if (audioCtx) return audioCtx;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.connect(audioCtx.destination);
+    masterGain.gain.value = 0.8;
+    await audioCtx.resume();
+    console.log('🔊 Audio initialized, state:', audioCtx.state);
+    return audioCtx;
+  }
+
+  // Synth sounds
+  function playKick(time) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, time);
+    osc.frequency.exponentialRampToValueAtTime(50, time + 0.1);
+    gain.gain.setValueAtTime(1, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(time);
+    osc.stop(time + 0.3);
+  }
+
+  function playSnare(time) {
+    if (!audioCtx) return;
+    // Noise burst
+    const bufferSize = audioCtx.sampleRate * 0.15;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = audioCtx.createBufferSource();
+    const noiseGain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+    noise.buffer = buffer;
+    filter.type = 'highpass';
+    filter.frequency.value = 1000;
+    noiseGain.gain.setValueAtTime(0.5, time);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(masterGain);
+    noise.start(time);
+    noise.stop(time + 0.15);
+    // Tone
+    const osc = audioCtx.createOscillator();
+    const oscGain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = 180;
+    oscGain.gain.setValueAtTime(0.4, time);
+    oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+    osc.connect(oscGain);
+    oscGain.connect(masterGain);
+    osc.start(time);
+    osc.stop(time + 0.1);
+  }
+
+  function playHihat(time) {
+    if (!audioCtx) return;
+    const bufferSize = audioCtx.sampleRate * 0.05;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = audioCtx.createBufferSource();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+    noise.buffer = buffer;
+    filter.type = 'highpass';
+    filter.frequency.value = 7000;
+    gain.gain.setValueAtTime(0.3, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+    noise.start(time);
+    noise.stop(time + 0.05);
+  }
+
+  // Play user-uploaded sample
+  function playUserSample(sampleId, time) {
+    if (!audioCtx || !window.userSamples || !window.userSamples[sampleId]) return;
+    const sample = window.userSamples[sampleId];
+    const source = audioCtx.createBufferSource();
+    source.buffer = sample.buffer;
+    source.connect(masterGain);
+    source.start(time || audioCtx.currentTime);
+  }
+
+  // Helper to play any sound by id
+  function playSoundById(soundId, time) {
+    const t = time || audioCtx.currentTime;
+    if (soundId === 'bd') playKick(t);
+    else if (soundId === 'sd' || soundId === 'cp') playSnare(t);
+    else if (soundId === 'hh' || soundId === 'oh') playHihat(t);
+    else if (soundId && soundId.startsWith('user')) playUserSample(soundId, t);
+  }
+
+  // Drum patterns
+  const patterns = {
+    hiphop: {
+      bd: [1,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0],
+      sd: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+      hh: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0]
+    },
+    trap: {
+      bd: [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0],
+      sd: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+      hh: [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1]
+    },
+    lofi: {
+      bd: [1,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0],
+      sd: [0,0,0,0, 1,0,0,1, 0,0,0,0, 1,0,0,0],
+      hh: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0]
+    }
+  };
+
+  // Sequencer state
+  let isPlaying = false;
+  let currentStep = 0;
+  let currentPattern = 'hiphop';
+  let bpm = 90;
+  let intervalId = null;
+
+  function playStep(step) {
+    if (!audioCtx) return;
+    const time = audioCtx.currentTime;
+    const pattern = patterns[currentPattern];
+    if (!pattern) return;
+
+    if (pattern.bd[step]) playKick(time);
+    if (pattern.sd[step]) playSnare(time);
+    if (pattern.hh[step]) playHihat(time);
+  }
+
+  function startSequencer() {
+    if (isPlaying) return;
+    isPlaying = true;
+    currentStep = 0;
+    const stepTime = (60 / bpm / 4) * 1000;
+    console.log(`▶️ Starting sequencer - ${currentPattern} @ ${bpm} BPM`);
+
+    intervalId = setInterval(() => {
+      playStep(currentStep);
+      currentStep = (currentStep + 1) % 16;
+
+      // Update beat indicator
+      document.querySelectorAll('.beat-step').forEach((el, i) => {
+        el.classList.toggle('active', i === currentStep);
+      });
+    }, stepTime);
+
+    // Update UI
+    const playBtn = document.getElementById('master-play');
+    if (playBtn) {
+      playBtn.classList.add('playing');
+      playBtn.textContent = '⏸';
+    }
+  }
+
+  function stopSequencer() {
+    isPlaying = false;
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+    currentStep = 0;
+    console.log('⏹ Sequencer stopped');
+
+    // Update UI
+    const playBtn = document.getElementById('master-play');
+    if (playBtn) {
+      playBtn.classList.remove('playing');
+      playBtn.textContent = '▶';
+    }
+    document.querySelectorAll('.beat-step').forEach(el => el.classList.remove('active'));
+  }
+
+  // Expose to window
+  window.beatEngine = {
+    init: initAudio,
+    play: startSequencer,
+    stop: stopSequencer,
+    toggle: async function() {
+      await initAudio();
+      if (isPlaying) stopSequencer();
+      else startSequencer();
+    },
+    setPattern: function(name) {
+      if (patterns[name]) {
+        currentPattern = name;
+        console.log('🎵 Pattern set to:', name);
+      }
+    },
+    setBPM: function(newBpm) {
+      bpm = parseInt(newBpm) || 90;
+      document.getElementById('bpm-display').textContent = bpm;
+      if (isPlaying) {
+        stopSequencer();
+        startSequencer();
+      }
+    },
+    isPlaying: () => isPlaying,
+    patterns: Object.keys(patterns)
+  };
+
+  // Quick test
+  window.quickAudioTest = async function() {
+    await initAudio();
+    playKick(audioCtx.currentTime);
+    setTimeout(() => playSnare(audioCtx.currentTime), 300);
+    setTimeout(() => playHihat(audioCtx.currentTime), 600);
+    console.log('✅ Test sounds played');
+  };
+
+  console.log('💡 Audio commands: beatEngine.toggle(), beatEngine.setPattern("trap"), beatEngine.setBPM(120)');
+
+  // ============================================
+  // STRUDEL INTEGRATION
+  // ============================================
+
+  // Strudel pattern presets by genre
+  const strudelPresets = {
+    hiphop: {
+      code: `stack(
+        s("bd [~ bd] sd ~, hh*8"),
+        s("~ ~ ~ 808").sometimes(x => x.gain(0.8))
+      ).cpm(90).room(0.2)`,
+      bpm: 90
+    },
+    trap: {
+      code: `stack(
+        s("bd*2 [[~ bd] bd] [bd ~], ~ cp ~ [cp [cp ~]], hh*32"),
+        s("[~ 808 ~ 808]*2").lpf(800)
+      ).cpm(140).room(0.15)`,
+      bpm: 140
+    },
+    drill: {
+      code: `stack(
+        s("bd ~ bd [~ [bd bd]], ~ ~ cp [~ cp], hh*8 [hh*16 hh*4]"),
+        s("[~ 808 ~ 808]*2").lpf(700),
+        note("<c2 c2 g1 f1>").s("square").lpf(600).gain(0.3)
+      ).cpm(140).lpf(850).room(0.25)`,
+      bpm: 140
+    },
+    boombap: {
+      code: `stack(
+        s("bd ~ sd [~ sd], ~ ~ cp ~, hh*4 [hh hh]"),
+        note("c2 ~ eb2 ~").s("sawtooth").lpf(500).slow(2).gain(0.4)
+      ).cpm(90).room(0.5)`,
+      bpm: 90
+    },
+    lofi: {
+      code: `stack(
+        s("bd ~ [~ bd] ~, ~ sd ~ sd, [hh hh]*4"),
+        note("<c2 eb2 f2 g2>").s("triangle").lpf(600).slow(4)
+      ).cpm(85).room(0.6).lpf(1200)`,
+      bpm: 85
+    },
+    reggae: {
+      code: `stack(
+        s("~ bd ~ bd, ~ ~ cp ~, ~ hh ~ hh"),
+        note("<c2 f2 g2 c3>").s("sawtooth").lpf(800).slow(2)
+      ).cpm(75).room(0.4).delay(0.2)`,
+      bpm: 75
+    },
+    afrobeat: {
+      code: `stack(
+        s("bd [~ bd] bd [bd ~], [~ cp]*2 cp [~ [cp cp]], hh*16"),
+        s("~ 808 ~ [808 ~]").lpf(700),
+        note("<c2 eb2 f2 g2 bb2 c3>").s("triangle").lpf(900).slow(2)
+      ).cpm(110).room(0.5).delay(0.2)`,
+      bpm: 110
+    },
+    house: {
+      code: `stack(
+        s("bd*4, ~ cp ~ cp, [hh hh]*8"),
+        note("<c2 c2 eb2 f2>").s("sawtooth").lpf(600).fast(2)
+      ).cpm(128).room(0.2)`,
+      bpm: 128
+    }
+  };
+
+  // Strudel layer state
+  let strudelLayers = [
+    { id: 1, elements: [], code: 's("bd sd")', playing: false, muted: false, effects: {} }
+  ];
+  let strudelInitialized = false;
+  let activeStrudelPattern = null;
+
+  // Initialize Strudel
+  async function initStrudel() {
+    if (strudelInitialized) return true;
+    if (typeof initStrudel !== 'undefined' && window.strudel) {
+      try {
+        await window.strudel.initAudio();
+        strudelInitialized = true;
+        console.log('🎵 Strudel initialized');
+        return true;
+      } catch (e) {
+        console.warn('Strudel init error:', e);
+      }
+    }
+    console.log('⚠️ Strudel not available, using synth fallback');
+    return false;
+  }
+
+  // Play a Strudel pattern
+  async function playStrudelPattern(code, bpm = 90) {
+    // First try Strudel
+    if (await initStrudel()) {
+      try {
+        if (typeof hush === 'function') hush();
+        const pattern = eval(code);
+        if (pattern && pattern.play) {
+          activeStrudelPattern = pattern.play();
+          console.log('🎵 Playing Strudel pattern');
+          return;
+        }
+      } catch (e) {
+        console.warn('Strudel eval error:', e);
+      }
+    }
+
+    // Fallback to synth engine
+    console.log('🔊 Using synth fallback');
+    const genreFromCode = Object.entries(strudelPresets).find(([k, v]) => v.code === code)?.[0];
+    if (genreFromCode && patterns[genreFromCode]) {
+      window.beatEngine.setPattern(genreFromCode);
+      window.beatEngine.setBPM(bpm);
+      startSequencer();
+    } else {
+      // Default to hiphop
+      window.beatEngine.setPattern('hiphop');
+      window.beatEngine.setBPM(bpm);
+      startSequencer();
+    }
+  }
+
+  // Stop Strudel
+  function stopStrudel() {
+    if (typeof hush === 'function') {
+      try { hush(); } catch(e) {}
+    }
+    stopSequencer();
+    activeStrudelPattern = null;
+  }
+
+  // Build Strudel code from layer elements
+  function buildPatternCode(layerId) {
+    const layer = strudelLayers.find(l => l.id === layerId);
+    if (!layer || layer.elements.length === 0) {
+      return 's("~")';
+    }
+
+    // Build pattern string from elements
+    const sounds = layer.elements.map(el => el.code).join(' ');
+    let code = `s("${sounds}")`;
+
+    // Add effects
+    if (layer.effects.room) code += '.room(0.3)';
+    if (layer.effects.delay) code += '.delay(0.2)';
+    if (layer.effects.lpf) code += '.lpf(800)';
+
+    return code;
+  }
+
+  // Update layer pattern display
+  function updateLayerDisplay(layerId) {
+    const layer = strudelLayers.find(l => l.id === layerId);
+    if (!layer) return;
+
+    const display = document.getElementById(`pattern-display-${layerId}`);
+    const codeEl = document.getElementById(`pattern-code-${layerId}`);
+
+    if (display) {
+      if (layer.elements.length === 0) {
+        display.innerHTML = '<span style="color: var(--muted); font-size: 0.8rem;">Drop instruments here...</span>';
+      } else {
+        display.innerHTML = layer.elements.map((el, idx) => `
+          <div class="pattern-element" data-index="${idx}" data-layer="${layerId}">
+            ${el.emoji || '🎵'} ${el.name}
+            <span class="remove-btn">×</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Update code display
+    const code = buildPatternCode(layerId);
+    layer.code = code;
+    if (codeEl) {
+      codeEl.textContent = code;
+    }
+  }
+
+  // Add element to layer
+  function addElementToLayer(layerId, element) {
+    const layer = strudelLayers.find(l => l.id === layerId);
+    if (!layer) return;
+
+    layer.elements.push(element);
+    updateLayerDisplay(layerId);
+    console.log(`➕ Added ${element.name} to layer ${layerId}`);
+  }
+
+  // Remove element from layer
+  function removeElementFromLayer(layerId, index) {
+    const layer = strudelLayers.find(l => l.id === layerId);
+    if (!layer) return;
+
+    layer.elements.splice(index, 1);
+    updateLayerDisplay(layerId);
+    console.log(`➖ Removed element from layer ${layerId}`);
+  }
+
+  // Toggle layer effect
+  function toggleLayerEffect(layerId, effect) {
+    const layer = strudelLayers.find(l => l.id === layerId);
+    if (!layer) return;
+
+    layer.effects[effect] = !layer.effects[effect];
+    updateLayerDisplay(layerId);
+
+    // Update button state
+    document.querySelectorAll(`.layer-effect-btn[data-layer="${layerId}"][data-effect="${effect}"]`).forEach(btn => {
+      btn.classList.toggle('active', layer.effects[effect]);
+    });
+  }
+
+  // Expose Strudel functions
+  window.strudelEngine = {
+    play: playStrudelPattern,
+    stop: stopStrudel,
+    presets: strudelPresets,
+    layers: strudelLayers,
+    addElement: addElementToLayer,
+    removeElement: removeElementFromLayer,
+    toggleEffect: toggleLayerEffect,
+    buildCode: buildPatternCode
+  };
+
+  // Wire up all controls on DOM ready
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎛️ Wiring up Beat Playground controls...');
+
+    // Genre preset buttons
+    document.querySelectorAll('.genre-preset-btn').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const genre = this.dataset.genre;
+        const bpm = parseInt(this.dataset.bpm) || 90;
+
+        // Update UI
+        document.querySelectorAll('.genre-preset-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        // Update BPM display
+        document.getElementById('bpm-display').textContent = bpm;
+        const slider = document.getElementById('bpm-slider');
+        if (slider) slider.value = bpm;
+
+        // Play the pattern
+        if (strudelPresets[genre]) {
+          await initAudio();
+          playStrudelPattern(strudelPresets[genre].code, bpm);
+          console.log(`🎵 Playing ${genre} @ ${bpm} BPM`);
+        }
+      });
+    });
+
+    // Old preset clicks (sidebar)
+    document.querySelectorAll('.preset-item').forEach(item => {
+      item.addEventListener('click', async function() {
+        const preset = this.dataset.preset;
+        if (preset && strudelPresets[preset]) {
+          await initAudio();
+          playStrudelPattern(strudelPresets[preset].code, strudelPresets[preset].bpm);
+        } else if (preset && patterns[preset]) {
+          await initAudio();
+          window.beatEngine.setPattern(preset);
+          startSequencer();
+        }
+      });
+    });
+
+    // Master play button
+    const masterPlay = document.getElementById('master-play');
+    if (masterPlay) {
+      masterPlay.addEventListener('click', async function() {
+        await initAudio();
+        if (isPlaying) {
+          stopStrudel();
+          this.classList.remove('playing');
+          this.textContent = '▶';
+        } else {
+          // Play first layer's pattern
+          const layer = strudelLayers[0];
+          if (layer && layer.code) {
+            playStrudelPattern(layer.code, bpm);
+          } else {
+            window.beatEngine.toggle();
+          }
+          this.classList.add('playing');
+          this.textContent = '⏸';
+        }
+      });
+    }
+
+    // Stop button
+    const stopBtn = document.getElementById('btn-stop');
+    if (stopBtn) {
+      stopBtn.addEventListener('click', function() {
+        stopStrudel();
+        const playBtn = document.getElementById('master-play');
+        if (playBtn) {
+          playBtn.classList.remove('playing');
+          playBtn.textContent = '▶';
+        }
+      });
+    }
+
+    // BPM slider
+    const bpmSlider = document.getElementById('bpm-slider');
+    if (bpmSlider) {
+      bpmSlider.addEventListener('input', function() {
+        document.getElementById('bpm-display').textContent = this.value;
+      });
+      bpmSlider.addEventListener('change', function() {
+        bpm = parseInt(this.value);
+        window.beatEngine.setBPM(bpm);
+      });
+    }
+
+    // Drag and drop for instruments
+    const palette = document.getElementById('instrument-palette');
+    if (palette) {
+      palette.querySelectorAll('.instrument-icon').forEach(icon => {
+        icon.addEventListener('dragstart', function(e) {
+          this.classList.add('dragging');
+          e.dataTransfer.setData('application/json', JSON.stringify({
+            sound: this.dataset.sound,
+            code: this.dataset.code || this.dataset.sound,
+            modifier: this.dataset.modifier,
+            name: this.querySelector('.instrument-icon-label')?.textContent || this.dataset.sound,
+            emoji: this.textContent.trim().split('\n')[0]
+          }));
+        });
+
+        icon.addEventListener('dragend', function() {
+          this.classList.remove('dragging');
+        });
+
+        // Also allow click to add
+        icon.addEventListener('click', async function() {
+          if (this.classList.contains('upload-trigger')) return; // Skip upload button
+          await initAudio();
+          const element = {
+            sound: this.dataset.sound,
+            code: this.dataset.code || this.dataset.sound,
+            modifier: this.dataset.modifier,
+            name: this.querySelector('.instrument-icon-label')?.textContent || this.dataset.sound,
+            emoji: this.textContent.trim().split('\n')[0],
+            userSample: this.dataset.userSample === 'true'
+          };
+          addElementToLayer(1, element);
+
+          // Play preview sound
+          playSoundById(element.sound);
+        });
+      });
+    }
+
+    // Drop zones
+    document.querySelectorAll('.layer-pattern-display').forEach(display => {
+      display.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('drop-target');
+      });
+
+      display.addEventListener('dragleave', function() {
+        this.classList.remove('drop-target');
+      });
+
+      display.addEventListener('drop', async function(e) {
+        e.preventDefault();
+        this.classList.remove('drop-target');
+
+        await initAudio();
+        const layerId = parseInt(this.dataset.layer);
+        try {
+          const data = JSON.parse(e.dataTransfer.getData('application/json'));
+          addElementToLayer(layerId, data);
+          // Play preview sound on drop
+          if (data.sound) playSoundById(data.sound);
+        } catch (err) {
+          console.error('Drop error:', err);
+        }
+      });
+
+      // Click to remove elements
+      display.addEventListener('click', function(e) {
+        const element = e.target.closest('.pattern-element');
+        if (element) {
+          const layerId = parseInt(element.dataset.layer);
+          const index = parseInt(element.dataset.index);
+          removeElementFromLayer(layerId, index);
+        }
+      });
+    });
+
+    // Layer effect buttons
+    document.querySelectorAll('.layer-effect-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const layerId = parseInt(this.dataset.layer);
+        const effect = this.dataset.effect;
+        toggleLayerEffect(layerId, effect);
+      });
+    });
+
+    // Layer play buttons
+    document.querySelectorAll('.strudel-layer .layer-btn[data-action="play"]').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const layer = this.closest('.strudel-layer');
+        const layerId = parseInt(layer.dataset.layer);
+        const layerData = strudelLayers.find(l => l.id === layerId);
+
+        await initAudio();
+
+        if (layerData.playing) {
+          stopStrudel();
+          layerData.playing = false;
+          layer.classList.remove('playing');
+          this.textContent = '▶';
+        } else {
+          playStrudelPattern(layerData.code, bpm);
+          layerData.playing = true;
+          layer.classList.add('playing');
+          this.textContent = '⏸';
+        }
+      });
+    });
+
+    // Layer clear buttons
+    document.querySelectorAll('.strudel-layer .layer-btn[data-action="clear"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const layer = this.closest('.strudel-layer');
+        const layerId = parseInt(layer.dataset.layer);
+        const layerData = strudelLayers.find(l => l.id === layerId);
+
+        if (layerData) {
+          layerData.elements = [];
+          layerData.effects = {};
+          updateLayerDisplay(layerId);
+        }
+      });
+    });
+
+    // Initialize first layer display
+    updateLayerDisplay(1);
+
+    // ========================================
+    // SAMPLE UPLOAD HANDLER
+    // ========================================
+    const uploadTrigger = document.getElementById('upload-trigger');
+    const sampleUpload = document.getElementById('sample-upload');
+    const userSamplesContainer = document.getElementById('user-samples-container');
+
+    // Store for uploaded audio buffers
+    window.userSamples = window.userSamples || {};
+    let sampleCounter = 0;
+
+    if (uploadTrigger && sampleUpload) {
+      uploadTrigger.addEventListener('click', () => sampleUpload.click());
+
+      sampleUpload.addEventListener('change', async function(e) {
+        if (!e.target.files.length) return;
+        await initAudio();
+
+        for (const file of e.target.files) {
+          try {
+            const sampleId = `user${++sampleCounter}`;
+            const arrayBuffer = await file.arrayBuffer();
+            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+            // Store the buffer
+            window.userSamples[sampleId] = {
+              buffer: audioBuffer,
+              name: file.name.replace(/\.[^/.]+$/, '').substring(0, 8)
+            };
+
+            // Create draggable icon
+            const icon = document.createElement('div');
+            icon.className = 'instrument-icon user-sample';
+            icon.draggable = true;
+            icon.dataset.sound = sampleId;
+            icon.dataset.code = sampleId;
+            icon.dataset.userSample = 'true';
+            icon.innerHTML = `🎧<span class="instrument-icon-label">${window.userSamples[sampleId].name}</span>
+                              <span class="sample-remove" data-sample="${sampleId}">×</span>`;
+
+            // Drag handlers
+            icon.addEventListener('dragstart', function(ev) {
+              this.classList.add('dragging');
+              ev.dataTransfer.setData('application/json', JSON.stringify({
+                sound: sampleId,
+                code: sampleId,
+                name: window.userSamples[sampleId].name,
+                emoji: '🎧',
+                userSample: true
+              }));
+            });
+            icon.addEventListener('dragend', function() {
+              this.classList.remove('dragging');
+            });
+
+            // Click to preview
+            icon.addEventListener('click', async function(ev) {
+              if (ev.target.classList.contains('sample-remove')) return;
+              await initAudio();
+              const sample = window.userSamples[sampleId];
+              if (sample && sample.buffer) {
+                const source = audioCtx.createBufferSource();
+                source.buffer = sample.buffer;
+                source.connect(masterGain);
+                source.start();
+              }
+            });
+
+            // Remove button handler
+            icon.querySelector('.sample-remove').addEventListener('click', function(ev) {
+              ev.stopPropagation();
+              const id = this.dataset.sample;
+              delete window.userSamples[id];
+              icon.remove();
+            });
+
+            userSamplesContainer.insertBefore(icon, uploadTrigger);
+            console.log(`📤 Loaded sample: ${window.userSamples[sampleId].name}`);
+          } catch (err) {
+            console.error('Failed to load sample:', err);
+            alert(`Failed to load ${file.name}. Make sure it's a valid audio file.`);
+          }
+        }
+        // Clear input for re-upload
+        sampleUpload.value = '';
+      });
+    }
+
+    console.log('✅ Beat Playground controls wired up');
+    console.log('🎵 Strudel presets available:', Object.keys(strudelPresets).join(', '));
+  });
+})();
+</script>
+
+<!-- Sample Loading Indicator -->
+<div class="sample-loading-indicator" id="sample-loading-indicator">
+  <div class="loading-spinner"></div>
+  <span class="loading-text">Loading sounds...</span>
+  <div class="loading-bar">
+    <div class="loading-progress"></div>
+  </div>
+</div>
+
+<div class="playground">
+  <div class="playground-container">
+
+    <!-- Header -->
+    <header class="playground-header">
+      <h1 class="playground-title">🎛️ Beat Playground</h1>
+      <p class="playground-subtitle">> MIX_BEATS() | EXPLORE_SOUNDS() | CREATE_MAGIC()</p>
+      <div class="samples-ready-badge loading" id="samples-status">
+        <span class="dot"></span>
+        <span>Loading samples...</span>
+      </div>
+    </header>
+
+    <div class="playground-grid">
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Transport -->
+        <div class="panel transport-panel">
+          <div class="transport-controls">
+            <button class="transport-btn stop" id="btn-stop" title="Stop All" onclick="window.stopAll && window.stopAll()">⏹</button>
+            <button class="transport-btn play" id="master-play" title="Play/Pause" onclick="window.toggleMasterPlay && window.toggleMasterPlay()">▶</button>
+            <button class="transport-btn record" id="btn-record" title="Record Mix" onclick="window.startRecordingMix && window.startRecordingMix()">⏺</button>
+          </div>
+          <div class="bpm-control">
+            <span class="bpm-label">BPM</span>
+            <div class="bpm-adjust">
+              <button class="bpm-btn" id="bpm-up" onclick="window.adjustBPM && window.adjustBPM(5)">+</button>
+              <button class="bpm-btn" id="bpm-down" onclick="window.adjustBPM && window.adjustBPM(-5)">-</button>
+            </div>
+            <span class="bpm-value" id="bpm-display">90</span>
+            <input type="range" min="60" max="180" value="90" class="volume-slider" id="bpm-slider" style="width: 120px;" oninput="document.getElementById('bpm-display').textContent = this.value" onchange="window.setBPM && window.setBPM(this.value)">
+          </div>
+        </div>
+
+        <!-- Strudel Pattern Builder -->
+        <div class="panel beat-layers">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <span>🎵</span> Strudel Pattern Builder
+            </h3>
+            <span style="color: var(--muted); font-size: 0.8rem;"><span id="layer-count">0</span>/4 layers</span>
+          </div>
+
+          <!-- Genre Quick Presets -->
+          <div class="genre-presets" id="genre-presets">
+            <button class="genre-preset-btn" data-genre="hiphop" data-bpm="90">
+              <span class="emoji">🎤</span>Hip Hop
+            </button>
+            <button class="genre-preset-btn" data-genre="trap" data-bpm="140">
+              <span class="emoji">🔥</span>Trap
+            </button>
+            <button class="genre-preset-btn" data-genre="drill" data-bpm="140">
+              <span class="emoji">⚡</span>Drill
+            </button>
+            <button class="genre-preset-btn" data-genre="boombap" data-bpm="90">
+              <span class="emoji">💥</span>Boom Bap
+            </button>
+            <button class="genre-preset-btn" data-genre="lofi" data-bpm="85">
+              <span class="emoji">🌙</span>Lo-Fi
+            </button>
+            <button class="genre-preset-btn" data-genre="reggae" data-bpm="75">
+              <span class="emoji">🌴</span>Reggae
+            </button>
+            <button class="genre-preset-btn" data-genre="afrobeat" data-bpm="110">
+              <span class="emoji">🌍</span>Afrobeat
+            </button>
+            <button class="genre-preset-btn" data-genre="house" data-bpm="128">
+              <span class="emoji">🏠</span>House
+            </button>
+          </div>
+
+          <!-- Instrument Palette -->
+          <div class="instrument-palette" id="instrument-palette">
+            <div class="instrument-palette-header">
+              <span class="palette-title">🎨 Drag instruments to build your pattern</span>
+            </div>
+
+            <div class="palette-category">
+              <div class="palette-category-name">Drums</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                <div class="instrument-icon" draggable="true" data-sound="bd" data-code="bd">
+                  🥁<span class="instrument-icon-label">Kick</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-sound="sd" data-code="sd">
+                  🪘<span class="instrument-icon-label">Snare</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-sound="hh" data-code="hh">
+                  🎩<span class="instrument-icon-label">HiHat</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-sound="oh" data-code="oh">
+                  🔔<span class="instrument-icon-label">Open HH</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-sound="cp" data-code="cp">
+                  👏<span class="instrument-icon-label">Clap</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-sound="rim" data-code="rim">
+                  🥢<span class="instrument-icon-label">Rim</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="palette-category">
+              <div class="palette-category-name">Bass & Synth</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                <div class="instrument-icon" draggable="true" data-sound="808" data-code="808">
+                  📻<span class="instrument-icon-label">808</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-sound="bass" data-code='note("c2").s("sawtooth").lpf(400)'>
+                  🎸<span class="instrument-icon-label">Bass</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-sound="sine" data-code='note("c3").s("sine")'>
+                  〰️<span class="instrument-icon-label">Sine</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-sound="saw" data-code='note("c3").s("sawtooth").lpf(800)'>
+                  📐<span class="instrument-icon-label">Saw</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="palette-category">
+              <div class="palette-category-name">Modifiers</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                <div class="instrument-icon" draggable="true" data-modifier="*2" data-code="*2">
+                  ⏩<span class="instrument-icon-label">x2</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-modifier="*4" data-code="*4">
+                  ⚡<span class="instrument-icon-label">x4</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-modifier="~" data-code="~">
+                  ⏸️<span class="instrument-icon-label">Rest</span>
+                </div>
+                <div class="instrument-icon" draggable="true" data-modifier="?" data-code="?">
+                  🎲<span class="instrument-icon-label">Random</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="palette-category">
+              <div class="palette-category-name">Your Samples</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;" id="user-samples-container">
+                <div class="instrument-icon upload-trigger" id="upload-trigger" title="Upload WAV or MP3">
+                  📤<span class="instrument-icon-label">Upload</span>
+                </div>
+              </div>
+              <input type="file" id="sample-upload" accept="audio/*" style="display: none;" multiple />
+            </div>
+          </div>
+
+          <!-- Pattern Layers -->
+          <div id="layers-container">
+            <!-- Strudel Layer 1 -->
+            <div class="strudel-layer" id="strudel-layer-1" data-layer="1">
+              <div class="layer-header">
+                <div class="layer-name">
+                  <span class="layer-icon">🎵</span>
+                  <span class="layer-label">Layer 1 - Drums</span>
+                </div>
+                <div class="layer-controls">
+                  <button class="layer-btn play" data-action="play" title="Play">▶</button>
+                  <button class="layer-btn mute" data-action="mute" title="Mute">🔊</button>
+                  <button class="layer-btn delete" data-action="clear" title="Clear">🗑️</button>
+                </div>
+              </div>
+
+              <div class="layer-pattern-display" id="pattern-display-1" data-layer="1">
+                <span style="color: var(--muted); font-size: 0.8rem;">Drop instruments here...</span>
+              </div>
+
+              <div class="pattern-code" id="pattern-code-1">s("bd sd")</div>
+
+              <div class="layer-controls-row">
+                <div style="display: flex; gap: 0.35rem;">
+                  <button class="layer-effect-btn" data-effect="room" data-layer="1">🏛️ Reverb</button>
+                  <button class="layer-effect-btn" data-effect="delay" data-layer="1">📢 Delay</button>
+                  <button class="layer-effect-btn" data-effect="lpf" data-layer="1">🔉 Filter</button>
+                </div>
+                <div class="layer-volume">
+                  <input type="range" class="volume-slider" min="0" max="100" value="80" data-layer="1">
+                </div>
+              </div>
+            </div>
+
+            <!-- Add Layer Button -->
+            <button class="add-layer-btn" id="add-strudel-layer-btn">
+              <span>+</span> Add Pattern Layer
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Presets -->
+        <div class="panel presets-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <span>📁</span> Presets
+            </h3>
+          </div>
+
+          <div id="presets-list">
+            <div class="preset-item" data-preset="hiphop" onclick="window.loadPreset && window.loadPreset('hiphop')">
+              <span class="preset-icon">🎤</span>
+              <div class="preset-info">
+                <div class="preset-name">Classic Hip Hop</div>
+                <div class="preset-meta">90 BPM • 2 layers</div>
+              </div>
+              <button class="preset-load-btn">Load</button>
+            </div>
+            <div class="preset-item" data-preset="trap" onclick="window.loadPreset && window.loadPreset('trap')">
+              <span class="preset-icon">🔥</span>
+              <div class="preset-info">
+                <div class="preset-name">Trap Vibes</div>
+                <div class="preset-meta">140 BPM • 3 layers</div>
+              </div>
+              <button class="preset-load-btn">Load</button>
+            </div>
+            <div class="preset-item" data-preset="lofi" onclick="window.loadPreset && window.loadPreset('lofi')">
+              <span class="preset-icon">🌙</span>
+              <div class="preset-info">
+                <div class="preset-name">Lo-Fi Chill</div>
+                <div class="preset-meta">85 BPM • 2 layers</div>
+              </div>
+              <button class="preset-load-btn">Load</button>
+            </div>
+          </div>
+
+          <div class="save-preset-row">
+            <input type="text" class="save-preset-input" id="preset-name-input" placeholder="Preset name...">
+            <button class="save-preset-btn" id="btn-save-preset" onclick="window.saveCurrentPreset && window.saveCurrentPreset()">Save</button>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="panel actions-panel">
+          <button class="action-btn primary" id="btn-use-in-battle" onclick="window.useBeatInBattle && window.useBeatInBattle()">
+            ⚔️ Use in Battle
+          </button>
+          <button class="action-btn secondary" id="btn-export" onclick="window.exportMix && window.exportMix()">
+            💾 Export Mix
+          </button>
+          <button class="action-btn secondary" id="btn-share" onclick="window.shareMix && window.shareMix()">
+            🔗 Share Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Source Selector Popup -->
+<div class="source-popup" id="source-popup">
+  <div class="source-popup-content">
+    <div class="source-popup-header">
+      <h3 class="source-popup-title">Add Beat Layer</h3>
+      <button class="source-popup-close" id="btn-close-popup" onclick="window.closeSourcePopup && window.closeSourcePopup()">&times;</button>
+    </div>
+
+    <div class="source-options" id="source-options">
+      <div class="source-option" data-source="sampler" onclick="window.selectSource && window.selectSource('sampler')">
+        <div class="source-option-icon">🎛️</div>
+        <div class="source-option-name">Sampler Bank</div>
+        <div class="source-option-desc">Pre-loaded drums & sounds</div>
+      </div>
+      <div class="source-option" data-source="strudel" onclick="window.selectSource && window.selectSource('strudel')">
+        <div class="source-option-icon">🎵</div>
+        <div class="source-option-name">Strudel Pattern</div>
+        <div class="source-option-desc">Live-coded beats</div>
+      </div>
+      <div class="source-option" data-source="moog" onclick="window.selectSource && window.selectSource('moog')">
+        <div class="source-option-icon">🎹</div>
+        <div class="source-option-name">AutoMoog</div>
+        <div class="source-option-desc">AI synthesizer</div>
+      </div>
+      <div class="source-option" data-source="upload" onclick="window.selectSource && window.selectSource('upload')">
+        <div class="source-option-icon">📁</div>
+        <div class="source-option-name">Upload File</div>
+        <div class="source-option-desc">Your own audio</div>
+      </div>
+    </div>
+
+    <!-- Beat Selector (shown after source selection) -->
+    <div class="beat-selector" id="beat-selector" style="display: none;">
+      <div class="beat-grid" id="beat-grid">
+        <!-- Populated dynamically -->
+      </div>
+      <div style="margin-top: 1rem; text-align: right;">
+        <button class="action-btn secondary" id="btn-back-sources" style="margin-right: 0.5rem;" onclick="window.backToSources && window.backToSources()">← Back</button>
+        <button class="action-btn primary" id="btn-confirm-layer" onclick="window.confirmAddLayer && window.confirmAddLayer()">Add Layer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+// Immediately log to verify script is running
+console.log('=== BEAT PLAYGROUND SCRIPT LOADING ===');
+window.BEAT_PLAYGROUND_LOADED = true;
+
+// ==========================================
+// SAMPLE LOADER - Preload and cache audio samples
+// ==========================================
+
+class SampleLoader {
+  constructor() {
+    this.samples = new Map();
+    this.loading = false;
+    this.loaded = false;
+    this.loadProgress = 0;
+    this.onProgress = null;
+    this.onComplete = null;
+  }
+
+  // Define all available samples
+  getSampleManifest() {
+    return {
+      // Drums
+      bd: '/wav/bd.wav',
+      sd: '/wav/sd.wav',
+      hh: '/wav/hh.wav',
+      oh: '/wav/oh.wav',
+      cp: '/wav/cp.wav',
+      rim: '/wav/rim.wav',
+      ht: '/wav/ht.wav',
+      mt: '/wav/mt.wav',
+      lt: '/wav/lt.wav',
+      // Bass
+      'bass-sub': '/wav/bass-sub.wav',
+      'bass-reese': '/wav/bass-reese.wav',
+      'bass-acid': '/wav/bass-acid.wav',
+      'bass-synth': '/wav/bass-synth.wav',
+      'bass-wobble': '/wav/bass-wobble.wav',
+      // FX
+      riser: '/wav/riser.wav',
+      swoosh: '/wav/swoosh.wav',
+      laser: '/wav/laser.wav',
+      zap: '/wav/zap.wav',
+      // Synth/Pads
+      pad: '/wav/pad.wav',
+      cosmic: '/wav/cosmic.wav',
+      drone: '/wav/drone.wav',
+      phaser: '/wav/phaser.wav',
+      'filter-sweep': '/wav/filter-sweep.wav'
+    };
+  }
+
+  async loadAll(audioContext) {
+    if (this.loaded || this.loading) return;
+    this.loading = true;
+
+    const manifest = this.getSampleManifest();
+    const entries = Object.entries(manifest);
+    let loadedCount = 0;
+
+    console.log(`📦 Loading ${entries.length} samples...`);
+    this.updateLoadingUI(0, entries.length);
+
+    const loadPromises = entries.map(async ([name, url]) => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        this.samples.set(name, audioBuffer);
+        loadedCount++;
+        this.loadProgress = loadedCount / entries.length;
+        this.updateLoadingUI(loadedCount, entries.length);
+
+        return { name, success: true };
+      } catch (err) {
+        console.warn(`⚠️ Failed to load sample: ${name}`, err.message);
+        loadedCount++;
+        this.loadProgress = loadedCount / entries.length;
+        this.updateLoadingUI(loadedCount, entries.length);
+        return { name, success: false };
+      }
+    });
+
+    const results = await Promise.all(loadPromises);
+    const successful = results.filter(r => r.success).length;
+
+    this.loaded = true;
+    this.loading = false;
+    console.log(`✅ Loaded ${successful}/${entries.length} samples`);
+
+    this.hideLoadingUI();
+    if (this.onComplete) this.onComplete(successful, entries.length);
+
+    return results;
+  }
+
+  get(name) {
+    return this.samples.get(name);
+  }
+
+  has(name) {
+    return this.samples.has(name);
+  }
+
+  updateLoadingUI(loaded, total) {
+    const indicator = document.getElementById('sample-loading-indicator');
+    if (indicator) {
+      const percent = Math.round((loaded / total) * 100);
+      indicator.querySelector('.loading-progress').style.width = `${percent}%`;
+      indicator.querySelector('.loading-text').textContent = `Loading sounds... ${loaded}/${total}`;
+      indicator.style.display = 'flex';
+    }
+  }
+
+  hideLoadingUI() {
+    const indicator = document.getElementById('sample-loading-indicator');
+    if (indicator) {
+      indicator.style.opacity = '0';
+      setTimeout(() => {
+        indicator.style.display = 'none';
+        indicator.style.opacity = '1';
+      }, 300);
+    }
+
+    // Update status badge
+    const badge = document.getElementById('samples-status');
+    if (badge) {
+      badge.classList.remove('loading');
+      const loadedCount = this.samples.size;
+      badge.innerHTML = `<span class="dot"></span><span>${loadedCount} samples ready</span>`;
+    }
+  }
+}
+
+// Global sample loader
+const sampleLoader = new SampleLoader();
+
+// ==========================================
+// AUDIO ENGINE - Web Audio API Integration
+// ==========================================
+
+class AudioEngine {
+  constructor() {
+    this.ctx = null;
+    this.masterGain = null;
+    this.layerNodes = new Map();
+    this.schedulerInterval = null;
+    this.nextNoteTime = 0;
+    this.currentBeat = 0;
+    this.lookAhead = 0.1;
+    this.scheduleAheadTime = 0.1;
+    this.samplesReady = false;
+  }
+
+  async init() {
+    if (this.ctx) {
+      console.log('🎵 AudioEngine already initialized, state:', this.ctx.state);
+      return;
+    }
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.masterGain = this.ctx.createGain();
+    this.masterGain.connect(this.ctx.destination);
+    this.masterGain.gain.value = 0.8;
+    console.log('🎵 AudioEngine initialized - state:', this.ctx.state, 'sampleRate:', this.ctx.sampleRate);
+
+    // Start loading samples in background
+    this.loadSamples();
+  }
+
+  async loadSamples() {
+    if (this.samplesReady) return;
+    try {
+      await sampleLoader.loadAll(this.ctx);
+      this.samplesReady = true;
+    } catch (err) {
+      console.error('Sample loading error:', err);
+    }
+  }
+
+  async resume() {
+    if (this.ctx?.state === 'suspended') {
+      await this.ctx.resume();
+    }
+  }
+
+  // Play a sample from the loaded samples
+  playSample(name, time, volume = 1.0, playbackRate = 1.0) {
+    const buffer = sampleLoader.get(name);
+    if (!buffer) {
+      // Fallback to synthesized sound
+      this.createSynthFallback(name, time);
+      return null;
+    }
+
+    const source = this.ctx.createBufferSource();
+    const gainNode = this.ctx.createGain();
+
+    source.buffer = buffer;
+    source.playbackRate.value = playbackRate;
+    gainNode.gain.value = volume;
+
+    source.connect(gainNode);
+    gainNode.connect(this.masterGain);
+
+    source.start(time);
+    return source;
+  }
+
+  // Synthesized fallback when sample not loaded
+  createSynthFallback(name, time) {
+    if (name === 'bd' || name === 'kick') {
+      this.createSynthKick(time);
+    } else if (name === 'sd' || name === 'snare') {
+      this.createSynthSnare(time);
+    } else if (name === 'hh' || name === 'hihat') {
+      this.createSynthHihat(time);
+    } else if (name === 'cp' || name === 'clap') {
+      this.createSynthClap(time);
+    }
+  }
+
+  // Create drum sounds - use samples when available, synth as fallback
+  createDrumSound(type, time, volume = 1.0) {
+    if (!this.ctx) {
+      console.warn('⚠️ createDrumSound: ctx not ready');
+      return;
+    }
+
+    const sampleMap = {
+      'kick': 'bd', 'bd': 'bd',
+      'snare': 'sd', 'sd': 'sd',
+      'hihat': 'hh', 'hh': 'hh',
+      'clap': 'cp', 'cp': 'cp',
+      'rim': 'rim',
+      'oh': 'oh',
+      'ht': 'ht', 'mt': 'mt', 'lt': 'lt'
+    };
+
+    const sampleName = sampleMap[type] || type;
+
+    if (sampleLoader.has(sampleName)) {
+      this.playSample(sampleName, time, volume);
+    } else {
+      // Use synthesized fallback - this should always work
+      console.log(`🔊 Using synth fallback for: ${type}`);
+      this.createSynthFallback(type, time);
+    }
+  }
+
+  // Synthesized kick drum
+  createSynthKick(time) {
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, time);
+    osc.frequency.exponentialRampToValueAtTime(50, time + 0.1);
+    gain.gain.setValueAtTime(1, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+    osc.start(time);
+    osc.stop(time + 0.3);
+  }
+
+  // Synthesized snare
+  createSynthSnare(time) {
+    const ctx = this.ctx;
+    this.createNoise(ctx, time, 0.15);
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(200, time);
+    gain.gain.setValueAtTime(0.5, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+    osc.start(time);
+    osc.stop(time + 0.15);
+  }
+
+  // Synthesized hihat
+  createSynthHihat(time) {
+    this.createNoise(this.ctx, time, 0.05, 8000);
+  }
+
+  // Synthesized clap
+  createSynthClap(time) {
+    for (let i = 0; i < 3; i++) {
+      this.createNoise(this.ctx, time + i * 0.01, 0.08);
+    }
+  }
+
+  createNoise(ctx, time, duration, filterFreq = 5000) {
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    const noise = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    const gain = ctx.createGain();
+    noise.buffer = buffer;
+    filter.type = 'highpass';
+    filter.frequency.value = filterFreq;
+    gain.gain.setValueAtTime(0.3, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+    noise.start(time);
+    noise.stop(time + duration);
+    return noise;
+  }
+
+  // Play bass sample or synth fallback
+  createBassSound(freq, time, duration = 0.2, bassType = 'bass-sub') {
+    // Try to use a bass sample with pitch shifting
+    if (sampleLoader.has(bassType)) {
+      // Calculate playback rate based on frequency (A1 = 55Hz as base)
+      const baseFreq = 55;
+      const playbackRate = freq / baseFreq;
+      this.playSample(bassType, time, 0.7, playbackRate);
+    } else {
+      // Synthesized fallback
+      const ctx = this.ctx;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, time);
+      gain.gain.setValueAtTime(0.4, time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(time);
+      osc.stop(time + duration);
+    }
+  }
+
+  // Create synth pad - use sample or synth
+  createSynthPad(freq, time, duration = 0.5) {
+    if (sampleLoader.has('pad')) {
+      const baseFreq = 220; // A3
+      const playbackRate = freq / baseFreq;
+      this.playSample('pad', time, 0.4, playbackRate);
+    } else {
+      // Synthesized fallback
+      const ctx = this.ctx;
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      osc1.type = 'sawtooth';
+      osc2.type = 'square';
+      osc1.frequency.setValueAtTime(freq, time);
+      osc2.frequency.setValueAtTime(freq * 1.005, time);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2000, time);
+      filter.Q.value = 2;
+
+      gain.gain.setValueAtTime(0, time);
+      gain.gain.linearRampToValueAtTime(0.2, time + 0.05);
+      gain.gain.linearRampToValueAtTime(0, time + duration);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc1.start(time);
+      osc2.start(time);
+      osc1.stop(time + duration);
+      osc2.stop(time + duration);
+    }
+  }
+
+  // Create AutoMoog synthesizer sound
+  createMoogSound(freq, time, params = {}) {
+    const ctx = this.ctx;
+    const {
+      waveform = 'sawtooth',
+      filter: filterFreq = 1000,
+      resonance = 5,
+      attack = 0.02,
+      decay = 0.2
+    } = params;
+
+    const duration = attack + decay + 0.1;
+
+    const osc = ctx.createOscillator();
+    osc.type = waveform;
+    osc.frequency.setValueAtTime(freq, time);
+
+    const subOsc = ctx.createOscillator();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(freq / 2, time);
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(filterFreq * 2, time);
+    filter.frequency.exponentialRampToValueAtTime(filterFreq / 2, time + duration);
+    filter.Q.value = resonance;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(0.35, time + attack);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + attack + decay);
+
+    const subGain = ctx.createGain();
+    subGain.gain.value = 0.3;
+
+    osc.connect(filter);
+    subOsc.connect(subGain);
+    subGain.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(time);
+    subOsc.start(time);
+    osc.stop(time + duration);
+    subOsc.stop(time + duration);
+  }
+
+  // Play FX sample
+  playFX(fxName, time, volume = 0.5) {
+    const fxMap = {
+      'fx1': 'phaser',     // vinyl crackle -> use phaser
+      'fx2': 'riser',
+      'riser': 'riser',
+      'swoosh': 'swoosh',
+      'laser': 'laser',
+      'zap': 'zap'
+    };
+
+    const sampleName = fxMap[fxName] || fxName;
+    if (sampleLoader.has(sampleName)) {
+      this.playSample(sampleName, time, volume);
+    }
+  }
+
+  getStepDuration(bpm) {
+    return 60 / bpm / 4; // 16th notes
+  }
+}
+
+// Initialize global audio engine
+const audioEngine = new AudioEngine();
+
+// ==========================================
+// DRUM PATTERNS - Pre-defined beat patterns
+// ==========================================
+
+const drumPatterns = {
+  // Boom Bap pattern (16 steps) - classic hip hop
+  'drum1': {
+    bd: [1,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0],
+    sd: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+    hh: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+    oh: [0,0,0,0, 0,0,0,1, 0,0,0,0, 0,0,0,1]
+  },
+  // Trap pattern - 808 style
+  'drum2': {
+    bd: [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0],
+    sd: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+    hh: [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+    cp: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,1,0,0]
+  },
+  // Lo-Fi pattern - chill vibes
+  'drum3': {
+    bd: [1,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0],
+    sd: [0,0,0,0, 1,0,0,1, 0,0,0,0, 1,0,0,0],
+    hh: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+    rim: [0,0,0,0, 0,0,0,0, 0,0,1,0, 0,0,0,0]
+  },
+  // Drill pattern - UK drill style
+  'drum4': {
+    bd: [1,0,0,1, 0,0,0,0, 1,0,0,1, 0,0,0,0],
+    sd: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1],
+    hh: [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+    oh: [0,0,0,0, 0,1,0,0, 0,0,0,0, 0,1,0,0]
+  },
+  // Reggae One Drop
+  'drum5': {
+    bd: [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,0,0],
+    sd: [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,0,0],
+    hh: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+    rim: [0,0,1,0, 0,0,0,0, 0,0,1,0, 0,0,0,0]
+  },
+  // Afrobeat
+  'drum6': {
+    bd: [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0],
+    sd: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+    hh: [1,1,1,0, 1,1,1,0, 1,1,1,0, 1,1,1,0],
+    cp: [0,0,0,1, 0,0,0,0, 0,0,0,1, 0,0,0,0]
+  }
+};
+
+const bassPatterns = {
+  'bass1': [55, 0, 0, 0, 55, 0, 0, 0, 55, 0, 0, 0, 55, 0, 0, 0], // Sub bass (A1)
+  'bass2': [55, 0, 55, 0, 0, 0, 55, 0, 55, 0, 55, 0, 0, 0, 55, 0], // 808 slide
+  'bass3': [65, 0, 65, 0, 73, 0, 65, 0, 65, 0, 73, 0, 82, 0, 73, 0]  // Funk bass
+};
+
+const synthPatterns = {
+  'synth1': { notes: [220, 0, 0, 0, 0, 0, 0, 0, 220, 0, 0, 0, 0, 0, 0, 0], type: 'pad' },
+  'synth2': { notes: [440, 0, 0, 0, 440, 0, 0, 0, 0, 0, 0, 0, 440, 0, 0, 0], type: 'lead' }
+};
+
+// AutoMoog patterns - synthesizer moods
+const moogPatterns = {
+  'aggressive': {
+    type: 'aggressive',
+    notes: [110, 0, 110, 0, 0, 0, 110, 0, 110, 0, 0, 0, 110, 0, 110, 0],
+    params: { waveform: 'sawtooth', filter: 1500, resonance: 8, attack: 0.01, decay: 0.1 }
+  },
+  'groove': {
+    type: 'groove',
+    notes: [82, 0, 0, 82, 0, 110, 0, 0, 82, 0, 0, 82, 0, 110, 0, 0],
+    params: { waveform: 'square', filter: 800, resonance: 4, attack: 0.02, decay: 0.15 }
+  },
+  'ambient': {
+    type: 'ambient',
+    notes: [55, 0, 0, 0, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0],
+    params: { waveform: 'sine', filter: 400, resonance: 2, attack: 0.3, decay: 0.8 }
+  },
+  'chaos': {
+    type: 'chaos',
+    notes: [110, 82, 0, 146, 0, 55, 123, 0, 92, 0, 165, 0, 73, 0, 110, 0],
+    params: { waveform: 'sawtooth', filter: 2000, resonance: 12, attack: 0.01, decay: 0.05 }
+  }
+};
+
+// ==========================================
+// LAYER AUDIO PLAYBACK
+// ==========================================
+
+class LayerPlayer {
+  constructor(layerId, source, beat, volume) {
+    this.layerId = layerId;
+    this.source = source;
+    this.beat = beat;
+    this.volume = volume / 100;
+    this.muted = false;
+    this.currentStep = 0;
+    this.interval = null;
+  }
+
+  start(bpm) {
+    if (this.interval) {
+      console.log('⚠️ LayerPlayer already started');
+      return;
+    }
+
+    const stepDuration = 60 / bpm / 4 * 1000; // ms per 16th note
+    console.log(`▶️ LayerPlayer.start() - BPM: ${bpm}, stepDuration: ${stepDuration}ms, beat: ${this.beat?.id}`);
+
+    this.interval = setInterval(() => {
+      if (this.muted) return;
+      this.playStep(this.currentStep);
+      this.currentStep = (this.currentStep + 1) % 16;
+    }, stepDuration);
+  }
+
+  playStep(step) {
+    const ctx = audioEngine.ctx;
+    if (!ctx) {
+      console.warn('⚠️ AudioContext not ready, skipping step', step);
+      return;
+    }
+
+    const time = ctx.currentTime;
+    const vol = this.volume;
+
+    // Debug log every 16 steps (once per bar)
+    if (step === 0) {
+      console.log(`🎵 Playing bar - source: ${this.source}, beat: ${this.beat?.id}, vol: ${vol}`);
+    }
+
+    if (this.source === 'sampler') {
+      const beatId = this.beat.id;
+
+      // Drum patterns - use real samples
+      if (drumPatterns[beatId]) {
+        const pattern = drumPatterns[beatId];
+        if (pattern.bd && pattern.bd[step]) audioEngine.createDrumSound('bd', time, vol);
+        if (pattern.sd && pattern.sd[step]) audioEngine.createDrumSound('sd', time, vol);
+        if (pattern.hh && pattern.hh[step]) audioEngine.createDrumSound('hh', time, vol * 0.6);
+        if (pattern.oh && pattern.oh[step]) audioEngine.createDrumSound('oh', time, vol * 0.7);
+        if (pattern.cp && pattern.cp[step]) audioEngine.createDrumSound('cp', time, vol);
+        if (pattern.rim && pattern.rim[step]) audioEngine.createDrumSound('rim', time, vol * 0.7);
+      }
+
+      // Bass patterns - use real bass samples
+      if (bassPatterns[beatId]) {
+        const freq = bassPatterns[beatId][step];
+        if (freq > 0) {
+          // Choose bass sample type based on pattern
+          const bassType = bassTypeMap[beatId] || 'bass-sub';
+          audioEngine.createBassSound(freq, time, 0.2, bassType);
+        }
+      }
+
+      // Synth patterns - use pad samples
+      if (synthPatterns[beatId]) {
+        const { notes, type } = synthPatterns[beatId];
+        const freq = notes[step];
+        if (freq > 0) {
+          if (type === 'pad') {
+            audioEngine.createSynthPad(freq, time, 0.4);
+          } else {
+            audioEngine.createBassSound(freq * 2, time, 0.15, 'bass-synth');
+          }
+        }
+      }
+
+      // FX patterns - use real FX samples
+      if (beatId === 'fx1' && step === 0) {
+        audioEngine.playFX('fx1', time, vol * 0.4);
+      }
+      if (beatId === 'fx2' && step === 0) {
+        audioEngine.playFX('riser', time, vol * 0.5);
+      }
+    } else if (this.source === 'moog') {
+      // AutoMoog synthesizer
+      const moogId = this.beat.id;
+      const moog = moogPatterns[moogId];
+
+      if (moog && moog.notes[step] > 0) {
+        audioEngine.createMoogSound(moog.notes[step], time, moog.params);
+      }
+    }
+  }
+
+  stop() {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
+    this.currentStep = 0;
+  }
+
+  setVolume(vol) {
+    this.volume = vol / 100;
+  }
+
+  setMuted(muted) {
+    this.muted = muted;
+  }
+}
+
+// Bass type mapping for different patterns
+const bassTypeMap = {
+  'bass1': 'bass-sub',
+  'bass2': 'bass-reese',
+  'bass3': 'bass-acid'
+};
+
+// Global layer players
+const layerPlayers = new Map();
+
+// Audio buffer cache for uploaded files
+const audioBufferCache = new Map();
+
+// Load uploaded audio file into buffer
+async function loadAudioFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        await audioEngine.init();
+        const buffer = await audioEngine.ctx.decodeAudioData(e.target.result);
+        resolve(buffer);
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+// Upload layer player - plays an audio file in a loop
+class UploadLayerPlayer {
+  constructor(layerId, buffer, volume) {
+    this.layerId = layerId;
+    this.buffer = buffer;
+    this.volume = volume / 100;
+    this.muted = false;
+    this.source = null;
+    this.gainNode = null;
+    this.playing = false;
+  }
+
+  start(bpm) {
+    if (this.playing) return;
+    this.playing = true;
+
+    const ctx = audioEngine.ctx;
+    this.gainNode = ctx.createGain();
+    this.gainNode.gain.value = this.muted ? 0 : this.volume;
+    this.gainNode.connect(audioEngine.masterGain);
+
+    this.source = ctx.createBufferSource();
+    this.source.buffer = this.buffer;
+    this.source.loop = true;
+    this.source.connect(this.gainNode);
+    this.source.start(0);
+  }
+
+  stop() {
+    if (!this.playing) return;
+    this.playing = false;
+
+    if (this.source) {
+      try {
+        this.source.stop();
+      } catch (e) {}
+      this.source.disconnect();
+      this.source = null;
+    }
+    if (this.gainNode) {
+      this.gainNode.disconnect();
+      this.gainNode = null;
+    }
+  }
+
+  setVolume(vol) {
+    this.volume = vol / 100;
+    if (this.gainNode) {
+      this.gainNode.gain.value = this.muted ? 0 : this.volume;
+    }
+  }
+
+  setMuted(muted) {
+    this.muted = muted;
+    if (this.gainNode) {
+      this.gainNode.gain.value = muted ? 0 : this.volume;
+    }
+  }
+}
+
+// ==========================================
+// STATE
+// ==========================================
+
+let layers = [];
+let currentBPM = 90;
+let isPlaying = false;
+let selectedSource = null;
+let selectedBeat = null;
+const MAX_LAYERS = 4;
+
+// Preset definitions
+const builtInPresets = {
+  hiphop: {
+    name: 'Classic Hip Hop',
+    bpm: 90,
+    layers: [
+      { source: 'sampler', beat: { id: 'drum1', name: 'Boom Bap Kit', type: 'drums' }, volume: 80 },
+      { source: 'sampler', beat: { id: 'bass1', name: 'Sub Bass', type: 'bass' }, volume: 70 }
+    ]
+  },
+  trap: {
+    name: 'Trap Vibes',
+    bpm: 140,
+    layers: [
+      { source: 'sampler', beat: { id: 'drum2', name: 'Trap Kit 808', type: 'drums' }, volume: 85 },
+      { source: 'sampler', beat: { id: 'bass2', name: '808 Slide', type: 'bass' }, volume: 75 },
+      { source: 'strudel', beat: { id: 'trap', name: 'Trap HiHats', pattern: 's("hh*8").bank("RolandTR808")' }, volume: 60 }
+    ]
+  },
+  lofi: {
+    name: 'Lo-Fi Chill',
+    bpm: 85,
+    layers: [
+      { source: 'sampler', beat: { id: 'drum3', name: 'Lo-Fi Drums', type: 'drums' }, volume: 70 },
+      { source: 'sampler', beat: { id: 'fx1', name: 'Vinyl Crackle', type: 'fx' }, volume: 40 }
+    ]
+  }
+};
+
+// Sampler beats library
+const samplerBeats = {
+  drums: [
+    { id: 'drum1', name: 'Boom Bap Kit', bpm: 90, desc: 'Classic hip hop groove' },
+    { id: 'drum2', name: 'Trap Kit 808', bpm: 140, desc: '808 drums with claps' },
+    { id: 'drum3', name: 'Lo-Fi Drums', bpm: 85, desc: 'Chill dusty beats' },
+    { id: 'drum4', name: 'Drill Pattern', bpm: 145, desc: 'UK drill style' },
+    { id: 'drum5', name: 'Reggae One Drop', bpm: 75, desc: 'Classic reggae rhythm' },
+    { id: 'drum6', name: 'Afrobeat Groove', bpm: 110, desc: 'African rhythms' }
+  ],
+  bass: [
+    { id: 'bass1', name: 'Sub Bass', bpm: 90, desc: 'Deep sub frequencies' },
+    { id: 'bass2', name: 'Reese Bass', bpm: 140, desc: 'Classic reese sound' },
+    { id: 'bass3', name: 'Acid Bass', bpm: 100, desc: '303 acid style' }
+  ],
+  synth: [
+    { id: 'synth1', name: 'Dark Pad', bpm: 90, desc: 'Atmospheric pad' },
+    { id: 'synth2', name: 'Lead Stab', bpm: 120, desc: 'Punchy lead synth' }
+  ],
+  fx: [
+    { id: 'fx1', name: 'Phaser Sweep', bpm: 0, desc: 'Whooshing effect' },
+    { id: 'fx2', name: 'Riser', bpm: 0, desc: 'Build-up effect' }
+  ]
+};
+
+// Strudel patterns
+const strudelPatterns = [
+  { id: 'hiphop', name: 'Hip Hop Beat', pattern: 's("bd sd:1 bd sd:2").bank("RolandTR808")' },
+  { id: 'trap', name: 'Trap HiHats', pattern: 's("hh*8").bank("RolandTR808").speed(0.8)' },
+  { id: 'boom', name: 'Boom Bap', pattern: 's("bd ~ sd ~ bd bd sd ~").bank("RolandTR808")' },
+  { id: 'drill', name: 'Drill Rhythm', pattern: 's("bd ~ ~ bd sd ~ bd ~").bank("RolandTR808").fast(1.2)' }
+];
+
+// Initialize - run when DOM is ready
+function initPlayground() {
+  console.log('initPlayground() called');
+
+  try {
+    loadSavedPresets();
+    console.log('loadSavedPresets done');
+  } catch(e) {
+    console.error('Error in loadSavedPresets:', e);
+  }
+
+  try {
+    updateLayerCount();
+    console.log('updateLayerCount done');
+  } catch(e) {
+    console.error('Error in updateLayerCount:', e);
+  }
+
+  try {
+    attachEventListeners();
+    console.log('attachEventListeners done');
+  } catch(e) {
+    console.error('Error in attachEventListeners:', e);
+  }
+
+  // Preload samples on first user interaction
+  setupSamplePreloading();
+
+  console.log('🎛️ Beat Playground ready');
+}
+
+// Preload samples on first interaction (required for Web Audio)
+function setupSamplePreloading() {
+  let preloadTriggered = false;
+
+  const triggerPreload = async () => {
+    if (preloadTriggered) return;
+    preloadTriggered = true;
+
+    console.log('🎵 Starting sample preload...');
+
+    // Initialize audio context
+    await audioEngine.init();
+    await audioEngine.resume();
+
+    // Remove listeners after first trigger
+    document.removeEventListener('click', triggerPreload);
+    document.removeEventListener('touchstart', triggerPreload);
+    document.removeEventListener('keydown', triggerPreload);
+  };
+
+  // Listen for first interaction
+  document.addEventListener('click', triggerPreload, { once: true });
+  document.addEventListener('touchstart', triggerPreload, { once: true });
+  document.addEventListener('keydown', triggerPreload, { once: true });
+
+  // Also try to preload if user hovers over the add layer button
+  document.getElementById('add-layer-btn')?.addEventListener('mouseenter', triggerPreload, { once: true });
+}
+
+// Ensure initialization runs
+console.log('Document readyState:', document.readyState);
+if (document.readyState === 'loading') {
+  console.log('Adding DOMContentLoaded listener');
+  document.addEventListener('DOMContentLoaded', initPlayground);
+} else {
+  console.log('DOM already loaded, calling initPlayground directly');
+  initPlayground();
+}
+
+// Attach all event listeners
+function attachEventListeners() {
+  // Transport controls
+  document.getElementById('master-play')?.addEventListener('click', toggleMasterPlay);
+  document.getElementById('btn-stop')?.addEventListener('click', stopAll);
+  document.getElementById('btn-record')?.addEventListener('click', startRecordingMix);
+
+  // BPM controls
+  document.getElementById('bpm-up')?.addEventListener('click', () => adjustBPM(5));
+  document.getElementById('bpm-down')?.addEventListener('click', () => adjustBPM(-5));
+  document.getElementById('bpm-slider')?.addEventListener('input', (e) => {
+    document.getElementById('bpm-display').textContent = e.target.value;
+  });
+  document.getElementById('bpm-slider')?.addEventListener('change', (e) => {
+    setBPM(e.target.value);
+  });
+
+  // Add layer button
+  document.getElementById('add-layer-btn')?.addEventListener('click', openSourcePopup);
+
+  // Preset items (using event delegation)
+  document.getElementById('presets-list')?.addEventListener('click', (e) => {
+    const presetItem = e.target.closest('.preset-item');
+    if (presetItem) {
+      const presetId = presetItem.dataset.preset;
+      const customIndex = presetItem.dataset.customIndex;
+      if (presetId) {
+        loadPreset(presetId);
+      } else if (customIndex !== undefined && customIndex !== '') {
+        loadCustomPreset(parseInt(customIndex));
+      }
+    }
+  });
+
+  // Action buttons
+  document.getElementById('btn-save-preset')?.addEventListener('click', saveCurrentPreset);
+  document.getElementById('btn-use-in-battle')?.addEventListener('click', useBeatInBattle);
+  document.getElementById('btn-export')?.addEventListener('click', exportMix);
+  document.getElementById('btn-share')?.addEventListener('click', shareMix);
+
+  // Popup controls
+  document.getElementById('btn-close-popup')?.addEventListener('click', closeSourcePopup);
+  document.getElementById('btn-back-sources')?.addEventListener('click', backToSources);
+  document.getElementById('btn-confirm-layer')?.addEventListener('click', confirmAddLayer);
+
+  // Source options (using event delegation)
+  document.getElementById('source-options')?.addEventListener('click', (e) => {
+    const sourceOption = e.target.closest('.source-option');
+    if (sourceOption) {
+      const source = sourceOption.dataset.source;
+      if (source) selectSource(source);
+    }
+  });
+
+  // Beat grid (using event delegation for dynamically created items)
+  document.getElementById('beat-grid')?.addEventListener('click', (e) => {
+    const beatItem = e.target.closest('.beat-item');
+    if (beatItem) {
+      const id = beatItem.dataset.id;
+      const name = beatItem.dataset.name;
+      const source = beatItem.dataset.source;
+      if (id) selectBeatItem(id, name, source);
+    }
+  });
+
+  // Layers container (using event delegation for dynamic layer controls)
+  document.getElementById('layers-container')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.layer-btn');
+    if (!btn) return;
+
+    const layer = btn.closest('.layer');
+    const layerId = layer?.id;
+    if (!layerId) return;
+
+    if (btn.classList.contains('play')) {
+      toggleLayerPlay(layerId);
+    } else if (btn.classList.contains('mute')) {
+      toggleLayerMute(layerId);
+    } else if (btn.classList.contains('delete')) {
+      deleteLayer(layerId);
+    }
+  });
+
+  // Volume sliders in layers (event delegation)
+  document.getElementById('layers-container')?.addEventListener('input', (e) => {
+    if (e.target.classList.contains('volume-slider')) {
+      const layer = e.target.closest('.layer');
+      const layerId = layer?.id;
+      if (layerId) {
+        setLayerVolume(layerId, e.target.value);
+        // Update displayed value
+        const valueSpan = e.target.nextElementSibling;
+        if (valueSpan) valueSpan.textContent = e.target.value + '%';
+      }
+    }
+  });
+}
+
+// Source Popup
+function openSourcePopup() {
+  if (layers.length >= MAX_LAYERS) {
+    alert('Maximum 4 layers allowed');
+    return;
+  }
+  document.getElementById('source-popup').classList.add('active');
+  document.getElementById('source-options').style.display = 'grid';
+  document.getElementById('beat-selector').style.display = 'none';
+}
+
+function closeSourcePopup() {
+  document.getElementById('source-popup').classList.remove('active');
+  selectedSource = null;
+  selectedBeat = null;
+}
+
+function backToSources() {
+  document.getElementById('source-options').style.display = 'grid';
+  document.getElementById('beat-selector').style.display = 'none';
+  selectedSource = null;
+  selectedBeat = null;
+}
+
+// Select Source
+function selectSource(source) {
+  selectedSource = source;
+  document.getElementById('source-options').style.display = 'none';
+  document.getElementById('beat-selector').style.display = 'block';
+
+  const beatGrid = document.getElementById('beat-grid');
+
+  if (source === 'sampler') {
+    // Show all sampler beats organized by category
+    const categories = [
+      { name: '🥁 Drums', items: samplerBeats.drums },
+      { name: '🎸 Bass', items: samplerBeats.bass },
+      { name: '🎹 Synth', items: samplerBeats.synth },
+      { name: '✨ FX', items: samplerBeats.fx }
+    ];
+
+    beatGrid.innerHTML = categories.map(cat => `
+      <div style="grid-column: 1 / -1; color: var(--muted); font-size: 0.75rem; margin-top: 0.5rem; border-bottom: 1px dashed var(--border); padding-bottom: 0.25rem;">
+        ${cat.name}
+      </div>
+      ${cat.items.map(beat => `
+        <div class="beat-item" data-id="${beat.id}" data-name="${beat.name}" data-source="sampler">
+          <div class="beat-item-name">${beat.name}</div>
+          <div class="beat-item-meta">${beat.bpm ? beat.bpm + ' BPM' : 'Effect'} ${beat.desc ? '• ' + beat.desc : ''}</div>
+        </div>
+      `).join('')}
+    `).join('');
+  } else if (source === 'strudel') {
+    beatGrid.innerHTML = strudelPatterns.map(p => `
+      <div class="beat-item" data-id="${p.id}" data-name="${p.name}" data-source="strudel">
+        <div class="beat-item-name">${p.name}</div>
+        <div class="beat-item-meta">Strudel Pattern</div>
+      </div>
+    `).join('');
+  } else if (source === 'moog') {
+    beatGrid.innerHTML = `
+      <div class="beat-item" data-id="aggressive" data-name="Aggressive Moog" data-source="moog">
+        <div class="beat-item-name">🔥 Aggressive</div>
+        <div class="beat-item-meta">High energy synth</div>
+      </div>
+      <div class="beat-item" data-id="groove" data-name="Groove Moog" data-source="moog">
+        <div class="beat-item-name">🎵 Groove</div>
+        <div class="beat-item-meta">Funky rhythms</div>
+      </div>
+      <div class="beat-item" data-id="ambient" data-name="Ambient Moog" data-source="moog">
+        <div class="beat-item-name">🌌 Ambient</div>
+        <div class="beat-item-meta">Atmospheric pads</div>
+      </div>
+      <div class="beat-item" data-id="chaos" data-name="Chaos Moog" data-source="moog">
+        <div class="beat-item-name">⚡ Chaos</div>
+        <div class="beat-item-meta">Experimental</div>
+      </div>
+    `;
+  } else if (source === 'upload') {
+    beatGrid.innerHTML = `
+      <div style="text-align: center; padding: 2rem;">
+        <input type="file" id="upload-input" accept="audio/*" style="display: none;">
+        <button id="btn-choose-file" class="action-btn secondary">
+          📁 Choose File
+        </button>
+        <p style="color: var(--muted); margin-top: 1rem; font-size: 0.85rem;">
+          Upload MP3, WAV, or OGG files
+        </p>
+      </div>
+    `;
+    // Attach event listener for file upload
+    document.getElementById('btn-choose-file')?.addEventListener('click', () => {
+      document.getElementById('upload-input').click();
+    });
+    document.getElementById('upload-input')?.addEventListener('change', handleFileUpload);
+  }
+}
+
+function selectBeatItem(id, name, source) {
+  document.querySelectorAll('.beat-item').forEach(item => {
+    item.classList.toggle('selected', item.dataset.id === id);
+  });
+  selectedBeat = { id, name, source };
+}
+
+async function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    showNotification('Loading audio file...');
+
+    try {
+      // Initialize audio engine
+      await audioEngine.init();
+      await audioEngine.resume();
+
+      // Load the audio file into a buffer
+      const buffer = await loadAudioFile(file);
+      const uploadId = `upload_${Date.now()}`;
+
+      // Cache the buffer
+      audioBufferCache.set(uploadId, buffer);
+
+      selectedBeat = {
+        id: uploadId,
+        name: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
+        source: 'upload',
+        duration: buffer.duration
+      };
+
+      showNotification(`Loaded: ${selectedBeat.name}`);
+
+      // Auto-add the layer
+      confirmAddLayer();
+    } catch (err) {
+      console.error('Error loading audio file:', err);
+      showNotification('Error loading audio file');
+    }
+  }
+}
+
+function confirmAddLayer() {
+  if (!selectedBeat) {
+    alert('Please select a beat first');
+    return;
+  }
+
+  addLayer(selectedSource, selectedBeat);
+  closeSourcePopup();
+}
+
+// Layer Management
+function addLayer(source, beat) {
+  const layer = {
+    id: `layer_${Date.now()}`,
+    source: source,
+    beat: beat,
+    volume: 75,
+    muted: false,
+    playing: false
+  };
+
+  layers.push(layer);
+  renderLayers();
+  updateLayerCount();
+
+  // Hide empty state
+  document.getElementById('empty-layers').style.display = 'none';
+}
+
+function renderLayers() {
+  const container = document.getElementById('layers-container');
+  if (!container) {
+    console.error('layers-container not found');
+    return;
+  }
+
+  const emptyState = document.getElementById('empty-layers');
+
+  if (layers.length === 0) {
+    if (emptyState) emptyState.style.display = 'block';
+    // Remove all layer elements but keep empty state
+    const layerElements = container.querySelectorAll('.layer');
+    layerElements.forEach(el => el.remove());
+    return;
+  }
+
+  if (emptyState) emptyState.style.display = 'none';
+
+  const sourceIcons = {
+    sampler: '🎛️',
+    strudel: '🎵',
+    moog: '🎹',
+    upload: '📁'
+  };
+
+  // Build layers HTML
+  const layersHtml = layers.map(layer => `
+    <div class="layer ${layer.playing ? 'active' : ''}" id="${layer.id}">
+      <div class="layer-header">
+        <div class="layer-name">
+          <span class="layer-icon">${sourceIcons[layer.source] || '🎵'}</span>
+          <span class="layer-label">${layer.beat?.name || 'Unknown'}</span>
+          <span class="layer-source">${layer.source}</span>
+        </div>
+        <div class="layer-controls">
+          <button class="layer-btn play ${layer.playing ? 'playing' : ''}" title="Play/Pause">
+            ${layer.playing ? '⏸' : '▶'}
+          </button>
+          <button class="layer-btn mute ${layer.muted ? 'muted' : ''}" title="Mute">
+            ${layer.muted ? '🔇' : '🔊'}
+          </button>
+          <button class="layer-btn delete" title="Delete">✕</button>
+        </div>
+      </div>
+      <div class="layer-volume">
+        <span class="volume-label">Volume</span>
+        <input type="range" class="volume-slider" min="0" max="100" value="${layer.volume}">
+        <span class="volume-value">${layer.volume}%</span>
+      </div>
+      ${layer.playing ? `
+      <div class="beat-indicator" data-layer="${layer.id}">
+        ${Array(16).fill(0).map((_, i) => `<div class="beat-step" data-step="${i}"></div>`).join('')}
+      </div>
+      ` : ''}
+    </div>
+  `).join('');
+
+  // Remove existing layers and add new ones (keep empty-layers element)
+  const existingLayers = container.querySelectorAll('.layer');
+  existingLayers.forEach(el => el.remove());
+
+  // Insert layers HTML
+  if (emptyState) {
+    emptyState.insertAdjacentHTML('beforebegin', layersHtml);
+  } else {
+    container.innerHTML = layersHtml;
+  }
+
+  // Update beat indicators if playing
+  if (isPlaying) {
+    startBeatIndicatorAnimation();
+  }
+}
+
+function updateLayerCount() {
+  document.getElementById('layer-count').textContent = layers.length;
+  document.getElementById('add-layer-btn').style.display = layers.length >= MAX_LAYERS ? 'none' : 'flex';
+}
+
+async function toggleLayerPlay(layerId) {
+  // Initialize audio on first interaction
+  await audioEngine.init();
+  await audioEngine.resume();
+
+  const layer = layers.find(l => l.id === layerId);
+  if (layer) {
+    layer.playing = !layer.playing;
+
+    if (layer.playing) {
+      // Start this layer's audio
+      let player;
+
+      if (layer.source === 'upload') {
+        // Use upload player for file uploads
+        const buffer = audioBufferCache.get(layer.beat.id);
+        if (buffer) {
+          player = new UploadLayerPlayer(layerId, buffer, layer.volume);
+        } else {
+          console.warn('Audio buffer not found for upload');
+          layer.playing = false;
+          renderLayers();
+          return;
+        }
+      } else {
+        // Use standard layer player for synth/sampler
+        player = new LayerPlayer(layerId, layer.source, layer.beat, layer.volume);
+      }
+
+      layerPlayers.set(layerId, player);
+      player.start(currentBPM);
+      console.log(`🎵 Layer ${layer.beat.name} playing`);
+    } else {
+      // Stop this layer's audio
+      const player = layerPlayers.get(layerId);
+      if (player) {
+        player.stop();
+        layerPlayers.delete(layerId);
+      }
+      console.log(`⏹ Layer ${layer.beat.name} stopped`);
+    }
+
+    renderLayers();
+  }
+}
+
+function toggleLayerMute(layerId) {
+  const layer = layers.find(l => l.id === layerId);
+  if (layer) {
+    layer.muted = !layer.muted;
+
+    // Update audio player if exists
+    const player = layerPlayers.get(layerId);
+    if (player) {
+      player.setMuted(layer.muted);
+    }
+
+    renderLayers();
+    console.log(`🔊 Layer ${layer.beat.name} ${layer.muted ? 'muted' : 'unmuted'}`);
+  }
+}
+
+function setLayerVolume(layerId, volume) {
+  const layer = layers.find(l => l.id === layerId);
+  if (layer) {
+    layer.volume = parseInt(volume);
+
+    // Update audio player if exists
+    const player = layerPlayers.get(layerId);
+    if (player) {
+      player.setVolume(layer.volume);
+    }
+  }
+}
+
+function deleteLayer(layerId) {
+  // Stop audio for this layer
+  const player = layerPlayers.get(layerId);
+  if (player) {
+    player.stop();
+    layerPlayers.delete(layerId);
+  }
+
+  layers = layers.filter(l => l.id !== layerId);
+  renderLayers();
+  updateLayerCount();
+  console.log('🗑️ Layer deleted');
+}
+
+// Transport Controls
+async function toggleMasterPlay() {
+  console.log('🎛️ toggleMasterPlay called - layers:', layers.length, 'isPlaying:', isPlaying);
+
+  // Initialize audio on first interaction
+  await audioEngine.init();
+  await audioEngine.resume();
+
+  console.log('🎛️ AudioEngine state after init:', audioEngine.ctx?.state);
+
+  isPlaying = !isPlaying;
+  const btn = document.getElementById('master-play');
+  btn.classList.toggle('playing', isPlaying);
+  btn.textContent = isPlaying ? '⏸' : '▶';
+
+  if (isPlaying) {
+    console.log('🎵 Master play started at', currentBPM, 'BPM with', layers.length, 'layers');
+
+    if (layers.length === 0) {
+      console.warn('⚠️ No layers to play! Add layers first.');
+    }
+
+    // Start all layers that aren't muted
+    layers.forEach((layer, idx) => {
+      console.log(`  Layer ${idx}: ${layer.source} - ${layer.beat?.name} - muted: ${layer.muted}`);
+
+      if (!layer.muted) {
+        layer.playing = true;
+
+        // Create and start audio player for this layer
+        if (!layerPlayers.has(layer.id)) {
+          let player;
+
+          if (layer.source === 'upload') {
+            // Use upload player for file uploads
+            const buffer = audioBufferCache.get(layer.beat.id);
+            if (buffer) {
+              player = new UploadLayerPlayer(layer.id, buffer, layer.volume);
+            }
+          } else {
+            // Use standard layer player for synth/sampler
+            console.log(`  Creating LayerPlayer for ${layer.beat?.name}`);
+            player = new LayerPlayer(layer.id, layer.source, layer.beat, layer.volume);
+          }
+
+          if (player) {
+            layerPlayers.set(layer.id, player);
+          }
+        }
+
+        const player = layerPlayers.get(layer.id);
+        if (player) {
+          player.start(currentBPM);
+        }
+      }
+    });
+
+    // Handle Strudel layers
+    startStrudelLayers();
+  } else {
+    console.log('⏹ Master play stopped');
+
+    // Stop all layers
+    layers.forEach(layer => {
+      layer.playing = false;
+      const player = layerPlayers.get(layer.id);
+      if (player) {
+        player.stop();
+      }
+    });
+
+    // Stop Strudel
+    stopStrudel();
+  }
+
+  renderLayers();
+}
+
+function stopAll() {
+  isPlaying = false;
+
+  const masterPlayBtn = document.getElementById('master-play');
+  if (masterPlayBtn) {
+    masterPlayBtn.classList.remove('playing');
+    masterPlayBtn.textContent = '▶';
+  }
+
+  // Stop all layer players
+  layerPlayers.forEach(player => {
+    try {
+      player.stop();
+    } catch (e) {
+      console.warn('Error stopping player:', e);
+    }
+  });
+  layerPlayers.clear();
+
+  // Reset layer playing state
+  layers.forEach(layer => layer.playing = false);
+
+  // Stop beat indicator animation
+  stopBeatIndicatorAnimation();
+
+  // Stop Strudel
+  stopStrudel();
+
+  // Re-render layers (don't do this here to avoid recursion issues during preset load)
+  // renderLayers();
+}
+
+// ==========================================
+// STRUDEL INTEGRATION
+// ==========================================
+
+let strudelInitialized = false;
+let strudelRepl = null;
+
+async function initStrudel() {
+  if (strudelInitialized) return true;
+
+  try {
+    // Load Strudel from CDN if not already loaded
+    if (!window.strudel) {
+      console.log('📦 Loading Strudel...');
+      await loadScript('https://unpkg.com/@strudel/core@1.0.2/dist/index.js');
+      await loadScript('https://unpkg.com/@strudel/webaudio@1.0.2/dist/index.js');
+      await loadScript('https://unpkg.com/@strudel/mini@1.0.2/dist/index.js');
+    }
+    strudelInitialized = true;
+    console.log('✅ Strudel loaded');
+    return true;
+  } catch (e) {
+    console.warn('⚠️ Strudel not available, using fallback patterns');
+    return false;
+  }
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+// Simplified Strudel-style patterns using Web Audio
+function playStrudelPattern(patternId) {
+  const patterns = {
+    'hiphop': { bd: [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], sd: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hh: [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0] },
+    'trap': { bd: [1,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0], sd: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hh: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] },
+    'boom': { bd: [1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0], sd: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hh: [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0] },
+    'drill': { bd: [1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0], sd: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1], hh: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] }
+  };
+  return patterns[patternId] || patterns['hiphop'];
+}
+
+function startStrudelLayers() {
+  layers.filter(l => l.source === 'strudel' && !l.muted).forEach(layer => {
+    // Use synthesized patterns for Strudel-type beats
+    const pattern = playStrudelPattern(layer.beat.id);
+    drumPatterns[`strudel_${layer.id}`] = pattern;
+
+    // Create player using the pattern
+    if (!layerPlayers.has(layer.id)) {
+      const player = new LayerPlayer(layer.id, 'sampler', { id: `strudel_${layer.id}`, name: layer.beat.name }, layer.volume);
+      layerPlayers.set(layer.id, player);
+    }
+    layerPlayers.get(layer.id).start(currentBPM);
+  });
+}
+
+function stopStrudel() {
+  // Stop any running Strudel instances
+  if (typeof hush === 'function') {
+    try { hush(); } catch(e) {}
+  }
+}
+
+function startRecordingMix() {
+  alert('Mix recording coming soon! This will capture your layered beat as a single audio file.');
+}
+
+// BPM Control
+function adjustBPM(delta) {
+  currentBPM = Math.max(60, Math.min(180, currentBPM + delta));
+  document.getElementById('bpm-display').textContent = currentBPM;
+  document.querySelector('input[type="range"]').value = currentBPM;
+  updatePlayingLayersTempo();
+}
+
+function setBPM(value) {
+  currentBPM = parseInt(value);
+  updatePlayingLayersTempo();
+}
+
+function updatePlayingLayersTempo() {
+  if (!isPlaying) return;
+
+  // Restart all playing layers with new tempo
+  layerPlayers.forEach((player, layerId) => {
+    player.stop();
+    player.start(currentBPM);
+  });
+
+  // Restart beat indicator with new tempo
+  stopBeatIndicatorAnimation();
+  startBeatIndicatorAnimation();
+
+  console.log('🎚️ BPM updated to', currentBPM);
+}
+
+// Presets
+async function loadPreset(presetId) {
+  try {
+    console.log('Loading preset:', presetId);
+    const preset = builtInPresets[presetId];
+    if (!preset) {
+      console.error('Preset not found:', presetId);
+      return;
+    }
+
+    // Stop all current audio first
+    stopAll();
+
+    // Clear existing layers and players
+    layers = [];
+    layerPlayers.clear();
+
+    // Set BPM
+    currentBPM = preset.bpm;
+    const bpmDisplay = document.getElementById('bpm-display');
+    const bpmSlider = document.getElementById('bpm-slider');
+    if (bpmDisplay) bpmDisplay.textContent = currentBPM;
+    if (bpmSlider) bpmSlider.value = currentBPM;
+
+    // Add layers from preset
+    preset.layers.forEach(layerDef => {
+      addLayer(layerDef.source, layerDef.beat);
+      if (layers.length > 0) {
+        layers[layers.length - 1].volume = layerDef.volume;
+      }
+    });
+
+    renderLayers();
+    updateLayerCount();
+
+    console.log(`📁 Loaded preset: ${preset.name} with ${layers.length} layers`);
+
+    // Show visual feedback
+    showNotification(`Loaded: ${preset.name} (${preset.bpm} BPM)`);
+
+    // Auto-play the preset after loading
+    await audioEngine.init();
+    await audioEngine.resume();
+
+    // Start playing (ensure we're starting, not toggling)
+    if (!isPlaying) {
+      toggleMasterPlay();
+    }
+  } catch (err) {
+    console.error('Error loading preset:', err);
+    showNotification('Error loading preset');
+  }
+}
+
+function saveCurrentPreset() {
+  const name = document.getElementById('preset-name-input').value.trim();
+  if (!name) {
+    alert('Please enter a preset name');
+    return;
+  }
+
+  if (layers.length === 0) {
+    alert('Add some layers first!');
+    return;
+  }
+
+  const preset = {
+    name: name,
+    bpm: currentBPM,
+    layers: layers.map(l => ({
+      source: l.source,
+      beat: l.beat,
+      volume: l.volume
+    })),
+    savedAt: new Date().toISOString()
+  };
+
+  // Save to localStorage
+  const savedPresets = JSON.parse(localStorage.getItem('playgroundPresets') || '[]');
+  savedPresets.push(preset);
+  localStorage.setItem('playgroundPresets', JSON.stringify(savedPresets));
+
+  // Clear input
+  document.getElementById('preset-name-input').value = '';
+
+  // Refresh presets list
+  loadSavedPresets();
+
+  console.log(`Saved preset: ${name}`);
+}
+
+function loadSavedPresets() {
+  const savedPresets = JSON.parse(localStorage.getItem('playgroundPresets') || '[]');
+
+  if (savedPresets.length > 0) {
+    const customPresetsHtml = savedPresets.map((p, i) => `
+      <div class="preset-item" data-custom-index="${i}">
+        <span class="preset-icon">⭐</span>
+        <div class="preset-info">
+          <div class="preset-name">${p.name}</div>
+          <div class="preset-meta">${p.bpm} BPM • ${p.layers.length} layers</div>
+        </div>
+        <button class="preset-load-btn">Load</button>
+      </div>
+    `).join('');
+
+    // Append to existing presets
+    document.getElementById('presets-list').innerHTML += customPresetsHtml;
+  }
+}
+
+async function loadCustomPreset(index) {
+  const savedPresets = JSON.parse(localStorage.getItem('playgroundPresets') || '[]');
+  const preset = savedPresets[index];
+  if (!preset) return;
+
+  // Stop current audio
+  stopAll();
+
+  layers = [];
+  currentBPM = preset.bpm;
+  document.getElementById('bpm-display').textContent = currentBPM;
+  document.querySelector('input[type="range"]').value = currentBPM;
+
+  preset.layers.forEach(layerDef => {
+    addLayer(layerDef.source, layerDef.beat);
+    layers[layers.length - 1].volume = layerDef.volume;
+  });
+
+  renderLayers();
+
+  console.log(`📁 Loaded custom preset: ${preset.name}`);
+  showNotification(`Loaded: ${preset.name} (${preset.bpm} BPM)`);
+
+  // Auto-play after loading
+  await audioEngine.init();
+  await audioEngine.resume();
+  toggleMasterPlay();
+}
+
+// ==========================================
+// UI HELPERS
+// ==========================================
+
+// Beat indicator animation
+let beatIndicatorInterval = null;
+let globalBeatStep = 0;
+
+function startBeatIndicatorAnimation() {
+  if (beatIndicatorInterval) return;
+
+  const stepDuration = 60 / currentBPM / 4 * 1000; // ms per 16th note
+
+  beatIndicatorInterval = setInterval(() => {
+    if (!isPlaying) {
+      stopBeatIndicatorAnimation();
+      return;
+    }
+
+    globalBeatStep = (globalBeatStep + 1) % 16;
+
+    // Update all beat indicators
+    document.querySelectorAll('.beat-indicator').forEach(indicator => {
+      indicator.querySelectorAll('.beat-step').forEach((step, i) => {
+        step.classList.toggle('active', i === globalBeatStep);
+      });
+    });
+  }, stepDuration);
+}
+
+function stopBeatIndicatorAnimation() {
+  if (beatIndicatorInterval) {
+    clearInterval(beatIndicatorInterval);
+    beatIndicatorInterval = null;
+  }
+  globalBeatStep = 0;
+
+  // Clear all indicators
+  document.querySelectorAll('.beat-step').forEach(step => {
+    step.classList.remove('active');
+  });
+}
+
+function showNotification(message) {
+  // Create or update notification element
+  let notif = document.getElementById('playground-notification');
+  if (!notif) {
+    notif = document.createElement('div');
+    notif.id = 'playground-notification';
+    notif.style.cssText = `
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #00ff9c, #00e5ff);
+      color: #000;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s;
+      box-shadow: 0 4px 20px rgba(0, 255, 156, 0.3);
+    `;
+    document.body.appendChild(notif);
+  }
+
+  notif.textContent = message;
+  notif.style.opacity = '1';
+
+  // Auto-hide after 2 seconds
+  setTimeout(() => {
+    notif.style.opacity = '0';
+  }, 2000);
+}
+
+// Actions
+function useBeatInBattle() {
+  if (layers.length === 0) {
+    alert('Add some layers first!');
+    return;
+  }
+
+  // Save current configuration for battle
+  const battleBeat = {
+    name: 'Custom Mix',
+    type: 'playground',
+    bpm: currentBPM,
+    layers: layers.map(l => ({
+      source: l.source,
+      beat: l.beat,
+      volume: l.volume
+    }))
+  };
+
+  localStorage.setItem('currentBattleBeat', JSON.stringify(battleBeat));
+  localStorage.setItem('currentBattlePattern', '');
+
+  // Redirect to battle
+  window.location.href = '/rap-battle';
+}
+
+function exportMix() {
+  alert('Export functionality coming soon! This will let you download your mix as an audio file.');
+}
+
+function shareMix() {
+  // Create shareable link with config
+  const config = {
+    bpm: currentBPM,
+    layers: layers.map(l => ({
+      s: l.source,
+      b: l.beat.id,
+      v: l.volume
+    }))
+  };
+
+  const encoded = btoa(JSON.stringify(config));
+  const shareUrl = `${window.location.origin}/beat-playground?mix=${encoded}`;
+
+  navigator.clipboard.writeText(shareUrl).then(() => {
+    alert('Share link copied to clipboard!');
+  }).catch(() => {
+    prompt('Copy this link:', shareUrl);
+  });
+}
+
+// Check for shared mix on load
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const mixParam = params.get('mix');
+  if (mixParam) {
+    try {
+      const config = JSON.parse(atob(mixParam));
+      currentBPM = config.bpm;
+      document.getElementById('bpm-display').textContent = currentBPM;
+      console.log('Loading shared mix:', config);
+    } catch(e) {
+      console.error('Invalid mix parameter');
+    }
+  }
+});
+
+// ==========================================
+// TEST FUNCTION - Call from console to verify audio works
+// ==========================================
+async function testAudio() {
+  console.log('🧪 Testing audio...');
+
+  await audioEngine.init();
+  await audioEngine.resume();
+
+  console.log('AudioContext state:', audioEngine.ctx?.state);
+  console.log('MasterGain:', audioEngine.masterGain);
+
+  // Play a simple kick drum
+  const time = audioEngine.ctx.currentTime;
+  console.log('Playing test kick at time:', time);
+
+  // Always use synth (don't rely on samples for test)
+  audioEngine.createSynthKick(time);
+
+  setTimeout(() => {
+    console.log('Playing test snare');
+    audioEngine.createSynthSnare(audioEngine.ctx.currentTime);
+  }, 500);
+
+  setTimeout(() => {
+    console.log('Playing test hihat');
+    audioEngine.createSynthHihat(audioEngine.ctx.currentTime);
+  }, 1000);
+
+  console.log('🧪 Test sounds scheduled - you should hear kick, snare, hihat');
+  return 'Audio test complete';
+}
+
+// Quick play function for testing presets
+async function quickPlay() {
+  console.log('⚡ Quick play test...');
+
+  // Ensure audio is ready
+  await audioEngine.init();
+  await audioEngine.resume();
+
+  // Add a drum layer if none exist
+  if (layers.length === 0) {
+    addLayer('sampler', { id: 'drum1', name: 'Boom Bap Kit' });
+    console.log('Added test drum layer');
+  }
+
+  // Start playback
+  if (!isPlaying) {
+    await toggleMasterPlay();
+  }
+
+  return 'Quick play started';
+}
+
+// ==========================================
+// EXPOSE ALL FUNCTIONS TO WINDOW
+// ==========================================
+window.testAudio = testAudio;
+window.quickPlay = quickPlay;
+window.audioEngine = audioEngine;
+window.sampleLoader = sampleLoader;
+window.layers = layers;
+window.layerPlayers = layerPlayers;
+window.toggleMasterPlay = toggleMasterPlay;
+window.stopAll = stopAll;
+window.startRecordingMix = startRecordingMix;
+window.adjustBPM = adjustBPM;
+window.setBPM = setBPM;
+window.openSourcePopup = openSourcePopup;
+window.closeSourcePopup = closeSourcePopup;
+window.backToSources = backToSources;
+window.selectSource = selectSource;
+window.selectBeatItem = selectBeatItem;
+window.confirmAddLayer = confirmAddLayer;
+window.addLayer = addLayer;
+window.renderLayers = renderLayers;
+window.toggleLayerPlay = toggleLayerPlay;
+window.toggleLayerMute = toggleLayerMute;
+window.setLayerVolume = setLayerVolume;
+window.deleteLayer = deleteLayer;
+window.loadPreset = loadPreset;
+window.loadCustomPreset = loadCustomPreset;
+window.saveCurrentPreset = saveCurrentPreset;
+window.useBeatInBattle = useBeatInBattle;
+window.exportMix = exportMix;
+window.shareMix = shareMix;
+window.handleFileUpload = handleFileUpload;
+window.initPlayground = initPlayground;
+
+console.log('=== BEAT PLAYGROUND FUNCTIONS EXPOSED TO WINDOW ===');
+</script>
+
+</BaseLayout>

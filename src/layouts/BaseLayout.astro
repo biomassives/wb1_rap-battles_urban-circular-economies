@@ -9,6 +9,7 @@
  * - includeMusicPlayer: Boolean to include music player component
  * - activeSection: String for navigation highlighting
  */
+import "../styles/mission-control.css";
 
 // Wallet Security Components
 import SecurityEducationModal from '../components/SecurityEducationModal.astro';
@@ -16,16 +17,21 @@ import RecoveryPhraseModal from '../components/RecoveryPhraseModal.astro';
 import RecoveryPhraseVerification from '../components/RecoveryPhraseVerification.astro';
 import WalletPINSetup from '../components/WalletPINSetup.astro';
 
+// Challenge System
+import ChallengeModal from '../components/ChallengeModal.astro';
+
 interface Props {
   title: string;
   description?: string;
   includeMusicPlayer?: boolean;
   activeSection?: string;
-}
+  theme?: 'dark' | 'light'; // Add theme prop
+} 
 
-const { 
+  const { 
   title, 
   description = "Hobby Farm NFT Collection - Music, Environmental Science & Kakuma Youth Empowerment",
+  subdescription = "Biodiversity Token Transparency & Education Tooling",
   includeMusicPlayer = false,
   activeSection = 'home'
 } = Astro.props;
@@ -43,7 +49,17 @@ const currentYear = new Date().getFullYear();
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script is:inline src="/scripts/form-storage.js"></script>
   
+  <script is:inline>
+    // Initialize Theme immediately to prevent flash of un-glitched content
+    const savedTheme = localStorage.getItem('mission_theme_pref') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
+
+  <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js" is:inline></script>
+  
+  <script is:inline src="/scripts/mission-bridge.js"></script>
   <!-- Preconnect to external resources -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   
@@ -51,12 +67,378 @@ const currentYear = new Date().getFullYear();
   <link rel="stylesheet" href="/styles/dark-theme.css">
   <link rel="stylesheet" href="/styles/global.css">
   <link rel="stylesheet" href="/styles/gamification.css">
-  
-  <!-- Web3 Dependencies (Solana) -->
-  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 
-  <!-- BIP39 for wallet generation -->
-  <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/index.js"></script>
+  <!-- WORLDBRIDGER ONE Bubble Text & Spore Styles -->
+  <style>
+    :root {
+      --wb-bubble-top: #70d6ff;
+      --wb-bubble-bottom: #ff9770;
+      --wb-lcd-neon: #39ff14;
+      --wb-glass: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Branded Header Container */
+    .worldbridger-brand {
+      position: relative;
+      padding: 0.25rem 0;
+      text-align: left;
+      z-index: 5;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    .worldbridger-brand:hover {
+      transform: scale(1.02);
+    }
+
+    /* 3D Bubble Text Effect - Compact for Navigation */
+    .worldbridger-title {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      margin: 0;
+      background: linear-gradient(180deg, var(--wb-bubble-top), var(--wb-bubble-bottom));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow:
+        -1px -1px 0px rgba(255,0,0,0.25),
+        1px 1px 0px rgba(0,255,255,0.25);
+      letter-spacing: -1px;
+      filter: url(#organic-glow);
+      line-height: 1.1;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .worldbridger-title .one {
+      display: inline;
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      margin-left: 0.25rem;
+    }
+
+    /* Mobile: Stack the text vertically */
+    @media (max-width: 480px) {
+      .worldbridger-title .one {
+        display: block;
+        margin-left: 0;
+        margin-top: -0.2rem;
+      }
+    }
+
+    /* Fallback shadow for browsers without background-clip */
+    @supports not (-webkit-background-clip: text) {
+      .worldbridger-title {
+        color: var(--wb-bubble-top);
+        text-shadow:
+          -2px -2px 0px rgba(255,0,0,0.3),
+          2px 2px 0px rgba(0,255,255,0.3),
+          0px 5px 0px #2d1b4d,
+          0px 10px 0px #1a1a2e,
+          0px 20px 30px rgba(0,0,0,0.8);
+      }
+    }
+
+    /* Drifting Spores (Bioluminescent Particles) */
+    .spore {
+      position: fixed;
+      background: white;
+      border-radius: 50%;
+      filter: blur(1px);
+      box-shadow: 0 0 10px #fff, 0 0 20px var(--wb-bubble-top);
+      animation: spore-drift 20s infinite ease-in-out;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes spore-drift {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.6;
+      }
+      90% {
+        opacity: 0.3;
+      }
+      100% {
+        transform: translate(100px, -100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* Subtle CRT Scanline Overlay (optional, disable if too intense) */
+    .scanline-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.03) 50%);
+      background-size: 100% 4px;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    /* Hide spores on reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .spore {
+        animation: none;
+        opacity: 0.3;
+      }
+      .scanline-overlay {
+        display: none;
+      }
+    }
+
+    /* Welcome Back Banner for Returning Users */
+    .wb1-welcome-banner {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      max-width: 320px;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(112, 214, 255, 0.15), rgba(255, 151, 112, 0.15));
+      border: 1px solid rgba(112, 214, 255, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      animation: slideInRight 0.5s ease-out;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .wb1-welcome-banner.hiding {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .wb1-welcome-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .wb1-welcome-icon {
+      font-size: 1.5rem;
+    }
+
+    .wb1-welcome-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--wb-bubble-top);
+      margin: 0;
+    }
+
+    .wb1-welcome-message {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0 0 12px 0;
+      line-height: 1.4;
+    }
+
+    .wb1-welcome-stats {
+      display: flex;
+      gap: 16px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .wb1-stat {
+      text-align: center;
+    }
+
+    .wb1-stat-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--wb-bubble-bottom);
+    }
+
+    .wb1-stat-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .wb1-welcome-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+
+    .wb1-welcome-close:hover {
+      color: white;
+    }
+
+    /* Collaboration badge in header */
+    .collab-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: rgba(112, 214, 255, 0.2);
+      border-radius: 12px;
+      font-size: 0.7rem;
+      color: var(--wb-bubble-top);
+    }
+
+    .collab-badge-count {
+      background: var(--wb-bubble-bottom);
+      color: #000;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    /* Challenge navigation buttons */
+    .challenge-nav-group {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .btn-challenge {
+      background: linear-gradient(135deg, rgba(255, 151, 112, 0.2), rgba(112, 214, 255, 0.2));
+      border: 1px solid rgba(255, 151, 112, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-challenge:hover {
+      background: linear-gradient(135deg, rgba(255, 151, 112, 0.4), rgba(112, 214, 255, 0.4));
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255, 151, 112, 0.3);
+    }
+
+    .btn-invites {
+      position: relative;
+    }
+
+    .btn-invites .badge-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      background: #e74c3c;
+      border-radius: 9px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse-badge 2s infinite;
+    }
+
+    @keyframes pulse-badge {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+  </style>
+  
+  <script is:inline>
+    console.log('════════════════════════════════════════');
+    console.log('🔐 LOADING CRYPTO LIBRARIES');
+    console.log('════════════════════════════════════════');
+  </script>
+
+  <!-- Load Solana Web3 -->
+  <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js" is:inline></script>
+
+  <script is:inline>
+    // Check Solana immediately after its script tag
+    if (window.solanaWeb3) {
+      console.log('✅ Solana Web3 loaded successfully');
+      console.log('Solana version:', window.solanaWeb3.VERSION || 'unknown');
+    } else {
+      console.error('❌ Solana Web3 failed to load from unpkg');
+    }
+  </script>
+
+  <!-- Load Solana NFT Manager -->
+  <script src="/scripts/solana-nft-manager.js" is:inline></script>
+
+  <script is:inline>
+    // Initialize NFT Manager after page load
+    if (typeof SolanaNFTManager !== 'undefined') {
+      console.log('✅ Solana NFT Manager loaded');
+    } else {
+      console.error('❌ Solana NFT Manager failed to load');
+    }
+  </script>
+
+  <!-- Load BIP39 via ES module from esm.sh (converts CommonJS to ES modules) -->
+  <script type="module">
+    console.log('⏳ Loading BIP39 library from esm.sh...');
+
+    try {
+      // Import BIP39 as ES module from esm.sh (automatically converts to ESM)
+      const bip39Module = await import('https://esm.sh/bip39@3.1.0');
+      console.log('✅ BIP39 module imported');
+      console.log('Module keys:', Object.keys(bip39Module));
+
+      // Check if it's a default export or named exports
+      const bip39 = bip39Module.default || bip39Module;
+      console.log('BIP39 object:', bip39);
+      console.log('Available methods:', Object.keys(bip39));
+
+      // Expose to window
+      window.bip39 = {
+        generateMnemonic: bip39.generateMnemonic || bip39Module.generateMnemonic,
+        mnemonicToSeed: bip39.mnemonicToSeed || bip39Module.mnemonicToSeed,
+        validateMnemonic: bip39.validateMnemonic || bip39Module.validateMnemonic
+      };
+
+      console.log('✅ BIP39 System Ready');
+      console.log('BIP39 functions available:', {
+        generateMnemonic: typeof window.bip39.generateMnemonic,
+        mnemonicToSeed: typeof window.bip39.mnemonicToSeed,
+        validateMnemonic: typeof window.bip39.validateMnemonic
+      });
+
+      // Test it
+      try {
+        const testMnemonic = window.bip39.generateMnemonic(128);
+        console.log('✅ Test mnemonic generated:', testMnemonic.split(' ').length, 'words');
+      } catch (e) {
+        console.error('❌ Test mnemonic failed:', e.message);
+        console.error('Stack:', e.stack);
+      }
+
+      window.dispatchEvent(new CustomEvent('bip39-ready'));
+      console.log('📢 BIP39 ready event dispatched');
+    } catch (error) {
+      console.error('❌ Failed to load BIP39 module from esm.sh');
+      console.error('Error type:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+
+    console.log('════════════════════════════════════════');
+  </script>
+
+
 
   <!-- Wallet Security Utilities -->
   <script is:inline src="/scripts/wallet-crypto.js"></script>
@@ -64,27 +446,101 @@ const currentYear = new Date().getFullYear();
 
   <!-- E8 Lattice Oracle - Post-Quantum Encryption -->
   <script is:inline src="/scripts/e8-lattice-oracle.js"></script>
+
+  <!-- Offline-First Storage Managers (MUST LOAD IN THIS ORDER) -->
+  <script is:inline src="/scripts/crypto-manager.js"></script>
+  <script is:inline src="/scripts/local-storage-manager.js"></script>
+  <script is:inline src="/scripts/local-db-manager.js"></script>
+  <script is:inline src="/scripts/form-storage-adapter.js"></script>
+
+  <!-- WB1 User Manager - Returning User & Collaboration Tracking -->
+  <script is:inline src="/scripts/wb1-user-manager.js"></script>
+
+  <!-- WB1 Challenge Manager - Challenge Workflow & Invitations -->
+  <script is:inline src="/scripts/wb1-challenge-manager.js"></script>
 </head>
 
 <body class="bg-gradient-farm font-sans">
-  
+
+  <!-- SVG Filters for Organic Glow Effect -->
+  <svg width="0" height="0" style="position:absolute;">
+    <defs>
+      <filter id="organic-glow">
+        <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Bioluminescent Floating Spores -->
+  <div class="spore" style="width: 4px; height: 4px; left: 10%; bottom: -5%; animation-delay: 0s;"></div>
+  <div class="spore" style="width: 6px; height: 6px; left: 30%; bottom: -5%; animation-delay: 3s;"></div>
+  <div class="spore" style="width: 3px; height: 3px; left: 50%; bottom: -5%; animation-delay: 6s;"></div>
+  <div class="spore" style="width: 5px; height: 5px; left: 70%; bottom: -5%; animation-delay: 9s;"></div>
+  <div class="spore" style="width: 4px; height: 4px; left: 90%; bottom: -5%; animation-delay: 12s;"></div>
+
+  <!-- Subtle Scanline Overlay -->
+  <div class="scanline-overlay"></div>
+
   <!-- ============================================ -->
   <!-- HEADER & NAVIGATION -->
   <!-- ============================================ -->
   <header class="header-main">
-    <div class="container mx-auto">
-      <nav class="nav-primary">
+    <div class="container mx-auto flex justify-between items-center">
+      <nav class="nav-primary ">
         
-        <!-- Logo -->
-        <div class="nav-logo">
-          <a href="/">
-            <span class="logo-icon">🌾</span>
-            <span class="logo-text">Hobby Farm</span>
+        <!-- WORLDBRIDGER ONE Bubble Text Logo -->
+        <div class="flex items-center gap-4">
+          <a href="/" class="worldbridger-brand" title="WorldBridger One">
+            <h1 class="worldbridger-title">
+              Worldbridger<span class="one">One</span>
+            </h1>
           </a>
         </div>
 
+        <!-- Quick Nav Links -->
+        <nav class="hidden md:flex gap-6 text-[10px] uppercase tracking-widest">
+          <a href="/rap-battle" class="hover:text-white transition-colors battle-link">⚔️ Battle</a>
+          <a href="/beat-playground" class="hover:text-white transition-colors">🎛️ Beats</a>
+          <a href="/profile" class="hover:text-white transition-colors">Mission_Control</a>
+          <a href="/music" class="hover:text-white transition-colors">Studio</a>
+        </nav>
+
         <!-- Main Navigation - Zen Minimal -->
         <ul class="nav-menu">
+          <!-- Battle Dropdown - Primary Flow -->
+          <li class="nav-dropdown battle-nav">
+            <button class="nav-dropdown-btn battle-btn">
+              <span class="nav-icon">⚔️</span>
+              <span>BATTLE</span>
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-menu">
+              <a href="/rap-battle" class="dropdown-item featured">
+                <span class="item-icon">🎤</span>
+                <span>Rap Battle Arena</span>
+                <span class="item-badge">NEW</span>
+              </a>
+              <a href="/beat-playground" class="dropdown-item">
+                <span class="item-icon">🎛️</span>
+                <span>Beat Playground</span>
+              </a>
+              <a href="/rap-battle?mode=practice" class="dropdown-item">
+                <span class="item-icon">🎓</span>
+                <span>Practice Mode</span>
+              </a>
+              <a href="/battle-voting" class="dropdown-item">
+                <span class="item-icon">🗳️</span>
+                <span>Vote on Battles</span>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="/leaderboard" class="dropdown-item">
+                <span class="item-icon">🏆</span>
+                <span>Battle Rankings</span>
+              </a>
+            </div>
+          </li>
+
           <!-- Music Dropdown -->
           <li class="nav-dropdown">
             <button class="nav-dropdown-btn">
@@ -93,13 +549,26 @@ const currentYear = new Date().getFullYear();
               <span class="dropdown-arrow">▼</span>
             </button>
             <div class="nav-dropdown-menu">
+              <a href="/moog-sampler" class="dropdown-item">
+                <span class="item-icon">◈</span>
+                <span>Moog Synth</span>
+              </a>
               <a href="/music" class="dropdown-item">
                 <span class="item-icon">🎹</span>
                 <span>Music Studio</span>
               </a>
-              <a href="/audio-remix-lab" class="dropdown-item">
+              <a href="/sampler" class="dropdown-item">
+                <span class="item-icon">🥁</span>
+                <span>Sampler Pads</span>
+              </a>
+              <a href="/improved-sampler" class="dropdown-item featured">
                 <span class="item-icon">🎛️</span>
-                <span>Remix Lab</span>
+                <span>Battle Sampler</span>
+                <span class="item-badge">BETA</span>
+              </a>
+              <a href="/rapper-template-builder" class="dropdown-item">
+                <span class="item-icon">📝</span>
+                <span>Verse Builder</span>
               </a>
             </div>
           </li>
@@ -147,6 +616,11 @@ const currentYear = new Date().getFullYear();
                 <span class="item-icon">🏆</span>
                 <span>Leaderboard</span>
               </a>
+              <div class="dropdown-divider"></div>
+              <a href="/data-test" class="dropdown-item">
+                <span class="item-icon">🔧</span>
+                <span>Data Test</span>
+              </a>
             </div>
           </li>
         </ul>
@@ -155,7 +629,7 @@ const currentYear = new Date().getFullYear();
         <div class="nav-actions">
           <!-- Language Switcher -->
           <div class="language-switcher">
-            <button id="language-btn" class="btn-icon btn-language" title="Change Language">
+            <button id="language-btn" class="btn-icon btn-language" title="Change Language" onclick="toggleLanguage()">
               <span class="language-icon">🌐</span>
               <span id="current-language" class="language-code">EN</span>
             </button>
@@ -233,7 +707,7 @@ const currentYear = new Date().getFullYear();
           </div>
 
           <!-- Theme Switcher -->
-          <button id="theme-toggle" class="btn-icon btn-theme" title="Toggle Dark/Light Mode">
+          <button id="theme-toggle" class="btn-icon btn-theme" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
             <span class="theme-icon-dark">🌙</span>
             <span class="theme-icon-light" style="display: none;">☀️</span>
           </button>
@@ -245,6 +719,17 @@ const currentYear = new Date().getFullYear();
             <span class="level-badge">
               Lvl <span id="current-level">1</span>
             </span>
+          </div>
+
+          <!-- Challenge Button -->
+          <div class="challenge-nav-group">
+            <button id="challenge-create-btn" class="btn-icon btn-challenge" title="Create Challenge" onclick="openChallengeCreateModal()">
+              <span class="challenge-icon">⚔️</span>
+            </button>
+            <button id="challenge-invites-btn" class="btn-icon btn-invites" title="Challenge Invites" onclick="showPendingInvites()" style="display: none;">
+              <span class="invites-icon">📨</span>
+              <span id="challenge-invite-count" class="badge-count">0</span>
+            </button>
           </div>
 
           <!-- Notifications -->
@@ -259,7 +744,11 @@ const currentYear = new Date().getFullYear();
           </button>
 
           <!-- Connect Wallet Button -->
-          <button id="connect-wallet-btn" class="btn-primary">
+          <button
+            id="connect-wallet-btn"
+            class="btn-primary"
+            onclick="handleConnectWallet()"
+          >
             Connect Wallet
           </button>
         </div>
@@ -286,6 +775,11 @@ const currentYear = new Date().getFullYear();
   <RecoveryPhraseModal />
   <RecoveryPhraseVerification />
   <WalletPINSetup />
+
+  <!-- ============================================ -->
+  <!-- CHALLENGE SYSTEM MODALS -->
+  <!-- ============================================ -->
+  <ChallengeModal />
 
   <!-- ============================================ -->
   <!-- FOOTER -->
@@ -427,7 +921,335 @@ const currentYear = new Date().getFullYear();
   <!-- ============================================ -->
   <!-- CORE JAVASCRIPT CLASSES -->
   <!-- ============================================ -->
+
+  <script is:inline>
+    const ThemeManager = {
+      toggle() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('mission_theme_pref', next);
+        this.updateDisplay(next);
+      },
+      updateDisplay(theme) {
+        const display = document.getElementById('current-state-display');
+        if (display) display.innerText = theme === 'dark' ? 'STABLE' : 'GLITCH_MODE';
+      }
+    };
+    // Sync display on load
+    ThemeManager.updateDisplay(localStorage.getItem('mission_theme_pref') || 'dark');
+  </script>
+
+
+
+  <!-- Direct UI Handlers (using is:inline for immediate availability) -->
+  <script is:inline>
+    console.log('🔥 INLINE HANDLERS LOADING');
+
+    // Debug utility - check wallet state in localStorage
+    function checkWalletState() {
+      console.log('═══════════════════════════════════════');
+      console.log('🔍 WALLET STATE CHECK');
+      console.log('═══════════════════════════════════════');
+
+      const walletCreated = localStorage.getItem('walletCreated');
+      const connectedWallet = localStorage.getItem('connectedWallet');
+      const anonymousWallet = localStorage.getItem('anonymousWallet');
+      const encryptedWallet = localStorage.getItem('encryptedWallet');
+      const pinHash = localStorage.getItem('pinHash');
+
+      console.log('walletCreated:', walletCreated);
+      console.log('connectedWallet:', connectedWallet);
+      console.log('anonymousWallet:', anonymousWallet);
+      console.log('encryptedWallet exists:', !!encryptedWallet);
+      console.log('pinHash exists:', !!pinHash);
+      console.log('═══════════════════════════════════════');
+
+      // Check for corrupted state
+      if (walletCreated === 'true' && !encryptedWallet) {
+        console.warn('⚠️ WARNING: walletCreated=true but no encrypted wallet found!');
+        console.warn('This is a corrupted state. Run clearWalletState() to fix.');
+        return false;
+      }
+
+      if (connectedWallet && !anonymousWallet && !encryptedWallet) {
+        console.warn('⚠️ WARNING: connectedWallet set but no wallet data found!');
+        console.warn('This is a corrupted state. Run clearWalletState() to fix.');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Utility to clear all wallet data (for debugging)
+    function clearWalletState() {
+      console.log('🧹 Clearing all wallet state from localStorage...');
+
+      const keysToRemove = [
+        'walletCreated',
+        'connectedWallet',
+        'anonymousWallet',
+        'anonymousWalletCreated',
+        'encryptedWallet',
+        'pinHash',
+        'securityEducationCompleted'
+      ];
+
+      keysToRemove.forEach(key => {
+        if (localStorage.getItem(key)) {
+          console.log('  Removing:', key);
+          localStorage.removeItem(key);
+        }
+      });
+
+      console.log('✅ Wallet state cleared. Reload the page to start fresh.');
+      alert('Wallet state cleared! Reload the page to start fresh.');
+    }
+
+    // Make utilities available globally for debugging
+    window.checkWalletState = checkWalletState;
+    window.clearWalletState = clearWalletState;
+
+    // Auto-check on page load
+    const walletStateOk = checkWalletState();
+    if (!walletStateOk) {
+      console.error('❌ Corrupted wallet state detected!');
+      console.error('🛠️ To fix: Open console and run: clearWalletState()');
+    }
+
+    // Wallet connection handler
+    function handleConnectWallet() {
+      console.log('═══════════════════════════════════════');
+      console.log('🔘 CONNECT WALLET CLICKED');
+      console.log('═══════════════════════════════════════');
+
+      // Check if already has wallet using the proper wallet detection
+      const hasExistingWallet = window.hasWallet && window.hasWallet();
+      if (hasExistingWallet) {
+        console.log('ℹ️ Wallet already exists');
+        alert('Wallet unlock coming soon! For now, your existing wallet is active.');
+        return;
+      }
+
+      // Open security education modal
+      const securityModal = document.getElementById('securityEducationModal');
+      if (securityModal) {
+        console.log('✅ Opening security education modal');
+        securityModal.style.display = 'flex';
+
+        // Show the choice screen (first step)
+        const choiceScreen = document.getElementById('educationChoice');
+        if (choiceScreen) {
+          choiceScreen.style.display = 'block';
+        }
+      } else {
+        console.error('❌ Modal not found');
+        alert('Wallet setup modal not found. Please refresh the page.');
+      }
+    }
+
+    // Theme toggle handler
+    function toggleTheme() {
+      console.log('🎨 Theme toggle clicked');
+      document.body.classList.toggle('light-theme');
+      const isLight = document.body.classList.contains('light-theme');
+
+      // Toggle icons
+      const themeDarkIcon = document.querySelector('.theme-icon-dark');
+      const themeLightIcon = document.querySelector('.theme-icon-light');
+      if (themeDarkIcon) themeDarkIcon.style.display = isLight ? 'none' : 'inline-block';
+      if (themeLightIcon) themeLightIcon.style.display = isLight ? 'inline-block' : 'none';
+
+      // Save preference
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      console.log('✅ Theme changed to:', isLight ? 'light' : 'dark');
+    }
+
+    // Language toggle handler
+    function toggleLanguage() {
+      console.log('🌐 Language toggle clicked');
+      const languageDropdown = document.getElementById('language-dropdown');
+      if (languageDropdown) {
+        const isVisible = languageDropdown.style.display === 'block';
+        languageDropdown.style.display = isVisible ? 'none' : 'block';
+      }
+    }
+
+    // Load theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        const themeDarkIcon = document.querySelector('.theme-icon-dark');
+        const themeLightIcon = document.querySelector('.theme-icon-light');
+        if (themeDarkIcon) themeDarkIcon.style.display = 'none';
+        if (themeLightIcon) themeLightIcon.style.display = 'inline-block';
+      }
+      console.log('🎨 Initial theme loaded:', savedTheme);
+    });
+
+    console.log('✅ INLINE HANDLERS READY');
+
+    // Generate dynamic bioluminescent spores
+    function generateSpores() {
+      // Check for reduced motion preference
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        console.log('🌿 Reduced motion detected, skipping spore generation');
+        return;
+      }
+
+      const body = document.body;
+      const existingSpores = document.querySelectorAll('.spore.dynamic-spore');
+
+      // Limit total spores to prevent performance issues
+      if (existingSpores.length >= 15) return;
+
+      for (let i = 0; i < 12; i++) {
+        const spore = document.createElement('div');
+        spore.className = 'spore dynamic-spore';
+        spore.style.left = Math.random() * 100 + 'vw';
+        spore.style.bottom = '-5%';
+        const size = Math.random() * 4 + 2;
+        spore.style.width = size + 'px';
+        spore.style.height = size + 'px';
+        spore.style.animationDelay = Math.random() * 20 + 's';
+        spore.style.animationDuration = (15 + Math.random() * 10) + 's';
+        body.appendChild(spore);
+      }
+      console.log('🌿 Bioluminescent spores generated');
+    }
+
+    // Generate spores after page load
+    if (document.readyState === 'complete') {
+      generateSpores();
+    } else {
+      window.addEventListener('load', generateSpores);
+    }
+
+    // Show welcome banner for returning users
+    function showWelcomeBanner() {
+      // Wait for WB1 User Manager to be ready
+      if (!window.wb1User || !window.wb1User.initialized) {
+        window.addEventListener('wb1-user-ready', showWelcomeBanner, { once: true });
+        return;
+      }
+
+      const status = window.wb1User.getUserStatus();
+
+      // Only show for returning users on their first visit today
+      if (!status.isReturningUser || !window.wb1User.isFirstVisitToday()) {
+        return;
+      }
+
+      // Check if already dismissed this session
+      if (sessionStorage.getItem('wb1_welcome_dismissed')) {
+        return;
+      }
+
+      const welcome = window.wb1User.getWelcomeMessage();
+      const collabCount = status.collaborations.active;
+
+      const banner = document.createElement('div');
+      banner.className = 'wb1-welcome-banner';
+      banner.innerHTML = `
+        <button class="wb1-welcome-close" onclick="dismissWelcomeBanner()">&times;</button>
+        <div class="wb1-welcome-header">
+          <span class="wb1-welcome-icon">${welcome.icon}</span>
+          <h3 class="wb1-welcome-title">${welcome.title}</h3>
+        </div>
+        <p class="wb1-welcome-message">${welcome.message}</p>
+        <div class="wb1-welcome-stats">
+          <div class="wb1-stat">
+            <div class="wb1-stat-value">${status.streak.current}</div>
+            <div class="wb1-stat-label">Day Streak</div>
+          </div>
+          <div class="wb1-stat">
+            <div class="wb1-stat-value">${status.visitCount}</div>
+            <div class="wb1-stat-label">Visits</div>
+          </div>
+          ${collabCount > 0 ? `
+          <div class="wb1-stat">
+            <div class="wb1-stat-value">${collabCount}</div>
+            <div class="wb1-stat-label">Collabs</div>
+          </div>
+          ` : ''}
+        </div>
+      `;
+
+      document.body.appendChild(banner);
+
+      // Auto-dismiss after 8 seconds
+      setTimeout(() => {
+        if (banner.parentNode) {
+          dismissWelcomeBanner();
+        }
+      }, 8000);
+
+      console.log('🎉 Welcome banner shown for returning user');
+    }
+
+    function dismissWelcomeBanner() {
+      const banner = document.querySelector('.wb1-welcome-banner');
+      if (banner) {
+        banner.classList.add('hiding');
+        sessionStorage.setItem('wb1_welcome_dismissed', 'true');
+        setTimeout(() => banner.remove(), 300);
+      }
+    }
+
+    // Expose globally
+    window.dismissWelcomeBanner = dismissWelcomeBanner;
+
+    // Show welcome banner after page load
+    if (document.readyState === 'complete') {
+      setTimeout(showWelcomeBanner, 1000);
+    } else {
+      window.addEventListener('load', () => setTimeout(showWelcomeBanner, 1000));
+    }
+
+    // Update challenge invites badge
+    function updateChallengeInvitesBadge() {
+      if (!window.wb1Challenges) {
+        window.addEventListener('wb1-challenges-ready', updateChallengeInvitesBadge, { once: true });
+        return;
+      }
+
+      const pendingInvites = window.wb1Challenges.pendingInvites || [];
+      const count = pendingInvites.length;
+      const btn = document.getElementById('challenge-invites-btn');
+      const badge = document.getElementById('challenge-invite-count');
+
+      if (btn && badge) {
+        if (count > 0) {
+          btn.style.display = 'flex';
+          badge.textContent = count > 9 ? '9+' : count;
+        } else {
+          btn.style.display = 'none';
+        }
+      }
+    }
+
+    // Listen for invite changes
+    window.addEventListener('wb1-invite-sent', updateChallengeInvitesBadge);
+    window.addEventListener('wb1-challenge-accepted', updateChallengeInvitesBadge);
+    window.addEventListener('wb1-challenge-declined', updateChallengeInvitesBadge);
+
+    // Initialize badge on load
+    if (document.readyState === 'complete') {
+      updateChallengeInvitesBadge();
+    } else {
+      window.addEventListener('load', updateChallengeInvitesBadge);
+    }
+  </script>
+
   <script>
+    console.log('═══════════════════════════════════════════════════════');
+    console.log('🔥 BASE LAYOUT SCRIPT LOADING');
+    console.log('═══════════════════════════════════════════════════════');
+    console.log('Timestamp:', new Date().toISOString());
+    console.log('Location:', window.location.href);
+    console.log('User Agent:', navigator.userAgent);
+
     // ========================================
     // Core Manager Classes (Vanilla JS)
     // ========================================
@@ -454,9 +1276,34 @@ const currentYear = new Date().getFullYear();
           );
         }
 
-        // Check if already connected to a real wallet
+        // Check if user has created a wallet (encrypted wallet stored locally)
+        if (window.hasWallet && window.hasWallet()) {
+          const publicKey = window.getWalletPublicKey();
+          if (publicKey) {
+            console.log('✅ Found created wallet:', publicKey);
+            this.connectedWallet = publicKey;
+            this.isAnonymous = false;
+            this.walletType = 'Purple Point Wallet';
+
+            // Track with WB1 User Manager
+            if (window.wb1User) {
+              window.wb1User.addWalletToHistory(publicKey, 'created');
+              window.wb1User.setPrimaryWallet(publicKey);
+            }
+
+            this.updateUI();
+            await window.progressManager?.loadProgress(publicKey);
+            return;
+          }
+        }
+
+        // Check if already connected to a real wallet (external wallet)
         const savedWallet = localStorage.getItem('connectedWallet');
-        if (savedWallet) {
+        if (savedWallet && !savedWallet.startsWith('anon_')) {
+          // Track external wallet
+          if (window.wb1User) {
+            window.wb1User.addWalletToHistory(savedWallet, 'external');
+          }
           await this.connect(savedWallet);
           return;
         }
@@ -540,6 +1387,9 @@ const currentYear = new Date().getFullYear();
       }
 
       async connect(walletAddress = null) {
+        console.log('🔗 WalletManager.connect() called with:', walletAddress);
+        console.log('Current URL:', window.location.href);
+
         // Connect wallet logic
         // TODO: Implement full Phantom integration
 
@@ -561,11 +1411,16 @@ const currentYear = new Date().getFullYear();
           this.connectedWallet = walletAddress;
           this.isAnonymous = false;
           localStorage.setItem('connectedWallet', walletAddress);
+
+          console.log('✅ Wallet connected, updating UI...');
           this.updateUI();
 
           // Load user data
+          console.log('📊 Loading progress for wallet...');
           await window.progressManager?.loadProgress(walletAddress);
 
+          console.log('✅ WalletManager.connect() completed');
+          console.log('Final URL:', window.location.href);
           return walletAddress;
         }
       }
@@ -677,6 +1532,12 @@ const currentYear = new Date().getFullYear();
       }
 
       async syncProgressFromAPI(walletAddress) {
+        // Skip API sync for anonymous/test wallets - they only use localStorage
+        if (walletAddress?.startsWith('anon_') || walletAddress?.startsWith('TEST_WALLET_')) {
+          console.log('📍 Anonymous wallet detected - using local storage only');
+          return;
+        }
+
         try {
           const response = await fetch(
             `/api/gamification/user-progress?walletAddress=${walletAddress}`
@@ -941,6 +1802,33 @@ const currentYear = new Date().getFullYear();
         return names[type] || 'Chicken';
       }
 
+
+  showSamplerModal() {
+  const modal = document.getElementById('sampler-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    
+    // RE-INIT CHECK: If the grid is empty, force the controller to build pads
+    const grid = document.getElementById('sampler-pad-grid');
+    if (grid && grid.children.length === 0 && window.samplerPadController) {
+      window.samplerPadController.generatePads();
+    }
+    
+    // Audio Resume
+    if (window.samplerPadController?.audioContext?.state === 'suspended') {
+      window.samplerPadController.audioContext.resume();
+    }
+  }
+}
+
+   closeSamplerModal() {
+    const modal = document.getElementById('sampler-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+
+
+
       getMentorDescription(type) {
         const descriptions = {
           chicken: 'Master of foundations and community building',
@@ -961,16 +1849,116 @@ const currentYear = new Date().getFullYear();
     window.progressManager = new ProgressManager();
     window.uiManager = new UIManager();
 
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize on page load - using astro:page-load for proper Astro view transition support
+    let isInitialized = false;
+    const initializeWalletButton = async () => {
+      console.log('══════════════════════════════════════════════════');
+      console.log('🎯 initializeWalletButton CALLED');
+      console.log('Time:', new Date().toISOString());
+      console.log('isInitialized:', isInitialized);
+      console.log('══════════════════════════════════════════════════');
+
+      if (isInitialized) {
+        console.log('⏭️ Already initialized, skipping...');
+        return;
+      }
+      isInitialized = true;
+
+      console.log('🚀 Page Load - Initializing UI components');
+      console.log('Wallet Manager:', window.walletManager);
       await window.walletManager.initialize();
-      
+      console.log('✅ Wallet Manager initialized');
+
       // Connect wallet button
-      document.getElementById('connect-wallet-btn')?.addEventListener('click', async () => {
-        // TODO: Implement full wallet connection
-        const testWallet = 'TEST_WALLET_' + Date.now();
-        await window.walletManager.connect(testWallet);
-      });
+      const connectBtn = document.getElementById('connect-wallet-btn');
+      console.log('🔍 Connect wallet button found:', connectBtn ? 'YES' : 'NO');
+
+      if (connectBtn) {
+        console.log('🔗 Adding click listener to connect button');
+
+        // Remove any existing listeners to prevent duplicates
+        const newConnectBtn = connectBtn.cloneNode(true);
+        connectBtn.parentNode.replaceChild(newConnectBtn, connectBtn);
+
+        newConnectBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          console.log('═══════════════════════════════════════');
+          console.log('🔘 WALLET CONNECT BUTTON CLICKED');
+          console.log('═══════════════════════════════════════');
+          console.log('Timestamp:', new Date().toISOString());
+          console.log('Button element:', newConnectBtn);
+
+          try {
+            // Check if already has wallet using the proper wallet detection
+            const hasExistingWallet = window.hasWallet && window.hasWallet();
+            if (hasExistingWallet) {
+              console.log('ℹ️ Wallet already exists, connecting...');
+              // TODO: Implement unlock with PIN
+              alert('Wallet unlock coming soon! For now, your existing wallet is active.');
+              return;
+            }
+
+            // Open security education modal to start wallet creation flow
+            console.log('🔍 Looking for security education modal...');
+            const securityModal = document.getElementById('securityEducationModal');
+            console.log('Modal element:', securityModal);
+
+            if (securityModal) {
+              console.log('✅ Modal found! Opening...');
+              console.log('Current display style:', securityModal.style.display);
+
+              // Force modal to display
+              securityModal.style.display = 'flex';
+              securityModal.style.opacity = '1';
+              securityModal.style.visibility = 'visible';
+              securityModal.style.zIndex = '9999';
+
+              console.log('New display style:', securityModal.style.display);
+              console.log('📚 Step 1/5: Security Education');
+
+              // Initialize the education flow if function exists
+              if (typeof window.showSecurityEducation === 'function') {
+                console.log('Calling showSecurityEducation()');
+                window.showSecurityEducation();
+              } else {
+                console.warn('showSecurityEducation function not found');
+              }
+            } else {
+              console.error('❌ Security education modal not found in DOM');
+              console.log('Searching for modals...');
+              const allModals = {
+                security: document.getElementById('securityEducationModal'),
+                recovery: document.getElementById('recoveryPhraseModal'),
+                verification: document.getElementById('recoveryVerificationModal'),
+                pin: document.getElementById('pinSetupModal')
+              };
+              console.log('Available modals:', allModals);
+
+              // Fallback: Create a test wallet
+              console.log('Using fallback: creating test wallet');
+              alert('Wallet security setup is loading. Creating a test wallet for now.');
+              const testWallet = 'TEST_WALLET_' + Date.now();
+              await window.walletManager.connect(testWallet);
+            }
+          } catch (error) {
+            console.error('❌ Error in wallet connect handler:', error);
+            console.error('Stack trace:', error.stack);
+            alert('An error occurred. Please check the console for details.');
+          }
+        });
+
+        console.log('✅ Click listener attached successfully');
+      } else {
+        console.error('❌ Connect wallet button not found in DOM!');
+        console.log('Attempting to find button by class or text...');
+        const allButtons = document.querySelectorAll('button');
+        console.log('All buttons on page:', allButtons.length);
+        allButtons.forEach((btn, i) => {
+          console.log(`Button ${i}:`, btn.textContent, btn.id, btn.className);
+        });
+      }
 
       // Profile button
       document.getElementById('profile-btn')?.addEventListener('click', () => {
@@ -995,7 +1983,8 @@ const currentYear = new Date().getFullYear();
         themeLightIcon.style.display = 'inline-block';
       }
 
-      themeToggle?.addEventListener('click', () => {
+      themeToggle?.addEventListener('click', (e) => {
+        console.log('🎨 Theme toggle clicked');
         document.body.classList.toggle('light-theme');
         const isLight = document.body.classList.contains('light-theme');
 
@@ -1005,6 +1994,7 @@ const currentYear = new Date().getFullYear();
 
         // Save preference
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        console.log('✅ Theme changed to:', isLight ? 'light' : 'dark');
       });
 
       // Language Switcher
@@ -1067,8 +2057,10 @@ const currentYear = new Date().getFullYear();
         dropdowns.forEach(dropdown => {
           if (!dropdown.contains(e.target)) {
             const menu = dropdown.querySelector('.nav-dropdown-menu');
+            const btn = dropdown.querySelector('.nav-dropdown-btn');
             if (menu) {
               menu.style.display = 'none';
+              btn?.classList.remove('active');
             }
           }
         });
@@ -1080,17 +2072,21 @@ const currentYear = new Date().getFullYear();
           e.stopPropagation();
           const dropdown = btn.closest('.nav-dropdown');
           const menu = dropdown.querySelector('.nav-dropdown-menu');
+          const isOpen = menu.style.display === 'block';
 
-          // Close other dropdowns
+          // Close all dropdowns and remove active class
           document.querySelectorAll('.nav-dropdown-menu').forEach(m => {
-            if (m !== menu) m.style.display = 'none';
+            m.style.display = 'none';
+          });
+          document.querySelectorAll('.nav-dropdown-btn').forEach(b => {
+            b.classList.remove('active');
           });
 
           // Toggle current dropdown
-          if (menu.style.display === 'block') {
-            menu.style.display = 'none';
-          } else {
+          if (!isOpen) {
             menu.style.display = 'block';
+            btn.classList.add('active');
+            console.log('Dropdown opened:', btn.textContent.trim());
           }
         });
       });
@@ -1099,7 +2095,11 @@ const currentYear = new Date().getFullYear();
       document.getElementById('mobile-menu-toggle')?.addEventListener('click', () => {
         document.querySelector('.nav-menu')?.classList.toggle('active');
       });
-    });
+    };
+
+    // Call initialization on both Astro page load (for view transitions) and DOMContentLoaded (for direct loads)
+    document.addEventListener('astro:page-load', initializeWalletButton);
+    document.addEventListener('DOMContentLoaded', initializeWalletButton);
   </script>
 </body>
 </html>

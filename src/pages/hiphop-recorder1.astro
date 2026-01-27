@@ -1,0 +1,175 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Bio-Acoustic Recorder">
+
+<style>
+  /* BIG RED BUTTON STYLES */
+  .recorder-container { text-align: center; padding: 2rem 0; }
+  
+  #record-toggle {
+    width: 100px; height: 100px; border-radius: 50%;
+    border: 5px solid #1e2a44; background: #ff4d6d;
+    cursor: pointer; transition: all 0.3s ease;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto; box-shadow: 0 0 20px rgba(255, 77, 109, 0.3);
+  }
+
+  #record-toggle.recording {
+    background: #05070a; border-color: #ff4d6d;
+    animation: pulse 1.5s infinite;
+  }
+
+  #record-toggle .icon {
+    width: 30px; height: 30px; background: white; border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+
+  #record-toggle.recording .icon {
+    border-radius: 4px; background: #ff4d6d;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(255, 77, 109, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 77, 109, 0); }
+  }
+
+  canvas { width: 100%; height: 100px; background: #02040a; border-radius: 8px; margin-top: 1rem; }
+  .hidden { display: none; }
+
+/* Theme Consistency */
+body { background: #05070a; color: #e6f1ff; font-family: ui-monospace, monospace; }
+main { max-width: 420px; margin: auto; padding: 1rem; }
+.step { background: #0b0f17; border: 1px solid #1e2a44; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+.song-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+
+button {
+  width: 100%; padding: 0.75rem; border-radius: 8px; cursor: pointer;
+  background: transparent; border: 1px solid #00ff9c; color: #00ff9c;
+}
+button.active { background: rgba(0, 255, 156, 0.2); }
+button.secondary { border-color: #4cc9f0; color: #4cc9f0; }
+button.danger { border-color: #ff4d6d; color: #ff4d6d; }
+
+pre {
+  background: #02040a; padding: 10px; border-radius: 6px;
+  font-size: 0.75rem; color: #4cc9f0; overflow-x: auto;
+  border: 1px solid #1e2a44; margin-top: 10px;
+}
+</style>
+
+
+
+<main>
+  <section class="step">
+    <h2>1️⃣ Select Beat & Code</h2>
+    <div class="song-grid">
+      <button class="song-pick" data-id="boombap">🥁 Boom Bap</button>
+      <button class="song-pick" data-id="trap">🔥 Trap</button>
+      <button class="song-pick" data-id="lofi">☕ Lofi</button>
+    </div>
+    <pre id="live-code-display">// Select a beat...</pre>
+  </section>
+
+  <section class="step">
+    <div class="recorder-container">
+      <button id="record-toggle">
+        <div class="icon"></div>
+      </button>
+      <p id="record-label" style="margin-top:10px; color: var(--muted);">READY TO RECORD</p>
+      <canvas id="waveform"></canvas>
+    </div>
+  </section>
+
+  <section id="metadata-panel" class="step hidden">
+    <h2>2️⃣ Identity & Minting</h2>
+    <input id="nft-name" placeholder="Observation Name (e.g. Morning Bird)" style="margin-bottom:10px;"/>
+    <textarea id="nft-desc" placeholder="Describe the biodiversity context..."></textarea>
+    
+    <div style="display:flex; gap:10px; margin-top:15px;">
+        <button id="preview-remix" class="secondary">🎧 PREVIEW REMIX</button>
+        <button id="save-nft" style="background: #00ff9c; color: #05070a;">💾 MINT LOCAL</button>
+    </div>
+  </section>
+</main>
+
+<script is:inline src="https://unpkg.com/@strudel/web@1.0.3"></script>
+<script is:inline src="/scripts/nft-strudel-player.js"></script>
+
+<script is:inline>
+  let recorder, audioCtx, analyser, dataArray, animationId;
+  let recordedChunks = [];
+  let recordedBlob = null;
+  let isRecording = false;
+
+  const btn = document.getElementById('record-toggle');
+  const label = document.getElementById('record-label');
+  const canvas = document.getElementById('waveform');
+  const ctx = canvas.getContext('2d');
+
+  /* --- WAVEFORM VISUALIZER --- */
+  function drawWaveform() {
+    animationId = requestAnimationFrame(drawWaveform);
+    analyser.getByteTimeDomainData(dataArray);
+    ctx.fillStyle = '#02040a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#00e5ff';
+    ctx.beginPath();
+    let sliceWidth = canvas.width / dataArray.length;
+    let x = 0;
+    for (let i = 0; i < dataArray.length; i++) {
+      let v = dataArray[i] / 128.0;
+      let y = v * canvas.height / 2;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      x += sliceWidth;
+    }
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+  }
+
+  /* --- RECORDING TOGGLE --- */
+  btn.onclick = async () => {
+    if (!isRecording) {
+      // START
+      recordedChunks = [];
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Setup Visualizer
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaStreamSource(stream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      source.connect(analyser);
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      drawWaveform();
+
+      recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = e => recordedChunks.push(e.data);
+      recorder.onstop = () => {
+        recordedBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+        document.getElementById('metadata-panel').classList.remove('hidden');
+        cancelAnimationFrame(animationId);
+      };
+
+      recorder.start();
+      btn.classList.add('recording');
+      label.innerText = "RECORDING...";
+      isRecording = true;
+    } else {
+      // STOP
+      recorder.stop();
+      btn.classList.remove('recording');
+      label.innerText = "CAPTURED";
+      isRecording = false;
+      if (audioCtx) audioCtx.close();
+    }
+  };
+
+  /* --- EXISTING STRUDEL LOGIC --- */
+  // (Paste your songLibrary and Preview logic from previous step here)
+</script>
+</BaseLayout>

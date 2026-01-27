@@ -1,0 +1,116 @@
+{
+  "presets": [
+    {
+      "id": "space-bass",
+      "leftBankName": "Space Bass",
+      "rightBankName": "Cosmic Ambience",
+      "description": "Bass sounds + ambient textures",
+      "leftBank": [
+        { "id": "L1", "name": "Sub Bass", "pattern": "s(\"bass-sub\")", "type": "bass", "bpm": 90, "color": "#00ff00" },
+        { "id": "L2", "name": "Acid Bass", "pattern": "s(\"bass-acid\")", "type": "bass", "bpm": 120, "color": "#00ff41" },
+        { "id": "L3", "name": "Synth Bass", "pattern": "s(\"bass-synth\")", "type": "bass", "bpm": 110, "color": "#00ff82" },
+        { "id": "L4", "name": "Reese Bass", "pattern": "s(\"bass-reese\")", "type": "bass", "bpm": 95, "color": "#00ffc3" },
+        { "id": "L5", "name": "Wobble Bass", "pattern": "s(\"bass-wobble\")", "type": "bass", "bpm": 140, "color": "#00e4ff" },
+        { "id": "L6", "name": "Phaser", "pattern": "s(\"phaser\")", "type": "fx", "bpm": 100, "color": "#00a5ff" },
+        { "id": "L7", "name": "Filter Sweep", "pattern": "s(\"filter-sweep\")", "type": "fx", "bpm": 120, "color": "#0066ff" },
+        { "id": "L8", "name": "Riser", "pattern": "s(\"riser\")", "type": "fx", "bpm": 128, "color": "#0027ff" },
+        { "id": "L9", "name": "Laser Zap", "pattern": "s(\"laser\")", "type": "fx", "bpm": 150, "color": "#2700ff" }
+      ],
+      "rightBank": [
+        { "id": "R1", "name": "Pad", "pattern": "s(\"pad\")", "type": "ambient", "bpm": 80, "color": "#6600ff" },
+        { "id": "R2", "name": "Drone", "pattern": "s(\"drone\")", "type": "ambient", "bpm": 70, "color": "#a500ff" },
+        { "id": "R3", "name": "Cosmic", "pattern": "s(\"cosmic\")", "type": "ambient", "bpm": 90, "color": "#e400ff" },
+        { "id": "R4", "name": "Swoosh", "pattern": "s(\"swoosh\")", "type": "fx", "bpm": 100, "color": "#ff00e4" },
+        { "id": "R5", "name": "Zap", "pattern": "s(\"zap\")", "type": "fx", "bpm": 140, "color": "#ff00a5" },
+        { "id": "R6", "name": "808 Groove", "pattern": "sound(\"bd hh sd hh\")", "type": "drums", "bpm": 120, "color": "#ff0066" },
+        { "id": "R7", "name": "Boom Bap", "pattern": "s(\"bd cp bd cp\")", "type": "drums", "bpm": 85, "color": "#ff0027" },
+        { "id": "R8", "name": "Hi-Hats", "pattern": "s(\"hh hh oh hh\")", "type": "drums", "bpm": 140, "color": "#FFD700" },
+        { "id": "R9", "name": "Tom Rolls", "pattern": "sound(\"lt mt ht lt\")", "type": "drums", "bpm": 100, "color": "#FFA700" }
+      ]
+    },
+    {
+      "id": "classic-drums",
+      "leftBankName": "808 Drums",
+      "rightBankName": "Beat Patterns",
+      "description": "Classic drum machine sounds and patterns",
+      "leftBank": [
+        { "id": "L1", "name": "Kick", "pattern": "s(\"bd\")", "type": "drums", "bpm": 120, "color": "#ff0000" },
+        { "id": "L2", "name": "Snare", "pattern": "s(\"sd\")", "type": "drums", "bpm": 120, "color": "#ff4400" },
+        { "id": "L3", "name": "Closed HH", "pattern": "s(\"hh\")", "type": "drums", "bpm": 140, "color": "#ff8800" },
+        { "id": "L4", "name": "Open HH", "pattern": "s(\"oh\")", "type": "drums", "bpm": 140, "color": "#ffcc00" },
+        { "id": "L5", "name": "Clap", "pattern": "s(\"cp\")", "type": "drums", "bpm": 120, "color": "#ccff00" },
+        { "id": "L6", "name": "Low Tom", "pattern": "s(\"lt\")", "type": "drums", "bpm": 100, "color": "#88ff00" },
+        { "id": "L7", "name": "Mid Tom", "pattern": "s(\"mt\")", "type": "drums", "bpm": 100, "color": "#44ff00" },
+        { "id": "L8", "name": "High Tom", "pattern": "s(\"ht\")", "type": "drums", "bpm": 100, "color": "#00ff00" },
+        { "id": "L9", "name": "Rimshot", "pattern": "s(\"rim\")", "type": "drums", "bpm": 120, "color": "#00ff44" }
+      ],
+      "rightBank": [
+        { "id": "R1", "name": "Four Floor", "pattern": "sound(\"bd bd bd bd\")", "type": "drums", "bpm": 128, "color": "#00ff88" },
+        { "id": "R2", "name": "Breakbeat", "pattern": "sound(\"bd bd sd rim\")", "type": "drums", "bpm": 160, "color": "#00ffcc" },
+        { "id": "R3", "name": "808 Groove", "pattern": "sound(\"bd hh sd hh\")", "type": "drums", "bpm": 120, "color": "#00ccff" },
+        { "id": "R4", "name": "Hip Hop", "pattern": "s(\"bd sd hh oh\")", "type": "drums", "bpm": 90, "color": "#0088ff" },
+        { "id": "R5", "name": "Boom Bap", "pattern": "s(\"bd cp bd cp\")", "type": "drums", "bpm": 85, "color": "#0044ff" },
+        { "id": "R6", "name": "Tom Rolls", "pattern": "sound(\"lt mt ht lt\")", "type": "drums", "bpm": 100, "color": "#0000ff" },
+        { "id": "R7", "name": "Hi-Hat Run", "pattern": "s(\"hh hh oh hh\")", "type": "drums", "bpm": 140, "color": "#4400ff" },
+        { "id": "R8", "name": "Minimal", "pattern": "s(\"bd sd\")", "type": "drums", "bpm": 125, "color": "#8800ff" },
+        { "id": "R9", "name": "Double Kick", "pattern": "sound(\"bd bd sd hh\")", "type": "drums", "bpm": 135, "color": "#cc00ff" }
+      ]
+    },
+    {
+      "id": "bass-heavy",
+      "leftBankName": "Bass Assault",
+      "rightBankName": "Bass + Drums",
+      "description": "Heavy bass focus with drum support",
+      "leftBank": [
+        { "id": "L1", "name": "Sub Bass", "pattern": "s(\"bass-sub\")", "type": "bass", "bpm": 90, "color": "#ff00ff" },
+        { "id": "L2", "name": "Acid Bass", "pattern": "s(\"bass-acid\")", "type": "bass", "bpm": 120, "color": "#ff00cc" },
+        { "id": "L3", "name": "Synth Bass", "pattern": "s(\"bass-synth\")", "type": "bass", "bpm": 110, "color": "#ff0088" },
+        { "id": "L4", "name": "Reese Bass", "pattern": "s(\"bass-reese\")", "type": "bass", "bpm": 95, "color": "#ff0044" },
+        { "id": "L5", "name": "Wobble Bass", "pattern": "s(\"bass-wobble\")", "type": "bass", "bpm": 140, "color": "#ff0000" },
+        { "id": "L6", "name": "Sub Bass 2", "pattern": "s(\"bass-sub\")", "type": "bass", "bpm": 70, "color": "#cc0000" },
+        { "id": "L7", "name": "Acid Bass 2", "pattern": "s(\"bass-acid\")", "type": "bass", "bpm": 100, "color": "#880000" },
+        { "id": "L8", "name": "Synth Bass 2", "pattern": "s(\"bass-synth\")", "type": "bass", "bpm": 130, "color": "#440000" },
+        { "id": "L9", "name": "Reese Bass 2", "pattern": "s(\"bass-reese\")", "type": "bass", "bpm": 85, "color": "#220000" }
+      ],
+      "rightBank": [
+        { "id": "R1", "name": "Kick Only", "pattern": "s(\"bd bd bd bd\")", "type": "drums", "bpm": 128, "color": "#002200" },
+        { "id": "R2", "name": "Kick + Snare", "pattern": "s(\"bd sd bd sd\")", "type": "drums", "bpm": 120, "color": "#004400" },
+        { "id": "R3", "name": "808 Full", "pattern": "sound(\"bd sd cp hh\")", "type": "drums", "bpm": 110, "color": "#006600" },
+        { "id": "R4", "name": "Breakbeat", "pattern": "sound(\"bd bd sd rim\")", "type": "drums", "bpm": 160, "color": "#008800" },
+        { "id": "R5", "name": "Minimal", "pattern": "s(\"bd sd\")", "type": "drums", "bpm": 125, "color": "#00aa00" },
+        { "id": "R6", "name": "Tom Fills", "pattern": "sound(\"lt mt ht ht\")", "type": "drums", "bpm": 100, "color": "#00cc00" },
+        { "id": "R7", "name": "Hi-Hats", "pattern": "s(\"hh hh oh hh\")", "type": "drums", "bpm": 140, "color": "#00ee00" },
+        { "id": "R8", "name": "Clap Track", "pattern": "s(\"cp cp cp cp\")", "type": "drums", "bpm": 120, "color": "#00ff00" },
+        { "id": "R9", "name": "Full Kit", "pattern": "sound(\"bd hh sd cp\")", "type": "drums", "bpm": 120, "color": "#00ff44" }
+      ]
+    },
+    {
+      "id": "ambient-space",
+      "leftBankName": "Atmospheric",
+      "rightBankName": "Space Effects",
+      "description": "Ambient pads and space textures",
+      "leftBank": [
+        { "id": "L1", "name": "Pad", "pattern": "s(\"pad\")", "type": "ambient", "bpm": 80, "color": "#0044ff" },
+        { "id": "L2", "name": "Drone", "pattern": "s(\"drone\")", "type": "ambient", "bpm": 70, "color": "#0066ff" },
+        { "id": "L3", "name": "Cosmic", "pattern": "s(\"cosmic\")", "type": "ambient", "bpm": 90, "color": "#0088ff" },
+        { "id": "L4", "name": "Pad 2", "pattern": "s(\"pad\")", "type": "ambient", "bpm": 60, "color": "#00aaff" },
+        { "id": "L5", "name": "Drone 2", "pattern": "s(\"drone\")", "type": "ambient", "bpm": 50, "color": "#00ccff" },
+        { "id": "L6", "name": "Cosmic 2", "pattern": "s(\"cosmic\")", "type": "ambient", "bpm": 75, "color": "#00eeff" },
+        { "id": "L7", "name": "Pad 3", "pattern": "s(\"pad\")", "type": "ambient", "bpm": 100, "color": "#00ffff" },
+        { "id": "L8", "name": "Drone 3", "pattern": "s(\"drone\")", "type": "ambient", "bpm": 85, "color": "#00ffcc" },
+        { "id": "L9", "name": "Cosmic 3", "pattern": "s(\"cosmic\")", "type": "ambient", "bpm": 110, "color": "#00ffaa" }
+      ],
+      "rightBank": [
+        { "id": "R1", "name": "Laser", "pattern": "s(\"laser\")", "type": "fx", "bpm": 120, "color": "#00ff88" },
+        { "id": "R2", "name": "Zap", "pattern": "s(\"zap\")", "type": "fx", "bpm": 140, "color": "#00ff66" },
+        { "id": "R3", "name": "Swoosh", "pattern": "s(\"swoosh\")", "type": "fx", "bpm": 100, "color": "#00ff44" },
+        { "id": "R4", "name": "Phaser", "pattern": "s(\"phaser\")", "type": "fx", "bpm": 100, "color": "#00ff22" },
+        { "id": "R5", "name": "Filter Sweep", "pattern": "s(\"filter-sweep\")", "type": "fx", "bpm": 120, "color": "#00ff00" },
+        { "id": "R6", "name": "Riser", "pattern": "s(\"riser\")", "type": "fx", "bpm": 128, "color": "#22ff00" },
+        { "id": "R7", "name": "Laser 2", "pattern": "s(\"laser\")", "type": "fx", "bpm": 150, "color": "#44ff00" },
+        { "id": "R8", "name": "Zap 2", "pattern": "s(\"zap\")", "type": "fx", "bpm": 160, "color": "#66ff00" },
+        { "id": "R9", "name": "Swoosh 2", "pattern": "s(\"swoosh\")", "type": "fx", "bpm": 110, "color": "#88ff00" }
+      ]
+    }
+  ]
+}

@@ -294,7 +294,9 @@ body {
   transition: transform 0.2s ease;
 }
 
-.nav-dropdown:hover .nav-dropdown-btn .dropdown-arrow {
+/* Dropdown arrow rotation on hover */
+.nav-dropdown:hover .nav-dropdown-btn .dropdown-arrow,
+.nav-dropdown-btn.active .dropdown-arrow {
   transform: rotate(180deg);
 }
 
@@ -302,9 +304,10 @@ body {
 .nav-dropdown-menu {
   display: none;
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
   left: 0;
   min-width: 200px;
+  margin-top: 8px;
   background: #000;
   border: 2px solid var(--color-neon-green);
   box-shadow:
@@ -313,6 +316,16 @@ body {
     0 4px 0 var(--color-neon-green);
   z-index: 1000;
   animation: dropdownSlide 0.2s ease;
+}
+
+/* Bridge the gap between button and menu for hover */
+.nav-dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
 }
 
 @keyframes dropdownSlide {
@@ -326,6 +339,7 @@ body {
   }
 }
 
+/* Show dropdown on hover (desktop) and via JS for click (mobile/desktop) */
 .nav-dropdown:hover .nav-dropdown-menu {
   display: block;
 }
@@ -374,6 +388,77 @@ body {
 
 .dropdown-item:hover .item-icon {
   filter: none;
+}
+
+/* Battle Navigation - Featured Styling */
+.battle-nav .nav-dropdown-btn {
+  background: linear-gradient(135deg, rgba(255, 56, 100, 0.15), rgba(255, 151, 112, 0.1));
+  border: 1px solid rgba(255, 151, 112, 0.3);
+}
+
+.battle-nav .nav-dropdown-btn:hover {
+  border-color: #ff9770;
+  box-shadow: 0 0 15px rgba(255, 151, 112, 0.3);
+}
+
+.battle-nav .nav-icon {
+  animation: battle-pulse 2s infinite;
+}
+
+@keyframes battle-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Featured Dropdown Item */
+.dropdown-item.featured {
+  background: linear-gradient(135deg, rgba(255, 151, 112, 0.1), rgba(255, 79, 216, 0.05));
+  border-left: 3px solid #ff9770;
+  position: relative;
+}
+
+.dropdown-item.featured:hover {
+  background: linear-gradient(135deg, #ff9770, #ff4fd8);
+}
+
+/* Item Badge (NEW, HOT, etc) */
+.item-badge {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ff3864;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  animation: badge-glow 1.5s infinite;
+}
+
+@keyframes badge-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 56, 100, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(255, 56, 100, 0.8); }
+}
+
+/* Dropdown Divider */
+.dropdown-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  margin: 0.5rem 0;
+}
+
+/* Quick Nav Battle Link */
+.battle-link {
+  color: #ff9770 !important;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 151, 112, 0.5);
+}
+
+.battle-link:hover {
+  color: #fff !important;
+  text-shadow: 0 0 15px rgba(255, 151, 112, 0.8);
 }
 
 /* User Actions - Right Side */

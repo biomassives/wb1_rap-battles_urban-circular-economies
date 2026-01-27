@@ -13,17 +13,82 @@
 // For now, we'll use the npm-installed versions
 
 /**
+ * Wait for BIP39 library to be loaded
+ * @returns {Promise<Object>} BIP39 library
+ */
+async function waitForBIP39() {
+  // Check if already loaded
+  if (window.bip39) {
+    console.log('✅ BIP39 already loaded');
+    return window.bip39;
+  }
+
+  // Wait up to 10 seconds for library to load
+  console.log('⏳ Waiting for BIP39 library to load...');
+  console.log('Current page:', window.location.pathname);
+  const maxWait = 10000; // 10 seconds
+  const checkInterval = 100; // Check every 100ms
+  let waited = 0;
+
+  while (!window.bip39 && waited < maxWait) {
+    await new Promise(resolve => setTimeout(resolve, checkInterval));
+    waited += checkInterval;
+
+    // Log progress every second
+    if (waited % 1000 === 0) {
+      console.log(`⏳ Still waiting... (${waited/1000}s elapsed)`);
+    }
+  }
+
+  if (!window.bip39) {
+    console.error('❌ BIP39 library failed to load after', maxWait/1000, 'seconds');
+    console.error('Page:', window.location.href);
+    console.error('Available window properties:', Object.keys(window).filter(k => k.includes('bip') || k.includes('crypto')));
+    throw new Error('BIP39 library failed to load. Please refresh the page and try again.');
+  }
+
+  console.log('✅ BIP39 library loaded after', waited, 'ms');
+  return window.bip39;
+}
+
+/**
+ * Wait for Solana Web3 library to be loaded
+ * @returns {Promise<Object>} Solana Web3 library
+ */
+async function waitForSolanaWeb3() {
+  // Check if already loaded
+  if (window.solanaWeb3) {
+    return window.solanaWeb3;
+  }
+
+  // Wait up to 10 seconds for library to load
+  console.log('⏳ Waiting for Solana Web3 library to load...');
+  const maxWait = 10000; // 10 seconds
+  const checkInterval = 100; // Check every 100ms
+  let waited = 0;
+
+  while (!window.solanaWeb3 && waited < maxWait) {
+    await new Promise(resolve => setTimeout(resolve, checkInterval));
+    waited += checkInterval;
+  }
+
+  if (!window.solanaWeb3) {
+    throw new Error('Solana Web3 library failed to load. Please refresh the page.');
+  }
+
+  console.log('✅ Solana Web3 library loaded');
+  return window.solanaWeb3;
+}
+
+/**
  * Generate a new Solana wallet with BIP39 mnemonic
  *
  * @returns {Promise<Object>} Wallet data {mnemonic, publicKey, secretKey}
  */
 async function generateNewSolanaWallet() {
   try {
-    // Generate 12-word mnemonic (128 bits of entropy)
-    const bip39 = window.bip39;
-    if (!bip39) {
-      throw new Error('BIP39 library not loaded. Please refresh the page.');
-    }
+    // Wait for BIP39 to be ready
+    const bip39 = await waitForBIP39();
 
     const mnemonic = bip39.generateMnemonic(128); // 12 words
     const words = mnemonic.split(' ');
@@ -36,11 +101,8 @@ async function generateNewSolanaWallet() {
     // Derive seed from mnemonic
     const seed = await bip39.mnemonicToSeed(mnemonic);
 
-    // Create Solana keypair from seed
-    const solanaWeb3 = window.solanaWeb3;
-    if (!solanaWeb3) {
-      throw new Error('Solana Web3 library not loaded. Please refresh the page.');
-    }
+    // Wait for Solana Web3 to be ready
+    const solanaWeb3 = await waitForSolanaWeb3();
 
     const keypair = solanaWeb3.Keypair.fromSeed(seed.slice(0, 32));
     const publicKey = keypair.publicKey.toString();
@@ -69,10 +131,8 @@ async function generateNewSolanaWallet() {
  */
 async function importWalletFromMnemonic(mnemonic) {
   try {
-    const bip39 = window.bip39;
-    if (!bip39) {
-      throw new Error('BIP39 library not loaded. Please refresh the page.');
-    }
+    // Wait for BIP39 to be ready
+    const bip39 = await waitForBIP39();
 
     // Validate mnemonic
     const cleanMnemonic = mnemonic.trim().toLowerCase();
@@ -83,11 +143,8 @@ async function importWalletFromMnemonic(mnemonic) {
     // Derive seed
     const seed = await bip39.mnemonicToSeed(cleanMnemonic);
 
-    // Create keypair
-    const solanaWeb3 = window.solanaWeb3;
-    if (!solanaWeb3) {
-      throw new Error('Solana Web3 library not loaded. Please refresh the page.');
-    }
+    // Wait for Solana Web3 to be ready
+    const solanaWeb3 = await waitForSolanaWeb3();
 
     const keypair = solanaWeb3.Keypair.fromSeed(seed.slice(0, 32));
     const publicKey = keypair.publicKey.toString();
@@ -142,25 +199,58 @@ async function startNewWalletFlow() {
  */
 window.generateNewWallet = async function() {
   try {
-    console.log('🔐 Generating new wallet...');
+    console.log('═══════════════════════════════════════');
+    console.log('🔐 WALLET GENERATION STARTED');
+    console.log('📚 Step 2/5: Generating Wallet');
+    console.log('Current URL:', window.location.href);
+    console.log('═══════════════════════════════════════');
+
+    // Prevent navigation during wallet creation
+    window._walletCreationInProgress = true;
+
+    console.log('⏳ About to call generateNewSolanaWallet()...');
 
     // Generate wallet
     const wallet = await generateNewSolanaWallet();
+
+    console.log('✅ Wallet generated successfully!');
+    console.log('📍 Public Key:', wallet.publicKey);
+    console.log('🔑 Recovery Words:', wallet.words.length, 'words');
+    console.log('Current URL after generation:', window.location.href);
 
     // Store temporarily for the flow
     window._currentWallet = wallet;
     window._recoveryWords = wallet.words;
 
+    console.log('═══════════════════════════════════════');
+    console.log('📚 Step 3/5: Show Recovery Phrase');
+    console.log('Checking for showRecoveryPhraseModal function...');
+    console.log('window.showRecoveryPhraseModal exists?', !!window.showRecoveryPhraseModal);
+    console.log('═══════════════════════════════════════');
+
     // Show recovery phrase modal
     if (window.showRecoveryPhraseModal) {
+      console.log('✅ Calling showRecoveryPhraseModal with', wallet.words.length, 'words');
       window.showRecoveryPhraseModal(wallet.words);
+      console.log('✅ showRecoveryPhraseModal call completed');
     } else {
-      console.error('Recovery phrase modal not loaded');
+      console.error('❌ Recovery phrase modal not loaded');
+      console.error('window.showRecoveryPhraseModal is undefined');
+      console.error('Available window functions:', Object.keys(window).filter(k => k.includes('show') || k.includes('modal')));
       alert('Component not loaded. Please refresh and try again.');
     }
   } catch (error) {
-    console.error('Wallet generation failed:', error);
-    alert(`Failed to generate wallet: ${error.message}`);
+    console.error('❌ Wallet generation failed:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Current URL after error:', window.location.href);
+    console.error('BIP39 available?', !!window.bip39);
+    console.error('Solana Web3 available?', !!window.solanaWeb3);
+    console.error('Recovery modal function available?', !!window.showRecoveryPhraseModal);
+
+    window._walletCreationInProgress = false;
+
+    alert(`Failed to generate wallet: ${error.message}\n\nPlease check the console for more details.`);
   }
 };
 

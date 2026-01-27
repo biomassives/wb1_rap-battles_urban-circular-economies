@@ -1,0 +1,3137 @@
+---
+/**
+ * Enhanced Mixer - Mix Strudel & Beat Pad Patterns
+ * Left/Right Bank System with Crossfader & Sample Pads
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Mixer"
+  description="Mix Strudel patterns and beat pad sequences"
+  activeSection="music"
+>
+  <div class="mixer-container">
+
+    <!-- Header -->
+    <header class="mixer-header">
+      <h1 class="mixer-title">◢ DJ MIXER ◣</h1>
+      <div class="header-controls">
+        <button id="bank-selector-btn" class="header-btn">
+          <span>📁 BANKS</span>
+        </button>
+        <button id="edit-banks-btn" class="header-btn">
+          <span>✏️ EDIT</span>
+        </button>
+        <button id="load-track-btn" class="header-btn">
+          <span>🎵 TRACKS</span>
+        </button>
+      </div>
+      <div class="upload-hint">
+        💡 Click + on any pad to upload • Drag & drop audio files
+      </div>
+      <nav class="header-nav">
+        <a href="/beat-pad" class="nav-btn">BEAT PAD</a>
+        <a href="/sampler" class="nav-btn">SAMPLER</a>
+        <a href="/" class="nav-btn">HOME</a>
+      </nav>
+    </header>
+
+    <!-- Bank Selector Modal -->
+    <div id="bank-selector-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Select Bank Preset</h2>
+          <button id="close-bank-selector" class="close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          <div id="preset-list" class="preset-list">
+            <!-- Presets loaded by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bank Editor Modal -->
+    <div id="bank-editor-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit Custom Bank</h2>
+          <button id="close-bank-editor" class="close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="editor-section">
+            <h3>Left Bank</h3>
+            <input type="text" id="left-bank-name-input" placeholder="Bank Name" class="bank-name-input" />
+            <div id="left-editor-grid" class="editor-grid">
+              <!-- Slots loaded by JS -->
+            </div>
+          </div>
+          <div class="editor-section">
+            <h3>Right Bank</h3>
+            <input type="text" id="right-bank-name-input" placeholder="Bank Name" class="bank-name-input" />
+            <div id="right-editor-grid" class="editor-grid">
+              <!-- Slots loaded by JS -->
+            </div>
+          </div>
+          <div class="editor-actions">
+            <button id="save-custom-bank" class="action-btn">💾 Save Custom Bank</button>
+            <button id="reset-to-default" class="action-btn">🔄 Reset to Default</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- File Manager Modal -->
+    <div id="file-manager-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Manage Sample Files</h2>
+          <button id="close-file-manager" class="close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="file-manager-container">
+            <div class="file-manager-hint">
+              Select which file to use • Remove unwanted files • Upload more files
+            </div>
+            <div id="file-manager-list" class="file-list">
+              <!-- Files loaded by JS -->
+            </div>
+            <div class="file-manager-actions">
+              <button id="add-more-files" class="action-btn">📁 Add More Files</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Track Browser Modal -->
+    <div id="track-browser-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Load NFT Track</h2>
+          <button id="close-track-browser" class="close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="track-browser-container">
+            <div class="track-browser-hint">
+              💡 Select a track with Strudel pattern to load into mixer bank
+            </div>
+            <div class="bank-selector">
+              <label>
+                <input type="radio" name="target-bank" value="left" checked />
+                Load to Left Bank
+              </label>
+              <label>
+                <input type="radio" name="target-bank" value="right" />
+                Load to Right Bank
+              </label>
+            </div>
+            <div id="track-list" class="track-list">
+              <div class="loading-tracks">🔄 Loading tracks...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Mixer -->
+    <main class="mixer-main">
+
+      <!-- Left Bank -->
+      <section class="mixer-bank left-bank">
+        <div class="bank-header">
+          <h2>◢ LEFT BANK</h2>
+          <span id="left-bank-name" class="bank-name">Strudel Classics</span>
+        </div>
+
+        <!-- Sample Bank - 3x3 Grid -->
+        <div class="sample-bank" id="left-samples">
+          <!-- Generated by JS -->
+        </div>
+
+        <!-- Waveform Visualizer -->
+        <div class="visualizer-container">
+          <canvas id="left-visualizer" class="waveform-canvas"></canvas>
+          <div class="viz-overlay">
+            <span id="left-viz-status" class="viz-status">READY</span>
+          </div>
+        </div>
+
+        <!-- Loaded Sample Info -->
+        <div class="loaded-info">
+          <div class="info-label">LOADED:</div>
+          <div id="left-loaded-name" class="loaded-name">-</div>
+          <div id="left-loaded-pattern" class="loaded-pattern">No pattern loaded</div>
+          <div id="left-loaded-bpm" class="loaded-bpm">BPM: --</div>
+        </div>
+
+        <!-- Channel Controls -->
+        <div class="bank-controls">
+          <div class="control-row">
+            <button id="left-play" class="bank-btn play">▶ PLAY</button>
+            <button id="left-stop" class="bank-btn">■ STOP</button>
+          </div>
+          <div class="volume-control">
+            <label>VOLUME</label>
+            <input type="range" id="left-volume" class="volume-slider" min="0" max="100" value="80" />
+            <span id="left-volume-value" class="volume-value">80</span>
+          </div>
+          <div class="meter">
+            <div id="left-meter" class="meter-bar"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Master Section with Crossfader -->
+      <section class="master-section">
+        <div class="master-header">
+          <h2>MASTER</h2>
+        </div>
+
+        <!-- Crossfader -->
+        <div class="crossfader-section">
+          <div class="crossfader-label">CROSSFADER</div>
+          <div class="crossfader-container">
+            <span class="cf-label left">L</span>
+            <input
+              type="range"
+              id="crossfader"
+              class="crossfader"
+              min="0"
+              max="100"
+              value="50"
+              orient="vertical"
+            />
+            <span class="cf-label right">R</span>
+          </div>
+          <div class="crossfader-value" id="cf-value">CENTER</div>
+        </div>
+
+        <!-- Master Controls -->
+        <div class="master-controls">
+          <button id="play-all" class="master-btn play">▶ ALL</button>
+          <button id="stop-all" class="master-btn">■ STOP</button>
+          <button id="sync-channels" class="master-btn sync">⟳ SYNC</button>
+        </div>
+
+        <!-- BPM Control -->
+        <div class="bpm-control">
+          <label>BPM</label>
+          <div class="bpm-buttons">
+            <button id="bpm-down" class="bpm-btn">-</button>
+            <input type="number" id="master-bpm" value="120" min="60" max="200" />
+            <button id="bpm-up" class="bpm-btn">+</button>
+          </div>
+        </div>
+
+        <!-- Master Volume -->
+        <div class="master-volume">
+          <label>MASTER</label>
+          <input type="range" id="master-slider" min="0" max="100" value="90" />
+          <span id="master-value">90</span>
+        </div>
+
+        <!-- Master Meter -->
+        <div class="master-meter">
+          <div id="master-meter-bar" class="master-meter-bar"></div>
+        </div>
+
+        <!-- Status -->
+        <div class="status-display">
+          <div id="status-text" class="status-text">READY</div>
+        </div>
+      </section>
+
+      <!-- Right Bank -->
+      <section class="mixer-bank right-bank">
+        <div class="bank-header">
+          <h2>RIGHT BANK ◣</h2>
+          <span id="right-bank-name" class="bank-name">Beat Pad Rhythms</span>
+        </div>
+
+        <!-- Sample Bank - 3x3 Grid -->
+        <div class="sample-bank" id="right-samples">
+          <!-- Generated by JS -->
+        </div>
+
+        <!-- Waveform Visualizer -->
+        <div class="visualizer-container">
+          <canvas id="right-visualizer" class="waveform-canvas"></canvas>
+          <div class="viz-overlay">
+            <span id="right-viz-status" class="viz-status">READY</span>
+          </div>
+        </div>
+
+        <!-- Loaded Sample Info -->
+        <div class="loaded-info">
+          <div class="info-label">LOADED:</div>
+          <div id="right-loaded-name" class="loaded-name">-</div>
+          <div id="right-loaded-pattern" class="loaded-pattern">No pattern loaded</div>
+          <div id="right-loaded-bpm" class="loaded-bpm">BPM: --</div>
+        </div>
+
+        <!-- Channel Controls -->
+        <div class="bank-controls">
+          <div class="control-row">
+            <button id="right-play" class="bank-btn play">▶ PLAY</button>
+            <button id="right-stop" class="bank-btn">■ STOP</button>
+          </div>
+          <div class="volume-control">
+            <label>VOLUME</label>
+            <input type="range" id="right-volume" class="volume-slider" min="0" max="100" value="80" />
+            <span id="right-volume-value" class="volume-value">80</span>
+          </div>
+          <div class="meter">
+            <div id="right-meter" class="meter-bar"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+</BaseLayout>
+
+<script type="module">
+// Import Strudel library for full pattern support
+import { repl, controls, evalScope } from 'https://cdn.jsdelivr.net/npm/@strudel/web@1.3.0/dist/repl.mjs';
+
+console.log('🎚️ DJ Mixer loading...');
+console.log('📦 Strudel library imported');
+
+class DJMixer {
+  constructor() {
+    this.leftBank = [];
+    this.rightBank = [];
+    this.leftBankName = 'Left Bank';
+    this.rightBankName = 'Right Bank';
+    this.leftLoaded = null;
+    this.rightLoaded = null;
+    this.leftVolume = 0.8;
+    this.rightVolume = 0.8;
+    this.masterVolume = 0.9;
+    this.crossfaderPosition = 50; // 0=left, 50=center, 100=right
+    this.masterBPM = 120;
+    this.audioContext = null;
+    this.leftGain = null;
+    this.rightGain = null;
+    this.masterGain = null;
+    this.leftAnalyzer = null;
+    this.rightAnalyzer = null;
+    this.leftCanvas = null;
+    this.rightCanvas = null;
+    this.leftCtx = null;
+    this.rightCtx = null;
+    this.leftPlaying = false;
+    this.rightPlaying = false;
+    this.animationId = null;
+    this.presets = [];
+    this.currentPresetId = null;
+
+    this.init();
+  }
+
+  async init() {
+    // Initialize audio
+    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Create gain nodes
+    this.leftGain = this.audioContext.createGain();
+    this.rightGain = this.audioContext.createGain();
+    this.masterGain = this.audioContext.createGain();
+
+    // Create analyzer nodes for visualization
+    this.leftAnalyzer = this.audioContext.createAnalyser();
+    this.rightAnalyzer = this.audioContext.createAnalyser();
+    this.leftAnalyzer.fftSize = 128;
+    this.rightAnalyzer.fftSize = 128;
+    this.leftAnalyzer.smoothingTimeConstant = 0.8;
+    this.rightAnalyzer.smoothingTimeConstant = 0.8;
+
+    // Connect audio chain with analyzers
+    this.leftGain.connect(this.leftAnalyzer);
+    this.leftAnalyzer.connect(this.masterGain);
+
+    this.rightGain.connect(this.rightAnalyzer);
+    this.rightAnalyzer.connect(this.masterGain);
+
+    this.masterGain.connect(this.audioContext.destination);
+
+    // Set initial volumes
+    this.leftGain.gain.value = this.leftVolume;
+    this.rightGain.gain.value = this.rightVolume;
+    this.masterGain.gain.value = this.masterVolume;
+
+    // Setup visualizers
+    this.setupVisualizers();
+
+    // Load presets
+    await this.loadPresets();
+
+    // Load saved bank or default
+    await this.loadSavedOrDefaultBank();
+
+    // Setup event listeners
+    this.setupEventListeners();
+
+    // Setup modal listeners
+    this.setupModalListeners();
+
+    // Start visualization loop
+    this.startVisualization();
+
+    console.log('✅ DJ Mixer ready with visualizers');
+  }
+
+  setupVisualizers() {
+    // Setup left visualizer
+    this.leftCanvas = document.getElementById('left-visualizer');
+    if (this.leftCanvas) {
+      this.leftCtx = this.leftCanvas.getContext('2d');
+      this.leftCanvas.width = this.leftCanvas.offsetWidth;
+      this.leftCanvas.height = this.leftCanvas.offsetHeight;
+    }
+
+    // Setup right visualizer
+    this.rightCanvas = document.getElementById('right-visualizer');
+    if (this.rightCanvas) {
+      this.rightCtx = this.rightCanvas.getContext('2d');
+      this.rightCanvas.width = this.rightCanvas.offsetWidth;
+      this.rightCanvas.height = this.rightCanvas.offsetHeight;
+    }
+
+    console.log('✅ Visualizers initialized');
+  }
+
+  startVisualization() {
+    const animate = () => {
+      this.drawVisualizer('left', this.leftCanvas, this.leftCtx, this.leftAnalyzer, this.leftPlaying);
+      this.drawVisualizer('right', this.rightCanvas, this.rightCtx, this.rightAnalyzer, this.rightPlaying);
+      this.animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+  }
+
+  drawVisualizer(bank, canvas, ctx, analyzer, isPlaying) {
+    if (!canvas || !ctx || !analyzer) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const bufferLength = analyzer.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    // Clear canvas with fade effect
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillRect(0, 0, width, height);
+
+    if (isPlaying) {
+      // Get frequency data
+      analyzer.getByteFrequencyData(dataArray);
+
+      // Draw waveform bars
+      const barWidth = width / bufferLength;
+      const colorStart = bank === 'left' ? 120 : 280; // Green for left, Magenta for right
+
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = (dataArray[i] / 255) * height * 0.9;
+        const x = i * barWidth;
+        const y = height - barHeight;
+
+        // Calculate color based on frequency intensity
+        const intensity = dataArray[i] / 255;
+        const hue = colorStart + (i / bufferLength) * 60;
+        const saturation = 100;
+        const lightness = 30 + intensity * 40;
+
+        ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        ctx.fillRect(x, y, barWidth - 1, barHeight);
+
+        // Glow effect
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+      }
+
+      ctx.shadowBlur = 0;
+
+      // Draw peak line
+      const average = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
+      const peakY = height - (average / 255) * height;
+
+      ctx.strokeStyle = bank === 'left' ? '#0f0' : '#f0f';
+      ctx.lineWidth = 2;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = bank === 'left' ? '#0f0' : '#f0f';
+
+      ctx.beginPath();
+      ctx.moveTo(0, peakY);
+      ctx.lineTo(width, peakY);
+      ctx.stroke();
+
+      ctx.shadowBlur = 0;
+    } else {
+      // Check if there's a waveform to display
+      const loadedSample = bank === 'left' ? this.leftLoaded : this.rightLoaded;
+
+      if (loadedSample && loadedSample.waveform) {
+        // Draw actual waveform from loaded sample
+        this.drawWaveform(ctx, loadedSample.waveform, width, height, bank);
+      } else {
+        // Draw idle state
+        ctx.strokeStyle = bank === 'left' ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 255, 0.2)';
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.moveTo(0, height / 2);
+
+        for (let i = 0; i < width; i++) {
+          const y = height / 2 + Math.sin((i + Date.now() * 0.05) * 0.05) * 10;
+          ctx.lineTo(i, y);
+        }
+
+        ctx.stroke();
+      }
+    }
+  }
+
+  drawWaveform(ctx, waveform, width, height, bank) {
+    if (!waveform || waveform.length === 0) return;
+
+    const color = bank === 'left' ? '#0f0' : '#f0f';
+    const glowColor = bank === 'left' ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 255, 0.5)';
+
+    // Clear background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw waveform
+    const barWidth = width / waveform.length;
+    const midY = height / 2;
+
+    ctx.fillStyle = color;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = glowColor;
+
+    for (let i = 0; i < waveform.length; i++) {
+      const x = i * barWidth;
+      const amplitude = waveform[i].rms || waveform[i].max || 0;
+      const barHeight = amplitude * height * 0.8;
+
+      // Draw from center outward
+      ctx.fillRect(x, midY - barHeight / 2, barWidth - 1, barHeight);
+    }
+
+    ctx.shadowBlur = 0;
+
+    // Draw center line
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.3;
+    ctx.beginPath();
+    ctx.moveTo(0, midY);
+    ctx.lineTo(width, midY);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  async loadPresets() {
+    try {
+      const response = await fetch('/data/mixer-bank-presets.json');
+      const data = await response.json();
+      this.presets = data.presets;
+      console.log(`✅ Loaded ${this.presets.length} bank presets`);
+    } catch (error) {
+      console.error('❌ Failed to load presets:', error);
+      this.presets = [];
+    }
+  }
+
+  async loadSavedOrDefaultBank() {
+    // Check localStorage for custom bank
+    const savedBank = localStorage.getItem('mixer-custom-bank');
+
+    if (savedBank) {
+      try {
+        const customBank = JSON.parse(savedBank);
+        this.loadBankData(customBank);
+        this.currentPresetId = 'custom';
+        console.log('✅ Loaded custom bank from localStorage');
+        return;
+      } catch (error) {
+        console.warn('Failed to load custom bank, using default');
+      }
+    }
+
+    // Check for last used preset
+    const lastPresetId = localStorage.getItem('mixer-last-preset');
+    if (lastPresetId && this.presets.find(p => p.id === lastPresetId)) {
+      this.loadPreset(lastPresetId);
+      return;
+    }
+
+    // Load first preset as default
+    if (this.presets.length > 0) {
+      this.loadPreset(this.presets[0].id);
+    }
+  }
+
+  loadPreset(presetId) {
+    const preset = this.presets.find(p => p.id === presetId);
+    if (!preset) {
+      console.error('Preset not found:', presetId);
+      return;
+    }
+
+    this.currentPresetId = presetId;
+    this.loadBankData({
+      leftBank: preset.leftBank,
+      rightBank: preset.rightBank,
+      leftBankName: preset.leftBankName,
+      rightBankName: preset.rightBankName
+    });
+
+    // Save to localStorage
+    localStorage.setItem('mixer-last-preset', presetId);
+
+    console.log(`✅ Loaded preset: ${preset.leftBankName} / ${preset.rightBankName}`);
+  }
+
+  loadBankData(data) {
+    this.leftBank = data.leftBank;
+    this.rightBank = data.rightBank;
+    this.leftBankName = data.leftBankName;
+    this.rightBankName = data.rightBankName;
+
+    document.getElementById('left-bank-name').textContent = this.leftBankName;
+    document.getElementById('right-bank-name').textContent = this.rightBankName;
+
+    this.renderSampleBanks();
+
+    console.log(`✅ Loaded ${this.leftBank.length} left samples, ${this.rightBank.length} right samples`);
+  }
+
+  renderSampleBanks() {
+    // Render left bank
+    const leftContainer = document.getElementById('left-samples');
+    leftContainer.innerHTML = '';
+    this.leftBank.forEach(sample => {
+      const pad = this.createSamplePad(sample, 'left');
+      leftContainer.appendChild(pad);
+    });
+
+    // Render right bank
+    const rightContainer = document.getElementById('right-samples');
+    rightContainer.innerHTML = '';
+    this.rightBank.forEach(sample => {
+      const pad = this.createSamplePad(sample, 'right');
+      rightContainer.appendChild(pad);
+    });
+  }
+
+  createSamplePad(sample, bank) {
+    const pad = document.createElement('div');
+    pad.className = 'sample-pad';
+    pad.dataset.bank = bank;
+    pad.dataset.sampleId = sample.id;
+    pad.style.setProperty('--pad-color', sample.color);
+
+    const fileCount = sample.customFiles?.length || 0;
+    const customIndicator = fileCount > 0 ? `<div class="custom-indicator" title="${fileCount} file(s)">📁 ${fileCount}</div>` : '';
+    const removeBtn = fileCount > 0 ? '<button class="pad-remove-btn" title="Clear custom files">✕</button>' : '';
+    const manageBtn = fileCount > 1 ? `<button class="pad-manage-btn" title="Manage ${fileCount} files">⋯</button>` : '';
+
+    pad.innerHTML = `
+      <div class="pad-id">${sample.id}</div>
+      <div class="pad-name">${sample.name}</div>
+      <div class="pad-type">${sample.type.toUpperCase()}</div>
+      ${customIndicator}
+      ${removeBtn}
+      ${manageBtn}
+      <button class="pad-upload-btn" title="Upload WAV file(s)">+</button>
+    `;
+
+    // Main click - load sample
+    pad.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('pad-upload-btn') &&
+          !e.target.classList.contains('pad-remove-btn') &&
+          !e.target.classList.contains('pad-manage-btn')) {
+        this.loadSample(sample, bank);
+      }
+    });
+
+    // Upload button click
+    const uploadBtn = pad.querySelector('.pad-upload-btn');
+    uploadBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.openQuickUpload(sample, bank);
+    });
+
+    // Remove button click
+    const removeBtn2 = pad.querySelector('.pad-remove-btn');
+    removeBtn2?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.clearCustomFiles(sample, bank);
+    });
+
+    // Manage button click
+    const manageBtn2 = pad.querySelector('.pad-manage-btn');
+    manageBtn2?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.openFileManager(sample, bank);
+    });
+
+    // Drag and drop support
+    pad.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      pad.classList.add('drag-over');
+    });
+
+    pad.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      pad.classList.remove('drag-over');
+    });
+
+    pad.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      pad.classList.remove('drag-over');
+
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+
+        // Check if it's an audio file
+        if (file.type.startsWith('audio/') || file.name.match(/\.(wav|mp3|ogg)$/i)) {
+          this.updateStatus(`Uploading ${file.name}...`);
+          try {
+            await this.addFileToSample(file, sample, bank);
+            this.updateStatus(`✅ Uploaded ${file.name}`);
+            this.renderSampleBanks();
+          } catch (error) {
+            console.error('Upload error:', error);
+            this.updateStatus('❌ Upload failed');
+            alert('Upload failed. Please ensure the file is a valid audio file.');
+          }
+        } else {
+          alert('Please drop an audio file (WAV, MP3, or OGG)');
+        }
+      }
+    });
+
+    return pad;
+  }
+
+  openQuickUpload(sample, bank) {
+    // Create file input
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'audio/wav,audio/wave,audio/x-wav,audio/mpeg,audio/mp3,audio/ogg';
+    input.multiple = true; // Allow multiple files
+
+    input.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+
+      // Show loading status
+      this.updateStatus(`Uploading ${files.length} file(s)...`);
+
+      try {
+        for (const file of files) {
+          await this.addFileToSample(file, sample, bank);
+        }
+        this.updateStatus(`✅ Uploaded ${files.length} file(s)`);
+        this.renderSampleBanks();
+      } catch (error) {
+        console.error('Upload error:', error);
+        this.updateStatus('❌ Upload failed');
+        alert('Upload failed. Please ensure files are valid audio files.');
+      }
+    });
+
+    // Trigger file picker
+    input.click();
+  }
+
+  openFileManager(sample, bank) {
+    // Show modal to manage multiple files for this pad
+    this.currentEditingSample = { sample, bank };
+    const modal = document.getElementById('file-manager-modal');
+    this.renderFileManager(sample, bank);
+    modal?.classList.remove('hidden');
+  }
+
+  closeFileManager() {
+    document.getElementById('file-manager-modal')?.classList.add('hidden');
+    this.currentEditingSample = null;
+  }
+
+  renderFileManager(sample, bank) {
+    const container = document.getElementById('file-manager-list');
+    if (!container) return;
+
+    const files = sample.customFiles || [];
+    const activeFile = sample.activeFileIndex || 0;
+
+    container.innerHTML = '';
+
+    if (files.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 2rem; color: rgba(0,255,255,0.5);">
+          No custom files yet. Upload files to get started!
+        </div>
+      `;
+      return;
+    }
+
+    files.forEach((fileData, idx) => {
+      const fileItem = document.createElement('div');
+      fileItem.className = `file-item ${idx === activeFile ? 'active' : ''}`;
+      fileItem.innerHTML = `
+        <div class="file-info">
+          <div class="file-name">${fileData.fileName}</div>
+          <div class="file-meta">${fileData.duration?.toFixed(2)}s • ${fileData.sampleRate}Hz</div>
+          <canvas class="file-waveform" width="200" height="40" data-idx="${idx}"></canvas>
+        </div>
+        <div class="file-actions">
+          <button class="file-select-btn ${idx === activeFile ? 'active' : ''}" data-idx="${idx}">
+            ${idx === activeFile ? '✓ Active' : 'Use'}
+          </button>
+          <button class="file-remove-btn" data-idx="${idx}" title="Remove file">✕</button>
+        </div>
+      `;
+
+      // Draw mini waveform
+      const canvas = fileItem.querySelector('.file-waveform');
+      const ctx = canvas.getContext('2d');
+      this.drawMiniWaveform(ctx, fileData.waveform, 200, 40);
+
+      // Select button
+      fileItem.querySelector('.file-select-btn')?.addEventListener('click', () => {
+        this.selectFile(sample, bank, idx);
+      });
+
+      // Remove button
+      fileItem.querySelector('.file-remove-btn')?.addEventListener('click', () => {
+        this.removeFile(sample, bank, idx);
+      });
+
+      container.appendChild(fileItem);
+    });
+  }
+
+  drawMiniWaveform(ctx, waveform, width, height) {
+    if (!waveform || waveform.length === 0) return;
+
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, width, height);
+
+    const barWidth = width / waveform.length;
+    const midY = height / 2;
+
+    ctx.fillStyle = '#0ff';
+    for (let i = 0; i < waveform.length; i++) {
+      const x = i * barWidth;
+      const amplitude = waveform[i].rms || waveform[i].max || 0;
+      const barHeight = amplitude * height * 0.8;
+      ctx.fillRect(x, midY - barHeight / 2, barWidth - 1, barHeight);
+    }
+  }
+
+  selectFile(sample, bank, fileIndex) {
+    sample.activeFileIndex = fileIndex;
+    const fileData = sample.customFiles[fileIndex];
+
+    // Update sample properties
+    sample.customFile = fileData.data;
+    sample.customFileName = fileData.fileName;
+    sample.waveform = fileData.waveform;
+    sample.sampleRate = fileData.sampleRate;
+    sample.duration = fileData.duration;
+    sample.pattern = `custom:${fileData.fileName}`;
+    sample.name = fileData.fileName.replace(/\.(wav|mp3|ogg)$/i, '');
+
+    this.saveCustomBank();
+    this.renderFileManager(sample, bank);
+    this.renderSampleBanks();
+    this.updateStatus(`✅ Selected: ${fileData.fileName}`);
+  }
+
+  removeFile(sample, bank, fileIndex) {
+    const fileData = sample.customFiles[fileIndex];
+    if (!confirm(`Remove "${fileData.fileName}"?`)) return;
+
+    sample.customFiles.splice(fileIndex, 1);
+
+    // If removed active file, select first available
+    if (fileIndex === sample.activeFileIndex) {
+      if (sample.customFiles.length > 0) {
+        this.selectFile(sample, bank, 0);
+      } else {
+        // No files left, reset to default
+        delete sample.customFile;
+        delete sample.customFileName;
+        delete sample.customFiles;
+        delete sample.activeFileIndex;
+        sample.pattern = sample.originalPattern || `s("bd")`;
+        sample.name = sample.originalName || sample.id;
+      }
+    } else if (sample.activeFileIndex > fileIndex) {
+      // Adjust active index if needed
+      sample.activeFileIndex--;
+    }
+
+    this.saveCustomBank();
+    this.renderFileManager(sample, bank);
+    this.renderSampleBanks();
+    this.updateStatus(`✅ Removed: ${fileData.fileName}`);
+  }
+
+  clearCustomFiles(sample, bank) {
+    const fileCount = sample.customFiles?.length || 0;
+    if (!confirm(`Clear all ${fileCount} custom file(s) from ${sample.id}?`)) return;
+
+    // Reset to original
+    delete sample.customFile;
+    delete sample.customFileName;
+    delete sample.customFiles;
+    delete sample.activeFileIndex;
+    delete sample.waveform;
+    sample.pattern = sample.originalPattern || `s("bd")`;
+    sample.name = sample.originalName || sample.id;
+
+    this.saveCustomBank();
+    this.renderSampleBanks();
+    this.updateStatus(`✅ Cleared custom files from ${sample.id}`);
+  }
+
+  async addFileToSample(file, sample, bank) {
+    console.log(`📁 Adding ${file.name} to ${sample.id}`);
+
+    // Read file
+    const arrayBuffer = await file.arrayBuffer();
+
+    // Parse and extract waveform
+    const audioData = await this.parseWAVFile(arrayBuffer);
+
+    // Store as base64
+    const base64Data = this.arrayBufferToBase64(arrayBuffer);
+
+    // Initialize customFiles array if needed
+    if (!sample.customFiles) {
+      sample.customFiles = [];
+      sample.originalPattern = sample.pattern;
+      sample.originalName = sample.name;
+    }
+
+    // Add to collection
+    const fileData = {
+      fileName: file.name,
+      data: base64Data,
+      waveform: audioData.waveform,
+      sampleRate: audioData.sampleRate,
+      duration: audioData.duration
+    };
+
+    sample.customFiles.push(fileData);
+
+    // Set as active if it's the first file
+    if (sample.customFiles.length === 1) {
+      sample.activeFileIndex = 0;
+      sample.customFile = base64Data;
+      sample.customFileName = file.name;
+      sample.waveform = audioData.waveform;
+      sample.sampleRate = audioData.sampleRate;
+      sample.duration = audioData.duration;
+      sample.pattern = `custom:${file.name}`;
+      sample.name = file.name.replace(/\.(wav|mp3|ogg)$/i, '');
+    }
+
+    // Auto-save to localStorage
+    this.saveCustomBank();
+
+    console.log(`✅ Added ${file.name} to ${sample.id} (${sample.customFiles.length} total)`);
+  }
+
+  async loadSample(sample, bank) {
+    // Extract waveform if not already present
+    if (!sample.waveform && !sample.pattern.startsWith('custom:')) {
+      await this.extractWaveformFromPattern(sample);
+    }
+
+    if (bank === 'left') {
+      this.leftLoaded = sample;
+      document.getElementById('left-loaded-name').textContent = sample.name;
+      document.getElementById('left-loaded-pattern').textContent = sample.pattern;
+      document.getElementById('left-loaded-bpm').textContent = `BPM: ${sample.bpm}`;
+
+      // Highlight active pad
+      document.querySelectorAll('.sample-pad[data-bank="left"]').forEach(p => {
+        p.classList.remove('active');
+      });
+      document.querySelector(`.sample-pad[data-bank="left"][data-sample-id="${sample.id}"]`)?.classList.add('active');
+
+      console.log(`✅ Loaded LEFT: ${sample.name}`);
+    } else {
+      this.rightLoaded = sample;
+      document.getElementById('right-loaded-name').textContent = sample.name;
+      document.getElementById('right-loaded-pattern').textContent = sample.pattern;
+      document.getElementById('right-loaded-bpm').textContent = `BPM: ${sample.bpm}`;
+
+      // Highlight active pad
+      document.querySelectorAll('.sample-pad[data-bank="right"]').forEach(p => {
+        p.classList.remove('active');
+      });
+      document.querySelector(`.sample-pad[data-bank="right"][data-sample-id="${sample.id}"]`)?.classList.add('active');
+
+      console.log(`✅ Loaded RIGHT: ${sample.name}`);
+    }
+
+    this.updateStatus(`Loaded: ${sample.name}`);
+  }
+
+  async extractWaveformFromPattern(sample) {
+    try {
+      // Map Strudel pattern to WAV file URL
+      const sampleUrls = {
+        // Drums
+        bd: '/wav/bd.wav',
+        sd: '/wav/sd.wav',
+        hh: '/wav/hh.wav',
+        oh: '/wav/oh.wav',
+        cp: '/wav/cp.wav',
+        lt: '/wav/lt.wav',
+        mt: '/wav/mt.wav',
+        ht: '/wav/ht.wav',
+        rim: '/wav/rim.wav',
+        // Bass
+        'bass-sub': '/wav/bass-sub.wav',
+        'bass-acid': '/wav/bass-acid.wav',
+        'bass-synth': '/wav/bass-synth.wav',
+        'bass-reese': '/wav/bass-reese.wav',
+        'bass-wobble': '/wav/bass-wobble.wav',
+        // Phaser/FX
+        'phaser': '/wav/phaser.wav',
+        'filter-sweep': '/wav/filter-sweep.wav',
+        'riser': '/wav/riser.wav',
+        // Space/Ambient
+        'pad': '/wav/pad.wav',
+        'drone': '/wav/drone.wav',
+        'laser': '/wav/laser.wav',
+        'zap': '/wav/zap.wav',
+        'cosmic': '/wav/cosmic.wav',
+        'swoosh': '/wav/swoosh.wav',
+      };
+
+      // Extract first sound from pattern
+      const match = sample.pattern.match(/s\("([^"]+)"\)|sound\("([^"]+)"\)/);
+      if (!match) return;
+
+      const sounds = (match[1] || match[2]).split(/[\s,]+/);
+      const firstSound = sounds[0];
+      const url = sampleUrls[firstSound];
+
+      if (!url) return;
+
+      // Fetch and parse WAV file
+      const response = await fetch(url);
+      if (!response.ok) return;
+
+      const arrayBuffer = await response.arrayBuffer();
+      const audioData = await this.parseWAVFile(arrayBuffer);
+
+      sample.waveform = audioData.waveform;
+      sample.sampleRate = audioData.sampleRate;
+      sample.duration = audioData.duration;
+
+      console.log(`  🎵 Extracted waveform for ${sample.name}`);
+    } catch (error) {
+      console.warn(`Failed to extract waveform for ${sample.name}:`, error);
+    }
+  }
+
+  setupEventListeners() {
+    // Crossfader
+    document.getElementById('crossfader')?.addEventListener('input', (e) => {
+      this.updateCrossfader(e.target.value);
+    });
+
+    // Left bank controls
+    document.getElementById('left-play')?.addEventListener('click', () => this.playBank('left'));
+    document.getElementById('left-stop')?.addEventListener('click', () => this.stopBank('left'));
+    document.getElementById('left-volume')?.addEventListener('input', (e) => {
+      this.setLeftVolume(e.target.value / 100);
+      document.getElementById('left-volume-value').textContent = e.target.value;
+    });
+
+    // Right bank controls
+    document.getElementById('right-play')?.addEventListener('click', () => this.playBank('right'));
+    document.getElementById('right-stop')?.addEventListener('click', () => this.stopBank('right'));
+    document.getElementById('right-volume')?.addEventListener('input', (e) => {
+      this.setRightVolume(e.target.value / 100);
+      document.getElementById('right-volume-value').textContent = e.target.value;
+    });
+
+    // Master controls
+    document.getElementById('play-all')?.addEventListener('click', () => this.playAll());
+    document.getElementById('stop-all')?.addEventListener('click', () => this.stopAll());
+    document.getElementById('sync-channels')?.addEventListener('click', () => this.syncChannels());
+
+    // BPM controls
+    document.getElementById('bpm-up')?.addEventListener('click', () => this.adjustBPM(1));
+    document.getElementById('bpm-down')?.addEventListener('click', () => this.adjustBPM(-1));
+    document.getElementById('master-bpm')?.addEventListener('change', (e) => {
+      this.masterBPM = parseInt(e.target.value) || 120;
+    });
+
+    // Master volume
+    document.getElementById('master-slider')?.addEventListener('input', (e) => {
+      this.masterVolume = e.target.value / 100;
+      this.masterGain.gain.value = this.masterVolume;
+      document.getElementById('master-value').textContent = e.target.value;
+    });
+  }
+
+  updateCrossfader(value) {
+    this.crossfaderPosition = parseInt(value);
+
+    // Calculate left/right gains based on crossfader position
+    // 0 = full left, 50 = center, 100 = full right
+    const leftGain = (100 - this.crossfaderPosition) / 100;
+    const rightGain = this.crossfaderPosition / 100;
+
+    this.leftGain.gain.value = this.leftVolume * leftGain;
+    this.rightGain.gain.value = this.rightVolume * rightGain;
+
+    // Update display
+    const cfValue = document.getElementById('cf-value');
+    if (this.crossfaderPosition < 45) {
+      cfValue.textContent = 'LEFT';
+    } else if (this.crossfaderPosition > 55) {
+      cfValue.textContent = 'RIGHT';
+    } else {
+      cfValue.textContent = 'CENTER';
+    }
+
+    console.log(`Crossfader: L=${(leftGain * 100).toFixed(0)}% R=${(rightGain * 100).toFixed(0)}%`);
+  }
+
+  setLeftVolume(volume) {
+    this.leftVolume = volume;
+    const crossfaderFactor = (100 - this.crossfaderPosition) / 100;
+    this.leftGain.gain.value = volume * crossfaderFactor;
+  }
+
+  setRightVolume(volume) {
+    this.rightVolume = volume;
+    const crossfaderFactor = this.crossfaderPosition / 100;
+    this.rightGain.gain.value = volume * crossfaderFactor;
+  }
+
+  async playBank(bank) {
+    const sample = bank === 'left' ? this.leftLoaded : this.rightLoaded;
+
+    if (!sample) {
+      this.updateStatus(`No sample loaded in ${bank} bank`);
+      return;
+    }
+
+    console.log(`▶️ Playing ${bank}: ${sample.name}`);
+    this.updateStatus(`Playing: ${sample.name}`);
+
+    // Set playing state for visualizer
+    if (bank === 'left') {
+      this.leftPlaying = true;
+      document.getElementById('left-viz-status').textContent = 'PLAYING';
+    } else {
+      this.rightPlaying = true;
+      document.getElementById('right-viz-status').textContent = 'PLAYING';
+    }
+
+    // Check if it's a custom uploaded file
+    if (sample.pattern.startsWith('custom:') && sample.customFile) {
+      await this.playCustomFile(sample, bank);
+    } else if (window.strudel?.evaluate) {
+      // Use Strudel for standard patterns
+      await window.strudel.evaluate(sample.pattern);
+      document.getElementById(`${bank}-play`)?.classList.add('playing');
+    } else {
+      this.updateStatus('Strudel not available - visit /beat-pad first');
+    }
+  }
+
+  async playCustomFile(sample, bank) {
+    try {
+      // Decode base64 to ArrayBuffer
+      const arrayBuffer = this.base64ToArrayBuffer(sample.customFile);
+
+      // Decode audio data
+      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+
+      // Create source and connect to appropriate gain node
+      const source = this.audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+
+      const gainNode = bank === 'left' ? this.leftGain : this.rightGain;
+      source.connect(gainNode);
+
+      // Play the file
+      source.start(this.audioContext.currentTime);
+
+      document.getElementById(`${bank}-play`)?.classList.add('playing');
+
+      // Auto-stop button when done playing
+      source.onended = () => {
+        document.getElementById(`${bank}-play`)?.classList.remove('playing');
+        if (bank === 'left') {
+          this.leftPlaying = false;
+          document.getElementById('left-viz-status').textContent = 'READY';
+        } else {
+          this.rightPlaying = false;
+          document.getElementById('right-viz-status').textContent = 'READY';
+        }
+      };
+
+      console.log(`✅ Playing custom file: ${sample.customFileName}`);
+    } catch (error) {
+      console.error('❌ Error playing custom file:', error);
+      this.updateStatus('Error playing custom file');
+    }
+  }
+
+  stopBank(bank) {
+    console.log(`⏹️ Stopping ${bank} bank`);
+
+    // Set playing state for visualizer
+    if (bank === 'left') {
+      this.leftPlaying = false;
+      document.getElementById('left-viz-status').textContent = 'READY';
+    } else {
+      this.rightPlaying = false;
+      document.getElementById('right-viz-status').textContent = 'READY';
+    }
+
+    if (window.strudel?.stop) {
+      window.strudel.stop();
+    }
+
+    document.getElementById(`${bank}-play`)?.classList.remove('playing');
+  }
+
+  playAll() {
+    console.log('▶️ Playing all banks');
+
+    if (this.leftLoaded) this.playBank('left');
+    if (this.rightLoaded) {
+      setTimeout(() => this.playBank('right'), 50);
+    }
+
+    document.getElementById('play-all')?.classList.add('playing');
+  }
+
+  stopAll() {
+    console.log('⏹️ Stopping all banks');
+
+    this.stopBank('left');
+    this.stopBank('right');
+
+    document.getElementById('play-all')?.classList.remove('playing');
+  }
+
+  syncChannels() {
+    console.log('⟳ Syncing channels');
+    this.stopAll();
+    setTimeout(() => this.playAll(), 100);
+  }
+
+  adjustBPM(delta) {
+    this.masterBPM = Math.max(60, Math.min(200, this.masterBPM + delta));
+    document.getElementById('master-bpm').value = this.masterBPM;
+    console.log(`BPM: ${this.masterBPM}`);
+  }
+
+  updateStatus(message) {
+    document.getElementById('status-text').textContent = message;
+    setTimeout(() => {
+      document.getElementById('status-text').textContent = 'READY';
+    }, 3000);
+  }
+
+  setupModalListeners() {
+    // Bank selector button
+    document.getElementById('bank-selector-btn')?.addEventListener('click', () => {
+      this.openBankSelector();
+    });
+
+    // Edit banks button
+    document.getElementById('edit-banks-btn')?.addEventListener('click', () => {
+      this.openBankEditor();
+    });
+
+    // Track browser button
+    document.getElementById('load-track-btn')?.addEventListener('click', () => {
+      this.openTrackBrowser();
+    });
+
+    // Close modals
+    document.getElementById('close-bank-selector')?.addEventListener('click', () => {
+      this.closeBankSelector();
+    });
+
+    document.getElementById('close-bank-editor')?.addEventListener('click', () => {
+      this.closeBankEditor();
+    });
+
+    document.getElementById('close-track-browser')?.addEventListener('click', () => {
+      this.closeTrackBrowser();
+    });
+
+    // File manager modal
+    document.getElementById('close-file-manager')?.addEventListener('click', () => {
+      this.closeFileManager();
+    });
+
+    document.getElementById('add-more-files')?.addEventListener('click', () => {
+      if (this.currentEditingSample) {
+        this.openQuickUpload(this.currentEditingSample.sample, this.currentEditingSample.bank);
+      }
+    });
+
+    // Save custom bank
+    document.getElementById('save-custom-bank')?.addEventListener('click', () => {
+      this.saveCustomBank();
+    });
+
+    // Reset to default
+    document.getElementById('reset-to-default')?.addEventListener('click', () => {
+      this.resetToDefault();
+    });
+
+    // Click outside modal to close
+    document.getElementById('bank-selector-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'bank-selector-modal') {
+        this.closeBankSelector();
+      }
+    });
+
+    document.getElementById('file-manager-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'file-manager-modal') {
+        this.closeFileManager();
+      }
+    });
+
+    document.getElementById('bank-editor-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'bank-editor-modal') {
+        this.closeBankEditor();
+      }
+    });
+  }
+
+  openBankSelector() {
+    const modal = document.getElementById('bank-selector-modal');
+    const presetList = document.getElementById('preset-list');
+
+    // Render presets
+    presetList.innerHTML = '';
+
+    this.presets.forEach(preset => {
+      const card = document.createElement('div');
+      card.className = 'preset-card';
+      if (preset.id === this.currentPresetId) {
+        card.classList.add('active');
+      }
+
+      card.innerHTML = `
+        <div class="preset-title">${preset.leftBankName} / ${preset.rightBankName}</div>
+        <div class="preset-desc">${preset.description}</div>
+        <div class="preset-id">ID: ${preset.id}</div>
+      `;
+
+      card.addEventListener('click', () => {
+        this.loadPreset(preset.id);
+        this.closeBankSelector();
+      });
+
+      presetList.appendChild(card);
+    });
+
+    modal.classList.remove('hidden');
+  }
+
+  closeBankSelector() {
+    document.getElementById('bank-selector-modal')?.classList.add('hidden');
+  }
+
+  openBankEditor() {
+    const modal = document.getElementById('bank-editor-modal');
+
+    // Load current bank names
+    document.getElementById('left-bank-name-input').value = this.leftBankName;
+    document.getElementById('right-bank-name-input').value = this.rightBankName;
+
+    // Render editor grids
+    this.renderEditorGrid('left');
+    this.renderEditorGrid('right');
+
+    modal.classList.remove('hidden');
+  }
+
+  closeBankEditor() {
+    document.getElementById('bank-editor-modal')?.classList.add('hidden');
+  }
+
+  renderEditorGrid(bank) {
+    const container = document.getElementById(`${bank}-editor-grid`);
+    const samples = bank === 'left' ? this.leftBank : this.rightBank;
+
+    container.innerHTML = '';
+
+    samples.forEach((sample, idx) => {
+      const slot = document.createElement('div');
+      slot.className = 'editor-slot';
+      slot.style.setProperty('--slot-color', sample.color);
+
+      slot.innerHTML = `
+        <div class="slot-id">${sample.id}</div>
+        <input type="text" class="slot-name" value="${sample.name}" data-bank="${bank}" data-idx="${idx}" data-field="name" />
+        <input type="text" class="slot-pattern" value="${sample.pattern}" data-bank="${bank}" data-idx="${idx}" data-field="pattern" />
+        <select class="slot-type" data-bank="${bank}" data-idx="${idx}" data-field="type">
+          <option value="drums" ${sample.type === 'drums' ? 'selected' : ''}>Drums</option>
+          <option value="bass" ${sample.type === 'bass' ? 'selected' : ''}>Bass</option>
+          <option value="fx" ${sample.type === 'fx' ? 'selected' : ''}>FX</option>
+          <option value="ambient" ${sample.type === 'ambient' ? 'selected' : ''}>Ambient</option>
+        </select>
+        <input type="number" class="slot-bpm" value="${sample.bpm}" min="60" max="200" data-bank="${bank}" data-idx="${idx}" data-field="bpm" />
+        <input type="color" class="slot-color" value="${sample.color}" data-bank="${bank}" data-idx="${idx}" data-field="color" />
+        <label class="upload-btn">
+          📁 Upload WAV
+          <input type="file" accept="audio/wav,audio/wave,audio/x-wav" class="file-input" data-bank="${bank}" data-idx="${idx}" />
+        </label>
+        <div class="custom-file-name">${sample.customFileName || ''}</div>
+      `;
+
+      // Add change listeners
+      slot.querySelectorAll('input:not(.file-input), select').forEach(input => {
+        input.addEventListener('change', (e) => {
+          this.updateEditorSlot(e.target);
+        });
+      });
+
+      // Add file upload listener
+      const fileInput = slot.querySelector('.file-input');
+      if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+          this.handleFileUpload(e.target, bank, idx);
+        });
+      }
+
+      container.appendChild(slot);
+    });
+  }
+
+  updateEditorSlot(input) {
+    const bank = input.dataset.bank;
+    const idx = parseInt(input.dataset.idx);
+    const field = input.dataset.field;
+    const value = input.type === 'number' ? parseInt(input.value) : input.value;
+
+    if (bank === 'left') {
+      this.leftBank[idx][field] = value;
+    } else {
+      this.rightBank[idx][field] = value;
+    }
+
+    console.log(`Updated ${bank} bank slot ${idx}: ${field} = ${value}`);
+  }
+
+  async handleFileUpload(input, bank, idx) {
+    const file = input.files[0];
+    if (!file) return;
+
+    console.log(`📁 Uploading file: ${file.name} for ${bank} bank slot ${idx}`);
+
+    try {
+      // Read file as ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+
+      // Parse WAV and extract waveform
+      const audioData = await this.parseWAVFile(arrayBuffer);
+
+      // Store as base64 for localStorage
+      const base64Data = this.arrayBufferToBase64(arrayBuffer);
+
+      // Update sample with custom file data
+      const sample = bank === 'left' ? this.leftBank[idx] : this.rightBank[idx];
+      sample.customFile = base64Data;
+      sample.customFileName = file.name;
+      sample.waveform = audioData.waveform;
+      sample.sampleRate = audioData.sampleRate;
+      sample.duration = audioData.duration;
+
+      // Update pattern to use custom file
+      sample.pattern = `custom:${file.name}`;
+      sample.name = file.name.replace('.wav', '');
+
+      // Re-render editor to show file name
+      this.renderEditorGrid(bank);
+
+      console.log(`✅ File uploaded: ${file.name}`);
+    } catch (error) {
+      console.error('❌ Error uploading file:', error);
+      alert('Error uploading file. Please ensure it is a valid WAV file.');
+    }
+  }
+
+  async parseWAVFile(arrayBuffer) {
+    // Decode audio data
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer.slice(0));
+
+    // Extract channel data (use first channel)
+    const channelData = audioBuffer.getChannelData(0);
+
+    // Downsample for waveform visualization (max 1000 points)
+    const targetLength = Math.min(1000, channelData.length);
+    const blockSize = Math.floor(channelData.length / targetLength);
+    const waveform = [];
+
+    for (let i = 0; i < targetLength; i++) {
+      const start = i * blockSize;
+      const end = start + blockSize;
+      let sum = 0;
+      let max = -Infinity;
+      let min = Infinity;
+
+      // Get RMS and peak values for this block
+      for (let j = start; j < end && j < channelData.length; j++) {
+        const value = channelData[j];
+        sum += value * value;
+        max = Math.max(max, value);
+        min = Math.min(min, value);
+      }
+
+      const rms = Math.sqrt(sum / blockSize);
+      waveform.push({ rms, max, min });
+    }
+
+    return {
+      waveform,
+      sampleRate: audioBuffer.sampleRate,
+      duration: audioBuffer.duration,
+      numberOfChannels: audioBuffer.numberOfChannels
+    };
+  }
+
+  arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  base64ToArrayBuffer(base64) {
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
+
+  saveCustomBank() {
+    // Update bank names
+    this.leftBankName = document.getElementById('left-bank-name-input').value;
+    this.rightBankName = document.getElementById('right-bank-name-input').value;
+
+    // Save to localStorage
+    const customBank = {
+      leftBank: this.leftBank,
+      rightBank: this.rightBank,
+      leftBankName: this.leftBankName,
+      rightBankName: this.rightBankName
+    };
+
+    localStorage.setItem('mixer-custom-bank', JSON.stringify(customBank));
+    this.currentPresetId = 'custom';
+
+    // Update UI
+    document.getElementById('left-bank-name').textContent = this.leftBankName;
+    document.getElementById('right-bank-name').textContent = this.rightBankName;
+    this.renderSampleBanks();
+
+    this.updateStatus('✅ Custom bank saved!');
+    this.closeBankEditor();
+
+    console.log('✅ Custom bank saved to localStorage');
+  }
+
+  resetToDefault() {
+    if (confirm('Reset to default preset? This will clear your custom bank.')) {
+      localStorage.removeItem('mixer-custom-bank');
+      localStorage.removeItem('mixer-last-preset');
+
+      if (this.presets.length > 0) {
+        this.loadPreset(this.presets[0].id);
+      }
+
+      this.updateStatus('✅ Reset to default');
+      this.closeBankEditor();
+
+      console.log('✅ Reset to default preset');
+    }
+  }
+
+  // Track Browser Methods
+  async openTrackBrowser() {
+    const modal = document.getElementById('track-browser-modal');
+    modal.classList.remove('hidden');
+
+    // Load tracks from IndexedDB
+    await this.loadTracksFromDB();
+  }
+
+  closeTrackBrowser() {
+    const modal = document.getElementById('track-browser-modal');
+    modal.classList.add('hidden');
+  }
+
+  async loadTracksFromDB() {
+    const trackList = document.getElementById('track-list');
+    trackList.innerHTML = '<div class="loading-tracks">🔄 Loading tracks...</div>';
+
+    try {
+      // Wait for localDB to be available
+      let attempts = 0;
+      while (!window.localDB?.db && attempts < 50) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+      }
+
+      if (!window.localDB?.db) {
+        trackList.innerHTML = '<div class="error-message">❌ Database not available. Make sure you have created tracks first.</div>';
+        return;
+      }
+
+      // Get all tracks from IndexedDB
+      const tracks = await window.localDB.getAllTracks();
+
+      if (!tracks || tracks.length === 0) {
+        trackList.innerHTML = '<div class="empty-message">📭 No tracks found. Create some tracks first!</div>';
+        return;
+      }
+
+      // Filter tracks with Strudel patterns
+      const strudelTracks = tracks.filter(t => t.strudelPattern || t.strudel_code);
+
+      if (strudelTracks.length === 0) {
+        trackList.innerHTML = '<div class="empty-message">🎵 No tracks with Strudel patterns found.</div>';
+        return;
+      }
+
+      // Render track list
+      this.renderTrackList(strudelTracks);
+
+    } catch (error) {
+      console.error('Error loading tracks:', error);
+      trackList.innerHTML = '<div class="error-message">❌ Error loading tracks: ' + error.message + '</div>';
+    }
+  }
+
+  renderTrackList(tracks) {
+    const trackList = document.getElementById('track-list');
+    let html = '';
+
+    tracks.forEach(track => {
+      const pattern = track.strudelPattern || track.strudel_code || '';
+      const patternPreview = pattern.substring(0, 50) + (pattern.length > 50 ? '...' : '');
+
+      html += `
+        <div class="track-item" data-track-id="${track.id}">
+          <div class="track-header">
+            <div class="track-title">${track.title || 'Untitled'}</div>
+            <div class="track-meta">${track.genre || 'Unknown'} ${track.bpm ? `• ${track.bpm} BPM` : ''}</div>
+          </div>
+          <div class="track-pattern">
+            <code>${patternPreview}</code>
+          </div>
+          <button class="load-track-btn" data-track-id="${track.id}">
+            ▶️ Load Track
+          </button>
+        </div>
+      `;
+    });
+
+    trackList.innerHTML = html;
+
+    // Add event listeners
+    document.querySelectorAll('.load-track-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const trackId = parseInt(btn.dataset.trackId);
+        await this.loadTrackToBank(trackId);
+      });
+    });
+  }
+
+  async loadTrackToBank(trackId) {
+    try {
+      // Get selected bank
+      const targetBank = document.querySelector('input[name="target-bank"]:checked').value;
+
+      // Get track from IndexedDB
+      const track = await window.localDB.getTrack(trackId);
+
+      if (!track) {
+        this.updateStatus('❌ Track not found');
+        return;
+      }
+
+      const pattern = track.strudelPattern || track.strudel_code;
+      if (!pattern) {
+        this.updateStatus('❌ Track has no Strudel pattern');
+        return;
+      }
+
+      console.log(`🎵 Loading track "${track.title}" to ${targetBank} bank`);
+      console.log(`📝 Pattern:`, pattern);
+
+      // Create a single sample with the full Strudel pattern
+      const trackSample = {
+        id: `${targetBank[0].toUpperCase()}1`,
+        name: track.title || 'NFT Track',
+        type: 'Track',
+        pattern: pattern,
+        color: '#ff00ff', // Magenta for NFT tracks
+        isNFTTrack: true,
+        trackId: trackId,
+        trackMetadata: {
+          title: track.title,
+          genre: track.genre,
+          bpm: track.bpm,
+          artist: track.artist
+        }
+      };
+
+      // Load to selected bank
+      if (targetBank === 'left') {
+        // Replace first sample with track
+        this.leftBank[0] = trackSample;
+        this.leftLoaded = trackSample;
+      } else {
+        this.rightBank[0] = trackSample;
+        this.rightLoaded = trackSample;
+      }
+
+      // Update UI
+      this.renderSampleBanks();
+      this.saveCustomBank();
+      this.updateStatus(`✅ Loaded "${track.title}" to ${targetBank} bank`);
+      this.closeTrackBrowser();
+
+      console.log(`✅ Track loaded to ${targetBank} bank`);
+
+    } catch (error) {
+      console.error('Error loading track:', error);
+      this.updateStatus('❌ Error loading track');
+    }
+  }
+}
+
+// Initialize Strudel if not already loaded
+async function initStrudel() {
+  if (window.strudel) {
+    console.log('✅ Strudel already loaded');
+    return;
+  }
+
+  console.log('🎵 Initializing Strudel player with full library support...');
+  console.log('📁 Loading custom samples from /wav/');
+
+  try {
+    // Initialize Strudel REPL with our custom configuration
+    await repl({
+      defaultSamples: {
+        // Map our custom WAV samples for Strudel to use
+        bd: '/wav/bd.wav',
+        sd: '/wav/sd.wav',
+        hh: '/wav/hh.wav',
+        oh: '/wav/oh.wav',
+        cp: '/wav/cp.wav',
+        lt: '/wav/lt.wav',
+        mt: '/wav/mt.wav',
+        ht: '/wav/ht.wav',
+        rim: '/wav/rim.wav',
+        'bass-sub': '/wav/bass-sub.wav',
+        'bass-acid': '/wav/bass-acid.wav',
+        'bass-synth': '/wav/bass-synth.wav',
+        'bass-reese': '/wav/bass-reese.wav',
+        'bass-wobble': '/wav/bass-wobble.wav',
+        'phaser': '/wav/phaser.wav',
+        'filter-sweep': '/wav/filter-sweep.wav',
+        'riser': '/wav/riser.wav',
+        'pad': '/wav/pad.wav',
+        'drone': '/wav/drone.wav',
+        'laser': '/wav/laser.wav',
+        'zap': '/wav/zap.wav',
+        'cosmic': '/wav/cosmic.wav',
+        'swoosh': '/wav/swoosh.wav',
+      },
+      prebake: false, // Load samples on demand
+      latency: 0.1,
+      audioContext: null, // Let Strudel create its own context
+    });
+
+    console.log('✅ Strudel REPL initialized');
+
+    // Create Strudel player interface
+    window.strudel = {
+      repl,
+      controls,
+      evalScope,
+      isPlaying: false,
+
+      async evaluate(code) {
+        try {
+          console.log('🎵 Evaluating Strudel pattern...');
+          console.log('📝 Code:', code.substring(0, 150) + (code.length > 150 ? '...' : ''));
+
+          // Stop any existing pattern
+          this.stop();
+
+          // Evaluate the pattern using Strudel's evaluator
+          const result = await evalScope(code);
+
+          if (result && typeof result.start === 'function') {
+            // Start playback
+            result.start();
+            this.isPlaying = true;
+            console.log('▶️ Pattern playing with full Strudel support!');
+          } else {
+            console.warn('⚠️ Pattern evaluated but no playable result');
+          }
+
+          return result;
+        } catch (error) {
+          console.error('❌ Strudel evaluation error:', error);
+          console.error('Pattern:', code);
+          throw error;
+        }
+      },
+
+      stop() {
+        try {
+          if (this.isPlaying) {
+            // Use Strudel's controls to stop playback
+            controls.stop();
+            this.isPlaying = false;
+            console.log('⏹️ Pattern stopped');
+          }
+        } catch (error) {
+          console.warn('⚠️ Error stopping pattern:', error);
+        }
+      },
+
+      async playPattern(pattern) {
+        // Helper method to play a pattern object directly
+        if (typeof pattern === 'string') {
+          return this.evaluate(pattern);
+        } else if (pattern && typeof pattern.start === 'function') {
+          this.stop();
+          pattern.start();
+          this.isPlaying = true;
+        }
+      }
+    };
+
+    console.log('✅ Strudel player ready with full library support!');
+    console.log('🎹 Supports: mix(), kit(), synth(), .seq(), effects, and more');
+
+  } catch (error) {
+    console.error('❌ Failed to initialize Strudel:', error);
+    console.warn('⚠️ Falling back to basic pattern support');
+
+    // Fallback to basic player if Strudel fails to load
+    window.strudel = {
+      evaluate(code) {
+        console.warn('⚠️ Using fallback player - limited pattern support');
+        return Promise.resolve();
+      },
+      stop() {
+        console.log('⏹️ Stop (fallback)');
+      }
+    };
+  }
+}
+
+// Initialize
+async function initMixer() {
+  if (!window.mixer) {
+    await initStrudel(); // Wait for Strudel to fully initialize
+    window.mixer = new DJMixer();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initMixer);
+document.addEventListener('astro:page-load', initMixer);
+
+if (document.readyState !== 'loading') {
+  initMixer();
+}
+</script>
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mixer-container {
+    width: 100%;
+    min-height: 100vh;
+    background: #000;
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Header */
+  .mixer-header {
+    background: #000;
+    border-bottom: 3px solid #0f0;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  }
+
+  .mixer-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+  }
+
+  .header-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0 1rem;
+  }
+
+  .header-btn {
+    padding: 0.5rem 1rem;
+    background: #000;
+    border: 2px solid #0ff;
+    color: #0ff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Courier New', monospace;
+  }
+
+  .header-btn:hover {
+    background: #0ff;
+    color: #000;
+    box-shadow: 0 0 15px #0ff;
+  }
+
+  .upload-hint {
+    flex: 1;
+    text-align: center;
+    font-size: 0.875rem;
+    color: rgba(0, 255, 255, 0.7);
+    padding: 0.5rem;
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px dashed rgba(0, 255, 255, 0.3);
+    border-radius: 4px;
+    margin: 0 1rem;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .nav-btn {
+    padding: 0.5rem 1rem;
+    background: #000;
+    border: 2px solid #0f0;
+    color: #0f0;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover {
+    background: #0f0;
+    color: #000;
+    box-shadow: 0 0 15px #0f0;
+  }
+
+  /* Main Mixer */
+  .mixer-main {
+    display: grid;
+    grid-template-columns: 1fr 300px 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    min-height: calc(100vh - 80px);
+  }
+
+  /* Banks */
+  .mixer-bank {
+    border: 3px solid #0f0;
+    background: rgba(0, 255, 0, 0.02);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bank-header {
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #0f0;
+    margin-bottom: 1rem;
+  }
+
+  .bank-header h2 {
+    font-size: 1.25rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px #0f0;
+    margin-bottom: 0.5rem;
+  }
+
+  .bank-name {
+    font-size: 0.875rem;
+    color: #0ff;
+    font-weight: 700;
+  }
+
+  /* Sample Bank - 3x3 Grid */
+  .sample-bank {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+  }
+
+  /* Visualizer */
+  .visualizer-container {
+    position: relative;
+    height: 120px;
+    background: #000;
+    border: 2px solid rgba(0, 255, 0, 0.3);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.1);
+  }
+
+  .right-bank .visualizer-container {
+    border-color: rgba(255, 0, 255, 0.3);
+    box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1);
+  }
+
+  .waveform-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .viz-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+    pointer-events: none;
+  }
+
+  .viz-status {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+  }
+
+  .right-bank .viz-status {
+    color: #f0f;
+    text-shadow: 0 0 5px #f0f;
+  }
+
+  .sample-pad {
+    aspect-ratio: 1;
+    background: radial-gradient(circle at center,
+      rgba(255, 255, 255, 0.1),
+      rgba(0, 0, 0, 0.9));
+    border: 3px solid var(--pad-color, #00ffff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    box-shadow: 0 0 20px var(--pad-color, #00ffff),
+                0 0 40px rgba(0, 255, 255, 0.4),
+                inset 0 0 10px rgba(0, 255, 255, 0.1);
+    padding: 0.5rem;
+  }
+
+  .sample-pad:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px var(--pad-color, #00ffff),
+                0 0 60px rgba(0, 255, 255, 0.6),
+                inset 0 0 15px rgba(0, 255, 255, 0.2);
+    background: radial-gradient(circle at center,
+      var(--pad-color, #00ffff),
+      rgba(0, 0, 0, 0.7));
+    border-width: 4px;
+  }
+
+  .sample-pad.active {
+    background: var(--pad-color, #00ffff);
+    border-width: 5px;
+    box-shadow: 0 0 50px var(--pad-color, #00ffff),
+                0 0 80px rgba(0, 255, 255, 0.8),
+                inset 0 0 30px rgba(255, 255, 255, 0.5);
+    animation: neon-pulse 1.5s ease-in-out infinite;
+  }
+
+  .sample-pad.active .pad-id,
+  .sample-pad.active .pad-name,
+  .sample-pad.active .pad-type {
+    color: #000;
+    text-shadow: none;
+  }
+
+  .pad-id {
+    font-size: 0.875rem;
+    font-weight: 900;
+    color: var(--pad-color, #00ffff);
+    text-shadow: 0 0 8px var(--pad-color, #00ffff);
+  }
+
+  .pad-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--pad-color, #00ffff);
+    text-align: center;
+    margin: 0.25rem 0;
+    text-shadow: 0 0 8px var(--pad-color, #00ffff);
+  }
+
+  .pad-type {
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: rgba(0, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .pad-upload-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    background: rgba(0, 255, 255, 0.2);
+    border: 2px solid #00ffff;
+    border-radius: 50%;
+    color: #00ffff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+    line-height: 1;
+    z-index: 10;
+  }
+
+  .pad-upload-btn:hover {
+    background: #00ffff;
+    color: #000;
+    box-shadow: 0 0 15px #00ffff;
+    transform: scale(1.1);
+  }
+
+  .pad-remove-btn {
+    position: absolute;
+    top: 4px;
+    left: 32px;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 0, 0, 0.2);
+    border: 2px solid #ff0000;
+    border-radius: 50%;
+    color: #ff0000;
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+    line-height: 1;
+    z-index: 10;
+  }
+
+  .pad-remove-btn:hover {
+    background: #ff0000;
+    color: #000;
+    box-shadow: 0 0 15px #ff0000;
+    transform: scale(1.1);
+  }
+
+  .pad-manage-btn {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 0, 0.2);
+    border: 2px solid #ffff00;
+    border-radius: 50%;
+    color: #ffff00;
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+    line-height: 1;
+    z-index: 10;
+  }
+
+  .pad-manage-btn:hover {
+    background: #ffff00;
+    color: #000;
+    box-shadow: 0 0 15px #ffff00;
+    transform: scale(1.1);
+  }
+
+  .custom-indicator {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    font-size: 0.75rem;
+    background: rgba(0, 255, 0, 0.2);
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    padding: 2px 6px;
+    z-index: 10;
+    font-weight: 700;
+  }
+
+  .sample-pad.drag-over {
+    background: radial-gradient(circle at center,
+      rgba(0, 255, 255, 0.3),
+      rgba(0, 0, 0, 0.7));
+    border-color: #0ff;
+    border-width: 4px;
+    border-style: dashed;
+    box-shadow: 0 0 40px #0ff;
+  }
+
+  /* Loaded Info */
+  .loaded-info {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(0, 255, 0, 0.3);
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .info-label {
+    font-size: 0.75rem;
+    color: #0ff;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .loaded-name {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #0f0;
+    margin-bottom: 0.25rem;
+  }
+
+  .loaded-pattern {
+    font-size: 0.75rem;
+    color: rgba(0, 255, 0, 0.7);
+    margin-bottom: 0.25rem;
+    word-break: break-all;
+  }
+
+  .loaded-bpm {
+    font-size: 0.75rem;
+    color: #ff0;
+    font-weight: 700;
+  }
+
+  /* Bank Controls */
+  .bank-controls {
+    margin-top: auto;
+  }
+
+  .control-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .bank-btn {
+    flex: 1;
+    padding: 1rem;
+    background: #000;
+    border: 3px solid #0f0;
+    color: #0f0;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .bank-btn:hover {
+    background: rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 20px #0f0;
+  }
+
+  .bank-btn.playing {
+    background: #0f0;
+    color: #000;
+  }
+
+  .volume-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .volume-control label {
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+
+  .volume-slider {
+    flex: 1;
+  }
+
+  .volume-value {
+    min-width: 2rem;
+    text-align: right;
+    font-weight: 700;
+  }
+
+  .meter {
+    height: 30px;
+    background: #000;
+    border: 2px solid #0f0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .meter-bar {
+    height: 100%;
+    background: linear-gradient(to right, #0f0, #ff0, #f00);
+    width: 0%;
+    transition: width 0.1s;
+  }
+
+  /* Master Section */
+  .master-section {
+    border: 3px solid #ff0;
+    background: rgba(255, 255, 0, 0.05);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .master-header {
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #ff0;
+    margin-bottom: 1rem;
+  }
+
+  .master-header h2 {
+    color: #ff0;
+    text-shadow: 0 0 10px #ff0;
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+  }
+
+  /* Crossfader */
+  .crossfader-section {
+    background: rgba(0, 0, 0, 0.7);
+    border: 3px solid #0ff;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  .crossfader-label {
+    text-align: center;
+    color: #0ff;
+    font-weight: 900;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px #0ff;
+  }
+
+  .crossfader-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .cf-label {
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: #0ff;
+    text-shadow: 0 0 10px #0ff;
+  }
+
+  .cf-label.left {
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+  }
+
+  .cf-label.right {
+    color: #f0f;
+    text-shadow: 0 0 10px #f0f;
+  }
+
+  .crossfader {
+    width: 150px;
+    height: 40px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(to right, #0f0 0%, #0ff 50%, #f0f 100%);
+    outline: none;
+    border: 2px solid #0ff;
+    cursor: pointer;
+  }
+
+  .crossfader::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 50px;
+    background: #fff;
+    cursor: pointer;
+    border: 3px solid #0ff;
+    box-shadow: 0 0 20px #0ff;
+  }
+
+  .crossfader::-moz-range-thumb {
+    width: 30px;
+    height: 50px;
+    background: #fff;
+    cursor: pointer;
+    border: 3px solid #0ff;
+    box-shadow: 0 0 20px #0ff;
+  }
+
+  .crossfader-value {
+    text-align: center;
+    color: #0ff;
+    font-weight: 900;
+    font-size: 1.25rem;
+    margin-top: 0.5rem;
+    text-shadow: 0 0 10px #0ff;
+  }
+
+  /* Master Controls */
+  .master-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .master-btn {
+    padding: 1rem;
+    background: #000;
+    border: 2px solid #ff0;
+    color: #ff0;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .master-btn:hover {
+    background: rgba(255, 255, 0, 0.2);
+    box-shadow: 0 0 15px #ff0;
+  }
+
+  .master-btn.playing {
+    background: #ff0;
+    color: #000;
+  }
+
+  .master-btn.sync {
+    border-color: #0ff;
+    color: #0ff;
+  }
+
+  .master-btn.sync:hover {
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 15px #0ff;
+  }
+
+  /* BPM Control */
+  .bpm-control {
+    margin-bottom: 1rem;
+  }
+
+  .bpm-control label {
+    display: block;
+    color: #ff0;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .bpm-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .bpm-btn {
+    width: 40px;
+    height: 40px;
+    background: #000;
+    border: 2px solid #ff0;
+    color: #ff0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .bpm-btn:hover {
+    background: rgba(255, 255, 0, 0.2);
+  }
+
+  #master-bpm {
+    flex: 1;
+    height: 40px;
+    background: #000;
+    border: 2px solid #ff0;
+    color: #ff0;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Master Volume */
+  .master-volume {
+    margin-bottom: 1rem;
+  }
+
+  .master-volume label {
+    display: block;
+    color: #ff0;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  #master-slider {
+    width: 100%;
+  }
+
+  #master-value {
+    display: block;
+    text-align: center;
+    color: #ff0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+  }
+
+  /* Master Meter */
+  .master-meter {
+    height: 60px;
+    background: #000;
+    border: 2px solid #ff0;
+    margin-bottom: 1rem;
+  }
+
+  /* Status Display */
+  .status-display {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #0ff;
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .status-text {
+    color: #0ff;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+
+  /* Modals */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .modal.hidden {
+    display: none;
+  }
+
+  .modal-content {
+    background: #000;
+    border: 3px solid #0ff;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 30px #0ff;
+  }
+
+  .modal-header {
+    background: rgba(0, 255, 255, 0.1);
+    border-bottom: 2px solid #0ff;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header h2 {
+    color: #0ff;
+    text-shadow: 0 0 10px #0ff;
+    margin: 0;
+  }
+
+  .close-btn {
+    background: none;
+    border: 2px solid #0ff;
+    color: #0ff;
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .close-btn:hover {
+    background: #0ff;
+    color: #000;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  /* Preset List */
+  .preset-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .preset-card {
+    background: rgba(0, 255, 255, 0.05);
+    border: 2px solid #0ff;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .preset-card:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: #0f0;
+    box-shadow: 0 0 20px #0ff;
+  }
+
+  .preset-card.active {
+    background: rgba(0, 255, 0, 0.2);
+    border-color: #0f0;
+    box-shadow: 0 0 25px #0f0;
+  }
+
+  .preset-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0ff;
+    margin-bottom: 0.5rem;
+  }
+
+  .preset-desc {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+  }
+
+  .preset-id {
+    font-size: 0.75rem;
+    color: rgba(0, 255, 255, 0.5);
+  }
+
+  /* Bank Editor */
+  .editor-section {
+    margin-bottom: 2rem;
+  }
+
+  .editor-section h3 {
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+    margin-bottom: 1rem;
+  }
+
+  .bank-name-input {
+    width: 100%;
+    padding: 0.75rem;
+    background: #000;
+    border: 2px solid #0ff;
+    color: #0ff;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .editor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .editor-slot {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--slot-color, #0ff);
+    padding: 0.75rem;
+    box-shadow: 0 0 10px var(--slot-color, #0ff);
+  }
+
+  .slot-id {
+    font-size: 0.875rem;
+    font-weight: 900;
+    color: var(--slot-color, #0ff);
+    margin-bottom: 0.5rem;
+  }
+
+  .slot-name,
+  .slot-pattern,
+  .slot-type,
+  .slot-bpm,
+  .slot-color {
+    width: 100%;
+    padding: 0.5rem;
+    background: #000;
+    border: 1px solid #0ff;
+    color: #0ff;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .slot-pattern {
+    font-size: 0.625rem;
+    color: #0f0;
+  }
+
+  .slot-color {
+    height: 40px;
+    cursor: pointer;
+  }
+
+  .upload-btn {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px dashed #0ff;
+    color: #0ff;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .upload-btn:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-style: solid;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  .custom-file-name {
+    font-size: 0.625rem;
+    color: rgba(0, 255, 0, 0.7);
+    text-align: center;
+    min-height: 1rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .editor-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: center;
+  }
+
+  .action-btn {
+    padding: 1rem 2rem;
+    background: #000;
+    border: 2px solid #0f0;
+    color: #0f0;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Courier New', monospace;
+  }
+
+  .action-btn:hover {
+    background: #0f0;
+    color: #000;
+    box-shadow: 0 0 20px #0f0;
+  }
+
+  /* File Manager */
+  .file-manager-container {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .file-manager-hint {
+    text-align: center;
+    padding: 1rem;
+    color: rgba(0, 255, 255, 0.7);
+    font-size: 0.875rem;
+    border-bottom: 1px dashed rgba(0, 255, 255, 0.3);
+    margin-bottom: 1rem;
+  }
+
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .file-item {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+  }
+
+  .file-item:hover {
+    border-color: #0ff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  }
+
+  .file-item.active {
+    border-color: #0f0;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    background: rgba(0, 255, 0, 0.05);
+  }
+
+  .file-info {
+    flex: 1;
+  }
+
+  .file-name {
+    font-size: 1rem;
+    color: #0ff;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .file-item.active .file-name {
+    color: #0f0;
+  }
+
+  .file-meta {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 0.5rem;
+  }
+
+  .file-waveform {
+    display: block;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    background: #000;
+  }
+
+  .file-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .file-select-btn {
+    padding: 0.5rem 1rem;
+    background: rgba(0, 255, 255, 0.1);
+    border: 2px solid #0ff;
+    color: #0ff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Courier New', monospace;
+  }
+
+  .file-select-btn:hover {
+    background: #0ff;
+    color: #000;
+  }
+
+  .file-select-btn.active {
+    background: #0f0;
+    color: #000;
+    border-color: #0f0;
+  }
+
+  .file-remove-btn {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 2px solid #f00;
+    border-radius: 4px;
+    color: #f00;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .file-remove-btn:hover {
+    background: #f00;
+    color: #000;
+    box-shadow: 0 0 10px #f00;
+  }
+
+  .file-manager-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed rgba(0, 255, 255, 0.3);
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Track Browser */
+  .track-browser-container {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .track-browser-hint {
+    text-align: center;
+    padding: 1rem;
+    color: rgba(255, 0, 255, 0.8);
+    font-size: 0.875rem;
+    border-bottom: 1px dashed rgba(255, 0, 255, 0.3);
+    margin-bottom: 1rem;
+  }
+
+  .bank-selector {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px dashed rgba(255, 0, 255, 0.3);
+  }
+
+  .bank-selector label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: rgba(255, 0, 255, 0.7);
+    transition: all 0.2s;
+  }
+
+  .bank-selector label:hover {
+    color: #f0f;
+  }
+
+  .bank-selector input[type="radio"]:checked + * {
+    color: #f0f;
+    font-weight: 700;
+  }
+
+  .track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .loading-tracks,
+  .empty-message,
+  .error-message {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .error-message {
+    color: #f00;
+  }
+
+  .track-item {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid rgba(255, 0, 255, 0.3);
+    padding: 1rem;
+    transition: all 0.2s;
+  }
+
+  .track-item:hover {
+    border-color: #f0f;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+  }
+
+  .track-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .track-title {
+    font-size: 1.1rem;
+    color: #f0f;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .track-meta {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .track-pattern {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.5);
+    border-left: 3px solid #f0f;
+  }
+
+  .track-pattern code {
+    font-size: 0.75rem;
+    color: rgba(255, 0, 255, 0.8);
+    font-family: 'Courier New', monospace;
+  }
+
+  .load-track-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(255, 0, 255, 0.1);
+    border: 2px solid #f0f;
+    color: #f0f;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Courier New', monospace;
+  }
+
+  .load-track-btn:hover {
+    background: #f0f;
+    color: #000;
+    box-shadow: 0 0 20px #f0f;
+  }
+
+  /* Animations */
+  @keyframes neon-pulse {
+    0%, 100% {
+      box-shadow: 0 0 50px var(--pad-color, #00ffff),
+                  0 0 80px rgba(0, 255, 255, 0.8),
+                  inset 0 0 30px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 70px var(--pad-color, #00ffff),
+                  0 0 120px rgba(0, 255, 255, 1),
+                  inset 0 0 40px rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .mixer-main {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+    }
+
+    .master-section {
+      order: -1;
+    }
+
+    .sample-bank {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .editor-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .preset-list {
+      grid-template-columns: 1fr;
+    }
+
+    .mixer-header {
+      flex-wrap: wrap;
+    }
+
+    .upload-hint {
+      order: 3;
+      width: 100%;
+      margin: 0.5rem 0 0 0;
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pad-upload-btn {
+      width: 28px;
+      height: 28px;
+      font-size: 1.4rem;
+    }
+
+    .upload-hint {
+      font-size: 0.7rem;
+      padding: 0.4rem;
+    }
+
+    .sample-bank {
+      gap: 0.5rem;
+      padding: 0.25rem;
+    }
+  }
+</style>

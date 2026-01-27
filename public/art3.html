@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Worldbridger One - Glimmer Edition</title>
+    <style>
+        :root {
+            --bg-color: #05050a; 
+            --bubble-top: #70d6ff;
+            --bubble-bottom: #ff9770;
+            --lcd-neon: #39ff14;
+            --spark-color: #ffcc33; /* Golden desert sparks */
+        }
+
+        body {
+            background: radial-gradient(circle at bottom, #1a1a2e 0%, #05050a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        /* 1. TEXT GLIMMER EFFECT */
+        .worldbridger {
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 0;
+            position: relative;
+            background: linear-gradient(
+                120deg, 
+                var(--bubble-top) 30%, 
+                #ffffff 50%, 
+                var(--bubble-bottom) 70%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* The sweep animation */
+            animation: shine 5s linear infinite;
+            text-shadow: 0px 10px 0px #2d1b4d, 0px 20px 30px rgba(0,0,0,0.5);
+            filter: url(#organic-glow);
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .one { font-size: 14rem; line-height: 0.7; margin-top: -20px; }
+
+        /* 2. ENHANCED LIFE-LIKE SPARKS */
+        .spark {
+            position: absolute;
+            background: var(--spark-color);
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: 0 0 8px var(--spark-color), 0 0 15px #fff;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* Random jitter animation to simulate rising heat/wind */
+        @keyframes rise-and-dance {
+            0% { 
+                transform: translateY(0) translateX(0) scale(0); 
+                opacity: 0; 
+            }
+            10% { opacity: 1; }
+            50% { 
+                /* The 'dance' - random mid-air shift */
+                transform: translateY(-40vh) translateX(30px) scale(1.2); 
+            }
+            100% { 
+                transform: translateY(-110vh) translateX(-20px) scale(0.5); 
+                opacity: 0; 
+            }
+        }
+
+        /* 3. LCD STYLING */
+        .details-container {
+            margin-top: 40px;
+            padding: 25px;
+            background: rgba(0, 255, 65, 0.03);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+            z-index: 5;
+        }
+
+        .lcd-text {
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--lcd-neon);
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px var(--lcd-neon);
+            margin: 8px 0;
+            animation: flicker 0.2s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <svg width="0" height="0" style="position:absolute;">
+        <filter id="organic-glow">
+            <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="1" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
+        </filter>
+    </svg>
+
+    <div class="header-container">
+        <h1 class="worldbridger">Worldbridger</h1>
+        <h1 class="worldbridger one">One</h1>
+    </div>
+
+    <div class="details-container">
+        <div class="lcd-text">Rap Battle w/ Fana Ke</div>
+        <div class="lcd-text">Reggae Production with OT</div>
+        <div class="lcd-text" style="font-size: 0.8rem; border-top: 1px solid #39ff1444; padding-top: 10px;">
+            ECOCITY / EXOTOPIA NFT REWARDS
+        </div>
+    </div>
+
+    <script>
+        // Teachable Vanilla JS: Generate high-life sparks
+        function createSpark() {
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            
+            // Random properties
+            const size = Math.random() * 4 + 2;
+            const startX = Math.random() * 100;
+            const duration = Math.random() * 3 + 4; // 4 to 7 seconds
+            const delay = Math.random() * 5;
+
+            spark.style.width = `${size}px`;
+            spark.style.height = `${size}px`;
+            spark.style.left = `${startX}vw`;
+            spark.style.bottom = `-5vh`;
+            
+            // Apply unique animation timing
+            spark.style.animation = `rise-and-dance ${duration}s ease-in-out ${delay}s infinite`;
+            
+            document.body.appendChild(spark);
+
+            // Clean up to prevent DOM bloat
+            setTimeout(() => {
+                spark.remove();
+            }, (duration + delay) * 1000);
+        }
+
+        // Maintain a population of 40 sparks
+        setInterval(() => {
+            if (document.querySelectorAll('.spark').length < 40) {
+                createSpark();
+            }
+        }, 300);
+    </script>
+</body>
+</html>

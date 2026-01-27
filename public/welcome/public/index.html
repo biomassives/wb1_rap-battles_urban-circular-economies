@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Worldbridger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+<!-- HERO -->
+<section class="section">
+  <div class="container flex flex-col gap-4">
+    <h1 class="text-4xl font-bold">Worldbridger</h1>
+    <p class="text-xl opacity-85">
+      Bridging worlds to build skills, access, and futures for urban youth worldwide.
+    </p>
+    <div class="flex gap-4">
+      <button class="btn" onclick="openJoin()">Join the network</button>
+      <a href="#how" class="btn secondary">Learn how it works</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHO -->
+<section class="section">
+  <div class="container">
+    <h2 class="text-2xl font-bold">Who this is for</h2>
+    <div class="flex flex-wrap gap-4" style="margin-top:1.5rem">
+      <div class="card"><a href="groups/creatives.html"><span class="icon">🎨</span> Underground creatives & artists</a></div>
+      <div class="card"><span class="icon">🛠</span> Humanitarian & environmental engineers</div>
+      <div class="card"><span class="icon">🧠</span> Social scientists & citizen researchers</div>
+      <div class="card"><span class="icon">💻</span> Open-source technologists</div>
+      <div class="card"><span class="icon">🤝</span> Mentors & learners</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT -->
+<section class="section" id="how">
+  <div class="container">
+    <h2 class="text-2xl font-bold">What we’re building</h2>
+    <div class="flex flex-col gap-4" style="margin-top:1.5rem">
+      <div class="card">📚 Informal education & skill pathways</div>
+      <div class="card">🌍 Citizen science & local data capacity</div>
+      <div class="card">🧩 Project collaboration frameworks</div>
+      <div class="card">🔁 Mentor ↔ mentee relationships</div>
+      <div class="card">🧱 Open artifacts: code, media, research</div>
+    </div>
+  </div>
+</section>
+
+<!-- JOIN -->
+<section class="section">
+  <div class="container card">
+    <h2 class="text-2xl font-bold">Step onto the bridge</h2>
+    <p class="opacity-70">Low pressure. Start by saying hello.</p>
+
+    <div class="flex flex-col gap-4" style="margin-top:1.5rem">
+      <input id="name" class="input" placeholder="Name or handle" />
+      <input id="email" class="input" placeholder="Email" />
+      <textarea id="interest" class="input" rows="3"
+        placeholder="What do you want to build or support?"></textarea>
+      <button id="submitBtn" class="btn" onclick="submitJoin()">Join Worldbridger</button>
+      <div id="status" class="opacity-70"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    Built by a growing community · Open by default
+  </div>
+</footer>
+
+<script src="/main.js"></script>
+</body>
+</html>
+

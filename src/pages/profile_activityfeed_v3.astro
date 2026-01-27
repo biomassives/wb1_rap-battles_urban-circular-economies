@@ -1,0 +1,121 @@
+---
+/**
+ * WorldBridger One - "Phosphor" Edition
+ * Simple, available, CRT-era high contrast.
+ */
+export const prerender = false;
+import BaseLayout from "../layouts/BaseLayout.astro";
+import OracleStatusBand from "../components/OracleStatusBand.astro";
+---
+
+<BaseLayout title="Mission Control" activeSection="profile">
+  <script src="/scripts/form-storage.js" is:inline></script>
+  <script src="/scripts/metabolic-logic.js" is:inline></script>
+
+  <div class="mission-control bg-[#d1d1d1] text-black min-h-screen font-mono p-4">
+    <div class="container mx-auto max-w-4xl">
+      
+      <header class="pixel-border border-black bg-white p-3 mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div class="flex justify-between text-[10px] font-bold uppercase tracking-tighter">
+          <span>ID: <span id="wallet-id">0xWB1...</span></span>
+          <span>RANK: <span id="header-level">STREWARD_LVL_1</span></span>
+          <span id="sync-status" class="blink text-blue-700">◆ LINK_ESTABLISHED</span>
+        </div>
+      </header>
+
+      <section id="glance-carousel" class="pixel-border border-black bg-[#e0e0e0] h-32 mb-6 overflow-hidden relative">
+        <div class="carousel-track h-full flex transition-transform duration-500">
+          <div class="slide min-w-full flex flex-col justify-center items-center">
+            <h2 class="text-[10px] font-black underline mb-2">METABOLIC_PULSE</h2>
+            <div class="flex gap-6 text-xl font-black">
+              <div id="card-nitrates">N: <span id="nitrate-val">--</span></div>
+              <div id="card-o2">O2: <span id="o2-val">--</span></div>
+              <div id="card-ph">PH: <span id="ph-val">--</span></div>
+            </div>
+          </div>
+          <div class="slide min-w-full flex flex-col justify-center items-center">
+            <h2 class="text-[10px] font-black underline mb-2">LEDGER_BALANCE</h2>
+            <div class="text-2xl font-black"><span id="current-xp">1,250</span> BIO_TOKENS</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid grid-cols-2 gap-4 mb-8">
+        <button onclick="logBioEvent('WATER')" class="pixel-btn bg-black text-white p-3 hover:bg-gray-800 active:translate-y-1">
+          [ LOG_POLISHING ]
+        </button>
+        <button onclick="logBioEvent('HARVEST')" class="pixel-btn bg-black text-white p-3 hover:bg-gray-800 active:translate-y-1">
+          [ LOG_HARVEST ]
+        </button>
+      </div>
+
+      <OracleStatusBand />
+
+      <section class="mt-8 border-t-4 border-black pt-4">
+        <div class="flex justify-between items-end mb-4">
+          <h3 class="text-xl font-black tracking-tighter italic">LIQUID_LEDGER_FEED</h3>
+          <nav class="flex gap-2 text-[9px] font-bold">
+            <button class="filter-btn underline" data-filter="all">ALL</button>
+            <button class="filter-btn" data-filter="system">SYS</button>
+            <button class="filter-btn" data-filter="research">RES</button>
+            <button class="filter-btn" data-filter="correspondence">MSG</button>
+          </nav>
+        </div>
+
+        <ul id="activity-list" class="space-y-3">
+          </ul>
+      </section>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* CRT Space Invaders Aesthetic */
+  .pixel-border { border: 3px solid black; }
+  .pixel-btn { font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
+  
+  /* Phosphor scanline effect overlay */
+  .mission-control::after {
+    content: " ";
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .blink { animation: blinker 1s step-end infinite; }
+  @keyframes blinker { 50% { opacity: 0; } }
+
+  .hazard-alert { background-color: #000 !important; color: #fff !important; animation: pulse-bg 0.5s infinite alternate; }
+  @keyframes pulse-bg { from { opacity: 1; } to { opacity: 0.7; } }
+</style>
+
+<script is:inline>
+  // Simple Carousel Logic: Stops moving after 3 cycles
+  let currentSlide = 0;
+  let cycleCount = 0;
+  const track = document.querySelector('.carousel-track');
+  const slides = document.querySelectorAll('.slide');
+
+  const carouselTicker = setInterval(() => {
+    currentSlide++;
+    if (currentSlide >= slides.length) {
+      currentSlide = 0;
+      cycleCount++;
+    }
+    if (cycleCount >= 3) clearInterval(carouselTicker);
+    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+  }, 4000);
+
+  // Filter UI Logic
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('underline'));
+      btn.classList.add('underline');
+      // Filter filtering logic is handled in the activity list items
+    });
+  });
+</script>

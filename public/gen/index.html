@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { background: #222; color: #eee; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        .controls { background: #333; padding: 20px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px; }
+        label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        svg { width: 600px; height: 600px; border: 1px solid #444; }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <div>
+        <label>Density (Turbulence)</label><br>
+        <input type="range" id="density" min="0.01" max="0.1" step="0.01" value="0.02">
+    </div>
+    <div>
+        <label>Color Depth (Opacity)</label><br>
+        <input type="range" id="depth" min="0.1" max="1" step="0.1" value="0.6">
+    </div>
+    <div>
+        <label>Subtext</label><br>
+        <input type="text" id="subtextInput" value="BIODIVERSITY TOKEN v.01">
+    </div>
+    <div>
+        <label>Synth Tone (Hz)</label><br>
+        <input type="range" id="freq" min="100" max="1000" value="440">
+    </div>
+</div>
+
+<svg id="viz" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <filter id="organicNoise">
+            <feTurbulence id="turbNode" type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" />
+            <feColorMatrix in="noise" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 15 -7" />
+        </filter>
+        
+        <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+    </defs>
+
+    <rect width="800" height="800" fill="#a8a8b0" />
+    
+    <g id="blotchLayer" filter="url(#organicNoise)" opacity="0.6">
+        <rect width="800" height="800" fill="#6a5acd" />
+    </g>
+
+    <path d="M100,280 L700,280 L550,550 L250,550 Z" fill="#1a1a1a" />
+
+    <g filter="url(#glow)" font-family="monospace" text-anchor="middle">
+        <text x="400" y="380" fill="#ff4500" font-size="70" font-weight="bold">WORLDBRIDGER</text>
+        <text x="400" y="500" fill="#ff4500" font-size="120" font-weight="bold">ONE</text>
+        <text id="subtextDisplay" x="400" y="700" fill="#fff" font-size="20" opacity="0.8">BIODIVERSITY TOKEN v.01</text>
+    </g>
+</svg>
+
+<script>
+    // 1. Setup Audio (Vanilla Web Audio API)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let oscillator;
+
+    const startSound = () => {
+        if (!oscillator) {
+            oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.value = 0.05; // Low volume
+            oscillator.start();
+        }
+    };
+
+    // 2. Control Logic
+    const turbNode = document.getElementById('turbNode');
+    const blotchLayer = document.getElementById('blotchLayer');
+    const subtextInput = document.getElementById('subtextInput');
+    const subtextDisplay = document.getElementById('subtextDisplay');
+    const freqInput = document.getElementById('freq');
+
+    // Update SVG and Sound on input
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', (e) => {
+            // Update Density
+            if (e.target.id === 'density') {
+                turbNode.setAttribute('baseFrequency', e.target.value);
+            }
+            // Update Color Depth
+            if (e.target.id === 'depth') {
+                blotchLayer.setAttribute('opacity', e.target.value);
+            }
+            // Update Text
+            if (e.target.id === 'subtextInput') {
+                subtextDisplay.textContent = e.target.value;
+            }
+            // Update Sound frequency
+            if (e.target.id === 'freq') {
+                startSound(); // Init on first touch
+                oscillator.frequency.setValueAtTime(e.target.value, audioCtx.currentTime);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

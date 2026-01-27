@@ -16,26 +16,103 @@
   <div class="education-overlay"></div>
 
   <div class="education-container card-retro-neon">
-    <!-- Header -->
-    <div class="education-header">
-      <div class="education-icon animated-bounce">🎓</div>
-      <h2 class="education-title glitch neon-text">
-        WALLET SECURITY 101
-      </h2>
-      <p class="education-subtitle mono">
-        Learn the basics before creating your wallet
-      </p>
+    <!-- Choice Screen (shown first) -->
+    <div class="education-choice" id="educationChoice">
+      <div class="education-header">
+        <div class="education-icon animated-bounce">🔐</div>
+        <h2 class="education-title glitch neon-text">
+          CREATE YOUR WALLET
+        </h2>
+        <p class="education-subtitle mono">
+          Choose how you'd like to proceed
+        </p>
+      </div>
+
+      <div class="choice-options">
+        <button class="choice-btn choice-learn btn-retro-neon" onclick="startFullEducation()">
+          <div class="choice-icon">🎓</div>
+          <div class="choice-content">
+            <h3 class="mono">Learn First (Recommended)</h3>
+            <p class="text-muted">5-minute tutorial on wallet security</p>
+            <p class="text-neon">+100 XP</p>
+          </div>
+        </button>
+
+        <button class="choice-btn choice-quick btn-retro" onclick="showQuickStart()">
+          <div class="choice-icon">⚡</div>
+          <div class="choice-content">
+            <h3 class="mono">Quick Start</h3>
+            <p class="text-muted">I understand crypto wallet security</p>
+            <p class="text-warning">Acknowledge risks & continue</p>
+          </div>
+        </button>
+      </div>
     </div>
 
-    <!-- Progress Bar -->
-    <div class="education-progress">
-      <div class="progress-bar">
-        <div class="progress-fill" id="educationProgress"></div>
+    <!-- Quick Start Confirmation -->
+    <div class="quick-start-screen" id="quickStartScreen" style="display: none;">
+      <div class="education-header">
+        <div class="education-icon">⚠️</div>
+        <h2 class="education-title mono neon-text">
+          IMPORTANT SECURITY WARNINGS
+        </h2>
       </div>
-      <div class="progress-text mono">
-        Lesson <span id="currentLesson">1</span> of 5
+
+      <div class="warning-box card-retro">
+        <div class="warning-list mono">
+          <div class="warning-item">
+            <span class="warning-icon">🔑</span>
+            <p><strong>Your recovery phrase is the ONLY way to recover your wallet</strong><br/>
+            <span class="text-muted">If you lose it, your assets are gone forever</span></p>
+          </div>
+          <div class="warning-item">
+            <span class="warning-icon">🚫</span>
+            <p><strong>NEVER share your recovery phrase with anyone</strong><br/>
+            <span class="text-muted">Not even support staff - it's like sharing your bank password</span></p>
+          </div>
+          <div class="warning-item">
+            <span class="warning-icon">📝</span>
+            <p><strong>Write it down on paper and store it safely</strong><br/>
+            <span class="text-muted">Don't save it digitally (screenshots, cloud, etc.)</span></p>
+          </div>
+        </div>
+
+        <label class="acknowledge-checkbox">
+          <input type="checkbox" id="acknowledgeRisks" onchange="console.log('Checkbox changed inline, checked:', this.checked); document.getElementById('proceedQuickBtn').disabled = !this.checked;" />
+          <span class="mono">I understand these security practices and accept full responsibility for my wallet</span>
+        </label>
+      </div>
+
+      <div class="quick-start-actions">
+        <button class="btn-retro" onclick="console.log('Back button clicked'); backToChoice()">← Back</button>
+        <button class="btn-retro-neon" id="proceedQuickBtn" onclick="console.log('Proceed button clicked!'); proceedQuickStart()" disabled>
+          I Understand - Create Wallet →
+        </button>
       </div>
     </div>
+
+    <!-- Full Education Content -->
+    <div class="education-content-wrapper" id="educationContent" style="display: none;">
+      <!-- Header -->
+      <div class="education-header">
+        <div class="education-icon animated-bounce">🎓</div>
+        <h2 class="education-title glitch neon-text">
+          WALLET SECURITY 101
+        </h2>
+        <p class="education-subtitle mono">
+          Learn the basics before creating your wallet
+        </p>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="education-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" id="educationProgress"></div>
+        </div>
+        <div class="progress-text mono">
+          Lesson <span id="currentLesson">1</span> of 5
+        </div>
+      </div>
 
     <!-- Lesson 1: What is a Wallet? -->
     <div class="lesson active" id="lesson1">
@@ -348,6 +425,7 @@
         <span id="nextLessonText">NEXT LESSON →</span>
       </button>
     </div>
+    </div><!-- Close education-content-wrapper -->
   </div>
 </div>
 
@@ -721,6 +799,134 @@
     letter-spacing: 2px;
   }
 
+  /* Choice Screen */
+  .choice-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .choice-btn {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: var(--color-black);
+    border: 3px solid var(--color-neon-green);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+  }
+
+  .choice-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 255, 0, 0.3);
+  }
+
+  .choice-learn {
+    border-color: var(--color-neon-green);
+  }
+
+  .choice-learn:hover {
+    background: rgba(0, 255, 0, 0.1);
+  }
+
+  .choice-quick {
+    border-color: var(--color-neon-yellow);
+  }
+
+  .choice-quick:hover {
+    background: rgba(255, 255, 0, 0.05);
+  }
+
+  .choice-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+  }
+
+  .choice-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-white);
+  }
+
+  .choice-content p {
+    margin: 0.25rem 0;
+    font-size: 0.95rem;
+  }
+
+  /* Quick Start Screen */
+  .warning-box {
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .warning-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .warning-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .warning-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .warning-item p {
+    flex: 1;
+    line-height: 1.6;
+  }
+
+  .warning-item strong {
+    color: var(--color-neon-yellow);
+  }
+
+  .acknowledge-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 0, 0.05);
+    border: 2px solid var(--color-neon-yellow);
+    cursor: pointer;
+  }
+
+  .acknowledge-checkbox input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    margin-top: 2px;
+    cursor: pointer;
+  }
+
+  .acknowledge-checkbox span {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .quick-start-actions {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .quick-start-actions button {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
   /* Mobile Responsive */
   @media (max-width: 768px) {
     .education-container {
@@ -733,6 +939,23 @@
 
     .do-dont-grid {
       grid-template-columns: 1fr;
+    }
+
+    .choice-btn {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .choice-icon {
+      font-size: 2.5rem;
+    }
+
+    .choice-content h3 {
+      font-size: 1.25rem;
+    }
+
+    .quick-start-actions {
+      flex-direction: column;
     }
   }
 </style>
@@ -755,12 +978,100 @@
       quizScore: 0
     };
 
+    // Show choice screen first
+    document.getElementById('educationChoice').style.display = 'block';
+    document.getElementById('quickStartScreen').style.display = 'none';
+    document.getElementById('educationContent').style.display = 'none';
+
     // Show modal
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+  };
 
+  window.startFullEducation = function() {
+    console.log('📚 Starting full education');
+    document.getElementById('educationChoice').style.display = 'none';
+    document.getElementById('educationContent').style.display = 'block';
     updateEducationUI();
   };
+
+  window.showQuickStart = function() {
+    console.log('⚡ Quick start selected');
+    document.getElementById('educationChoice').style.display = 'none';
+    document.getElementById('quickStartScreen').style.display = 'block';
+
+    // Reset checkbox
+    const checkbox = document.getElementById('acknowledgeRisks');
+    checkbox.checked = false;
+    document.getElementById('proceedQuickBtn').disabled = true;
+  };
+
+  window.backToChoice = function() {
+    document.getElementById('quickStartScreen').style.display = 'none';
+    document.getElementById('educationChoice').style.display = 'block';
+  };
+
+  window.proceedQuickStart = function() {
+    console.log('═══════════════════════════════════════');
+    console.log('⚡ PROCEED QUICK START CLICKED');
+    console.log('═══════════════════════════════════════');
+    console.log('Current URL:', window.location.href);
+    console.log('window.generateNewWallet exists?', !!window.generateNewWallet);
+    console.log('window.progressManager exists?', !!window.progressManager);
+
+    // Mark education as completed (skipped via quick start)
+    localStorage.setItem('securityEducationCompleted', 'quick_start');
+    console.log('✅ Saved securityEducationCompleted to localStorage');
+
+    // Close modal
+    const modal = document.getElementById('securityEducationModal');
+    if (modal) {
+      modal.style.display = 'none';
+      console.log('✅ Modal closed');
+    }
+    document.body.style.overflow = '';
+
+    // Award less XP for quick start
+    if (window.progressManager) {
+      console.log('💰 Awarding 25 XP for quick start...');
+      window.progressManager.awardXP(25, 'quick_start', 'Quick wallet setup');
+    } else {
+      console.warn('⚠️ window.progressManager not available');
+    }
+
+    // Start wallet creation
+    console.log('🚀 About to call window.generateNewWallet()...');
+    if (window.generateNewWallet) {
+      console.log('✅ Calling window.generateNewWallet()');
+      window.generateNewWallet();
+    } else {
+      console.error('❌ window.generateNewWallet is not defined!');
+      console.error('Available wallet functions:', Object.keys(window).filter(k => k.toLowerCase().includes('wallet')));
+      alert('Wallet generation function not loaded. Please refresh the page and try again.');
+    }
+  };
+
+  // Enable proceed button when checkbox is checked
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('🔧 Setting up checkbox handler...');
+    const checkbox = document.getElementById('acknowledgeRisks');
+    const proceedBtn = document.getElementById('proceedQuickBtn');
+
+    console.log('Checkbox element:', checkbox);
+    console.log('Proceed button element:', proceedBtn);
+
+    if (checkbox && proceedBtn) {
+      checkbox.addEventListener('change', (e) => {
+        const checked = e.target.checked;
+        console.log('📋 Checkbox changed, checked:', checked);
+        proceedBtn.disabled = !checked;
+        console.log('🔘 Button disabled state:', proceedBtn.disabled);
+      });
+      console.log('✅ Checkbox handler attached');
+    } else {
+      console.error('❌ Could not find checkbox or button!');
+    }
+  });
 
   function updateEducationUI() {
     const { currentLesson } = educationState;

@@ -1,0 +1,146 @@
+---
+/**
+ * Modified for WorldBridger One Living Systems
+ */
+// src/pages/profile_activityfeed_v2.astro
+// We want this to be dynamic to show real-time Liquid Ledger updates
+export const prerender = false;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import OracleStatusBand from "../components/OracleStatusBand.astro";
+---
+
+<BaseLayout
+  title="Mission Control"
+  description="Command center for aquatic filters, medicinal gardens, and biodiversity tokens."
+  activeSection="profile"
+>
+  <script src="/scripts/form-storage.js" is:inline></script>
+  <script src="/scripts/metabolic-logic.js" is:inline></script>
+
+  <div class="mission-control">
+    <div class="container mx-auto">
+
+<div class="commander-header pixel-border bg-black/80">
+  <div class="status-bar pixel-text text-green-400 flex justify-between">
+    <span class="status-item">█ SYSTEM_ID: <span id="wallet-id" class="text-white">----</span></span>
+    <span class="status-item">▲ BIO_RANK: <span id="header-level" class="text-white">1</span></span>
+    <span id="sync-status" class="status-item blink text-blue-400">◆ SYNCING_ORACLE...</span>
+  </div>
+
+  <div class="metabolic-grid grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+    <div class="gauge-card pixel-border p-2 bg-gray-900" id="card-nitrates">
+      <div class="pixel-text text-[8px] text-gray-500">NITRATE_LEVEL</div>
+      <div class="text-xl font-bold glow-text" id="nitrate-val">--</div>
+    </div>
+    <div class="gauge-card pixel-border p-2 bg-gray-900" id="card-o2">
+      <div class="pixel-text text-[8px] text-gray-500">O2_SATURATION</div>
+      <div class="text-xl font-bold glow-text" id="o2-val">--</div>
+    </div>
+    <div class="gauge-card pixel-border p-2 bg-gray-900" id="card-ph">
+      <div class="pixel-text text-[8px] text-gray-500">PH_BALANCE</div>
+      <div class="text-xl font-bold glow-text" id="ph-val">--</div>
+    </div>
+    <div class="gauge-card pixel-border p-2 bg-gray-900 border-yellow-600" id="card-harvest">
+      <div class="pixel-text text-[8px] text-yellow-600">HARVEST_ALERTS</div>
+      <div class="text-sm font-bold animate-pulse text-yellow-400" id="harvest-val">SCANNING...</div>
+    </div>
+  </div>
+</div>
+
+<div class="action-panel mt-6 flex gap-4">
+    <button onclick="logBioEvent('WATER_POLISHING')" class="pixel-btn flex-1 bg-blue-900 hover:bg-blue-700 py-2">
+        <span>💧 LOG_POLISHING</span>
+    </button>
+    <button onclick="logBioEvent('MEDICINAL_HARVEST')" class="pixel-btn flex-1 bg-green-900 hover:bg-green-700 py-2">
+        <span>🌿 LOG_HARVEST</span>
+    </button>
+</div>
+
+
+
+
+        <div class="commander-profile mt-6">
+          <div class="commander-avatar pixel-art">
+            <div class="pixel-character" id="player-avatar">
+              <div class="pixel-row">▓▓▓▓▓</div>
+              <div class="pixel-row">▓█▓█▓</div>
+              <div class="pixel-row">▓▓▓▓▓</div>
+            </div>
+          </div>
+
+          <div class="commander-info">
+            <h1 class="commander-name glow-text text-3xl" id="commander-name">CADET_STEWARD</h1>
+            
+            <div class="xp-display mt-4">
+              <div class="xp-label-row flex justify-between text-sm">
+                <span class="pixel-text">ECOLOGICAL_REPUTATION</span>
+                <span class="glow-text"><span id="current-xp">1,250</span> / 5,000 XP</span>
+              </div>
+              <div class="xp-bar-container pixel-border h-4 w-full bg-gray-900 mt-1">
+                <div class="xp-bar-fill bg-green-500 h-full" id="xp-bar" style="width: 25%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-stats-grid">
+            <div class="stat-box pixel-border p-2 text-center">
+              <div class="stat-icon">💧</div>
+              <div class="stat-value glow-text text-xl" id="stat-water-polished">1.2k</div>
+              <div class="stat-label pixel-text text-[10px]">LITERS_CLEANED</div>
+            </div>
+            <div class="stat-box pixel-border p-2 text-center">
+              <div class="stat-icon">🌿</div>
+              <div class="stat-value glow-text text-xl" id="stat-medicinals">14</div>
+              <div class="stat-label pixel-text text-[10px]">ACTIVE_SPECIES</div>
+            </div>
+            <div class="stat-box pixel-border p-2 text-center">
+              <div class="stat-icon">🐝</div>
+              <div class="stat-value glow-text text-xl" id="stat-pollinators">240</div>
+              <div class="stat-label pixel-text text-[10px]">POLLINATOR_SIGHTINGS</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <OracleStatusBand />
+
+      <section id="transparency-feed" class="profile-section mt-12 border-t border-green-900/30 pt-8 px-4">
+        <div class="max-w-4xl mx-auto">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold text-green-400 flex items-center gap-2">
+              🌱 LIQUID_LEDGER_FEED
+            </h3>
+            <button class="pixel-btn text-xs bg-green-900 px-2 py-1" onclick="triggerManualLog()">+ LOG_BIO_DATA</button>
+          </div>
+          
+          <ul id="activity-list" class="space-y-4">
+            <li class="p-4 bg-gray-900/50 pixel-border border-green-900/50">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-green-500 font-mono text-sm">[VERIFIED_HARVEST]</span>
+                  <p class="text-gray-300 mt-1">Harvested 400g of **Watercress** from Rooftop Alpha. Nitrogen levels stabilized.</p>
+                </div>
+                <span class="text-[10px] text-gray-500 font-mono">2026-01-14_10:25:53</span>
+              </div>
+              <div class="mt-2 flex gap-4 text-[10px] font-mono text-green-600">
+                <span>+50 XP</span>
+                <span>+12 BIODIVERSITY_TOKENS</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Add specific Space Invaders / Retro Styles */
+  .pixel-border { border: 4px solid #000; box-shadow: 0 0 0 2px #333; }
+  .glow-text { text-shadow: 2px 2px #00ff0033; }
+  .pixel-gradient { background: linear-gradient(to bottom, #22c55e 0%, #15803d 100%); }
+  .blink { animation: blinker 1.5s linear infinite; }
+  @keyframes blinker { 50% { opacity: 0; } }
+</style>

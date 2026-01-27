@@ -177,34 +177,38 @@ const collection = Array.from({ length: 55 }, (_, i) => {
           </div>
 
           <!-- SVG Preview (Simplified - full SVG generated on click) -->
-          <div class="card-preview">
-            <div class="preview-placeholder" style={`background: linear-gradient(135deg, ${card.skinTone} 0%, ${card.rarity.color}22 100%);`}>
-              <div class="preview-icon">{
-                card.animalSpirit === 'Chicken' ? '🐓' :
-                card.animalSpirit === 'Cat' ? '🐱' :
-                card.animalSpirit === 'Goat' ? '🐐' :
-                card.animalSpirit === 'Dog' ? '🐕' :
-                card.animalSpirit === 'Bunny' ? '🐰' :
-                card.animalSpirit === 'Pigeon' ? '🕊️' :
-                card.animalSpirit === "Cooper's Hawk" ? '🦅' :
-                card.animalSpirit === 'Eagle' ? '🦅' :
-                card.animalSpirit === 'Lion' ? '🦁' :
-                '🐺'
-              }</div>
-              <div class="preview-gender mono">{card.gender.toUpperCase()}</div>
-            </div>
+          <a href={`/nft-gallery/${card.id}`} class="card-preview-link">
+            <div class="card-preview">
+              <div class="preview-placeholder" style={`background: linear-gradient(135deg, ${card.skinTone} 0%, ${card.rarity.color}22 100%);`}>
+                <div class="preview-icon">{
+                  card.animalSpirit === 'Chicken' ? '🐓' :
+                  card.animalSpirit === 'Cat' ? '🐱' :
+                  card.animalSpirit === 'Goat' ? '🐐' :
+                  card.animalSpirit === 'Dog' ? '🐕' :
+                  card.animalSpirit === 'Bunny' ? '🐰' :
+                  card.animalSpirit === 'Pigeon' ? '🕊️' :
+                  card.animalSpirit === "Cooper's Hawk" ? '🦅' :
+                  card.animalSpirit === 'Eagle' ? '🦅' :
+                  card.animalSpirit === 'Lion' ? '🦁' :
+                  '🐺'
+                }</div>
+                <div class="preview-gender mono">{card.gender.toUpperCase()}</div>
+              </div>
 
-            <!-- Sound Wave Indicator -->
-            <div class="sound-indicator">
-              <div class="sound-wave" data-active="false">
-                <span></span><span></span><span></span><span></span><span></span>
+              <!-- Sound Wave Indicator -->
+              <div class="sound-indicator">
+                <div class="sound-wave" data-active="false">
+                  <span></span><span></span><span></span><span></span><span></span>
+                </div>
               </div>
             </div>
-          </div>
+          </a>
 
           <!-- Card Info -->
           <div class="card-info">
-            <h3 class="card-name mono">{card.name}</h3>
+            <a href={`/nft-gallery/${card.id}`} class="card-name-link">
+              <h3 class="card-name mono">{card.name}</h3>
+            </a>
             <div class="card-details mono">
               <div class="detail-row">
                 <span class="detail-label">Spirit:</span>
@@ -225,11 +229,16 @@ const collection = Array.from({ length: 55 }, (_, i) => {
             </div>
           </div>
 
-          <!-- Play Button -->
-          <button class="card-play-btn btn-retro-neon mono" data-playing="false">
-            <span class="play-icon">▶</span>
-            <span class="play-text">PLAY SOUND</span>
-          </button>
+          <!-- Action Buttons -->
+          <div class="card-actions">
+            <button class="card-play-btn btn-retro mono" data-playing="false">
+              <span class="play-icon">▶</span>
+              <span class="play-text">PLAY</span>
+            </button>
+            <a href={`/nft-gallery/${card.id}`} class="card-detail-btn btn-retro-neon mono">
+              VIEW DETAILS
+            </a>
+          </div>
 
         </article>
       ))}
@@ -446,17 +455,6 @@ const collection = Array.from({ length: 55 }, (_, i) => {
     document.getElementById('categoryFilter')?.addEventListener('change', filterCards);
     document.getElementById('genderFilter')?.addEventListener('change', filterCards);
     document.getElementById('sortFilter')?.addEventListener('change', filterCards);
-
-    // Card click to play (alternative to button)
-    document.querySelectorAll('.nft-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (!target.closest('.card-play-btn')) {
-          const playBtn = card.querySelector('.card-play-btn') as HTMLElement;
-          playBtn?.click();
-        }
-      });
-    });
   });
 
   // Cleanup on page unload
@@ -723,19 +721,52 @@ const collection = Array.from({ length: 55 }, (_, i) => {
     font-weight: 700;
   }
 
-  /* Play Button */
+  /* Card Links */
+  .card-preview-link {
+    display: block;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .card-preview-link:hover {
+    opacity: 0.9;
+  }
+
+  .card-name-link {
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .card-name-link:hover .card-name {
+    color: var(--color-neon-green);
+  }
+
+  /* Card Actions */
+  .card-actions {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+
   .card-play-btn {
-    width: 100%;
     padding: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    margin-top: auto;
   }
 
   .card-play-btn[data-playing="true"] {
     animation: pulse 1s ease-in-out infinite;
+  }
+
+  .card-detail-btn {
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
   }
 
   /* Stats Panel */

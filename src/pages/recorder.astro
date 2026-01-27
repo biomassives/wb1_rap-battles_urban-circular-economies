@@ -1,0 +1,200 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Recorder → NFT Prototype"
+  description="Record audio, package assets, and prepare NFT metadata"
+  activeSection="music"
+>
+
+<h1>Recorder → NFT Prototype</h1>
+
+<p>
+This page is intentionally minimal. It supports:
+</p>
+
+<ul>
+  <li>Loading a backing track</li>
+  <li>Recording live vocals over playback</li>
+  <li>Reviewing the take</li>
+  <li>Packaging audio + metadata for NFT minting</li>
+</ul>
+
+<hr />
+
+<h2>1. Load Backing Track (Optional)</h2>
+
+<input id="audio-file" type="file" accept="audio/*" />
+<br /><br />
+
+<audio id="playback" controls></audio>
+
+<hr />
+
+<h2>2. Record Live Audio</h2>
+
+<p>Playback will start automatically when recording begins.</p>
+
+<button id="record-start">🎙 Start Recording</button>
+<button id="record-stop" disabled>⏹ Stop Recording</button>
+
+<br /><br />
+
+<audio id="recorded-audio" controls></audio>
+
+<hr />
+
+<h2>3. NFT Metadata & Packing</h2>
+
+<section id="mint-panel" hidden>
+
+  <label>Name</label><br />
+  <input id="mint-name" placeholder="Live Take #001" />
+  <br /><br />
+
+  <label>Description</label><br />
+  <textarea
+    id="mint-description"
+    placeholder="Recorded live over backing track"
+  ></textarea>
+  <br /><br />
+
+  <label>NFT Standard</label><br />
+  <select id="mint-standard">
+    <option value="erc721">ERC-721 (1/1 Recording)</option>
+    <option value="erc1155">ERC-1155 (Edition)</option>
+  </select>
+  <br /><br />
+
+  <button id="mint-preview">Preview Metadata</button>
+  <button id="mint-pack">Pack NFT</button>
+
+  <pre id="mint-output"></pre>
+
+</section>
+
+<script>
+/**************************************
+ * Playback Loader
+ **************************************/
+const playback = document.getElementById('playback');
+const fileInput = document.getElementById('audio-file');
+
+let backingFile = null;
+
+fileInput.onchange = (e) => {
+  backingFile = e.target.files[0] || null;
+  if (!backingFile) return;
+
+  playback.src = URL.createObjectURL(backingFile);
+  playback.load();
+};
+
+/**************************************
+ * Recording State
+ **************************************/
+let mediaRecorder;
+let recordedChunks = [];
+let recordedBlob = null;
+
+const startBtn = document.getElementById('record-start');
+const stopBtn = document.getElementById('record-stop');
+const recordedAudio = document.getElementById('recorded-audio');
+const mintPanel = document.getElementById('mint-panel');
+
+startBtn.onclick = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  mediaRecorder = new MediaRecorder(stream);
+  recordedChunks = [];
+
+  mediaRecorder.ondataavailable = (e) => recordedChunks.push(e.data);
+
+  mediaRecorder.onstop = () => {
+    recordedBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+    recordedAudio.src = URL.createObjectURL(recordedBlob);
+    mintPanel.hidden = false;
+  };
+
+  if (playback.src) {
+    playback.currentTime = 0;
+    playback.play();
+  }
+
+  mediaRecorder.start();
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+};
+
+stopBtn.onclick = () => {
+  mediaRecorder.stop();
+  playback.pause();
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+};
+
+/**************************************
+ * Metadata Builder
+ **************************************/
+function buildMetadata() {
+  return {
+    name: document.getElementById('mint-name').value || 'Untitled Recording',
+    description: document.getElementById('mint-description').value || '',
+    standard: document.getElementById('mint-standard').value,
+    attributes: [
+      { trait_type: 'Category', value: 'Live Audio Recording' },
+      { trait_type: 'Has Backing Track', value: !!backingFile }
+    ],
+    sources: {
+      backingTrack: backingFile ? backingFile.name : null,
+      recording: 'recorded.webm'
+    },
+    format: {
+      container: 'webm',
+      codec: 'opus'
+    }
+  };
+}
+
+/**************************************
+ * Preview Metadata
+ **************************************/
+document.getElementById('mint-preview').onclick = () => {
+  const meta = buildMetadata();
+  document.getElementById('mint-output').textContent =
+    JSON.stringify(meta, null, 2);
+};
+
+/**************************************
+ * NFT PACKER (Mock – replace with IPFS)
+ **************************************/
+async function mockPackNFT(metadata, audioBlob, backing) {
+  return {
+    cid: 'bafyMOCKRECORDER',
+    tokenURI: 'ipfs://bafyMOCKRECORDER/metadata.json',
+    files: [
+      backing ? backing.name : null,
+      'recorded.webm',
+      'metadata.json'
+    ].filter(Boolean),
+    metadata
+  };
+}
+
+/**************************************
+ * Pack NFT
+ **************************************/
+document.getElementById('mint-pack').onclick = async () => {
+  const meta = buildMetadata();
+  const packed = await mockPackNFT(meta, recordedBlob, backingFile);
+
+  document.getElementById('mint-output').textContent =
+    JSON.stringify(packed, null, 2);
+
+  console.log('NFT PACK READY', packed);
+};
+</script>
+
+</BaseLayout>
+

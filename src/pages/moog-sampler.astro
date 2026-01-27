@@ -1,0 +1,1078 @@
+---
+/**
+ * moog-sampler.astro - Moog Sample Recorder
+ *
+ * Record samples from the AutoMoog synthesizer and save them to localStorage.
+ * Samples can be imported into the Rap Battle arena or played alongside other pages.
+ *
+ * Features:
+ * - Live AutoMoog synthesis with full controls
+ * - Record Moog output directly (not microphone)
+ * - Save samples to localStorage library
+ * - Export samples to rap battle backing tracks
+ * - Preview and manage saved samples
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MoogLooper from '../components/MoogLooper.astro';
+---
+
+<BaseLayout
+  title="Moog Sample Recorder"
+  description="Record samples from AutoMoog synthesizer for use in battles and tracks"
+  activeSection="music"
+>
+
+<style>
+:root {
+  --bg-dark: #05070a;
+  --panel-bg: #0b0f17;
+  --text: #e6f1ff;
+  --muted: #8aa2c1;
+  --neon-green: #00ff9c;
+  --neon-cyan: #00e5ff;
+  --neon-magenta: #ff4fd8;
+  --neon-orange: #ff9770;
+  --danger: #ff3864;
+  --border: #1e2a44;
+}
+
+.moog-sampler-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0b1020, #05070a 70%);
+  padding: 2rem 1rem;
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.sampler-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Header */
+.sampler-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sampler-title {
+  font-size: 2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--neon-magenta), var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.sampler-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* Main Layout */
+.sampler-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .sampler-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Panels */
+.panel {
+  background: linear-gradient(180deg, var(--panel-bg), #070b12);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--border);
+}
+
+/* Recording Section */
+.recording-section {
+  margin-top: 1.5rem;
+}
+
+.record-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.record-btn, .stop-btn, .save-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: inherit;
+}
+
+.record-btn {
+  background: linear-gradient(135deg, var(--danger), #ff1744);
+  border: none;
+  color: #fff;
+}
+
+.record-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 56, 100, 0.4);
+}
+
+.record-btn.recording {
+  animation: recording-pulse 1s ease-in-out infinite;
+}
+
+@keyframes recording-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 56, 100, 0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(255, 56, 100, 0); }
+}
+
+.stop-btn {
+  background: transparent;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+}
+
+.stop-btn:hover:not(:disabled) {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.stop-btn:disabled, .record-btn:disabled, .save-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, var(--neon-green), #00cc7a);
+  border: none;
+  color: #000;
+}
+
+.save-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 255, 156, 0.4);
+}
+
+/* Recording Status */
+.recording-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.status-dot.recording {
+  background: var(--danger);
+  animation: blink 0.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.status-text {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.status-text.recording {
+  color: var(--danger);
+}
+
+.recording-timer {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'SF Mono', Monaco, monospace;
+}
+
+/* Audio Preview */
+.audio-preview {
+  margin-top: 1rem;
+}
+
+.audio-preview audio {
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* Sample Name Input */
+.sample-name-input {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.sample-name-input input {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  background: #05070a;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.sample-name-input input:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+}
+
+/* Mood Preset */
+.mood-preset {
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--neon-cyan);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+/* Sample Library */
+.library-section {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.sample-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sample-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.2s;
+}
+
+.sample-item:hover {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+.sample-item.selected {
+  border-color: var(--neon-green);
+  background: rgba(0, 255, 156, 0.1);
+}
+
+.sample-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.sample-name {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.sample-mood {
+  background: rgba(255, 79, 216, 0.2);
+  color: var(--neon-magenta);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+}
+
+.sample-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.sample-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sample-action-btn {
+  flex: 1;
+  padding: 0.4rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.sample-action-btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.sample-action-btn.play {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+
+.sample-action-btn.play.playing {
+  background: var(--neon-green);
+  color: #000;
+}
+
+.sample-action-btn.export {
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+}
+
+.sample-action-btn.delete {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.sample-action-btn.delete:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* Empty State */
+.empty-library {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--muted);
+}
+
+.empty-library p {
+  margin: 0 0 0.5rem;
+}
+
+/* Export to Battle */
+.export-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border);
+}
+
+.export-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, var(--neon-magenta), #cc00ff);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.export-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 79, 216, 0.4);
+}
+
+.export-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Success Toast */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--neon-green);
+  color: #000;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 700;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.quick-action {
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.quick-action:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+/* Sample Count Badge */
+.sample-count {
+  background: var(--neon-magenta);
+  color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-left: auto;
+}
+</style>
+
+<div class="moog-sampler-page">
+  <div class="sampler-container">
+    <header class="sampler-header">
+      <h1 class="sampler-title">Moog Sample Recorder</h1>
+      <p class="sampler-subtitle">Create and record samples from the AutoMoog synthesizer</p>
+    </header>
+
+    <div class="sampler-layout">
+      <!-- Left Column: Moog + Recording -->
+      <div class="main-column">
+        <!-- AutoMoog Component -->
+        <div class="panel">
+          <MoogLooper />
+        </div>
+
+        <!-- Recording Controls -->
+        <div class="panel recording-section">
+          <h3 class="panel-title">
+            <span>Recording</span>
+          </h3>
+
+          <div class="mood-preset" id="current-mood-display">
+            <span>Current Mood:</span>
+            <strong id="mood-label">Ambient</strong>
+          </div>
+
+          <div class="recording-status">
+            <div class="status-dot" id="status-dot"></div>
+            <span class="status-text" id="status-text">Ready to record</span>
+            <span class="recording-timer" id="recording-timer">00:00</span>
+          </div>
+
+          <div class="record-controls">
+            <button class="record-btn" id="record-btn">
+              <span>REC</span>
+            </button>
+            <button class="stop-btn" id="stop-btn" disabled>
+              <span>STOP</span>
+            </button>
+          </div>
+
+          <div class="audio-preview" id="audio-preview" style="display: none;">
+            <audio id="preview-audio" controls></audio>
+
+            <div class="sample-name-input">
+              <input type="text" id="sample-name" placeholder="Sample name (e.g., Deep Bass Loop)" />
+              <button class="save-btn" id="save-btn">
+                <span>SAVE</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <button class="quick-action" onclick="window.location.href='/rap-battle'">
+              Go to Rap Battle
+            </button>
+            <button class="quick-action" onclick="window.location.href='/sampler'">
+              Open Sampler
+            </button>
+            <button class="quick-action" onclick="window.location.href='/battle-recorder'">
+              Battle Recorder
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Sample Library -->
+      <div class="library-column">
+        <div class="panel library-section">
+          <h3 class="panel-title">
+            <span>Sample Library</span>
+            <span class="sample-count" id="sample-count">0</span>
+          </h3>
+
+          <div class="sample-list" id="sample-list">
+            <div class="empty-library">
+              <p>No samples yet</p>
+              <p>Record from AutoMoog to build your library</p>
+            </div>
+          </div>
+
+          <div class="export-section">
+            <button class="export-btn" id="export-battle-btn" disabled>
+              <span>Export Selected to Rap Battle</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Sample saved!</div>
+</div>
+
+<script>
+/**
+ * Moog Sample Recorder
+ * Records audio from the AutoMoog synthesizer and saves to localStorage
+ */
+
+class MoogSampleRecorder {
+  constructor() {
+    // State
+    this.isRecording = false;
+    this.mediaRecorder = null;
+    this.recordedChunks = [];
+    this.recordedBlob = null;
+    this.recordingStartTime = null;
+    this.timerInterval = null;
+    this.currentMood = 'ambient';
+    this.selectedSampleId = null;
+    this.playingAudio = null;
+
+    // Storage key
+    this.STORAGE_KEY = 'moogSamples';
+
+    // DOM elements
+    this.recordBtn = document.getElementById('record-btn');
+    this.stopBtn = document.getElementById('stop-btn');
+    this.saveBtn = document.getElementById('save-btn');
+    this.statusDot = document.getElementById('status-dot');
+    this.statusText = document.getElementById('status-text');
+    this.timer = document.getElementById('recording-timer');
+    this.audioPreview = document.getElementById('audio-preview');
+    this.previewAudio = document.getElementById('preview-audio');
+    this.sampleNameInput = document.getElementById('sample-name');
+    this.sampleList = document.getElementById('sample-list');
+    this.sampleCount = document.getElementById('sample-count');
+    this.moodLabel = document.getElementById('mood-label');
+    this.exportBtn = document.getElementById('export-battle-btn');
+    this.toast = document.getElementById('toast');
+
+    this.init();
+  }
+
+  init() {
+    this.setupEventListeners();
+    this.loadSamples();
+    this.syncMoodDisplay();
+  }
+
+  setupEventListeners() {
+    // Record button
+    this.recordBtn.addEventListener('click', () => this.startRecording());
+
+    // Stop button
+    this.stopBtn.addEventListener('click', () => this.stopRecording());
+
+    // Save button
+    this.saveBtn.addEventListener('click', () => this.saveSample());
+
+    // Export button
+    this.exportBtn.addEventListener('click', () => this.exportToRapBattle());
+
+    // Listen for mood changes from AutoMoog
+    const moodSelector = document.getElementById('mood-selector');
+    if (moodSelector) {
+      moodSelector.addEventListener('change', (e) => {
+        this.currentMood = e.target.value;
+        this.moodLabel.textContent = this.currentMood.charAt(0).toUpperCase() + this.currentMood.slice(1);
+      });
+    }
+  }
+
+  syncMoodDisplay() {
+    const moodSelector = document.getElementById('mood-selector');
+    if (moodSelector) {
+      this.currentMood = moodSelector.value;
+      this.moodLabel.textContent = this.currentMood.charAt(0).toUpperCase() + this.currentMood.slice(1);
+    }
+  }
+
+  async startRecording() {
+    try {
+      // We need to capture the audio from the AutoMoog
+      // Since it uses Web Audio API, we'll use MediaStreamDestination
+      const autoMoog = window.autoMoogController;
+
+      if (!autoMoog || !autoMoog.audioContext) {
+        alert('Please start the AutoMoog engine first, then try recording.');
+        return;
+      }
+
+      if (!autoMoog.voice || !autoMoog.voice.masterGain) {
+        alert('AutoMoog voice not initialized. Click "Start Engine" first.');
+        return;
+      }
+
+      // Resume audio context if suspended
+      if (autoMoog.audioContext.state === 'suspended') {
+        await autoMoog.audioContext.resume();
+      }
+
+      // Create a MediaStreamDestination to capture audio
+      const dest = autoMoog.audioContext.createMediaStreamDestination();
+
+      // Create a gain node to split the signal
+      const captureGain = autoMoog.audioContext.createGain();
+      captureGain.gain.value = 1;
+
+      // Disconnect voice from destination, route through our capture gain
+      try {
+        autoMoog.voice.masterGain.disconnect();
+      } catch (e) {
+        // May not be connected yet
+      }
+
+      // Connect masterGain -> captureGain -> both destinations
+      autoMoog.voice.masterGain.connect(captureGain);
+      captureGain.connect(autoMoog.audioContext.destination); // Keep playing
+      captureGain.connect(dest); // Capture for recording
+
+      // Store for cleanup
+      this._captureGain = captureGain;
+      this._dest = dest;
+
+      // Setup MediaRecorder with fallback mimeType
+      let mimeType = 'audio/webm;codecs=opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/webm';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'audio/ogg';
+        }
+      }
+
+      this.mediaRecorder = new MediaRecorder(dest.stream, { mimeType });
+      this.recordedChunks = [];
+
+      this.mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          this.recordedChunks.push(e.data);
+        }
+      };
+
+      this.mediaRecorder.onstop = () => {
+        this.recordedBlob = new Blob(this.recordedChunks, { type: mimeType });
+        this.previewAudio.src = URL.createObjectURL(this.recordedBlob);
+        this.audioPreview.style.display = 'block';
+
+        // Generate default name
+        const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+        this.sampleNameInput.value = `${this.currentMood} ${timestamp}`;
+      };
+
+      // Start recording
+      this.mediaRecorder.start(100); // Collect data every 100ms
+      this.isRecording = true;
+      this.recordingStartTime = Date.now();
+
+      // Update UI
+      this.recordBtn.classList.add('recording');
+      this.recordBtn.disabled = true;
+      this.stopBtn.disabled = false;
+      this.statusDot.classList.add('recording');
+      this.statusText.classList.add('recording');
+      this.statusText.textContent = 'Recording...';
+
+      // Start timer
+      this.startTimer();
+
+      console.log('Recording started - capturing from AutoMoog masterGain');
+
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+      alert('Could not start recording. Make sure AutoMoog is playing.');
+    }
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder && this.isRecording) {
+      this.mediaRecorder.stop();
+      this.isRecording = false;
+
+      // Cleanup routing - restore direct connection
+      if (this._captureGain && window.autoMoogController) {
+        try {
+          const autoMoog = window.autoMoogController;
+
+          // Disconnect the capture chain
+          this._captureGain.disconnect();
+
+          // Reconnect masterGain directly to destination
+          if (autoMoog.voice && autoMoog.voice.masterGain) {
+            autoMoog.voice.masterGain.disconnect();
+            autoMoog.voice.masterGain.connect(autoMoog.audioContext.destination);
+          }
+
+          this._captureGain = null;
+          this._dest = null;
+        } catch (e) {
+          console.warn('Cleanup routing issue:', e);
+        }
+      }
+
+      // Update UI
+      this.recordBtn.classList.remove('recording');
+      this.recordBtn.disabled = false;
+      this.stopBtn.disabled = true;
+      this.statusDot.classList.remove('recording');
+      this.statusText.classList.remove('recording');
+      this.statusText.textContent = 'Recording complete';
+
+      // Stop timer
+      this.stopTimer();
+
+      console.log('Recording stopped');
+    }
+  }
+
+  startTimer() {
+    this.timerInterval = setInterval(() => {
+      const elapsed = Date.now() - this.recordingStartTime;
+      const seconds = Math.floor(elapsed / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      this.timer.textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }, 100);
+  }
+
+  stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  async saveSample() {
+    if (!this.recordedBlob) {
+      alert('No recording to save');
+      return;
+    }
+
+    const name = this.sampleNameInput.value.trim() || `Moog Sample ${Date.now()}`;
+
+    // Convert blob to base64 for localStorage
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const sample = {
+        id: `moog_${Date.now()}`,
+        name: name,
+        mood: this.currentMood,
+        duration: this.timer.textContent,
+        timestamp: new Date().toISOString(),
+        dataUrl: reader.result,
+        type: 'moog_sample',
+        // Store current AutoMoog settings
+        settings: this.captureSettings()
+      };
+
+      // Save to localStorage
+      const samples = this.getSamples();
+      samples.unshift(sample);
+
+      // Limit to 20 samples to avoid localStorage overflow
+      if (samples.length > 20) {
+        samples.pop();
+      }
+
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(samples));
+
+      // Refresh UI
+      this.loadSamples();
+      this.showToast('Sample saved!');
+
+      // Reset for next recording
+      this.recordedBlob = null;
+      this.audioPreview.style.display = 'none';
+      this.timer.textContent = '00:00';
+      this.statusText.textContent = 'Ready to record';
+    };
+
+    reader.readAsDataURL(this.recordedBlob);
+  }
+
+  captureSettings() {
+    try {
+      return {
+        mood: document.getElementById('mood-selector')?.value || 'ambient',
+        energy: document.getElementById('perf-energy')?.value || 0.5,
+        warmth: document.getElementById('perf-warmth')?.value || 0.5,
+        density: document.getElementById('perf-density')?.value || 0.5,
+        chaos: document.getElementById('perf-chaos')?.value || 0.3,
+        baseFreq: document.getElementById('dsp-freq')?.value || 110,
+        cutoff: document.getElementById('dsp-cutoff')?.value || 0.5,
+        resonance: document.getElementById('dsp-resonance')?.value || 0.3,
+        drive: document.getElementById('dsp-drive')?.value || 1.5
+      };
+    } catch (e) {
+      return {};
+    }
+  }
+
+  getSamples() {
+    try {
+      return JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  loadSamples() {
+    const samples = this.getSamples();
+    this.sampleCount.textContent = samples.length;
+
+    if (samples.length === 0) {
+      this.sampleList.innerHTML = `
+        <div class="empty-library">
+          <p>No samples yet</p>
+          <p>Record from AutoMoog to build your library</p>
+        </div>
+      `;
+      this.exportBtn.disabled = true;
+      return;
+    }
+
+    let html = '';
+    samples.forEach((sample) => {
+      const isSelected = sample.id === this.selectedSampleId;
+      html += `
+        <div class="sample-item ${isSelected ? 'selected' : ''}" data-id="${sample.id}">
+          <div class="sample-header">
+            <span class="sample-name">${this.escapeHtml(sample.name)}</span>
+            <span class="sample-mood">${sample.mood || 'unknown'}</span>
+          </div>
+          <div class="sample-meta">
+            <span>${sample.duration || '??:??'}</span>
+            <span>${new Date(sample.timestamp).toLocaleDateString()}</span>
+          </div>
+          <div class="sample-actions">
+            <button class="sample-action-btn play" data-id="${sample.id}">Play</button>
+            <button class="sample-action-btn export" data-id="${sample.id}">To Battle</button>
+            <button class="sample-action-btn delete" data-id="${sample.id}">Delete</button>
+          </div>
+        </div>
+      `;
+    });
+
+    this.sampleList.innerHTML = html;
+
+    // Add event listeners
+    this.sampleList.querySelectorAll('.sample-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        if (e.target.classList.contains('sample-action-btn')) return;
+        this.selectSample(item.dataset.id);
+      });
+    });
+
+    this.sampleList.querySelectorAll('.sample-action-btn.play').forEach(btn => {
+      btn.addEventListener('click', () => this.playSample(btn.dataset.id));
+    });
+
+    this.sampleList.querySelectorAll('.sample-action-btn.export').forEach(btn => {
+      btn.addEventListener('click', () => this.exportSingleToRapBattle(btn.dataset.id));
+    });
+
+    this.sampleList.querySelectorAll('.sample-action-btn.delete').forEach(btn => {
+      btn.addEventListener('click', () => this.deleteSample(btn.dataset.id));
+    });
+  }
+
+  selectSample(id) {
+    this.selectedSampleId = id;
+    this.exportBtn.disabled = !id;
+    this.loadSamples(); // Re-render to update selection
+  }
+
+  playSample(id) {
+    const samples = this.getSamples();
+    const sample = samples.find(s => s.id === id);
+
+    if (!sample) return;
+
+    // Stop any currently playing audio
+    if (this.playingAudio) {
+      this.playingAudio.pause();
+      this.playingAudio = null;
+
+      // Reset all play buttons
+      this.sampleList.querySelectorAll('.sample-action-btn.play').forEach(btn => {
+        btn.classList.remove('playing');
+        btn.textContent = 'Play';
+      });
+    }
+
+    // Find the button
+    const btn = this.sampleList.querySelector(`.sample-action-btn.play[data-id="${id}"]`);
+
+    // Create and play audio
+    const audio = new Audio(sample.dataUrl);
+    audio.onended = () => {
+      btn.classList.remove('playing');
+      btn.textContent = 'Play';
+      this.playingAudio = null;
+    };
+
+    audio.play();
+    this.playingAudio = audio;
+    btn.classList.add('playing');
+    btn.textContent = 'Stop';
+  }
+
+  deleteSample(id) {
+    if (!confirm('Delete this sample?')) return;
+
+    let samples = this.getSamples();
+    samples = samples.filter(s => s.id !== id);
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(samples));
+
+    if (this.selectedSampleId === id) {
+      this.selectedSampleId = null;
+    }
+
+    this.loadSamples();
+    this.showToast('Sample deleted');
+  }
+
+  exportSingleToRapBattle(id) {
+    const samples = this.getSamples();
+    const sample = samples.find(s => s.id === id);
+
+    if (!sample) return;
+
+    this.addToRapBattleLibrary(sample);
+    this.showToast('Exported to Rap Battle!');
+  }
+
+  exportToRapBattle() {
+    if (!this.selectedSampleId) return;
+
+    const samples = this.getSamples();
+    const sample = samples.find(s => s.id === this.selectedSampleId);
+
+    if (!sample) return;
+
+    this.addToRapBattleLibrary(sample);
+    this.showToast('Exported to Rap Battle!');
+  }
+
+  addToRapBattleLibrary(sample) {
+    // Add to nftBackingTracks (the key rap-battle uses)
+    const backingTracks = JSON.parse(localStorage.getItem('nftBackingTracks') || '[]');
+
+    // Check if already exists
+    if (backingTracks.find(t => t.id === sample.id)) {
+      return; // Already exported
+    }
+
+    const battleTrack = {
+      id: sample.id,
+      name: sample.name,
+      type: 'moog',
+      mood: sample.mood,
+      bpm: 120, // Default BPM for Moog samples
+      timestamp: sample.timestamp,
+      dataUrl: sample.dataUrl,
+      settings: sample.settings,
+      source: 'moog_sampler'
+    };
+
+    backingTracks.unshift(battleTrack);
+    localStorage.setItem('nftBackingTracks', JSON.stringify(backingTracks));
+
+    // Also store as currentBattleBeat for immediate use
+    localStorage.setItem('currentBattleBeat', JSON.stringify({
+      name: sample.name,
+      type: 'moog',
+      id: sample.id,
+      mood: sample.mood,
+      dataUrl: sample.dataUrl
+    }));
+
+    console.log('Exported to rap battle:', battleTrack);
+  }
+
+  showToast(message) {
+    this.toast.textContent = message;
+    this.toast.classList.add('show');
+    setTimeout(() => {
+      this.toast.classList.remove('show');
+    }, 2000);
+  }
+
+  escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  window.moogSampleRecorder = new MoogSampleRecorder();
+});
+</script>
+
+</BaseLayout>

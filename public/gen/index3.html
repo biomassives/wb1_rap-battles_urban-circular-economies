@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Worldbridger Lab v3</title>
+    <style>
+        body { background: #d1d1d6; color: #222; font-family: monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .ui-layer { background: rgba(255,255,255,0.9); padding: 12px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; border-bottom: 2px solid #000; z-index: 10; font-size: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .group { display: flex; flex-direction: column; }
+        input, select { width: 100%; margin-top: 4px; border: 1px solid #999; }
+        svg { flex-grow: 1; width: 100%; background: #a8a8b0; cursor: crosshair; }
+    </style>
+</head>
+<body>
+
+<div class="ui-layer">
+    <div class="group">
+        <label>FORM POPULATION</label>
+        <input type="range" id="popCount" min="1" max="10" step="1" value="1">
+    </div>
+    <div class="group">
+        <label>MOTION ENGINE</label>
+        <select id="motionType">
+            <option value="none">STATIC</option>
+            <option value="organism">ORGANISM DRIFT</option>
+            <option value="brownian">BROWNIAN JITTER</option>
+        </select>
+    </div>
+    <div class="group">
+        <label>SUB-TEXT LINE 1</label>
+        <input type="text" id="sub1" value="ECOCITY/EXOTOPIA">
+    </div>
+    <div class="group">
+        <label>SUB-TEXT LINE 2</label>
+        <input type="text" id="sub2" value="NFT REWARDS">
+    </div>
+    <div class="group">
+        <button onclick="window.location.reload()" style="height:100%">RESET CANVAS</button>
+    </div>
+</div>
+
+<svg id="viz" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <pattern id="shieldHatch" width="6" height="6" patternUnits="userSpaceOnUse">
+            <rect width="6" height="6" fill="#0c0c0e" />
+            <path d="M-1,1 l2,-2 M0,6 l6,-6 M5,7 l2,-2" stroke="#2a2a2e" stroke-width="1" />
+        </pattern>
+
+        <pattern id="calcGrid" width="4" height="4" patternUnits="userSpaceOnUse">
+            <rect width="4" height="4" fill="#ff5e00" />
+            <path d="M0 0h4v1H0z M0 0h1v4H0z" fill="rgba(0,0,0,0.4)" />
+        </pattern>
+
+        <filter id="glow"><feGaussianBlur stdDeviation="3" /><feComposite in="SourceGraphic" operator="over" /></filter>
+        <filter id="grain"><feTurbulence id="turb" type="fractalNoise" baseFrequency="0.03" numOctaves="3" /><feColorMatrix type="saturate" values="0.5"/></filter>
+    </defs>
+
+    <rect width="1000" height="1000" filter="url(#grain)" opacity="0.3" />
+
+    <g id="organismContainer"></g>
+
+    <path d="M50,280 L950,280 L880,480 L500,820 L120,480 Z" fill="url(#shieldHatch)" />
+
+    <g filter="url(#glow)" font-family="monospace" font-weight="900" text-anchor="middle">
+        <text x="500" y="440" fill="url(#calcGrid)" font-size="95" letter-spacing="-3">WORLDBRIDGER</text>
+        <text x="500" y="600" fill="url(#calcGrid)" font-size="190" letter-spacing="-8">ONE</text>
+        
+        <text id="st1" x="500" y="880" fill="#fff" font-size="28" opacity="0.9">ECOCITY/EXOTOPIA</text>
+        <text id="st2" x="500" y="920" fill="#fff" font-size="28" opacity="0.9">NFT REWARDS</text>
+    </g>
+</svg>
+
+<script>
+    const container = document.getElementById('organismContainer');
+    const popInput = document.getElementById('popCount');
+    const sub1Input = document.getElementById('sub1');
+    const sub2Input = document.getElementById('sub2');
+    
+    let elements = [];
+
+    // The 9 archetypal shapes from your guide
+    function createShape(i) {
+        const types = [
+            () => `<circle r="50" fill="#6a5acd"/>`,
+            () => `<rect width="80" height="80" fill="#ffd700" transform="rotate(15)"/>`,
+            () => `<polygon points="0,-60 50,40 -50,40" fill="#32cd32"/>`,
+            () => `<rect width="150" height="40" fill="#ff4500" rx="20"/>`,
+            () => `<path d="M-50,0 Q0,-100 50,0" stroke="#00ced1" stroke-width="8" fill="none"/>`,
+            () => `<circle r="30" fill="#ff69b4" opacity="0.8"/>`,
+            () => `<rect width="40" height="120" fill="#00bfff" opacity="0.5"/>`,
+            () => `<path d="M-40,40 L0,0 L40,40" stroke="#fff" stroke-width="4" fill="none"/>`,
+            () => `<circle r="15" fill="#fff"/>`
+        ];
+        
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.innerHTML = types[i % 9]();
+        container.appendChild(g);
+        
+        return {
+            el: g,
+            x: Math.random() * 1000,
+            y: Math.random() * 1000,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            phase: Math.random() * Math.PI * 2
+        };
+    }
+
+    function syncPopulation() {
+        container.innerHTML = '';
+        elements = [];
+        const count = popInput.value * 9; 
+        for(let i=0; i<count; i++) elements.push(createShape(i));
+    }
+
+    function animate() {
+        const mode = document.getElementById('motionType').value;
+        elements.forEach((obj, i) => {
+            if (mode === 'brownian') {
+                obj.x += (Math.random() - 0.5) * 4;
+                obj.y += (Math.random() - 0.5) * 4;
+            } else if (mode === 'organism') {
+                obj.x += Math.sin(Date.now() * 0.001 + obj.phase) * 1.5;
+                obj.y += Math.cos(Date.now() * 0.0013 + obj.phase) * 1.5;
+            }
+            obj.el.setAttribute('transform', `translate(${obj.x}, ${obj.y})`);
+        });
+        requestAnimationFrame(animate);
+    }
+
+    popInput.addEventListener('input', syncPopulation);
+    sub1Input.addEventListener('input', e => document.getElementById('st1').textContent = e.target.value.toUpperCase());
+    sub2Input.addEventListener('input', e => document.getElementById('st2').textContent = e.target.value.toUpperCase());
+
+    syncPopulation();
+    animate();
+</script>
+</body>
+</html>

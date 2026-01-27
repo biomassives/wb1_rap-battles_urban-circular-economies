@@ -70,16 +70,16 @@
 
     <!-- Recovery Phrase Display -->
     <div class="phrase-display-wrapper">
-      <div class="phrase-instruction mono text-center">
-        <span class="text-neon">→</span> Write these 12 words in order on paper <span class="text-neon">←</span>
+      <div class="phrase-instruction mono text-center" style="color: #0f0; text-shadow: 0 0 10px #00ff00; background: #000; border: 2px solid #00ff00;">
+        <span style="color: #00ffff;">▸▸▸</span> WRITE THESE 12 WORDS IN ORDER ON PAPER <span style="color: #00ffff;">◂◂◂</span>
       </div>
 
       <div id="phraseGrid" class="phrase-grid" oncopy="return false" oncut="return false">
         <!-- Words will be injected here by JavaScript -->
       </div>
 
-      <div class="phrase-footer mono text-muted">
-        <small>👆 Hover to reveal each word | Copy/paste disabled for your security</small>
+      <div class="phrase-footer mono" style="color: #00ff00; text-shadow: 0 0 5px #00ff00;">
+        <small>👆 Hover over each word box to reveal | Scanline effect active | Copy/paste disabled for security</small>
       </div>
     </div>
 
@@ -300,12 +300,57 @@
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     padding: 2rem;
-    background: var(--color-black);
-    border: 3px solid var(--color-white);
-    box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.1);
+    background: #000000;
+    border: 3px solid #00ff00;
+    box-shadow:
+      inset 0 0 30px rgba(0, 255, 0, 0.2),
+      0 0 15px rgba(0, 255, 0, 0.5);
+    position: relative;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+    overflow: hidden;
+    animation: borderPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes borderPulse {
+    0%, 100% {
+      border-color: #00ff00;
+      box-shadow:
+        inset 0 0 30px rgba(0, 255, 0, 0.2),
+        0 0 15px rgba(0, 255, 0, 0.5);
+    }
+    50% {
+      border-color: #00ff88;
+      box-shadow:
+        inset 0 0 40px rgba(0, 255, 136, 0.3),
+        0 0 25px rgba(0, 255, 136, 0.7);
+    }
+  }
+
+  /* CRT Scanline Effect */
+  .phrase-grid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 255, 0, 0.05) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(0, 255, 0, 0.05) 3px
+    );
+    pointer-events: none;
+    z-index: 2;
+    animation: scanline 8s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
   }
 
   .phrase-word {
@@ -313,37 +358,47 @@
     align-items: center;
     gap: 1rem;
     padding: 1.25rem;
-    background: var(--color-near-black);
-    border: 3px solid var(--color-mid-gray);
+    background: #0a0a0a;
+    border: 3px solid #00ff00;
     font-family: var(--font-mono);
     font-size: 1.125rem;
     font-weight: 900;
     transition: all 0.3s ease;
     position: relative;
-    cursor: default;
+    cursor: pointer;
+    text-shadow: 0 0 8px #00ff00;
   }
 
   .phrase-word:hover {
-    border-color: var(--color-neon-green);
-    box-shadow: 0 0 20px var(--color-neon-green-glow);
-    transform: translateY(-2px);
+    border-color: #00ffff;
+    box-shadow:
+      0 0 20px #00ffff,
+      inset 0 0 10px rgba(0, 255, 255, 0.2);
+    transform: translateY(-2px) scale(1.02);
   }
 
   .phrase-word .word-number {
-    color: var(--color-neon-cyan);
+    color: #00ffff;
     font-size: 0.875rem;
     min-width: 30px;
+    text-shadow: 0 0 10px #00ffff;
   }
 
   .phrase-word .word-text {
-    color: var(--color-neon-green);
-    letter-spacing: 1px;
-    filter: blur(3px);
+    color: #00ff00;
+    letter-spacing: 2px;
+    filter: blur(4px);
     transition: filter 0.3s ease;
+    text-shadow: 0 0 10px #00ff00;
+    font-weight: 700;
   }
 
   .phrase-word:hover .word-text {
     filter: blur(0);
+    color: #0f0;
+    text-shadow:
+      0 0 15px #00ff00,
+      0 0 25px #00ff00;
   }
 
   .phrase-footer {
@@ -500,10 +555,82 @@
 </style>
 
 <script is:inline>
+  // Retro Game Sound System (Space Invaders style)
+  const RetroSounds = {
+    audioContext: null,
+
+    init() {
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    },
+
+    // Space Invaders "blip" sound
+    playBlip() {
+      this.init();
+      const osc = this.audioContext.createOscillator();
+      const gain = this.audioContext.createGain();
+
+      osc.connect(gain);
+      gain.connect(this.audioContext.destination);
+
+      osc.frequency.setValueAtTime(800, this.audioContext.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(200, this.audioContext.currentTime + 0.1);
+
+      gain.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+
+      osc.start(this.audioContext.currentTime);
+      osc.stop(this.audioContext.currentTime + 0.1);
+    },
+
+    // Power-up sound
+    playPowerUp() {
+      this.init();
+      const osc = this.audioContext.createOscillator();
+      const gain = this.audioContext.createGain();
+
+      osc.connect(gain);
+      gain.connect(this.audioContext.destination);
+
+      osc.frequency.setValueAtTime(200, this.audioContext.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(800, this.audioContext.currentTime + 0.3);
+
+      gain.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+
+      osc.start(this.audioContext.currentTime);
+      osc.stop(this.audioContext.currentTime + 0.3);
+    },
+
+    // Hover reveal sound
+    playReveal() {
+      this.init();
+      const osc = this.audioContext.createOscillator();
+      const gain = this.audioContext.createGain();
+
+      osc.connect(gain);
+      gain.connect(this.audioContext.destination);
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(600, this.audioContext.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, this.audioContext.currentTime + 0.05);
+
+      gain.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.05);
+
+      osc.start(this.audioContext.currentTime);
+      osc.stop(this.audioContext.currentTime + 0.05);
+    }
+  };
+
   // Global functions for recovery phrase modal
   window.showRecoveryPhraseModal = function(words) {
     const modal = document.getElementById('recoveryPhraseModal');
     const grid = document.getElementById('phraseGrid');
+
+    // Play modal open sound
+    RetroSounds.playPowerUp();
 
     // Clear and populate grid
     grid.innerHTML = '';
@@ -514,6 +641,12 @@
         <span class="word-number">#${index + 1}</span>
         <span class="word-text">${word}</span>
       `;
+
+      // Add hover sound effect
+      wordEl.addEventListener('mouseenter', () => {
+        RetroSounds.playReveal();
+      });
+
       grid.appendChild(wordEl);
     });
 
@@ -533,11 +666,19 @@
     const total = document.querySelectorAll('.checklist-item input').length;
     const checked = document.querySelectorAll('.checklist-item input:checked').length;
 
+    // Play blip sound on checkbox change
+    RetroSounds.playBlip();
+
     document.getElementById('checklistCount').textContent = checked;
 
     // Enable proceed button only if all checked
     const proceedBtn = document.getElementById('proceedToVerificationBtn');
     proceedBtn.disabled = checked < total;
+
+    // Play power-up when all checked
+    if (checked === total) {
+      setTimeout(() => RetroSounds.playPowerUp(), 100);
+    }
   };
 
   window.goBackFromRecoveryPhrase = function() {
@@ -548,11 +689,24 @@
   };
 
   window.proceedToVerification = function() {
-    document.getElementById('recoveryPhraseModal').style.display = 'none';
+    console.log('═══════════════════════════════════════');
+    console.log('📚 Step 4/5: Verify Recovery Phrase');
+    console.log('═══════════════════════════════════════');
 
-    // Show verification modal (will be created next)
+    // Play success sound
+    RetroSounds.playPowerUp();
+
+    document.getElementById('recoveryPhraseModal').style.display = 'none';
+    document.body.style.overflow = '';
+
+    // Show verification modal
     if (window.showRecoveryPhraseVerification) {
       window.showRecoveryPhraseVerification(window._recoveryWords);
+      console.log('✅ Verification modal opened');
+    } else {
+      console.error('❌ Verification modal not loaded');
+      console.error('window.showRecoveryPhraseVerification is undefined');
+      alert('Verification component not loaded. Please refresh and try again.');
     }
   };
 

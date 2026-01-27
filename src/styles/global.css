@@ -1,0 +1,42 @@
+.sampler-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999; /* Ensure it's above everything */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 50px;
+  background: var(--accent-gradient, #7b2ff7); /* Use your theme color */
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+
+.sampler-fab:hover {
+  transform: scale(1.05);
+}
+
+/* Hide label on small screens to keep it elegant */
+@media (max-width: 600px) {
+  .fab-label { display: none; }
+}
+
+/* The 'Worldbridge' HUD Layer */
+#sampler-overlay-container {
+  position: fixed;
+  inset: 0; /* Full screen */
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85); /* Dim the background */
+  backdrop-filter: blur(4px);
+  display: none; /* Hidden by default */
+  place-items: center; /* Center the SamplerPad component */
+  padding: 2rem;
+}
+
+#sampler-overlay-container.is-visible {
+  display: grid; /* Becomes visible when toggled */
+}

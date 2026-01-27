@@ -1,0 +1,1154 @@
+---
+/**
+ * progress.astro
+ * User Progress Dashboard
+ * 
+ * Displays:
+ * - Current level and XP
+ * - Animal mentor with daily wisdom
+ * - Achievements showcase
+ * - Stats (tracks, battles, courses, impact)
+ * - Skill trees visualization
+ * - Recent activity feed
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Worldbridging Progress" 
+  description="Track your journey through music, environmental learning, and community impact"
+  activeSection="progress"
+>
+  
+  <!-- ============================================ -->
+  <!-- HERO SECTION - Level & XP Overview -->
+  <!-- ============================================ -->
+  <section class="progress-hero">
+    <div class="container mx-auto">
+      <div class="hero-content">
+        
+        <!-- Level Display -->
+        <div class="level-showcase">
+          <div class="level-circle">
+            <div class="level-number" id="hero-level">1</div>
+            <div class="level-label">Level</div>
+          </div>
+          
+          <div class="stage-info">
+            <h1 class="stage-name" id="hero-stage">Artisan Stage</h1>
+            <p class="stage-description">Just beginning your journey</p>
+          </div>
+        </div>
+
+        <!-- XP Progress -->
+        <div class="xp-progress-container">
+          <div class="xp-labels">
+            <span class="xp-current" id="hero-xp-current">0 XP</span>
+            <span class="xp-target" id="hero-xp-target">50 XP to Level 2</span>
+          </div>
+          
+          <div class="xp-bar">
+            <div class="xp-fill" id="hero-xp-fill" style="width: 0%"></div>
+            <div class="xp-glow"></div>
+          </div>
+          
+          <div class="xp-percentage">
+            <span id="hero-xp-percent">0%</span> to next level
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats-grid">
+          <div class="quick-stat">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value" id="quick-achievements">0</div>
+            <div class="stat-label">Achievements</div>
+          </div>
+          
+          <div class="quick-stat">
+            <div class="stat-icon">🎵</div>
+            <div class="stat-value" id="quick-tracks">0</div>
+            <div class="stat-label">Tracks</div>
+          </div>
+          
+          <div class="quick-stat">
+            <div class="stat-icon">🌱</div>
+            <div class="stat-value" id="quick-courses">0</div>
+            <div class="stat-label">Courses</div>
+          </div>
+          
+          <div class="quick-stat">
+            <div class="stat-icon">⚔️</div>
+            <div class="stat-value" id="quick-battles">0</div>
+            <div class="stat-label">Battles</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- ANIMAL MENTOR SECTION -->
+  <!-- ============================================ -->
+  <section class="mentor-section">
+    <div class="container mx-auto">
+      <div class="mentor-card">
+        
+        <!-- Mentor Avatar & Info -->
+        <div class="mentor-header">
+          <div class="mentor-avatar-large" id="mentor-avatar">🐓</div>
+          
+          <div class="mentor-info">
+            <h2 class="mentor-name" id="mentor-name">Chicken Mentor</h2>
+            <p class="mentor-title" id="mentor-title">Master of Foundations & Community</p>
+            <div class="mentor-specialties">
+              <span class="specialty-badge">🎵 Music Basics</span>
+              <span class="specialty-badge">🌱 Sustainable Living</span>
+              <span class="specialty-badge">👥 Community Building</span>
+            </div>
+          </div>
+          
+          <!-- Mentor Level Progress -->
+          <div class="mentor-progress">
+            <div class="mentor-level-badge">
+              <span class="mentor-level-label">Mentor Level</span>
+              <span class="mentor-level-number">Apprentice</span>
+            </div>
+            <p class="mentor-level-info">
+              Level up your mentor by completing lessons in their domain
+            </p>
+          </div>
+        </div>
+
+        <!-- Daily Wisdom -->
+        <div class="daily-wisdom-card">
+          <div class="wisdom-icon">💡</div>
+          <div class="wisdom-content">
+            <h3 class="wisdom-label">Today's Wisdom</h3>
+            <blockquote class="wisdom-text" id="daily-wisdom">
+              <!-- Loaded from API -->
+              Loading wisdom from your mentor...
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Mentor Actions -->
+        <div class="mentor-actions">
+          <button class="btn-primary" onclick="window.mentorManager?.requestSession()">
+            📅 Book Mentor Session
+          </button>
+          <button class="btn-secondary" onclick="window.mentorManager?.viewGuidance()">
+            📚 View All Guidance
+          </button>
+          <button class="btn-text" onclick="window.mentorManager?.changeMentor()">
+            🔄 Change Mentor (Lvl 11+)
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- ACHIEVEMENTS SHOWCASE -->
+  <!-- ============================================ -->
+  <section class="achievements-section">
+    <div class="container mx-auto">
+      
+      <div class="section-header">
+        <h2 class="section-title">Achievements</h2>
+        <div class="section-actions">
+          <div class="achievement-progress">
+            <span id="achievement-count">0</span> / <span id="achievement-total">50</span>
+            <div class="progress-bar-mini">
+              <div class="progress-fill-mini" id="achievement-progress-bar"></div>
+            </div>
+          </div>
+          <a href="/achievements" class="btn-link">View All →</a>
+        </div>
+      </div>
+
+      <!-- Achievement Categories Tabs -->
+      <div class="achievement-tabs">
+        <button class="tab-btn active" data-category="all">All</button>
+        <button class="tab-btn" data-category="musical">🎵 Musical</button>
+        <button class="tab-btn" data-category="environmental">🌍 Environmental</button>
+        <button class="tab-btn" data-category="community">👥 Community</button>
+      </div>
+
+      <!-- Achievements Grid -->
+      <div id="achievements-grid" class="achievements-grid">
+        <!-- Achievements will be loaded here via JS -->
+        <!-- Template for achievement card:
+        
+        <div class="achievement-card [earned|locked] [rarity-common|uncommon|rare|legendary]">
+          <div class="achievement-badge">🏆</div>
+          <h3 class="achievement-name">First Verse</h3>
+          <p class="achievement-description">Write your first 16 bars</p>
+          <div class="achievement-reward">+50 XP</div>
+          <div class="achievement-earned-date">Earned: Jan 1, 2025</div>
+        </div>
+        
+        -->
+      </div>
+
+      <!-- Recent Achievements -->
+      <div class="recent-achievements">
+        <h3>Recently Unlocked</h3>
+        <div id="recent-achievements-list" class="recent-list">
+          <!-- Recent achievements loaded here -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- STATS DASHBOARD -->
+  <!-- ============================================ -->
+  <section class="stats-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Your Stats</h2>
+
+      <div class="stats-grid">
+        
+        <!-- Musical Stats -->
+        <div class="stat-card musical">
+          <div class="stat-card-header">
+            <h3>🎵 Musical Journey</h3>
+            <span class="stat-category-badge">Artist</span>
+          </div>
+          
+          <div class="stat-rows">
+            <div class="stat-row">
+              <span class="stat-label">Published Tracks</span>
+              <span class="stat-value" id="stat-tracks">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Total Plays</span>
+              <span class="stat-value" id="stat-plays">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Collaborations</span>
+              <span class="stat-value" id="stat-collabs">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Battle Record</span>
+              <span class="stat-value">
+                <span id="stat-battle-wins">0</span>W - 
+                <span id="stat-battle-losses">0</span>L
+              </span>
+            </div>
+            <div class="stat-row highlight">
+              <span class="stat-label">Win Rate</span>
+              <span class="stat-value" id="stat-win-rate">0%</span>
+            </div>
+          </div>
+
+          <a href="/music" class="stat-card-action">Go to Studio →</a>
+        </div>
+
+        <!-- Environmental Stats -->
+<div class="stat-card legal">
+    <div class="stat-card-header">
+      <h3>⚖️ Legal & Right to Repair</h3>
+      <span class="stat-category-badge">Advocate</span>
+    </div>
+    <div class="stat-rows">
+      <div class="stat-row">
+        <span class="stat-label">Legal Workshops</span>
+        <span class="stat-value" id="stat-legal-workshops">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Statutes Mastered</span>
+        <span class="stat-value" id="stat-statutes">0</span>
+      </div>
+      <div class="stat-row highlight">
+        <span class="stat-label">Legal Literacy XP</span>
+        <span class="stat-value" id="stat-legal-xp">0</span>
+      </div>
+    </div>
+    <a href="/legal-library" class="stat-card-action">View Knowledge Base →</a>
+  </div>
+
+  <div class="stat-card environmental">
+    <div class="stat-card-header">
+      <h3>🛠️ Civic Engineering</h3>
+      <span class="stat-category-badge">Steward</span>
+    </div>
+    <div class="stat-rows">
+      <div class="stat-row">
+        <span class="stat-label">WATSAN Projects</span>
+        <span class="stat-value" id="stat-watsan">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Repairs Verified</span>
+        <span class="stat-value" id="stat-repairs">0</span>
+      </div>
+      <div class="stat-row highlight">
+        <span class="stat-label">Engineering XP</span>
+        <span class="stat-value" id="stat-eng-xp">0</span>
+      </div>
+    </div>
+    <a href="/engineering" class="stat-card-action">Go to Lab →</a>
+  </div>
+
+  <div class="stat-card creative">
+    <div class="stat-card-header">
+      <h3>🎤 Creative & Urban</h3>
+      <span class="stat-category-badge">Performer</span>
+    </div>
+    <div class="stat-rows">
+      <div class="stat-row">
+        <span class="stat-label">Rap Battles</span>
+        <span class="stat-value" id="stat-rap-battles">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Tournament Wins</span>
+        <span class="stat-value" id="stat-soccer">0</span>
+      </div>
+      <div class="stat-row highlight">
+        <span class="stat-label">Creative XP</span>
+        <span class="stat-value" id="stat-creative-xp">0</span>
+      </div>
+    </div>
+    <a href="/urban-creative" class="stat-card-action">View Events →</a>
+  </div>
+          <a href="/learning" class="stat-card-action">Go to Learning →</a>
+        </div>
+
+        <!-- Community Impact Stats -->
+        <div class="stat-card community">
+          <div class="stat-card-header">
+            <h3>👥 Community Impact</h3>
+            <span class="stat-category-badge">Leader</span>
+          </div>
+          
+          <div class="stat-rows">
+            <div class="stat-row">
+              <span class="stat-label">People Mentored</span>
+              <span class="stat-value" id="stat-mentored">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Mentor Sessions</span>
+              <span class="stat-value" id="stat-sessions">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Community Events</span>
+              <span class="stat-value" id="stat-events">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Global Connections</span>
+              <span class="stat-value" id="stat-connections">0</span>
+            </div>
+          </div>
+
+          <a href="/community" class="stat-card-action">View Community →</a>
+        </div>
+
+        <!-- Kakuma Impact Stats -->
+        <div class="stat-card kakuma">
+          <div class="stat-card-header">
+            <h3>🏕️ Kakuma Impact</h3>
+            <span class="stat-category-badge kakuma-badge">Humanitarian</span>
+          </div>
+          
+          <div class="stat-rows">
+            <div class="stat-row">
+              <span class="stat-label">Youth Impacted</span>
+              <span class="stat-value" id="stat-youth-impacted">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Projects Supported</span>
+              <span class="stat-value" id="stat-kakuma-projects">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Total Impact Actions</span>
+              <span class="stat-value" id="stat-impact-actions">0</span>
+            </div>
+            <div class="stat-row highlight">
+              <span class="stat-label">Value Generated</span>
+              <span class="stat-value" id="stat-value-generated">$0</span>
+            </div>
+          </div>
+
+          <a href="/kakuma" class="stat-card-action">Support Kakuma →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SKILL TREES -->
+  <!-- ============================================ -->
+  <section class="skills-section">
+    <div class="container mx-auto">
+      
+      <div class="section-header">
+        <h2 class="section-title">Skill Development</h2>
+        <p class="section-description">
+          Progress through four interconnected paths to master your craft
+        </p>
+      </div>
+
+      <!-- Skill Path Tabs -->
+      <div class="skill-path-tabs">
+        <button class="path-tab active" data-path="musical">
+          <span class="path-icon">🎵</span>
+          <span class="path-name">Musical Mastery</span>
+        </button>
+        <button class="path-tab" data-path="environmental">
+          <span class="path-icon">🌍</span>
+          <span class="path-name">Environmental Engineering</span>
+        </button>
+        <button class="path-tab" data-path="entrepreneurship">
+          <span class="path-icon">💼</span>
+          <span class="path-name">Entrepreneurship</span>
+        </button>
+        <button class="path-tab" data-path="leadership">
+          <span class="path-icon">👥</span>
+          <span class="path-name">Leadership & Impact</span>
+        </button>
+      </div>
+
+      <!-- Skill Tree Visualization -->
+      <div id="skill-tree-container" class="skill-tree-container">
+        <!-- 
+        Skill tree will be rendered here via JS
+        Structure:
+        - Foundation tier (bottom)
+        - Intermediate tier (middle)
+        - Advanced tier (top)
+        
+        Each skill node shows:
+        - Skill name
+        - Progress bar
+        - Lock/unlock status
+        - Prerequisites (connecting lines)
+        - XP required
+        -->
+      </div>
+
+      <!-- Skill Details Panel (shown when skill clicked) -->
+      <div id="skill-detail-panel" class="skill-detail-panel" style="display: none;">
+        <!-- Will show detailed info about selected skill -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- RECENT ACTIVITY FEED -->
+  <!-- ============================================ -->
+  <section class="activity-section">
+    <div class="container mx-auto">
+      
+      <h2 class="section-title">Recent Activity</h2>
+
+      <div id="activity-feed" class="activity-feed">
+        <!--
+        Activity items will be loaded here
+        
+        Template:
+        <div class="activity-item [type-class]">
+          <div class="activity-icon">🎵</div>
+          <div class="activity-content">
+            <p class="activity-text">
+              <strong>You</strong> uploaded a new track: "Morning Vibes"
+            </p>
+            <span class="activity-time">2 hours ago</span>
+          </div>
+          <div class="activity-reward">+100 XP</div>
+        </div>
+        -->
+      </div>
+
+      <button class="btn-secondary load-more" onclick="window.activityManager?.loadMore()">
+        Load More Activity
+      </button>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- MENTOR REQUEST MODAL -->
+  <!-- ============================================ -->
+  <div id="mentor-request-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content mentor-modal">
+
+      <div class="modal-header">
+        <h3>📅 Request Mentor Session</h3>
+        <button class="btn-close" onclick="closeMentorRequest()">×</button>
+      </div>
+
+      <form id="mentor-request-form" class="mentor-request-form">
+
+        <!-- Help Category -->
+        <div class="form-group">
+          <label for="help-category" class="form-label">
+            What do you need help with? *
+          </label>
+          <select id="help-category" name="category" class="form-select" required>
+            <option value="">Select a category...</option>
+            <option value="music">🎵 Music Production & Beat Making</option>
+            <option value="lyrics">📝 Lyric Writing & Storytelling</option>
+            <option value="battles">⚔️ Rap Battles & Performance</option>
+            <option value="learning">🌱 Environmental Learning</option>
+            <option value="kakuma">🏕️ Kakuma Projects</option>
+            <option value="community">👥 Community Building</option>
+            <option value="general">💡 General Guidance</option>
+          </select>
+          <span class="form-hint">
+            Choose the area where you need the most support
+          </span>
+        </div>
+
+        <!-- Goals Textarea -->
+        <div class="form-group">
+          <label for="mentor-goals" class="form-label">
+            Tell us about your goals *
+          </label>
+          <textarea
+            id="mentor-goals"
+            name="goals"
+            class="form-textarea"
+            rows="4"
+            placeholder="What do you want to achieve? What challenges are you facing?"
+            maxlength="500"
+            required
+          ></textarea>
+          <div class="form-actions-row">
+            <span class="form-hint" id="goals-counter">0 / 500 characters</span>
+          </div>
+        </div>
+
+        <!-- Mentor Style Preferences -->
+        <div class="form-group">
+          <label class="form-label">
+            Preferred Mentor Style
+          </label>
+          <div class="checkbox-group">
+            <label class="form-checkbox">
+              <input type="checkbox" name="style" value="structured" />
+              <span>
+                <strong>Structured Lessons</strong>
+                <br/>
+                <small>Step-by-step curriculum with clear milestones</small>
+              </span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="style" value="freeform" />
+              <span>
+                <strong>Freeform Exploration</strong>
+                <br/>
+                <small>Flexible learning guided by curiosity</small>
+              </span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="style" value="project" />
+              <span>
+                <strong>Project-Based Learning</strong>
+                <br/>
+                <small>Learn by building real things</small>
+              </span>
+            </label>
+            <label class="form-checkbox">
+              <input type="checkbox" name="style" value="collaborative" />
+              <span>
+                <strong>Collaborative Sessions</strong>
+                <br/>
+                <small>Work together with mentor in real-time</small>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Session Frequency -->
+        <div class="form-group">
+          <label for="session-frequency" class="form-label">
+            How often would you like to meet?
+          </label>
+          <select id="session-frequency" name="frequency" class="form-select">
+            <option value="weekly">Once a week</option>
+            <option value="biweekly" selected>Every two weeks</option>
+            <option value="monthly">Once a month</option>
+            <option value="flexible">Flexible - as needed</option>
+          </select>
+        </div>
+
+        <!-- Preferred Time -->
+        <div class="form-group">
+          <label for="preferred-time" class="form-label">
+            Preferred Time (Optional)
+          </label>
+          <select id="preferred-time" name="preferredTime" class="form-select">
+            <option value="">No preference</option>
+            <option value="morning">Morning (6am - 12pm)</option>
+            <option value="afternoon">Afternoon (12pm - 6pm)</option>
+            <option value="evening">Evening (6pm - 12am)</option>
+            <option value="late">Late night (12am - 6am)</option>
+          </select>
+          <span class="form-hint">
+            Your timezone will be detected automatically
+          </span>
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="form-group">
+          <label for="additional-notes" class="form-label">
+            Anything else your mentor should know? (Optional)
+          </label>
+          <textarea
+            id="additional-notes"
+            name="notes"
+            class="form-textarea"
+            rows="3"
+            placeholder="Learning style, availability constraints, specific topics, etc."
+            maxlength="300"
+          ></textarea>
+          <span class="form-hint" id="notes-counter">0 / 300 characters</span>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="btn-secondary"
+            onclick="closeMentorRequest()"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary">
+            <span>📅</span>
+            <span>Submit Request</span>
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</BaseLayout>
+
+<!-- ============================================ -->
+<!-- PAGE-SPECIFIC JAVASCRIPT -->
+<!-- ============================================ -->
+<script>
+  /**
+   * ProgressPageManager
+   * Handles loading and displaying user progress data
+   */
+  class ProgressPageManager {
+    constructor() {
+      this.progressData = null;
+    }
+
+    async initialize() {
+      const walletAddress = window.walletManager?.connectedWallet;
+      if (!walletAddress) {
+        this.showConnectPrompt();
+        return;
+      }
+
+      await this.loadProgressData(walletAddress);
+      this.renderAllSections();
+    }
+
+    async loadProgressData(walletAddress) {
+      try {
+        // Load comprehensive progress data
+        const response = await fetch(
+          `/api/gamification/user-progress?walletAddress=${walletAddress}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+          this.progressData = data;
+        }
+      } catch (error) {
+        console.error('Failed to load progress:', error);
+        this.showError('Failed to load your progress. Please try again.');
+      }
+    }
+
+    renderAllSections() {
+      if (!this.progressData) return;
+
+      this.renderHeroSection();
+      this.renderMentorSection();
+      this.renderAchievements();
+      this.renderStats();
+      this.renderSkillTrees();
+      this.renderActivityFeed();
+    }
+
+    renderHeroSection() {
+      const { progression } = this.progressData;
+      
+      // Update level
+      document.getElementById('hero-level').textContent = progression.currentLevel;
+      document.getElementById('hero-stage').textContent = 
+        this.capitalizeFirst(progression.lifeStage) + ' Stage';
+      
+      // Update XP
+      const xpPercent = progression.nextLevel.percentComplete;
+      document.getElementById('hero-xp-current').textContent = 
+        `${progression.totalXP} XP`;
+      document.getElementById('hero-xp-target').textContent = 
+        `${progression.nextLevel.xpNeeded} XP to Level ${progression.nextLevel.level}`;
+      document.getElementById('hero-xp-fill').style.width = `${xpPercent}%`;
+      document.getElementById('hero-xp-percent').textContent = 
+        `${Math.round(xpPercent)}%`;
+      
+      // Update quick stats
+      document.getElementById('quick-achievements').textContent = 
+        this.progressData.achievements.total;
+      document.getElementById('quick-tracks').textContent = 
+        this.progressData.music.publishedTracks;
+      document.getElementById('quick-courses').textContent = 
+        this.progressData.environmental.coursesCompleted;
+      document.getElementById('quick-battles').textContent = 
+        this.progressData.music.battles.total;
+    }
+
+    renderMentorSection() {
+      const { progression, dailyWisdom } = this.progressData;
+      
+      // Update mentor info
+      const mentorData = this.getMentorData(progression.animalMentor);
+      document.getElementById('mentor-avatar').textContent = mentorData.emoji;
+      document.getElementById('mentor-name').textContent = mentorData.name;
+      document.getElementById('mentor-title').textContent = mentorData.title;
+      
+      // Update daily wisdom
+      if (dailyWisdom) {
+        document.getElementById('daily-wisdom').innerHTML = 
+          `<strong>${dailyWisdom.topic}:</strong> ${dailyWisdom.wisdom_text}`;
+      }
+    }
+
+    renderAchievements() {
+      // TODO: Load and render achievements
+      const container = document.getElementById('achievements-grid');
+      
+      // For now, show loading state
+      container.innerHTML = '<p class="loading">Loading achievements...</p>';
+    }
+
+    renderStats() {
+      const { music, environmental, kakumaImpact } = this.progressData;
+      
+      // Musical stats
+      document.getElementById('stat-tracks').textContent = music.publishedTracks;
+      document.getElementById('stat-plays').textContent = '0'; // TODO: Add plays tracking
+      document.getElementById('stat-collabs').textContent = '0'; // TODO: Add collab tracking
+      document.getElementById('stat-battle-wins').textContent = music.battles.wins;
+      document.getElementById('stat-battle-losses').textContent = music.battles.losses;
+      document.getElementById('stat-win-rate').textContent = music.battles.winRate + '%';
+      
+      // Environmental stats
+      document.getElementById('stat-courses-done').textContent = 
+        environmental.coursesCompleted;
+      document.getElementById('stat-projects').textContent = 
+        environmental.projectsParticipated;
+      
+      // Kakuma stats
+      document.getElementById('stat-youth-impacted').textContent = 
+        kakumaImpact.youthImpacted;
+      document.getElementById('stat-kakuma-projects').textContent = '0'; // TODO
+      document.getElementById('stat-impact-actions').textContent = 
+        kakumaImpact.totalActions;
+      document.getElementById('stat-value-generated').textContent = 
+        `$${kakumaImpact.valueGenerated}`;
+    }
+
+    renderSkillTrees() {
+      // TODO: Implement skill tree visualization
+      const container = document.getElementById('skill-tree-container');
+      container.innerHTML = '<p class="loading">Loading skill trees...</p>';
+    }
+
+    renderActivityFeed() {
+      const { recentActivity } = this.progressData;
+      const container = document.getElementById('activity-feed');
+      
+      if (!recentActivity || recentActivity.length === 0) {
+        container.innerHTML = '<p class="empty-state">No recent activity</p>';
+        return;
+      }
+
+      container.innerHTML = recentActivity.map(activity => `
+        <div class="activity-item">
+          <div class="activity-icon">${this.getActivityIcon(activity.activity_type)}</div>
+          <div class="activity-content">
+            <p class="activity-text">${activity.description}</p>
+            <span class="activity-time">${this.formatTime(activity.created_at)}</span>
+          </div>
+          <div class="activity-reward">+${activity.xp_earned} XP</div>
+        </div>
+      `).join('');
+    }
+
+    showConnectPrompt() {
+      // Show message to connect wallet
+      const container = document.querySelector('.progress-hero');
+      container.innerHTML = `
+        <div class="connect-prompt">
+          <h2>Connect Your Wallet</h2>
+          <p>Connect your wallet to view your progress</p>
+          <button class="btn-primary" onclick="document.getElementById('connect-wallet-btn').click()">
+            Connect Wallet
+          </button>
+        </div>
+      `;
+    }
+
+    showError(message) {
+      console.error(message);
+      // TODO: Show user-friendly error message
+    }
+
+    getMentorData(type) {
+      const mentors = {
+        chicken: {
+          emoji: '🐓',
+          name: 'Chicken Mentor',
+          title: 'Master of Foundations & Community'
+        },
+        cat: {
+          emoji: '🐱',
+          name: 'Cat Mentor',
+          title: 'Guide of Independence & Creative Flow'
+        },
+        goat: {
+          emoji: '🐐',
+          name: 'Goat Mentor',
+          title: 'Teacher of Resourcefulness & Adaptability'
+        },
+        pigeon: {
+          emoji: '🕊️',
+          name: 'Pigeon Mentor',
+          title: 'Expert in Communication & Networking'
+        },
+        dog: {
+          emoji: '🐕',
+          name: 'Dog Mentor',
+          title: 'Leader of Loyalty & Community Protection'
+        },
+        rabbit: {
+          emoji: '🐰',
+          name: 'Rabbit Mentor',
+          title: 'Master of Rapid Growth & Multiplication'
+        }
+      };
+      
+      return mentors[type] || mentors.chicken;
+    }
+
+    getActivityIcon(type) {
+      const icons = {
+        track_upload: '🎵',
+        battle_won: '⚔️',
+        battle_lost: '🛡️',
+        course_completed: '🎓',
+        achievement_earned: '🏆',
+        level_up: '⭐',
+        observation: '🔬',
+        project_joined: '🌱'
+      };
+      return icons[type] || '📌';
+    }
+
+    formatTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins} min ago`;
+      
+      const diffHours = Math.floor(diffMins / 60);
+      if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      
+      const diffDays = Math.floor(diffHours / 24);
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    }
+
+    capitalizeFirst(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+  }
+
+  // Initialize page manager
+  window.progressPageManager = new ProgressPageManager();
+
+  // Load data when page ready and wallet connected
+  document.addEventListener('DOMContentLoaded', () => {
+    // Wait a bit for wallet manager to initialize
+    setTimeout(() => {
+      window.progressPageManager.initialize();
+    }, 500);
+  });
+
+  // ============================================
+  // MENTOR REQUEST MODAL FUNCTIONS
+  // ============================================
+
+  function openMentorRequest() {
+    document.getElementById('mentor-request-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMentorRequest() {
+    document.getElementById('mentor-request-modal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('mentor-request-form').reset();
+    document.getElementById('goals-counter').textContent = '0 / 500 characters';
+    document.getElementById('notes-counter').textContent = '0 / 300 characters';
+  }
+
+  // Character counters
+  document.getElementById('mentor-goals')?.addEventListener('input', (e) => {
+    document.getElementById('goals-counter').textContent =
+      `${e.target.value.length} / 500 characters`;
+  });
+
+  document.getElementById('additional-notes')?.addEventListener('input', (e) => {
+    document.getElementById('notes-counter').textContent =
+      `${e.target.value.length} / 300 characters`;
+  });
+
+  // Form submission
+  document.getElementById('mentor-request-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const walletAddress = window.walletManager?.connectedWallet;
+    if (!walletAddress) {
+      alert('Please connect your wallet first');
+      return;
+    }
+
+    // Collect form data
+    const formData = new FormData(e.target);
+    const styles = Array.from(formData.getAll('style'));
+
+    const requestData = {
+      walletAddress,
+      category: formData.get('category'),
+      goals: formData.get('goals'),
+      mentorStyles: styles,
+      frequency: formData.get('frequency'),
+      preferredTime: formData.get('preferredTime'),
+      additionalNotes: formData.get('notes'),
+      requestedAt: new Date().toISOString()
+    };
+
+    try {
+      // Submit mentor request
+      const response = await fetch('/api/mentors/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Award XP for requesting mentor
+        await window.progressManager?.awardXP(25, 'mentor_requested', 'Requested a mentor session');
+
+        // Close modal
+        closeMentorRequest();
+
+        // Show success message
+        alert('✅ Mentor request submitted! We\'ll match you with a mentor within 24-48 hours.');
+
+        // Reload progress data
+        await window.progressPageManager?.initialize();
+      } else {
+        alert('❌ Failed to submit mentor request. Please try again.');
+      }
+    } catch (error) {
+      console.error('Failed to submit mentor request:', error);
+      alert('❌ An error occurred. Please try again.');
+    }
+  });
+
+  // MentorManager placeholder (for compatibility with button calls)
+  window.mentorManager = {
+    requestSession: openMentorRequest,
+    viewGuidance: () => {
+      // TODO: Implement view all guidance modal
+      console.log('View guidance clicked');
+    },
+    changeMentor: () => {
+      // TODO: Implement change mentor modal (requires level 11+)
+      alert('Change mentor feature coming soon! (Requires Level 11)');
+    }
+  };
+</script>
+
+<style>
+  /* Page-specific styles */
+  .progress-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    margin-bottom: 3rem;
+  }
+
+  .level-showcase {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .level-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .level-number {
+    font-size: 3rem;
+    font-weight: bold;
+  }
+
+  .level-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .stage-name {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .xp-progress-container {
+    margin: 2rem 0;
+  }
+
+  .xp-bar {
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    margin: 1rem 0;
+  }
+
+  .xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+    border-radius: 20px;
+    transition: width 0.5s ease;
+  }
+
+  .quick-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .quick-stat {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  /* Mentor Request Modal Styles */
+  .mentor-modal {
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .mentor-request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .form-checkbox:hover {
+    border-color: var(--color-primary);
+    background: var(--color-gray-50);
+  }
+
+  .form-checkbox input[type="checkbox"] {
+    margin-top: 0.25rem;
+  }
+
+  .form-checkbox input[type="checkbox"]:checked + span {
+    color: var(--color-primary);
+  }
+
+  .form-checkbox small {
+    color: var(--color-gray-600);
+    font-size: 0.875rem;
+  }
+
+  /* More styles... */
+</style>
+
+/*
+ * MODAL REVIEW NOTES:
+ * - ✅ Mentor request modal complete and functional
+ * - ✅ 7 help categories with good coverage
+ * - ✅ Mentor style preferences with descriptive options
+ * - ✅ Session frequency and timing preferences
+ * - ✅ Character counters for textareas
+ * - ✅ Form validation and submission
+ * - ✅ XP award on successful request (25 XP)
+ * - ⚠️ API endpoint /api/mentors/request needs implementation
+ * - 💡 GOOD USE CASE: Modal perfect for this form (7 fields, clear purpose)
+ * - 📝 TODO: Implement /api/mentors/request endpoint
+ * - 📝 TODO: Add mentor matching algorithm
+ * - 📝 TODO: Add email notification when mentor matched
+ */

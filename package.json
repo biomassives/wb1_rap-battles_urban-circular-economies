@@ -6,7 +6,11 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate-wav": "node scripts/generate-wav-samples.js",
+    "generate-synth": "node scripts/generate-synth-samples.js",
+    "generate-all-samples": "npm run generate-wav && npm run generate-synth",
+    "verify-samples": "node scripts/verify-samples.js"
   },
   "devDependencies": {
     "astro": "^5.16.6"
@@ -19,6 +23,7 @@
     "@tonejs/midi": "^2.0.28",
     "@vercel/postgres": "^0.10.0",
     "bip39": "^3.1.0",
+    "pg": "^8.16.3",
     "three": "^0.182.0"
   }
 }

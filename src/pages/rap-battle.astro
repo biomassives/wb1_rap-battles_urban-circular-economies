@@ -1,0 +1,2199 @@
+---
+/**
+ * rap-battle.astro - Unified Rap Battle Experience
+ *
+ * Complete workflow:
+ * 1. Choose: Create Challenge OR Join Existing (via BattleSetupModal)
+ * 2. Select beat (sampler bank, Strudel, AutoMoog, or upload)
+ * 3. Invite opponents (or accept invite)
+ * 4. Battle lobby with messaging
+ * 5. Record your verse with backing track
+ * 6. Submit & vote
+ * 7. Winner announced, NFT minted
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BattleSetupModal from '../components/BattleSetupModal.astro';
+---
+
+<BaseLayout
+  title="Rap Battle Arena"
+  description="Challenge opponents, record your verse, win NFTs"
+  activeSection="music"
+>
+
+<style>
+:root {
+  --bg-dark: #05070a;
+  --panel-bg: #0b0f17;
+  --text: #e6f1ff;
+  --muted: #8aa2c1;
+  --neon-green: #00ff9c;
+  --neon-cyan: #00e5ff;
+  --neon-magenta: #ff4fd8;
+  --neon-orange: #ff9770;
+  --danger: #ff3864;
+  --border: #1e2a44;
+}
+
+.battle-arena {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0b1020, #05070a 70%);
+  padding: 2rem 1rem;
+}
+
+.arena-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Header */
+.arena-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.arena-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(0, 255, 156, 0.3);
+  margin: 0;
+}
+
+.arena-subtitle {
+  color: var(--muted);
+  font-family: monospace;
+  margin-top: 0.5rem;
+}
+
+/* Battle Mode Selection */
+.mode-selection {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mode-card {
+  background: linear-gradient(180deg, var(--panel-bg), #070b12);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mode-card:hover {
+  border-color: var(--neon-cyan);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2);
+}
+
+.mode-card.active {
+  border-color: var(--neon-green);
+  background: linear-gradient(180deg, rgba(0, 255, 156, 0.1), var(--panel-bg));
+}
+
+.mode-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.mode-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.25rem;
+}
+
+.mode-desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.mode-hint {
+  font-size: 0.75rem;
+  color: var(--neon-cyan);
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border);
+  opacity: 0.8;
+}
+
+/* Current Beat Display */
+.current-beat-display {
+  background: linear-gradient(180deg, rgba(0, 255, 156, 0.08), rgba(0, 229, 255, 0.05));
+  border: 1px solid var(--neon-green);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.beat-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.beat-icon {
+  font-size: 1.5rem;
+}
+
+.beat-name {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.beat-source {
+  color: var(--neon-cyan);
+  font-size: 0.8rem;
+  background: rgba(0, 229, 255, 0.15);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+}
+
+.beat-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.beat-play-btn,
+.beat-change-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.beat-play-btn {
+  background: var(--neon-green);
+  border: none;
+  color: #000;
+  font-weight: 700;
+}
+
+.beat-play-btn:hover {
+  transform: scale(1.05);
+}
+
+.beat-play-btn.playing {
+  background: var(--danger);
+  color: #fff;
+}
+
+.beat-change-btn {
+  background: transparent;
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.beat-change-btn:hover {
+  background: rgba(0, 229, 255, 0.1);
+}
+
+/* Panel */
+.panel {
+  background: linear-gradient(180deg, var(--panel-bg), #070b12);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--border);
+}
+
+.panel-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-step {
+  background: var(--neon-green);
+  color: #000;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Active Battles List */
+.battles-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.battle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.battle-item:hover {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+.battle-info h4 {
+  margin: 0 0 0.25rem;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.battle-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.battle-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.battle-status.waiting {
+  background: rgba(255, 151, 112, 0.2);
+  color: var(--neon-orange);
+}
+
+.battle-status.ready {
+  background: rgba(0, 255, 156, 0.2);
+  color: var(--neon-green);
+}
+
+.battle-status.live {
+  background: rgba(255, 56, 100, 0.2);
+  color: var(--danger);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Quick Create */
+.quick-create {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.quick-btn {
+  background: rgba(0, 255, 156, 0.1);
+  border: 1px solid var(--neon-green);
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: var(--neon-green);
+  font-family: monospace;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.quick-btn:hover {
+  background: rgba(0, 255, 156, 0.2);
+  transform: scale(1.02);
+}
+
+.quick-btn .icon {
+  font-size: 1.5rem;
+}
+
+/* Battle Lobby */
+.battle-lobby {
+  display: none;
+}
+
+.battle-lobby.active {
+  display: block;
+}
+
+.lobby-vs {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(0, 255, 156, 0.05), rgba(255, 79, 216, 0.05));
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.lobby-player {
+  text-align: center;
+}
+
+.player-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 0.5rem;
+  border: 3px solid var(--panel-bg);
+}
+
+.player-name {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.player-status {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.player-status.ready {
+  color: var(--neon-green);
+}
+
+.vs-badge {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--neon-magenta);
+  text-shadow: 0 0 20px rgba(255, 79, 216, 0.5);
+}
+
+.waiting-player {
+  opacity: 0.5;
+}
+
+.waiting-player .player-avatar {
+  background: var(--border);
+  animation: waiting-pulse 2s infinite;
+}
+
+@keyframes waiting-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+/* Chat */
+.lobby-chat {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  height: 200px;
+  overflow-y: auto;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chat-message {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.chat-message.system {
+  background: rgba(0, 229, 255, 0.1);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--neon-cyan);
+}
+
+.chat-sender {
+  font-size: 0.75rem;
+  color: var(--neon-green);
+  margin-bottom: 0.25rem;
+}
+
+.chat-text {
+  color: var(--text);
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chat-input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+}
+
+.chat-send {
+  background: var(--neon-green);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  color: #000;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Recording Section */
+.recording-section {
+  display: none;
+}
+
+.recording-section.active {
+  display: block;
+}
+
+.recorder-display {
+  background: #000;
+  border: 2px solid var(--neon-magenta);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.recorder-timer {
+  font-size: 3rem;
+  font-family: monospace;
+  color: var(--neon-green);
+  margin-bottom: 1rem;
+}
+
+.recorder-status {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.recorder-status.recording {
+  color: var(--danger);
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.recorder-visualizer {
+  height: 60px;
+  background: rgba(0, 255, 156, 0.1);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.viz-bar {
+  width: 4px;
+  background: var(--neon-green);
+  border-radius: 2px;
+  transition: height 0.1s;
+}
+
+.recorder-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.rec-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: all 0.2s;
+}
+
+.rec-btn.record {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.rec-btn.record:hover {
+  background: rgba(255, 56, 100, 0.2);
+}
+
+.rec-btn.record.active {
+  background: var(--danger);
+  color: #fff;
+  animation: recording-pulse 1s infinite;
+}
+
+@keyframes recording-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 56, 100, 0.5); }
+  50% { box-shadow: 0 0 0 10px rgba(255, 56, 100, 0); }
+}
+
+.rec-btn.stop {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.rec-btn.submit {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+
+.rec-btn.submit:hover {
+  background: rgba(0, 255, 156, 0.2);
+}
+
+/* Playback */
+.playback-section {
+  margin-top: 1rem;
+}
+
+.playback-audio {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-action {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+  border: none;
+  color: #000;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 255, 156, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 229, 255, 0.1);
+}
+
+.btn-danger {
+  background: transparent;
+  border: 2px solid var(--danger);
+  color: var(--danger);
+}
+
+/* Pending Invites Banner */
+.invites-banner {
+  background: linear-gradient(135deg, rgba(255, 151, 112, 0.1), rgba(255, 79, 216, 0.1));
+  border: 1px solid var(--neon-orange);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.invites-banner.hidden {
+  display: none;
+}
+
+.invites-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.invites-icon {
+  font-size: 1.5rem;
+}
+
+.invites-text h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.invites-text p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.invites-action {
+  background: var(--neon-orange);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  color: #000;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--muted);
+}
+
+.empty-state .icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* Practice Mode Section */
+.practice-section {
+  margin-top: 1.5rem;
+}
+
+.practice-panel {
+  background: linear-gradient(180deg, rgba(112, 214, 255, 0.08), var(--panel-bg));
+  border-color: rgba(112, 214, 255, 0.3);
+}
+
+.practice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--border);
+}
+
+.practice-badge {
+  background: linear-gradient(135deg, rgba(112, 214, 255, 0.2), rgba(0, 255, 156, 0.1));
+  border: 1px solid var(--neon-cyan);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  color: var(--neon-cyan);
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.exit-practice-btn-main {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exit-practice-btn-main:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.practice-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--neon-green);
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.practice-tips {
+  background: rgba(255, 151, 112, 0.08);
+  border: 1px solid rgba(255, 151, 112, 0.2);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.practice-tips h4 {
+  color: var(--neon-orange);
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
+}
+
+.practice-tips ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.practice-tips li {
+  padding: 0.35rem 0 0.35rem 1.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  position: relative;
+}
+
+.practice-tips li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--neon-orange);
+}
+
+.practice-saved-takes h4 {
+  color: var(--text);
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
+}
+
+.saved-takes-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.no-takes {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.saved-take-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.saved-take-item:hover {
+  border-color: var(--neon-cyan);
+}
+
+.take-icon {
+  font-size: 1.25rem;
+}
+
+.take-info {
+  flex: 1;
+}
+
+.take-name {
+  color: var(--text);
+  font-size: 0.9rem;
+  display: block;
+}
+
+.take-duration {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.take-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.take-btn {
+  padding: 0.35rem 0.6rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.take-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.take-btn.play {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+
+.take-btn.delete {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Practice action buttons layout */
+.practice-action-buttons {
+  flex-wrap: wrap;
+}
+
+.practice-action-buttons .btn-action {
+  min-width: 140px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .mode-selection {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-create {
+    grid-template-columns: 1fr;
+  }
+
+  .lobby-vs {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .vs-badge {
+    transform: rotate(90deg);
+  }
+}
+</style>
+
+<div class="battle-arena">
+  <div class="arena-container">
+
+    <!-- Header -->
+    <header class="arena-header">
+      <h1 class="arena-title">⚔️ RAP BATTLE ARENA ⚔️</h1>
+      <p class="arena-subtitle">> CREATE_BATTLE() | JOIN_BATTLE() | WIN_NFT()</p>
+    </header>
+
+    <!-- Pending Invites Banner -->
+    <div class="invites-banner hidden" id="invites-banner">
+      <div class="invites-info">
+        <span class="invites-icon">📨</span>
+        <div class="invites-text">
+          <h4>You have battle invites!</h4>
+          <p><span id="invite-count">0</span> challenges waiting for you</p>
+        </div>
+      </div>
+      <button class="invites-action" onclick="showPendingInvites()">View Invites</button>
+    </div>
+
+    <!-- Mode Selection - Opens Battle Setup Modal -->
+    <div class="mode-selection" id="mode-selection">
+      <div class="mode-card" data-mode="create" onclick="openBattleSetupWithMode('create')">
+        <div class="mode-icon">🎤</div>
+        <h3 class="mode-title">CREATE BATTLE</h3>
+        <p class="mode-desc">Challenge someone to a rap battle</p>
+        <div class="mode-hint">Select beats from sampler, Strudel, or Moog</div>
+      </div>
+      <div class="mode-card" data-mode="join" onclick="openBattleSetupWithMode('join')">
+        <div class="mode-icon">⚡</div>
+        <h3 class="mode-title">JOIN BATTLE</h3>
+        <p class="mode-desc">Enter an open challenge or use invite code</p>
+        <div class="mode-hint">Sync with your opponent's beat selection</div>
+      </div>
+    </div>
+
+    <!-- Current Beat Display -->
+    <div class="current-beat-display" id="current-beat-display" style="display: none;">
+      <div class="beat-info">
+        <span class="beat-icon">🎵</span>
+        <span class="beat-name" id="display-beat-name">-</span>
+        <span class="beat-source" id="display-beat-source">-</span>
+      </div>
+      <div class="beat-controls">
+        <button class="beat-play-btn" id="beat-play-btn" onclick="toggleBeatPlayback()">▶ Play Beat</button>
+        <button class="beat-change-btn" onclick="openBattleSetup()">Change Beat</button>
+      </div>
+    </div>
+
+    <!-- Create Battle Panel -->
+    <div class="panel" id="create-panel" style="display: none;">
+      <div class="panel-header">
+        <h3 class="panel-title">
+          <span>🎤</span> Quick Battle Setup
+        </h3>
+        <span class="panel-step">STEP 1</span>
+      </div>
+
+      <div class="quick-create">
+        <button class="quick-btn" onclick="createQuickBattle('freestyle')">
+          <span class="icon">🎙️</span>
+          <span>Freestyle</span>
+        </button>
+        <button class="quick-btn" onclick="createQuickBattle('topic')">
+          <span class="icon">📝</span>
+          <span>Topic Battle</span>
+        </button>
+        <button class="quick-btn" onclick="createQuickBattle('beat')">
+          <span class="icon">🥁</span>
+          <span>Beat Battle</span>
+        </button>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-action btn-secondary" onclick="openChallengeCreateModal()">
+          ⚙️ Advanced Options
+        </button>
+        <button class="btn-action btn-primary" id="btn-send-invites" disabled>
+          📨 Send Invites
+        </button>
+      </div>
+    </div>
+
+    <!-- Join Battle Panel -->
+    <div class="panel" id="join-panel" style="display: none;">
+      <div class="panel-header">
+        <h3 class="panel-title">
+          <span>⚡</span> Active Battles
+        </h3>
+        <span class="panel-step">JOIN</span>
+      </div>
+
+      <div class="battles-list" id="battles-list">
+        <div class="empty-state">
+          <div class="icon">🔍</div>
+          <p>No active battles found. Create one or enter an invite code!</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 1rem;">
+        <input
+          type="text"
+          id="invite-code-input"
+          class="chat-input"
+          placeholder="Enter invite code (e.g., ABC123)"
+          style="text-transform: uppercase; text-align: center; font-size: 1.2rem; letter-spacing: 4px;"
+        >
+        <div class="action-buttons" style="margin-top: 0.75rem;">
+          <button class="btn-action btn-primary" onclick="joinByCode()">
+            🎯 Join Battle
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Battle Lobby -->
+    <div class="battle-lobby" id="battle-lobby">
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title" id="lobby-title">
+            <span>⚔️</span> Battle Lobby
+          </h3>
+          <span class="panel-step" id="lobby-status">WAITING</span>
+        </div>
+
+        <!-- VS Display -->
+        <div class="lobby-vs">
+          <div class="lobby-player" id="player-1">
+            <div class="player-avatar">🎤</div>
+            <div class="player-name">You</div>
+            <div class="player-status ready">Ready</div>
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="lobby-player waiting-player" id="player-2">
+            <div class="player-avatar">?</div>
+            <div class="player-name">Waiting...</div>
+            <div class="player-status">Invite sent</div>
+          </div>
+        </div>
+
+        <!-- Chat -->
+        <div class="lobby-chat" id="lobby-chat">
+          <div class="chat-message system">
+            Battle lobby created. Waiting for opponent...
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input
+            type="text"
+            class="chat-input"
+            id="chat-input"
+            placeholder="Type a message..."
+            onkeypress="handleChatKeypress(event)"
+          >
+          <button class="chat-send" onclick="sendChatMessage()">Send</button>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn-action btn-secondary" onclick="inviteMore()">
+            ➕ Invite More
+          </button>
+          <button class="btn-action btn-primary" id="btn-start-battle" disabled>
+            🎙️ Start Battle
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recording Section -->
+    <div class="recording-section" id="recording-section">
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">
+            <span>🎙️</span> Record Your Verse
+          </h3>
+          <span class="panel-step" id="round-indicator">ROUND 1</span>
+        </div>
+
+        <div class="recorder-display">
+          <div class="recorder-timer" id="recorder-timer">00:00</div>
+          <div class="recorder-status" id="recorder-status">Ready to record</div>
+          <div class="recorder-visualizer" id="visualizer">
+            <!-- Visualizer bars generated by JS -->
+          </div>
+          <div class="recorder-controls">
+            <button class="rec-btn record" id="btn-record" onclick="toggleRecording()">
+              ⏺
+            </button>
+            <button class="rec-btn stop" id="btn-stop" onclick="stopRecording()" disabled>
+              ⏹
+            </button>
+            <button class="rec-btn submit" id="btn-submit-verse" onclick="submitVerse()" disabled>
+              ✓
+            </button>
+          </div>
+        </div>
+
+        <div class="playback-section" id="playback-section" style="display: none;">
+          <audio id="playback-audio" class="playback-audio" controls></audio>
+          <div class="action-buttons" id="submission-buttons">
+            <button class="btn-action btn-danger" onclick="reRecord()">
+              🔄 Re-record
+            </button>
+            <button class="btn-action btn-primary" onclick="confirmSubmission()">
+              ✅ Submit Verse
+            </button>
+          </div>
+          <!-- Practice mode buttons (shown instead of submission in practice mode) -->
+          <div class="action-buttons practice-action-buttons" id="practice-buttons" style="display: none;">
+            <button class="btn-action btn-danger" onclick="reRecord()">
+              🔄 Try Again
+            </button>
+            <button class="btn-action btn-secondary" onclick="savePracticeRecording()">
+              💾 Save to Device
+            </button>
+            <button class="btn-action btn-primary" onclick="exitPracticeAndCreateBattle()">
+              ⚔️ Ready for Real Battle
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Practice Mode Section -->
+    <div class="practice-section" id="practice-section" style="display: none;">
+      <div class="panel practice-panel">
+        <div class="practice-header">
+          <div class="practice-badge">
+            <span>🎓</span> PRACTICE MODE
+          </div>
+          <button class="exit-practice-btn-main" onclick="exitToPracticeMenu()">Exit Practice</button>
+        </div>
+
+        <div class="practice-stats">
+          <div class="stat-item">
+            <span class="stat-value" id="practice-recordings-count">0</span>
+            <span class="stat-label">Recordings</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="practice-total-time">0:00</span>
+            <span class="stat-label">Total Time</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="practice-best-take">-</span>
+            <span class="stat-label">Best Take</span>
+          </div>
+        </div>
+
+        <div class="practice-tips">
+          <h4>💡 Tips for Your Battle</h4>
+          <ul>
+            <li>Listen to the beat and find the rhythm before recording</li>
+            <li>Project your voice clearly into the microphone</li>
+            <li>Practice your flow - timing is everything</li>
+            <li>Don't be afraid to try different styles</li>
+            <li>Save your best takes to review later</li>
+          </ul>
+        </div>
+
+        <div class="practice-saved-takes" id="practice-saved-takes">
+          <h4>📁 Your Saved Takes</h4>
+          <div class="saved-takes-list" id="saved-takes-list">
+            <p class="no-takes">No saved takes yet. Start recording!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Battle Setup Modal -->
+<BattleSetupModal />
+
+<script>
+// State
+let currentMode = null;
+let currentChallenge = null;
+let isRecording = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let recordedBlob = null;
+let recordingStartTime = null;
+let timerInterval = null;
+let currentBeat = null;
+let beatAudioContext = null;
+let beatIsPlaying = false;
+let strudelPattern = null;
+
+// Practice Mode State
+let isPracticeMode = false;
+let practiceRecordingsCount = 0;
+let practiceTotalTime = 0;
+let savedPracticeTakes = [];
+
+// DOM Elements
+const modeSelection = document.getElementById('mode-selection');
+const createPanel = document.getElementById('create-panel');
+const joinPanel = document.getElementById('join-panel');
+const battleLobby = document.getElementById('battle-lobby');
+const recordingSection = document.getElementById('recording-section');
+const invitesBanner = document.getElementById('invites-banner');
+const currentBeatDisplay = document.getElementById('current-beat-display');
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  initializeArena();
+  checkPendingInvites();
+  loadActiveBattles();
+  createVisualizerBars();
+  loadCurrentBeat();
+
+  // Auto-open setup modal if no battle is active
+  setTimeout(() => {
+    if (!currentChallenge && typeof openBattleSetup === 'function') {
+      // Check if user came from direct link vs homepage
+      const urlParams = new URLSearchParams(window.location.search);
+      if (!urlParams.get('id') && !urlParams.get('code')) {
+        openBattleSetup();
+      }
+    }
+  }, 500);
+});
+
+// Open modal with pre-selected mode
+function openBattleSetupWithMode(mode) {
+  if (typeof openBattleSetup === 'function') {
+    openBattleSetup();
+    // Pre-select the mode after modal opens
+    setTimeout(() => {
+      if (typeof selectBattleMode === 'function') {
+        selectBattleMode(mode);
+      }
+    }, 100);
+  }
+}
+
+// Load beat from localStorage (set by BattleSetupModal)
+function loadCurrentBeat() {
+  const savedBeat = localStorage.getItem('currentBattleBeat');
+  const savedPattern = localStorage.getItem('currentBattlePattern');
+
+  if (savedBeat) {
+    currentBeat = JSON.parse(savedBeat);
+    strudelPattern = savedPattern || null;
+    updateBeatDisplay();
+  }
+}
+
+// Update beat display
+function updateBeatDisplay() {
+  if (!currentBeat) {
+    currentBeatDisplay.style.display = 'none';
+    return;
+  }
+
+  currentBeatDisplay.style.display = 'flex';
+  document.getElementById('display-beat-name').textContent = currentBeat.name || 'Unknown Beat';
+
+  const sourceLabels = {
+    'sampler': '🎛️ Sampler',
+    'strudel': '🎵 Strudel',
+    'moog': '🎹 AutoMoog',
+    'file': '📁 Upload'
+  };
+  document.getElementById('display-beat-source').textContent =
+    sourceLabels[currentBeat.type] || currentBeat.type || 'Custom';
+}
+
+// Toggle beat playback during recording
+function toggleBeatPlayback() {
+  const btn = document.getElementById('beat-play-btn');
+
+  if (beatIsPlaying) {
+    stopBeatPlayback();
+    btn.textContent = '▶ Play Beat';
+    btn.classList.remove('playing');
+  } else {
+    startBeatPlayback();
+    btn.textContent = '⏹ Stop Beat';
+    btn.classList.add('playing');
+  }
+}
+
+function startBeatPlayback() {
+  beatIsPlaying = true;
+
+  // Check what type of beat we have
+  if (currentBeat?.type === 'strudel' && strudelPattern) {
+    // Play Strudel pattern
+    playStrudelPattern(strudelPattern);
+  } else if (currentBeat?.type === 'moog' && currentBeat?.mood) {
+    // Launch AutoMoog with mood
+    launchAutoMoog(currentBeat.mood);
+  } else if (currentBeat?.type === 'file' && currentBeat?.file) {
+    // Play uploaded file
+    playUploadedBeat(currentBeat.file);
+  } else if (currentBeat?.id && currentBeat.type !== 'moog') {
+    // Play sampler beat - try to find it
+    playSamplerBeat(currentBeat.id);
+  }
+}
+
+function stopBeatPlayback() {
+  beatIsPlaying = false;
+
+  // Stop Strudel
+  if (typeof hush === 'function') {
+    try { hush(); } catch (e) {}
+  }
+
+  // Stop any audio element
+  const beatAudio = document.getElementById('beat-audio');
+  if (beatAudio) {
+    beatAudio.pause();
+    beatAudio.currentTime = 0;
+  }
+
+  // Close AutoMoog if open
+  if (typeof closeMoogModal === 'function') {
+    // Don't close, just stop
+  }
+}
+
+// Play Strudel pattern
+function playStrudelPattern(pattern) {
+  if (!pattern) return;
+
+  try {
+    // Check if Strudel is available
+    if (typeof evaluate === 'function') {
+      evaluate(pattern);
+    } else if (window.strudel?.evaluate) {
+      window.strudel.evaluate(pattern);
+    } else {
+      console.log('Strudel pattern would play:', pattern);
+      // Fallback: create simple drum pattern audio
+      playFallbackDrum();
+    }
+  } catch (e) {
+    console.error('Strudel error:', e);
+    playFallbackDrum();
+  }
+}
+
+// Simple fallback drum loop
+function playFallbackDrum() {
+  if (!beatAudioContext) {
+    beatAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  const ctx = beatAudioContext;
+  const bpm = currentBeat?.bpm || 90;
+  const beatDuration = 60 / bpm;
+
+  function playKick(time) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.setValueAtTime(150, time);
+    osc.frequency.exponentialRampToValueAtTime(40, time + 0.1);
+    gain.gain.setValueAtTime(0.8, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(time);
+    osc.stop(time + 0.2);
+  }
+
+  function playSnare(time) {
+    const noise = ctx.createBufferSource();
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.1, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < buffer.length; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    noise.buffer = buffer;
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 1000;
+    gain.gain.setValueAtTime(0.5, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start(time);
+    noise.stop(time + 0.1);
+  }
+
+  // Schedule 4 beats
+  let now = ctx.currentTime;
+  for (let i = 0; i < 16; i++) {
+    playKick(now + i * beatDuration);
+    if (i % 2 === 1) playSnare(now + i * beatDuration);
+  }
+
+  // Loop if still playing
+  setTimeout(() => {
+    if (beatIsPlaying) playFallbackDrum();
+  }, beatDuration * 16 * 1000);
+}
+
+// Launch AutoMoog
+function launchAutoMoog(mood) {
+  if (typeof openMoogModal === 'function') {
+    openMoogModal();
+    // Set mood if available
+    setTimeout(() => {
+      if (typeof setMoogMood === 'function') {
+        setMoogMood(mood);
+      }
+    }, 500);
+  }
+}
+
+// Play uploaded beat file
+function playUploadedBeat(file) {
+  let audioEl = document.getElementById('beat-audio');
+  if (!audioEl) {
+    audioEl = document.createElement('audio');
+    audioEl.id = 'beat-audio';
+    audioEl.loop = true;
+    document.body.appendChild(audioEl);
+  }
+
+  if (file instanceof File) {
+    audioEl.src = URL.createObjectURL(file);
+  } else if (typeof file === 'string') {
+    audioEl.src = file;
+  }
+  audioEl.play();
+}
+
+// Play sampler beat
+function playSamplerBeat(beatId) {
+  // Try to find in sampler sequences
+  const sequences = JSON.parse(localStorage.getItem('samplerSequences') || '[]');
+  const seq = sequences.find(s => s.id === beatId);
+
+  if (seq?.combinedStrudelPattern) {
+    playStrudelPattern(seq.combinedStrudelPattern);
+  } else if (seq?.strudelPattern) {
+    playStrudelPattern(seq.strudelPattern);
+  } else {
+    // Just use fallback drum
+    playFallbackDrum();
+  }
+}
+
+function initializeArena() {
+  // Check for challenge manager
+  if (!window.wb1Challenges) {
+    window.addEventListener('wb1-challenges-ready', initializeArena, { once: true });
+    return;
+  }
+
+  console.log('⚔️ Battle Arena initialized');
+
+  // Listen for challenge events
+  window.addEventListener('wb1-challenge-accepted', handleOpponentJoined);
+  window.addEventListener('wb1-message-added', handleNewMessage);
+
+  // Listen for modal close to refresh beat display
+  const modal = document.getElementById('battleSetupModal');
+  if (modal) {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          if (!modal.classList.contains('active')) {
+            // Modal was closed, refresh beat display
+            loadCurrentBeat();
+          }
+        }
+      });
+    });
+    observer.observe(modal, { attributes: true });
+  }
+
+  // Also listen for storage changes (in case beat is set from modal)
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'currentBattleBeat' || e.key === 'currentBattlePattern') {
+      loadCurrentBeat();
+    }
+  });
+}
+
+// Mode Selection - Now redirects to modal
+function selectMode(mode) {
+  currentMode = mode;
+
+  // Update UI
+  document.querySelectorAll('.mode-card').forEach(card => {
+    card.classList.toggle('active', card.dataset.mode === mode);
+  });
+
+  // If modal is available, use it; otherwise fall back to inline panels
+  if (typeof openBattleSetup === 'function') {
+    openBattleSetupWithMode(mode);
+    return;
+  }
+
+  createPanel.style.display = mode === 'create' ? 'block' : 'none';
+  joinPanel.style.display = mode === 'join' ? 'block' : 'none';
+  battleLobby.classList.remove('active');
+  recordingSection.classList.remove('active');
+}
+
+// Quick Battle Creation
+function createQuickBattle(type) {
+  if (!window.wb1Challenges) {
+    alert('Challenge system loading...');
+    return;
+  }
+
+  const titles = {
+    'freestyle': 'Freestyle Battle',
+    'topic': 'Topic Battle',
+    'beat': 'Beat Battle'
+  };
+
+  currentChallenge = window.wb1Challenges.createChallenge({
+    type: 'rap_battle',
+    mode: '1v1',
+    title: titles[type] || 'Rap Battle',
+    description: `Quick ${type} rap battle`,
+    stakesAmount: 50
+  });
+
+  if (currentChallenge) {
+    // Update state to pending
+    window.wb1Challenges.updateChallengeState(currentChallenge.id, 'pending');
+
+    // Enable invite button
+    document.getElementById('btn-send-invites').disabled = false;
+
+    console.log('🎤 Quick battle created:', currentChallenge.id);
+
+    // Show lobby
+    showBattleLobby();
+  }
+}
+
+// Show Battle Lobby
+function showBattleLobby() {
+  if (!currentChallenge) return;
+
+  modeSelection.style.display = 'none';
+  createPanel.style.display = 'none';
+  joinPanel.style.display = 'none';
+  battleLobby.classList.add('active');
+
+  // Reload beat info in case it was set by modal
+  loadCurrentBeat();
+
+  document.getElementById('lobby-title').innerHTML = `<span>⚔️</span> ${currentChallenge.title}`;
+
+  // Add system message
+  addChatMessage('system', `Battle "${currentChallenge.title}" created. Invite code: ${currentChallenge.inviteCode}`);
+
+  // Show beat info if available
+  if (currentBeat) {
+    addChatMessage('system', `Beat: ${currentBeat.name} (${currentBeat.type || 'custom'})`);
+  }
+}
+
+// Make showBattleLobby globally available for the modal
+window.showBattleLobby = showBattleLobby;
+
+// Expose functions for inline onclick handlers
+window.toggleBeatPlayback = toggleBeatPlayback;
+window.openBattleSetupWithMode = openBattleSetupWithMode;
+window.selectMode = selectMode;
+
+// Chat
+function addChatMessage(type, text, sender = null) {
+  const chat = document.getElementById('lobby-chat');
+  const msg = document.createElement('div');
+  msg.className = `chat-message ${type}`;
+
+  if (type === 'system') {
+    msg.textContent = text;
+  } else {
+    msg.innerHTML = `
+      <div class="chat-sender">${sender || 'You'}</div>
+      <div class="chat-text">${text}</div>
+    `;
+  }
+
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function sendChatMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !currentChallenge) return;
+
+  // Add to UI
+  addChatMessage('user', text);
+
+  // Send via challenge manager
+  if (window.wb1Challenges) {
+    window.wb1Challenges.sendMessage(currentChallenge.id, text);
+  }
+
+  input.value = '';
+}
+
+function handleChatKeypress(event) {
+  if (event.key === 'Enter') {
+    sendChatMessage();
+  }
+}
+
+function handleNewMessage(event) {
+  const { challengeId, message } = event.detail;
+  if (challengeId !== currentChallenge?.id) return;
+
+  if (message.type === 'system') {
+    addChatMessage('system', message.content);
+  } else if (message.sender?.wallet !== window.wb1User?.getActiveWallet()?.address) {
+    addChatMessage('opponent', message.content, message.sender?.username);
+  }
+}
+
+// Invite Functions
+function inviteMore() {
+  if (currentChallenge) {
+    openInviteModal(currentChallenge.id);
+  }
+}
+
+document.getElementById('btn-send-invites')?.addEventListener('click', () => {
+  if (currentChallenge) {
+    openInviteModal(currentChallenge.id);
+  }
+});
+
+// Opponent Joined
+function handleOpponentJoined(event) {
+  const { challenge, participant } = event.detail;
+  if (challenge.id !== currentChallenge?.id) return;
+
+  // Update player 2
+  const player2 = document.getElementById('player-2');
+  player2.classList.remove('waiting-player');
+  player2.querySelector('.player-avatar').textContent = participant.username.charAt(0).toUpperCase();
+  player2.querySelector('.player-name').textContent = participant.username;
+  player2.querySelector('.player-status').textContent = 'Ready';
+  player2.querySelector('.player-status').classList.add('ready');
+
+  // Enable start button
+  document.getElementById('btn-start-battle').disabled = false;
+  document.getElementById('lobby-status').textContent = 'READY';
+
+  addChatMessage('system', `${participant.username} has joined the battle!`);
+}
+
+// Start Battle
+document.getElementById('btn-start-battle')?.addEventListener('click', () => {
+  if (!currentChallenge) return;
+
+  window.wb1Challenges?.startChallenge(currentChallenge.id);
+
+  battleLobby.classList.remove('active');
+  recordingSection.classList.add('active');
+
+  addChatMessage('system', 'Battle started! Record your verse!');
+});
+
+// Join Battle
+function joinByCode() {
+  const input = document.getElementById('invite-code-input');
+  const code = input.value.trim().toUpperCase();
+  if (!code) {
+    alert('Please enter an invite code');
+    return;
+  }
+
+  const result = window.wb1Challenges?.joinChallengeByCode(code);
+  if (result?.success) {
+    currentChallenge = result.challenge || window.wb1Challenges.challenges.find(c => c.inviteCode === code);
+    showBattleLobby();
+  } else {
+    alert(result?.error || 'Could not join battle');
+  }
+}
+
+// Pending Invites
+function checkPendingInvites() {
+  if (!window.wb1Challenges) {
+    window.addEventListener('wb1-challenges-ready', checkPendingInvites, { once: true });
+    return;
+  }
+
+  const invites = window.wb1Challenges.pendingInvites || [];
+  if (invites.length > 0) {
+    invitesBanner.classList.remove('hidden');
+    document.getElementById('invite-count').textContent = invites.length;
+  }
+}
+
+// Load Active Battles
+function loadActiveBattles() {
+  if (!window.wb1Challenges) {
+    window.addEventListener('wb1-challenges-ready', loadActiveBattles, { once: true });
+    return;
+  }
+
+  const battles = window.wb1Challenges.getActiveChallenges().filter(c => c.type === 'rap_battle');
+  const list = document.getElementById('battles-list');
+
+  if (battles.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <p>No active battles found. Create one or enter an invite code!</p>
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = battles.map(battle => {
+    const statusClass = battle.state === 'pending' ? 'waiting' :
+                       battle.state === 'in_progress' ? 'live' : 'ready';
+    const statusText = battle.state === 'pending' ? 'Waiting' :
+                      battle.state === 'in_progress' ? 'LIVE' : 'Ready';
+
+    return `
+      <div class="battle-item" onclick="joinBattle('${battle.id}')">
+        <div class="battle-info">
+          <h4>${battle.title}</h4>
+          <div class="battle-meta">${battle.participants.length} players • Code: ${battle.inviteCode}</div>
+        </div>
+        <span class="battle-status ${statusClass}">${statusText}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function joinBattle(battleId) {
+  const result = window.wb1Challenges?.acceptChallenge(battleId);
+  if (result?.success) {
+    currentChallenge = result.challenge;
+    showBattleLobby();
+  }
+}
+
+// Recording Functions
+function createVisualizerBars() {
+  const visualizer = document.getElementById('visualizer');
+  visualizer.innerHTML = '';
+  for (let i = 0; i < 30; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'viz-bar';
+    bar.style.height = '10px';
+    visualizer.appendChild(bar);
+  }
+}
+
+async function toggleRecording() {
+  const btn = document.getElementById('btn-record');
+
+  if (!isRecording) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      recordedChunks = [];
+
+      mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+      mediaRecorder.onstop = onRecordingComplete;
+
+      mediaRecorder.start();
+      isRecording = true;
+      recordingStartTime = Date.now();
+
+      btn.classList.add('active');
+      btn.innerHTML = '⏺';
+      document.getElementById('btn-stop').disabled = false;
+      document.getElementById('recorder-status').textContent = '● RECORDING';
+      document.getElementById('recorder-status').classList.add('recording');
+
+      // Start beat playback automatically if beat is selected
+      if (currentBeat && !beatIsPlaying) {
+        startBeatPlayback();
+        document.getElementById('beat-play-btn')?.classList.add('playing');
+        const playBtn = document.getElementById('beat-play-btn');
+        if (playBtn) playBtn.textContent = '⏹ Stop Beat';
+      }
+
+      startTimer();
+      animateVisualizer(stream);
+
+    } catch (error) {
+      console.error('Microphone error:', error);
+      alert('Could not access microphone');
+    }
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+    isRecording = false;
+
+    document.getElementById('btn-record').classList.remove('active');
+    document.getElementById('btn-stop').disabled = true;
+    document.getElementById('recorder-status').textContent = 'Recording complete';
+    document.getElementById('recorder-status').classList.remove('recording');
+
+    // Stop beat playback
+    if (beatIsPlaying) {
+      stopBeatPlayback();
+      const playBtn = document.getElementById('beat-play-btn');
+      if (playBtn) {
+        playBtn.textContent = '▶ Play Beat';
+        playBtn.classList.remove('playing');
+      }
+    }
+
+    stopTimer();
+  }
+}
+
+function onRecordingComplete() {
+  recordedBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+  const url = URL.createObjectURL(recordedBlob);
+
+  document.getElementById('playback-audio').src = url;
+  document.getElementById('playback-section').style.display = 'block';
+  document.getElementById('btn-submit-verse').disabled = false;
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+    const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+    const secs = (elapsed % 60).toString().padStart(2, '0');
+    document.getElementById('recorder-timer').textContent = `${mins}:${secs}`;
+  }, 100);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+function animateVisualizer(stream) {
+  const audioContext = new AudioContext();
+  const analyser = audioContext.createAnalyser();
+  const source = audioContext.createMediaStreamSource(stream);
+  source.connect(analyser);
+
+  analyser.fftSize = 64;
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+
+  const bars = document.querySelectorAll('.viz-bar');
+
+  function draw() {
+    if (!isRecording) return;
+
+    analyser.getByteFrequencyData(dataArray);
+
+    bars.forEach((bar, i) => {
+      const value = dataArray[i] || 0;
+      const height = Math.max(4, (value / 255) * 50);
+      bar.style.height = `${height}px`;
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+}
+
+function reRecord() {
+  document.getElementById('playback-section').style.display = 'none';
+  document.getElementById('recorder-timer').textContent = '00:00';
+  document.getElementById('recorder-status').textContent = 'Ready to record';
+  recordedBlob = null;
+}
+
+function submitVerse() {
+  confirmSubmission();
+}
+
+function confirmSubmission() {
+  if (!recordedBlob || !currentChallenge) {
+    alert('No recording to submit');
+    return;
+  }
+
+  const audioUrl = URL.createObjectURL(recordedBlob);
+
+  const result = window.wb1Challenges?.submitEntry(currentChallenge.id, {
+    type: 'audio',
+    content: 'Rap verse submission',
+    fileUrl: audioUrl,
+    metadata: {
+      duration: document.getElementById('recorder-timer').textContent,
+      format: 'audio/webm',
+      beat: currentBeat ? {
+        name: currentBeat.name,
+        type: currentBeat.type,
+        id: currentBeat.id
+      } : null,
+      strudelPattern: strudelPattern || null
+    }
+  });
+
+  if (result?.success) {
+    alert('Verse submitted! Waiting for opponent...');
+    document.getElementById('recorder-status').textContent = '✅ Submitted';
+    // Clear beat from localStorage after successful submission
+    // localStorage.removeItem('currentBattleBeat');
+    // localStorage.removeItem('currentBattlePattern');
+  }
+}
+
+// ========== PRACTICE MODE FUNCTIONS ==========
+
+// Check and initialize practice mode
+function checkPracticeMode() {
+  const practiceFlag = localStorage.getItem('battlePracticeMode');
+  if (practiceFlag === 'true') {
+    enterPracticeRecordingMode();
+  }
+}
+
+// Enter practice recording mode
+function enterPracticeRecordingMode() {
+  isPracticeMode = true;
+
+  // Load saved practice takes
+  loadSavedPracticeTakes();
+
+  // Hide normal battle UI
+  modeSelection.style.display = 'none';
+  createPanel.style.display = 'none';
+  joinPanel.style.display = 'none';
+  battleLobby.classList.remove('active');
+
+  // Show practice-specific UI
+  document.getElementById('practice-section').style.display = 'block';
+  recordingSection.classList.add('active');
+
+  // Update recording section for practice mode
+  document.getElementById('round-indicator').textContent = 'PRACTICE';
+  document.getElementById('submission-buttons').style.display = 'none';
+  document.getElementById('practice-buttons').style.display = 'flex';
+
+  // Update stats display
+  updatePracticeStats();
+
+  console.log('🎓 Practice recording mode active');
+}
+
+// Exit practice mode back to menu
+function exitToPracticeMenu() {
+  isPracticeMode = false;
+  localStorage.removeItem('battlePracticeMode');
+
+  // Reset UI
+  document.getElementById('practice-section').style.display = 'none';
+  recordingSection.classList.remove('active');
+  modeSelection.style.display = 'grid';
+  document.getElementById('submission-buttons').style.display = 'flex';
+  document.getElementById('practice-buttons').style.display = 'none';
+  document.getElementById('round-indicator').textContent = 'ROUND 1';
+
+  // Reopen setup modal
+  if (typeof openBattleSetup === 'function') {
+    openBattleSetup();
+  }
+}
+
+// Exit practice and create real battle
+function exitPracticeAndCreateBattle() {
+  isPracticeMode = false;
+  localStorage.removeItem('battlePracticeMode');
+
+  // Reset UI
+  document.getElementById('practice-section').style.display = 'none';
+  recordingSection.classList.remove('active');
+  document.getElementById('submission-buttons').style.display = 'flex';
+  document.getElementById('practice-buttons').style.display = 'none';
+  document.getElementById('round-indicator').textContent = 'ROUND 1';
+
+  // Open setup modal in create mode
+  if (typeof openBattleSetup === 'function') {
+    openBattleSetup();
+    setTimeout(() => {
+      if (typeof selectBattleMode === 'function') {
+        selectBattleMode('create');
+      }
+    }, 100);
+  }
+}
+
+// Save practice recording
+function savePracticeRecording() {
+  if (!recordedBlob) {
+    alert('No recording to save');
+    return;
+  }
+
+  const duration = document.getElementById('recorder-timer').textContent;
+  const timestamp = new Date().toISOString();
+  const takeNumber = savedPracticeTakes.length + 1;
+
+  // Create take object
+  const take = {
+    id: `take_${Date.now()}`,
+    name: `Take ${takeNumber}`,
+    duration: duration,
+    timestamp: timestamp,
+    beat: currentBeat?.name || 'No beat',
+    blob: null // We'll store as data URL for localStorage
+  };
+
+  // Convert blob to data URL for storage
+  const reader = new FileReader();
+  reader.onloadend = function() {
+    take.dataUrl = reader.result;
+
+    // Save to array and localStorage
+    savedPracticeTakes.push(take);
+    localStorage.setItem('practiceTakes', JSON.stringify(savedPracticeTakes.map(t => ({
+      ...t,
+      dataUrl: t.dataUrl // Keep data URL for playback
+    }))));
+
+    // Update UI
+    updatePracticeStats();
+    renderSavedTakes();
+
+    // Show confirmation
+    document.getElementById('recorder-status').textContent = `💾 Saved as "${take.name}"`;
+
+    console.log('💾 Practice take saved:', take.name);
+  };
+  reader.readAsDataURL(recordedBlob);
+
+  // Update stats
+  practiceRecordingsCount++;
+  const [mins, secs] = duration.split(':').map(Number);
+  practiceTotalTime += mins * 60 + secs;
+}
+
+// Load saved practice takes from localStorage
+function loadSavedPracticeTakes() {
+  try {
+    const saved = localStorage.getItem('practiceTakes');
+    if (saved) {
+      savedPracticeTakes = JSON.parse(saved);
+      practiceRecordingsCount = savedPracticeTakes.length;
+
+      // Calculate total time
+      practiceTotalTime = savedPracticeTakes.reduce((total, take) => {
+        const [mins, secs] = (take.duration || '0:00').split(':').map(Number);
+        return total + (mins * 60 + secs);
+      }, 0);
+    }
+  } catch (e) {
+    console.error('Error loading practice takes:', e);
+    savedPracticeTakes = [];
+  }
+}
+
+// Update practice stats display
+function updatePracticeStats() {
+  document.getElementById('practice-recordings-count').textContent = practiceRecordingsCount;
+
+  const mins = Math.floor(practiceTotalTime / 60);
+  const secs = practiceTotalTime % 60;
+  document.getElementById('practice-total-time').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+  // Find longest take as "best"
+  if (savedPracticeTakes.length > 0) {
+    const longest = savedPracticeTakes.reduce((best, take) => {
+      const [mins, secs] = (take.duration || '0:00').split(':').map(Number);
+      const [bestMins, bestSecs] = (best.duration || '0:00').split(':').map(Number);
+      const takeSeconds = mins * 60 + secs;
+      const bestSeconds = bestMins * 60 + bestSecs;
+      return takeSeconds > bestSeconds ? take : best;
+    });
+    document.getElementById('practice-best-take').textContent = longest.duration;
+  }
+}
+
+// Render saved takes list
+function renderSavedTakes() {
+  const list = document.getElementById('saved-takes-list');
+
+  if (savedPracticeTakes.length === 0) {
+    list.innerHTML = '<p class="no-takes">No saved takes yet. Start recording!</p>';
+    return;
+  }
+
+  list.innerHTML = savedPracticeTakes.map((take, index) => `
+    <div class="saved-take-item" data-id="${take.id}">
+      <span class="take-icon">🎤</span>
+      <div class="take-info">
+        <span class="take-name">${take.name}</span>
+        <span class="take-duration">${take.duration} • ${take.beat}</span>
+      </div>
+      <div class="take-actions">
+        <button class="take-btn play" onclick="playPracticeTake('${take.id}')">▶</button>
+        <button class="take-btn delete" onclick="deletePracticeTake('${take.id}')">✕</button>
+      </div>
+    </div>
+  `).reverse().join('');
+}
+
+// Play a saved practice take
+let currentPlayingTake = null;
+
+function playPracticeTake(takeId) {
+  // Stop any currently playing
+  if (currentPlayingTake) {
+    currentPlayingTake.pause();
+    currentPlayingTake = null;
+  }
+
+  const take = savedPracticeTakes.find(t => t.id === takeId);
+  if (!take || !take.dataUrl) return;
+
+  currentPlayingTake = new Audio(take.dataUrl);
+  currentPlayingTake.play();
+
+  currentPlayingTake.onended = () => {
+    currentPlayingTake = null;
+  };
+}
+
+// Delete a saved practice take
+function deletePracticeTake(takeId) {
+  if (!confirm('Delete this take?')) return;
+
+  savedPracticeTakes = savedPracticeTakes.filter(t => t.id !== takeId);
+  localStorage.setItem('practiceTakes', JSON.stringify(savedPracticeTakes));
+
+  // Recalculate stats
+  practiceRecordingsCount = savedPracticeTakes.length;
+  practiceTotalTime = savedPracticeTakes.reduce((total, take) => {
+    const [mins, secs] = (take.duration || '0:00').split(':').map(Number);
+    return total + (mins * 60 + secs);
+  }, 0);
+
+  updatePracticeStats();
+  renderSavedTakes();
+}
+
+// Expose practice mode functions globally
+window.checkPracticeMode = checkPracticeMode;
+window.enterPracticeRecordingMode = enterPracticeRecordingMode;
+window.exitToPracticeMenu = exitToPracticeMenu;
+window.exitPracticeAndCreateBattle = exitPracticeAndCreateBattle;
+window.savePracticeRecording = savePracticeRecording;
+window.playPracticeTake = playPracticeTake;
+window.deletePracticeTake = deletePracticeTake;
+
+// Check practice mode on load
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(checkPracticeMode, 600);
+});
+</script>
+
+</BaseLayout>

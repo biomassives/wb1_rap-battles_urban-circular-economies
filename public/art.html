@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Worldbridger One Poster</title>
+    <style>
+        :root {
+            --bg-color: #1a1a2e; /* Desert night sky */
+            --bubble-top: #70d6ff;
+            --bubble-bottom: #ff9770;
+            --lcd-color: #00ff41; /* Classic calculator green */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background: radial-gradient(circle at bottom, #2d1b4d 0%, #1a1a2e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 3D Bubble Lettering Effect */
+        .header-container {
+            text-align: center;
+            perspective: 1000px;
+        }
+
+        .worldbridger {
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 0;
+            background: linear-gradient(to bottom, var(--bubble-top), var(--bubble-bottom));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* Multiple shadows create the fluting 3D depth */
+            text-shadow: 
+                0px 5px 0px #3a2a5d,
+                0px 10px 0px #2a1a4d,
+                0px 15px 20px rgba(0,0,0,0.5);
+            letter-spacing: -2px;
+            filter: drop-shadow(0 0 10px rgba(112, 214, 255, 0.3));
+        }
+
+        .one {
+            font-size: 12rem;
+            line-height: 0.8;
+            margin-top: -10px;
+        }
+
+        /* Retro Calculator / LCD Font Style */
+        .details-container {
+            margin-top: 40px;
+            padding: 20px;
+            border: 2px solid rgba(0, 255, 65, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            box-shadow: inset 0 0 15px rgba(0, 255, 65, 0.1);
+        }
+
+        .lcd-text {
+            /* Using a monospace font to mimic segmented displays */
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--lcd-color);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.7);
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .nft-line {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            border-top: 1px solid rgba(0, 255, 65, 0.3);
+            padding-top: 10px;
+        }
+
+        /* Nature/Etheric background elements */
+        .stars {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 10vw 20vh 2px white, 50vw 10vh 2px white, 80vw 40vh 2px white;
+            z-index: -1;
+        }
+    
+    /* 1. The "Scanline" Embellishment */
+    body::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        top: 0; left: 0; bottom: 0; right: 0;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        z-index: 2;
+        background-size: 100% 4px, 3px 100%;
+        pointer-events: none;
+    }
+
+    /* 2. Nature/Etheric Floating Spores */
+    .spore {
+        position: absolute;
+        background: radial-gradient(circle, #fff, transparent 70%);
+        border-radius: 50%;
+        opacity: 0.3;
+        animation: drift 15s infinite linear;
+    }
+
+    @keyframes drift {
+        from { transform: translateY(100vh) translateX(0); }
+        to { transform: translateY(-10vh) translateX(100px); }
+    }
+
+    /* 3. The "Calculator" Text Pulse */
+    .lcd-text {
+        animation: flick 0.01s infinite alternate;
+    }
+
+    @keyframes flick {
+        0% { opacity: 0.95; text-shadow: 0 0 8px var(--lcd-color); }
+        100% { opacity: 1; text-shadow: 0 0 12px var(--lcd-color), 0 0 2px #fff; }
+    }
+
+    /* SVG Filter for that "Organic Digital" look */
+    .worldbridger {
+        filter: url(#organic-glow) drop-shadow(0 0 15px rgba(112, 214, 255, 0.4));
+    }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute;">
+  <filter id="organic-glow">
+    <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="1" result="noise" />
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+  </filter>
+</svg>
+
+<div class="spore" style="width: 5px; height: 5px; left: 10%; animation-delay: 1s;"></div>
+<div class="spore" style="width: 8px; height: 8px; left: 30%; animation-delay: 5s;"></div>
+<div class="spore" style="width: 4px; height: 4px; left: 70%; animation-delay: 3s;"></div>
+
+
+    <div class="stars"></div>
+
+    <div class="header-container">
+        <h1 class="worldbridger">Worldbridger</h1>
+        <h1 class="worldbridger one">One</h1>
+    </div>
+
+    <div class="details-container">
+        <div class="lcd-text">Rap Battle w/ Fana Ke</div>
+        <div class="lcd-text">Reggae Production with OT</div>
+        <div class="lcd-text nft-line">ecocity / exotopia NFT rewards</div>
+    </div>
+
+</body>
+</html>

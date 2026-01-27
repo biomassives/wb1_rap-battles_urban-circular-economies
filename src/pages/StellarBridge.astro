@@ -1,0 +1,175 @@
+---
+/**
+ * bridge.astro - The Stellar Navigator
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+// You don't need the music components here unless you want the looper on this page
+---
+
+<BaseLayout title="Stellar Bridge" activeSection="learning">
+
+<div id="ui-layer" class="fixed top-6 left-6 z-50 pointer-events-none">
+  <div class="pixel-border bg-black/80 p-4 backdrop-blur-md">
+    <h1 class="glow-text text-2xl tracking-tighter">█ STELLAR_BRIDGE_V2</h1>
+    <div id="star-info" class="text-xs text-green-500 mt-2 font-mono">
+      SYSTEM_STATUS: <span class="blink">SCANNING_SECTOR...</span>
+    </div>
+  </div>
+</div>
+
+<div class="instructions fixed bottom-6 left-6 z-50 text-[10px] text-white/40 uppercase tracking-widest pointer-events-none">
+  Scroll to Zoom • Drag to Rotate • Click Star to Select • Double Click to Warp
+</div>
+
+<div id="canvas-container" class="fixed inset-0 z-0 bg-black"></div>
+
+<script is:inline type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "controls": "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js"
+    }
+  }
+</script>
+
+<script is:inline type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'controls';
+
+  // 1. DATA & STATE
+  const BRIGHT_STARS = [
+    { name: "Sirius", ra: 101.28, dec: -16.71, dist: 8.6, mag: -1.46, color: "#9bb0ff" },
+    { name: "Canopus", ra: 95.98, dec: -52.69, dist: 310, mag: -0.74, color: "#ffffff" },
+    { name: "Rigel Kentaurus", ra: 219.9, dec: -60.83, dist: 4.4, mag: -0.01, color: "#fff4ea" },
+    { name: "Arcturus", ra: 213.9, dec: 19.18, dist: 36.7, mag: -0.05, color: "#ffb46b" },
+    { name: "Vega", ra: 279.2, dec: 38.78, dist: 25, mag: 0.03, color: "#d1dbff" }
+  ];
+
+  // 2. SCENE SETUP
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+  // 3. INTERACTIVE RING (The "Inviting" Pulse)
+  const ringGeo = new THREE.RingGeometry(1.2, 1.5, 32);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0, side: THREE.DoubleSide });
+  const hoverRing = new THREE.Mesh(ringGeo, ringMat);
+  scene.add(hoverRing);
+
+  // 4. STAR GENERATION
+  const starGroup = new THREE.Group();
+  scene.add(starGroup);
+
+  const loader = new THREE.TextureLoader();
+  const starTexture = loader.load('https://threejs.org/examples/textures/lensflare/lensflare0.png');
+
+  BRIGHT_STARS.forEach(data => {
+    const material = new THREE.SpriteMaterial({ 
+        map: starTexture, 
+        color: data.color, 
+        transparent: true, 
+        blending: THREE.AdditiveBlending 
+    });
+    const sprite = new THREE.Sprite(material);
+    
+    // Position Mapping
+    const phi = (90 - data.dec) * (Math.PI / 180);
+    const theta = (data.ra) * (Math.PI / 180);
+    const r = 50; 
+    sprite.position.set(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+    
+    sprite.scale.set(2, 2, 1);
+    sprite.userData = { ...data };
+    starGroup.add(sprite);
+  });
+
+  // 5. CONTROLS
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.5;
+  camera.position.z = 80;
+
+  // 6. INTERACTION (Raycasting)
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let selectedStar = null;
+
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(starGroup.children);
+
+    if (intersects.length > 0) {
+      selectedStar = intersects[0].object;
+      hoverRing.position.copy(selectedStar.position);
+      hoverRing.lookAt(camera.position);
+      hoverRing.visible = true;
+      hoverRing.material.opacity = 1;
+      document.body.style.cursor = 'pointer';
+      document.getElementById('star-info').innerHTML = `TARGET_FOUND: ${selectedStar.userData.name}<br/>DIST: ${selectedStar.userData.dist}ly`;
+    } else {
+      document.body.style.cursor = 'default';
+      hoverRing.material.opacity *= 0.9; // Fade out
+    }
+  });
+
+  // 7. THE WARP (Double Click)
+  window.addEventListener('dblclick', async () => {
+    if (!selectedStar) return;
+    
+    // Log to Nile DB / Metabolic API
+    const logData = {
+      walletAddress: window.walletManager?.connectedWallet || 'anonymous',
+      starName: selectedStar.userData.name,
+      action: 'WARP_DISCOVERY'
+    };
+    
+    console.log("█ WARP_INITIATED", logData);
+    fetch('/api/metabolic/log-event', { method: 'POST', body: JSON.stringify(logData) });
+
+    // Fly-to Animation
+    const targetPos = selectedStar.position.clone();
+    controls.target.copy(targetPos);
+    camera.position.set(targetPos.x, targetPos.y, targetPos.z + 10);
+    document.documentElement.classList.add('glitch-flash');
+    setTimeout(() => document.documentElement.classList.remove('glitch-flash'), 500);
+  });
+
+  // 8. ANIMATION LOOP
+  function animate(time) {
+    requestAnimationFrame(animate);
+    controls.update();
+
+    if (hoverRing.visible) {
+      const s = 1 + Math.sin(time * 0.01) * 0.2;
+      hoverRing.scale.set(s, s, s);
+      hoverRing.rotation.z += 0.02;
+    }
+
+    renderer.render(scene, camera);
+  }
+  animate(0);
+
+  // Resize Handler
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+<style>
+  /* Quick local styles to ensure UI doesn't break */
+  .pixel-border { border: 2px solid #00ff41; box-shadow: 4px 4px 0px #003b00; }
+  .glow-text { text-shadow: 0 0 10px #00ff41; color: #00ff41; font-family: monospace; }
+  .blink { animation: blinker 1s linear infinite; }
+  @keyframes blinker { 50% { opacity: 0; } }
+  .glitch-flash { filter: invert(1) hue-rotate(90deg); transition: filter 0.5s; }
+</style>
+</BaseLayout>

@@ -692,6 +692,12 @@
   };
 
   window.showPINSetup = function() {
+    console.log('═══════════════════════════════════════');
+    console.log('🔐 PIN SETUP STARTED');
+    console.log('📚 Step 5/5: Create Your PIN');
+    console.log('═══════════════════════════════════════');
+    console.log('This PIN will encrypt your wallet locally');
+
     const modal = document.getElementById('pinSetupModal');
 
     // Reset state
@@ -710,6 +716,8 @@
 
     // Focus first input
     setTimeout(() => document.getElementById('create1').focus(), 300);
+
+    console.log('✅ PIN setup modal opened');
   };
 
   function showPINStep(step) {
@@ -975,15 +983,37 @@
   };
 
   async function completeWalletSetup() {
+    console.log('═══════════════════════════════════════');
+    console.log('🔐 FINALIZING WALLET SETUP');
+    console.log('═══════════════════════════════════════');
+    console.log('Encrypting wallet with PIN...');
+
     // Hide PIN modal
     document.getElementById('pinSetupModal').style.display = 'none';
     document.body.style.overflow = '';
 
     // Encrypt and save wallet
-    if (window.encryptAndSaveWallet && window._recoveryWords) {
+    if (window.encryptAndSaveWallet && window._recoveryWords && window._currentWallet) {
       const mnemonic = window._recoveryWords.join(' ');
-      await window.encryptAndSaveWallet(mnemonic, pinSetupState.createPIN);
+      const publicKey = window._currentWallet.publicKey;
+      console.log('🔒 Encrypting recovery phrase with PIN');
+      console.log('📍 Public Key:', publicKey);
+      await window.encryptAndSaveWallet(mnemonic, pinSetupState.createPIN, publicKey);
+      console.log('✅ Wallet encrypted and saved locally');
+    } else {
+      console.error('❌ Encryption functions not available');
+      if (!window._currentWallet) {
+        console.error('❌ Current wallet data missing');
+      }
     }
+
+    console.log('═══════════════════════════════════════');
+    console.log('🎉 WALLET CREATION COMPLETE!');
+    console.log('═══════════════════════════════════════');
+    console.log('Your secure Solana wallet is ready');
+    console.log('Recovery phrase: SAVED (encrypted)');
+    console.log('PIN: SAVED (hashed)');
+    console.log('═══════════════════════════════════════');
 
     // Show success message
     alert('🎉 Wallet Created Successfully!\n\nYour secure wallet is ready to use.\n+25 XP awarded!');

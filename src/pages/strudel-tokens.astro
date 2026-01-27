@@ -1,0 +1,180 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Using your dailySeed logic to keep the "Daily Generation" feel consistent
+const today = new Date();
+const dailySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+
+// Testing Edition Recipes as NFT Metadata
+const biodiversityTokens = [
+  { 
+    id: 101, 
+    name: "Mycelium Network", 
+    spirit: "Fungi",
+    rarity: { name: 'Rare', color: '#ffff00', glow: '0 0 20px #ffff00' },
+    code: `s("bd [sd bd] bd sd, hh*16").bank("RolandTR909")`,
+    dataPoint: "Subsurface Connectivity: High"
+  },
+  { 
+    id: 102, 
+    name: "Apex Aviary", 
+    spirit: "Eagle",
+    rarity: { name: 'Legendary', color: '#ff00ff', glow: '0 0 30px #ff00ff' },
+    code: `note("<[c2 c3]*4 [bb1 bb2]*4>").s("sawtooth").lpf(800)`,
+    dataPoint: "Thermal Uplift: +15%"
+  },
+  { 
+    id: 103, 
+    name: "Wetland Pulse", 
+    spirit: "Goat", // Grazing rhythms
+    rarity: { name: 'Common', color: '#00ff00', glow: '0 0 10px #00ff00' },
+    code: `s("bd*2, [~ cp]*2, [~ hh]*4").room(0.5).speed(0.8)`,
+    dataPoint: "Hydration Levels: Optimal"
+  }
+];
+---
+
+<BaseLayout title="Strudel Token Lab" activeSection="audio-tools">
+  <div class="nft-gallery-page scanlines">
+    <div class="container mx-auto">
+      
+      <header class="gallery-header pixel-border arcade-screen">
+        <div class="header-badge">
+          <span class="neon-text blink">▶ AUDIO TEST LAB ◀</span>
+        </div>
+        <h1 class="gallery-title glitch">
+          <span class="block">STRUDEL</span>
+          <span class="block neon-text">BIO-TOKENS</span>
+        </h1>
+        <p class="gallery-subtitle mono">
+          > METADATA AS CODE • NO PRIVATE OWNERSHIP • LIVE RE-SYNTH<br/>
+          > SEED: <span class="text-cyan">{dailySeed}</span>
+          <span class="blink text-neon">█</span>
+        </p>
+      </header>
+
+      <div class="collection-grid">
+        {biodiversityTokens.map(token => (
+          <article 
+            class="nft-card card-retro-neon"
+            style={`--rarity-color: ${token.rarity.color}; --rarity-glow: ${token.rarity.glow};`}
+          >
+            <div class="card-header">
+              <div class="card-number mono">#{token.id}</div>
+              <div class="card-rarity mono" style={`color: ${token.rarity.color};`}>{token.rarity.name}</div>
+            </div>
+
+            <div class="card-preview">
+               <div class="code-overlay mono">{token.spirit}</div>
+               <div class="strudel-visualizer">
+                  <code>{token.code.substring(0, 30)}...</code>
+               </div>
+            </div>
+
+            <div class="card-info">
+              <h3 class="card-name mono">{token.name}</h3>
+              <p class="mono text-xs text-cyan">{token.dataPoint}</p>
+            </div>
+
+            <div class="card-actions">
+              <button 
+                class="play-strudel-btn btn-retro mono" 
+                data-strudel-code={token.code}
+              >
+                ▶ EVALUATE
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <nav class="gallery-nav">
+        <button id="hush-all" class="btn-retro">🛑 HUSH ALL</button>
+        <a href="/nft-gallery" class="btn-retro-neon">← BACK TO GALLERY</a>
+      </nav>
+    </div>
+  </div>
+</BaseLayout>
+
+<script src="https://unpkg.com/@strudel/web@1.0.3"></script>
+
+<script is:inline>
+  // Initialize Strudel Global Context
+  initStrudel();
+
+  const playButtons = document.querySelectorAll('.play-strudel-btn');
+  const hushBtn = document.getElementById('hush-all');
+
+  playButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const code = btn.getAttribute('data-strudel-code');
+      hush(); // Stop previous patterns
+      
+      try {
+        // The "Teachable" magic: evaluating the token's metadata directly
+        eval(code + '.play()');
+        
+        // Visual feedback
+        btn.innerText = "■ STOP";
+        btn.style.background = "#fff";
+      } catch (e) {
+        console.error("Strudel Metadata Error:", e);
+      }
+    });
+  });
+
+  hushBtn.addEventListener('click', () => {
+    hush();
+    playButtons.forEach(b => {
+      b.innerText = "▶ EVALUATE";
+      b.style.background = "";
+    });
+  });
+</script>
+
+<style>
+  /* Integrating your existing arcade styles */
+  .strudel-visualizer {
+    background: #000;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #444;
+    margin: 10px;
+    padding: 10px;
+    font-size: 0.7rem;
+    color: #00ff88;
+    overflow: hidden;
+  }
+  
+  .code-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.8);
+    padding: 2px 8px;
+    border: 1px solid var(--rarity-color);
+    font-size: 0.8rem;
+  }
+
+  /* Ensure the grid matches your gallery.astro */
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+  }
+
+  .nft-card {
+    position: relative;
+    background: #111;
+    border: 2px solid var(--rarity-color);
+    box-shadow: var(--rarity-glow);
+    transition: transform 0.2s;
+  }
+
+  .nft-card:hover {
+    transform: translateY(-5px);
+  }
+</style>

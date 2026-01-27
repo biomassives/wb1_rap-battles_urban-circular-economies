@@ -1,0 +1,128 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Hip Hop NFT Recorder v1.1.0">
+
+<style>
+/* Theme Consistency */
+body { background: #05070a; color: #e6f1ff; font-family: ui-monospace, monospace; }
+main { max-width: 420px; margin: auto; padding: 1rem; }
+.step { background: #0b0f17; border: 1px solid #1e2a44; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+.song-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+
+button { 
+  width: 100%; padding: 0.75rem; border-radius: 8px; cursor: pointer;
+  background: transparent; border: 1px solid #00ff9c; color: #00ff9c;
+}
+button.active { background: rgba(0, 255, 156, 0.2); }
+button.secondary { border-color: #4cc9f0; color: #4cc9f0; }
+button.danger { border-color: #ff4d6d; color: #ff4d6d; }
+
+pre { 
+  background: #02040a; padding: 10px; border-radius: 6px; 
+  font-size: 0.75rem; color: #4cc9f0; overflow-x: auto;
+  border: 1px solid #1e2a44; margin-top: 10px;
+}
+</style>
+
+<main>
+  <h1>🎙️ Hip Hop NFT Recorder</h1>
+
+  <section class="step">
+    <h2>1️⃣ Pick Your Foundation</h2>
+    <div class="song-grid">
+      <button class="song-pick" data-id="boombap">🥁 Boom Bap</button>
+      <button class="song-pick" data-id="trap">🔥 Trap</button>
+      <button class="song-pick" data-id="lofi">☕ Lofi HipHop</button>
+      <button class="song-pick" data-id="drill">🏙️ Drill</button>
+      <button class="song-pick" data-id="westcoast">🌴 West Coast</button>
+      <button class="song-pick" data-id="phonk">🚗 Phonk</button>
+    </div>
+    <pre id="live-code-display">// Strudel code will appear here...</pre>
+  </section>
+
+  <section class="step">
+    <h2>2️⃣ Record Your Bio-Vocal</h2>
+    <button id="start-record">🎙️ Start Recording</button>
+    <button id="stop-record" class="danger" disabled>⏹ Stop</button>
+    <audio id="recording-preview" controls></audio>
+  </section>
+
+  <section class="step">
+    <h2>3️⃣ Preview & Local Mint</h2>
+    <button id="preview-remix" class="secondary" disabled>🎧 PREVIEW OVERLAY</button>
+    <button id="save-nft" disabled>💾 Save to LocalDB</button>
+    <div id="test-status" style="margin-top:10px; font-size:0.8rem; color:#00ff9c;"></div>
+  </section>
+</main>
+
+
+<script is:inline src="https://unpkg.com/@strudel/web@1.0.3"></script>
+  <script is:inline src="/scripts/nft-strudel-player.js"></script>
+
+  <script is:inline>
+    // We use a safe check to ensure the Strudel globals are ready
+    function getStrudelEngine() {
+      return {
+        hush: window.hush || function() { console.log('hush not ready'); },
+        samples: window.samples || function() { console.log('samples not ready'); },
+        stack: window.stack || function(a, b) { return a; }
+      };
+    }
+
+    const songLibrary = {
+      boombap: 's("bd [~ bd] sd [~ bd]").bank("mpc").lp(1200)',
+      trap: 's("bd*2, [~ sd]*2, hh*16").speed(1.2).gain(0.8)',
+      lofi: 's("bd [~ sd] bd sd").bank("dr55").delay(0.4).room(0.6)',
+      drill: 's("bd [~ ~ bd] sd [~ bd ~]").speed(1.4).chop(4)',
+      westcoast: 's("bd sd").bank("linn").jux(rev)',
+      phonk: 's("bd [~ sd]").bank("808").crush(4).distort(0.2)'
+    };
+
+    let currentBaseCode = '';
+    let recordedBlob = null;
+
+    // Handle Selection
+    document.querySelectorAll('.song-pick').forEach(function(btn) {
+      btn.onclick = function() {
+        currentBaseCode = songLibrary[btn.dataset.id];
+        document.getElementById('live-code-display').innerText = currentBaseCode;
+        
+        var engine = getStrudelEngine();
+        engine.hush();
+        
+        // Use window.eval to stay in global scope
+        var pattern = window.eval(currentBaseCode);
+        if (pattern && pattern.play) pattern.play();
+      };
+    });
+
+    // Handle Preview Remix
+    document.getElementById('preview-remix').onclick = function() {
+      if (!recordedBlob) return;
+      
+      var engine = getStrudelEngine();
+      var previewUrl = URL.createObjectURL(recordedBlob);
+      
+      // Use string concatenation to avoid any Vite template issues
+      var sampleOverlay = 's("bio").room(0.4)';
+      var fullCode = 'stack(' + currentBaseCode + ', ' + sampleOverlay + ')';
+      
+      document.getElementById('live-code-display').innerText = fullCode;
+
+      engine.hush();
+      engine.samples({ "bio": previewUrl });
+      
+      try {
+        var remixPattern = window.eval(fullCode);
+        if (remixPattern && remixPattern.play) remixPattern.play();
+      } catch (e) {
+        console.error("Strudel Error:", e);
+      }
+    };
+  </script>
+
+
+
+</BaseLayout>

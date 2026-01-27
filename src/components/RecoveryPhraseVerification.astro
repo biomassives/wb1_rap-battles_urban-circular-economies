@@ -579,12 +579,20 @@
   };
 
   window.proceedToPINSetup = function() {
+    console.log('═══════════════════════════════════════');
+    console.log('📚 Step 5/5: Create PIN');
+    console.log('═══════════════════════════════════════');
+    console.log('✅ Recovery phrase verified successfully');
+
     document.getElementById('verificationModal').style.display = 'none';
 
     // Show PIN setup modal (will be created next)
     if (window.showPINSetup) {
+      console.log('✅ Opening PIN setup modal');
       window.showPINSetup();
     } else {
+      console.error('❌ PIN setup modal not loaded');
+      console.error('window.showPINSetup is undefined');
       alert('✓ Verification complete!\n\nYour recovery phrase has been verified.');
       document.body.style.overflow = '';
     }

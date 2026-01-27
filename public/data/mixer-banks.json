@@ -1,0 +1,156 @@
+{
+  "leftBank": {
+    "name": "Space Bass",
+    "samples": [
+      {
+        "id": "L1",
+        "name": "Sub Bass",
+        "pattern": "s(\"bass-sub\")",
+        "type": "bass",
+        "bpm": 90,
+        "color": "#00ff00"
+      },
+      {
+        "id": "L2",
+        "name": "Acid Bass",
+        "pattern": "s(\"bass-acid\")",
+        "type": "bass",
+        "bpm": 120,
+        "color": "#00ff41"
+      },
+      {
+        "id": "L3",
+        "name": "Synth Bass",
+        "pattern": "s(\"bass-synth\")",
+        "type": "bass",
+        "bpm": 110,
+        "color": "#00ff82"
+      },
+      {
+        "id": "L4",
+        "name": "Reese Bass",
+        "pattern": "s(\"bass-reese\")",
+        "type": "bass",
+        "bpm": 95,
+        "color": "#00ffc3"
+      },
+      {
+        "id": "L5",
+        "name": "Wobble Bass",
+        "pattern": "s(\"bass-wobble\")",
+        "type": "bass",
+        "bpm": 140,
+        "color": "#00e4ff"
+      },
+      {
+        "id": "L6",
+        "name": "Phaser",
+        "pattern": "s(\"phaser\")",
+        "type": "fx",
+        "bpm": 100,
+        "color": "#00a5ff"
+      },
+      {
+        "id": "L7",
+        "name": "Filter Sweep",
+        "pattern": "s(\"filter-sweep\")",
+        "type": "fx",
+        "bpm": 120,
+        "color": "#0066ff"
+      },
+      {
+        "id": "L8",
+        "name": "Riser",
+        "pattern": "s(\"riser\")",
+        "type": "fx",
+        "bpm": 128,
+        "color": "#0027ff"
+      },
+      {
+        "id": "L9",
+        "name": "Laser Zap",
+        "pattern": "s(\"laser\")",
+        "type": "fx",
+        "bpm": 150,
+        "color": "#2700ff"
+      }
+    ]
+  },
+  "rightBank": {
+    "name": "Cosmic Ambience",
+    "samples": [
+      {
+        "id": "R1",
+        "name": "Pad",
+        "pattern": "s(\"pad\")",
+        "type": "ambient",
+        "bpm": 80,
+        "color": "#6600ff"
+      },
+      {
+        "id": "R2",
+        "name": "Drone",
+        "pattern": "s(\"drone\")",
+        "type": "ambient",
+        "bpm": 70,
+        "color": "#a500ff"
+      },
+      {
+        "id": "R3",
+        "name": "Cosmic",
+        "pattern": "s(\"cosmic\")",
+        "type": "ambient",
+        "bpm": 90,
+        "color": "#e400ff"
+      },
+      {
+        "id": "R4",
+        "name": "Swoosh",
+        "pattern": "s(\"swoosh\")",
+        "type": "fx",
+        "bpm": 100,
+        "color": "#ff00e4"
+      },
+      {
+        "id": "R5",
+        "name": "Zap",
+        "pattern": "s(\"zap\")",
+        "type": "fx",
+        "bpm": 140,
+        "color": "#ff00a5"
+      },
+      {
+        "id": "R6",
+        "name": "808 Groove",
+        "pattern": "sound(\"bd hh sd hh\")",
+        "type": "drums",
+        "bpm": 120,
+        "color": "#ff0066"
+      },
+      {
+        "id": "R7",
+        "name": "Boom Bap",
+        "pattern": "s(\"bd cp bd cp\")",
+        "type": "drums",
+        "bpm": 85,
+        "color": "#ff0027"
+      },
+      {
+        "id": "R8",
+        "name": "Hi-Hats",
+        "pattern": "s(\"hh hh oh hh\")",
+        "type": "drums",
+        "bpm": 140,
+        "color": "#FFD700"
+      },
+      {
+        "id": "R9",
+        "name": "Tom Rolls",
+        "pattern": "sound(\"lt mt ht lt\")",
+        "type": "drums",
+        "bpm": 100,
+        "color": "#FFA700"
+      }
+    ]
+  }
+}

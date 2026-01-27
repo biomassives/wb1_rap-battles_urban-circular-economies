@@ -119,6 +119,10 @@ body {
   background-size: 20px 20px;
 }
 
+.level-badge {
+  color: #000;
+}
+
 /* Scanline Effect */
 .scanlines {
   position: relative;
@@ -436,6 +440,14 @@ input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--color-neon-green);
   box-shadow: 0 0 10px var(--color-neon-green-glow);
+}
+
+.footer-section > h4 {
+  font-family: var(--font-mono);
+  color: var(--color-neon-pink);
+}
+.footer-section > h3 {
+  color: var(--color-neon-green);
 }
 
 /* Loading Animation - Space Invader Style */

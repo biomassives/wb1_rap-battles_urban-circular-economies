@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MoogLooper from '../../components/MoogLooper.astro';
+import SamplerPad from '../../components/SamplerPad.astro';
+
+// This data could eventually come from your Express/Elixir API or a Postgres call
+const beatMetadata = [
+  { id: "001", name: "Bio-Rhythm Alpha", code: "A1-B2-A1-E3", species: "Fungi", rarity: "Common" },
+  { id: "002", name: "Canopy Pulse", code: "C#3-G2-C#3-F4", species: "Avian", rarity: "Rare" },
+  { id: "003", name: "Deep Soil Resonance", code: "E1-E1-G1-B1", species: "Mycelium", rarity: "Legendary" }
+];
+
+const title = "Beats & Biodiversity Metadata";
+---
+
+<BaseLayout title={title} activeSection="audio-tools">
+  <section class="metadata-container">
+    <header class="tool-header">
+      <h1>{title}</h1>
+      <p>Decentralized audio signatures derived from biodiversity data points.</p>
+    </header>
+
+    <div class="tool-grid">
+      <div class="audio-engine">
+        <MoogLooper />
+        <div class="instructions">
+          <h3>On-Chain Logic</h3>
+          <p>These beats are generated via the <code>codes</code> stored in the NFT metadata. No private ownership of the rhythm—just open-source resonance.</p>
+        </div>
+      </div>
+
+      <div class="metadata-explorer">
+        <h2>Token Registry</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Bio-Code</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {beatMetadata.map((beat) => (
+                <tr class="metadata-row" data-code={beat.code}>
+                  <td>{beat.id}</td>
+                  <td><strong>{beat.name}</strong><br/><small>{beat.species}</small></td>
+                  <td><code>{beat.code}</code></td>
+                  <td>
+                    <button class="play-btn" data-beat-code={beat.code}>Load Beat</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .metadata-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .tool-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 768px) {
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+  .table-wrapper {
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; color: #888; font-size: 0.8rem; text-transform: uppercase; }
+  td, th { padding: 12px; border-bottom: 1px solid #333; }
+  .play-btn {
+    background: #00ff88;
+    color: #000;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+  }
+  .play-btn:hover { background: #fff; }
+</style>
+
+<script>
+  // Vanilla JS approach for interactivity, keeping it "teachable"
+  const buttons = document.querySelectorAll('.play-btn');
+  
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const code = button.getAttribute('data-beat-code');
+      console.log(`Loading metadata code into looper: ${code}`);
+      
+      // Here you would dispatch a custom event to your MoogLooper component
+      // or call a global window method if the looper exposes one.
+      const event = new CustomEvent('loadBeatCode', { detail: { code } });
+      window.dispatchEvent(event);
+    });
+  });
+</script>

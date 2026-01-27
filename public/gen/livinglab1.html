@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Worldbridger: Alive-Tech Lab</title>
+    <style>
+        body { background: #1a1a1c; color: #eee; font-family: 'Courier New', monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .ui-layer { background: rgba(25,25,30,0.98); padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; border-bottom: 2px solid #ff4500; z-index: 100; font-size: 10px; }
+        .group { border-left: 1px solid #444; padding: 0 12px; display: flex; flex-direction: column; gap: 5px; }
+        input, select { width: 100%; accent-color: #ff4500; background: #333; color: #fff; border: 1px solid #555; }
+        svg { flex-grow: 1; width: 100%; background: #222228; }
+        .label-row { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div class="ui-layer">
+    <div class="group">
+        <label>Aliveness Algo</label>
+        <select id="algoType">
+            <option value="predator">Stalk & Pounce (Stop-Go)</option>
+            <option value="neural">Neural Twitch (Micro-jitter)</option>
+            <option value="breathe">Harmonic Breath (Pulse)</option>
+        </select>
+        <label>Shred Intensity</label>
+        <input type="range" id="shred" min="5" max="50" value="25">
+    </div>
+    <div class="group">
+        <label>Color Palette (Harmonics)</label>
+        <select id="palette">
+            <option value="cyber-moss">Cyber-Moss (Greens/Cyans)</option>
+            <option value="volcanic">Volcanic (Oranges/Purples)</option>
+            <option value="biodiversity">Deep Forest (Earth/Neon)</option>
+            <option value="monochrom">High-Grit (Grey/Red)</option>
+        </select>
+        <label>Pop/Saturation</label>
+        <input type="range" id="pop" min="0.5" max="2" step="0.1" value="1.2">
+    </div>
+    <div class="group">
+        <label>Population</label>
+        <input type="range" id="popCount" min="1" max="12" value="1">
+        <label>BG Text Opacity</label>
+        <input type="range" id="bgClarity" min="0" max="0.8" step="0.1" value="0.3">
+    </div>
+    <div class="group">
+        <label>Line 1</label><input type="text" id="sub1" value="ECOCITY/EXOTOPIA">
+        <label>Line 2</label><input type="text" id="sub2" value="NFT REWARDS">
+    </div>
+</div>
+
+<svg id="viz" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <pattern id="pathlineText" width="500" height="50" patternUnits="userSpaceOnUse" patternTransform="rotate(-2)">
+            <text x="0" y="35" fill="#3a3a45" font-size="14" font-weight="bold">BIODIVERSITY_ORACLE_NODE_v7_SYNC_IN_PROGRESS...</text>
+        </pattern>
+
+        <filter id="shredFilter">
+            <feTurbulence id="shredTurb" type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
+            <feDisplacementMap id="shredMap" in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+
+        <pattern id="shieldHatch" width="4" height="4" patternUnits="userSpaceOnUse">
+            <rect width="4" height="4" fill="#050505" />
+            <path d="M0,4 l4,-4" stroke="#1a1a1a" stroke-width="0.5" />
+        </pattern>
+    </defs>
+
+    <rect width="1000" height="1000" fill="#1e1e24" />
+    <rect id="bgTextLayer" width="1000" height="1000" fill="url(#pathlineText)" />
+
+    <g id="organismContainer" filter="url(#shredFilter)"></g>
+
+    <path id="mainShield" d="M50,280 L950,280 L880,480 L500,820 L120,480 Z" fill="url(#shieldHatch)" filter="url(#shredFilter)" />
+
+    <g id="imageStack">
+        <image id="layer1" href="wblayer1.png" x="150" y="250" width="700" height="400" opacity="0.9" style="mix-blend-mode: screen;"/>
+        <image id="layer2" href="wblayer2.png" x="150" y="250" width="700" height="400" opacity="0.7" style="mix-blend-mode: plus-lighter;"/>
+        <image id="layer3" href="wblayer3.png" x="150" y="250" width="700" height="400" opacity="0.5" style="mix-blend-mode: overlay;"/>
+    </g>
+
+    <g text-anchor="middle" font-family="monospace" font-weight="900">
+        <text id="st1" x="500" y="880" fill="#fff" font-size="28" opacity="0.8">ECOCITY/EXOTOPIA</text>
+        <text id="st2" x="500" y="920" fill="#fff" font-size="28" opacity="0.8">NFT REWARDS</text>
+    </g>
+</svg>
+
+<script>
+    const container = document.getElementById('organismContainer');
+    const popInput = document.getElementById('popCount');
+    const shredMap = document.getElementById('shredMap');
+    const paletteSelect = document.getElementById('palette');
+    
+    let organisms = [];
+    const palettes = {
+        'cyber-moss': ['#00ffcc', '#33ff33', '#0099ff', '#114433'],
+        'volcanic': ['#ff4500', '#9400d3', '#ff00ff', '#330033'],
+        'biodiversity': ['#ADFF2F', '#008000', '#FFD700', '#20B2AA'],
+        'monochrom': ['#ff0000', '#ffffff', '#444444', '#111111']
+    };
+
+    function createShape(i) {
+        const colors = palettes[paletteSelect.value];
+        const color = colors[i % colors.length];
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        
+        // Randomly pick an archetypal shape
+        const shapeTypes = [
+            `<circle r="${30+Math.random()*40}" fill="${color}"/>`,
+            `<rect width="100" height="20" fill="${color}"/>`,
+            `<polygon points="0,-50 40,30 -40,30" fill="${color}"/>`
+        ];
+        g.innerHTML = shapeTypes[Math.floor(Math.random()*3)];
+        container.appendChild(g);
+        
+        return {
+            el: g,
+            x: Math.random() * 1000, y: Math.random() * 1000,
+            tx: Math.random() * 1000, ty: Math.random() * 1000,
+            wait: Math.random() * 100, scale: 1
+        };
+    }
+
+    function sync() {
+        container.innerHTML = '';
+        organisms = [];
+        for(let i=0; i<popInput.value * 8; i++) organisms.push(createShape(i));
+    }
+
+    let tick = 0;
+    function aliveMotion() {
+    organisms.forEach(o => {
+        // "Thinking" delay - random time before next move
+        const delay = Math.random() * 2;
+        
+        gsap.to(o, {
+            x: Math.random() * 1000,
+            y: Math.random() * 1000,
+            duration: 0.5 + Math.random(),
+            delay: delay,
+            ease: "expo.inOut", // Fast pounce, slow settle
+            onUpdate: () => {
+                o.el.setAttribute('transform', `translate(${o.x}, ${o.y})`);
+                
+                // Reactive Shred: Increase glitch only while moving
+                const speed = Math.abs(gsap.getProperty(o, "x", "velocity") || 0);
+                if(speed > 5) {
+                    shredMap.setAttribute('scale', 40);
+                }
+            },
+            onComplete: () => {
+                // Return to "rest" shred state
+                shredMap.setAttribute('scale', 15);
+                aliveMotion(); // Loop the individual thought
+            }
+        });
+    });
+}
+
+ndex4.html</script>
+</body>
+</html>

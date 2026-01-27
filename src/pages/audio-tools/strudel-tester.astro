@@ -1,0 +1,144 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// These "Recipes" will act as your NFT Metadata "Bio-Codes"
+const testBeats = [
+  { 
+    id: "BIO-001", 
+    name: "Fungal Rhythm", 
+    code: `s("bd [sd bd] bd sd, hh*16").bank("RolandTR909")`,
+    bioData: "Mycelium growth pattern #42"
+  },
+  { 
+    id: "BIO-002", 
+    name: "Canopy Pulse", 
+    code: `note("<[c2 c3]*4 [bb1 bb2]*4>").s("sawtooth").lpf(800)`,
+    bioData: "Avian migratory frequency"
+  },
+  { 
+    id: "BIO-003", 
+    name: "Deep Soil", 
+    code: `s("bd*2, [~ cp]*2, [~ hh]*4").room(0.5).speed(0.8)`,
+    bioData: "Earthworm vibration resonance"
+  }
+];
+---
+
+<BaseLayout title="Strudel Bio-Beats Lab" activeSection="audio-tools">
+  <main class="lab-container">
+    <header>
+      <h1>Strudel Bio-Beats Tester</h1>
+      <p>Testing Edition v1: Converting biodiversity metadata into live-coded sound.</p>
+    </header>
+
+    <div class="controls">
+      <button id="stop-all" class="stop-btn">Hush (Stop All)</button>
+    </div>
+
+    <div class="beat-grid">
+      {testBeats.map((beat) => (
+        <div class="beat-card">
+          <div class="card-header">
+            <h3>{beat.name}</h3>
+            <code>{beat.id}</code>
+          </div>
+          <p class="bio-tag">{beat.bioData}</p>
+          <pre class="code-preview"><code>{beat.code}</code></pre>
+          <button 
+            class="play-beat-btn" 
+            data-code={beat.code}
+          >
+            Play Beat
+          </button>
+        </div>
+      ))}
+    </div>
+  </main>
+</BaseLayout>
+
+<script src="https://unpkg.com/@strudel/web@1.0.3"></script>
+
+<script is:inline>
+  // Initialize Strudel - this must happen on the client
+  // It provides global functions like 's', 'note', 'hush', etc.
+  initStrudel();
+
+  const playButtons = document.querySelectorAll('.play-beat-btn');
+  const stopButton = document.getElementById('stop-all');
+
+  playButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const codeStr = btn.getAttribute('data-code');
+      
+      // Safety: Stop previous sounds before starting new one
+      hush();
+      
+      try {
+        // EVAL the strudel code string. 
+        // In a production "Biodiversity Token" app, this string 
+        // comes directly from the on-chain metadata.
+        eval(codeStr + '.play()');
+        
+        // UI Feedback
+        playButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      } catch (err) {
+        console.error("Strudel Syntax Error:", err);
+      }
+    });
+  });
+
+  stopButton.addEventListener('click', () => {
+    hush();
+    playButtons.forEach(b => b.classList.remove('active'));
+  });
+</script>
+
+<style>
+  .lab-container { padding: 2rem; max-width: 1000px; margin: 0 auto; color: #e0e0e0; }
+  .controls { margin-bottom: 2rem; }
+  .beat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+  
+  .beat-card {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.2s;
+  }
+  .beat-card:hover { border-color: #00ff88; }
+  
+  .card-header { display: flex; justify-content: space-between; align-items: baseline; }
+  .bio-tag { font-size: 0.8rem; color: #00ff88; margin: 0.5rem 0; }
+  
+  .code-preview {
+    background: #000;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px dashed #444;
+  }
+
+  .play-beat-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .play-beat-btn.active { background: #00ff88; color: #000; }
+  
+  .stop-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+</style>

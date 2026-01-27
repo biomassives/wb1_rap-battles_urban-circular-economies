@@ -1,0 +1,2392 @@
+---
+/**
+ * BattleSetupModal.astro
+ * Overlay dialog for rap battle setup with:
+ * - Create or Join battle options
+ * - Beat selection from sampler banks
+ * - Strudel pattern integration
+ * - AutoMoog synth connection
+ */
+---
+
+<!-- Battle Setup Modal Overlay -->
+<div id="battleSetupModal" class="battle-setup-modal">
+  <div class="battle-setup-content">
+    <!-- Close Button -->
+    <button class="modal-close-btn" onclick="closeBattleSetup()" aria-label="Close">
+      <span>&times;</span>
+    </button>
+
+    <!-- Modal Header -->
+    <div class="setup-header">
+      <div class="header-glow"></div>
+      <h1 class="setup-title">
+        <span class="title-icon">⚔️</span>
+        <span class="title-text">BATTLE SETUP</span>
+      </h1>
+      <p class="setup-subtitle">Choose your path, select your beat, dominate.</p>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step active" data-step="1">
+        <span class="step-num">1</span>
+        <span class="step-label">Mode</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2">
+        <span class="step-num">2</span>
+        <span class="step-label">Beat</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3">
+        <span class="step-num">3</span>
+        <span class="step-label">Ready</span>
+      </div>
+    </div>
+
+    <!-- Step 1: Mode Selection -->
+    <div class="setup-step" id="setup-step-1">
+      <!-- Practice Mode Banner (shown when in demo mode) -->
+      <div class="practice-mode-banner" id="practice-mode-banner" style="display: none;">
+        <span class="practice-icon">🎓</span>
+        <span class="practice-text">Practice Mode - No stakes, unlimited retries!</span>
+        <button class="exit-practice-btn" onclick="exitPracticeMode()">Exit Practice</button>
+      </div>
+
+      <div class="mode-cards">
+        <div class="mode-card" data-mode="create" onclick="selectBattleMode('create')">
+          <div class="mode-glow create-glow"></div>
+          <div class="mode-icon">🎤</div>
+          <h3 class="mode-title">CREATE BATTLE</h3>
+          <p class="mode-desc">Start a new challenge and invite opponents</p>
+          <ul class="mode-features">
+            <li>Choose battle type</li>
+            <li>Set stakes & duration</li>
+            <li>Invite via email, SMS, or NFT</li>
+          </ul>
+        </div>
+
+        <div class="mode-divider">
+          <span>OR</span>
+        </div>
+
+        <div class="mode-card" data-mode="join" onclick="selectBattleMode('join')">
+          <div class="mode-glow join-glow"></div>
+          <div class="mode-icon">⚡</div>
+          <h3 class="mode-title">JOIN BATTLE</h3>
+          <p class="mode-desc">Enter an existing challenge with a code</p>
+          <div class="join-code-input">
+            <input
+              type="text"
+              id="joinCodeInput"
+              placeholder="ENTER CODE"
+              maxlength="6"
+              onclick="event.stopPropagation()"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Practice/Demo Mode Option -->
+      <div class="practice-mode-section">
+        <div class="practice-divider">
+          <span>NEW TO BATTLES?</span>
+        </div>
+        <div class="practice-card" onclick="enterPracticeMode()">
+          <div class="practice-card-icon">🎓</div>
+          <div class="practice-card-content">
+            <h4>Try Practice Mode</h4>
+            <p>Learn the ropes with no pressure - explore beats, practice recording, and get comfortable before competing.</p>
+            <ul class="practice-features">
+              <li>No XP stakes</li>
+              <li>Unlimited re-records</li>
+              <li>AI practice opponent</li>
+              <li>Full beat access</li>
+            </ul>
+          </div>
+          <div class="practice-card-arrow">→</div>
+        </div>
+      </div>
+
+      <!-- Help & Playground Links -->
+      <div class="help-link-section">
+        <button class="help-link-btn" onclick="startGuidedTour()">
+          <span>❓</span> Need help? Take a quick tour
+        </button>
+        <a href="/beat-playground" class="playground-link">
+          <span>🎛️</span> Open Beat Playground
+        </a>
+      </div>
+    </div>
+
+    <!-- Step 2: Beat Selection -->
+    <div class="setup-step" id="setup-step-2" style="display: none;">
+      <!-- Beat Source Tabs -->
+      <div class="beat-source-tabs">
+        <button class="source-tab active" data-source="sampler" onclick="switchBeatSource('sampler')">
+          <span class="tab-icon">🎛️</span>
+          <span>Sampler Bank</span>
+        </button>
+        <button class="source-tab" data-source="strudel" onclick="switchBeatSource('strudel')">
+          <span class="tab-icon">🎵</span>
+          <span>Strudel Patterns</span>
+        </button>
+        <button class="source-tab" data-source="moog" onclick="switchBeatSource('moog')">
+          <span class="tab-icon">🎹</span>
+          <span>AutoMoog</span>
+        </button>
+        <button class="source-tab" data-source="upload" onclick="switchBeatSource('upload')">
+          <span class="tab-icon">📁</span>
+          <span>Upload</span>
+        </button>
+      </div>
+
+      <!-- Sampler Bank Content -->
+      <div class="beat-source-content" id="source-sampler">
+        <div class="bank-selector">
+          <button class="bank-btn active" data-bank="drums" onclick="selectBank('drums')">🥁 Drums</button>
+          <button class="bank-btn" data-bank="bass" onclick="selectBank('bass')">🎸 Bass</button>
+          <button class="bank-btn" data-bank="synth" onclick="selectBank('synth')">🎹 Synth</button>
+          <button class="bank-btn" data-bank="fx" onclick="selectBank('fx')">✨ FX</button>
+        </div>
+        <div class="beats-grid" id="sampler-beats-grid">
+          <!-- Populated by JS -->
+          <div class="loading-beats">Loading beats...</div>
+        </div>
+        <div class="selected-beat-preview" id="sampler-preview" style="display: none;">
+          <div class="preview-info">
+            <span class="preview-icon">🎵</span>
+            <span class="preview-name" id="preview-beat-name">-</span>
+            <span class="preview-bpm" id="preview-beat-bpm">120 BPM</span>
+          </div>
+          <div class="preview-controls">
+            <button class="preview-btn" onclick="previewBeat()">▶ Preview</button>
+            <button class="preview-btn stop" onclick="stopPreview()">⏹ Stop</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strudel Patterns Content -->
+      <div class="beat-source-content" id="source-strudel" style="display: none;">
+        <div class="strudel-presets">
+          <h4>Quick Patterns</h4>
+          <div class="preset-grid">
+            <button class="preset-btn" data-pattern="hiphop" onclick="selectStrudelPreset('hiphop')">
+              <span class="preset-icon">🎤</span>
+              <span class="preset-name">Hip Hop</span>
+            </button>
+            <button class="preset-btn" data-pattern="trap" onclick="selectStrudelPreset('trap')">
+              <span class="preset-icon">🔥</span>
+              <span class="preset-name">Trap</span>
+            </button>
+            <button class="preset-btn" data-pattern="boom" onclick="selectStrudelPreset('boom')">
+              <span class="preset-icon">💥</span>
+              <span class="preset-name">Boom Bap</span>
+            </button>
+            <button class="preset-btn" data-pattern="lofi" onclick="selectStrudelPreset('lofi')">
+              <span class="preset-icon">🌙</span>
+              <span class="preset-name">Lo-Fi</span>
+            </button>
+            <button class="preset-btn" data-pattern="drill" onclick="selectStrudelPreset('drill')">
+              <span class="preset-icon">⚡</span>
+              <span class="preset-name">Drill</span>
+            </button>
+            <button class="preset-btn" data-pattern="afro" onclick="selectStrudelPreset('afro')">
+              <span class="preset-icon">🌍</span>
+              <span class="preset-name">Afrobeat</span>
+            </button>
+          </div>
+        </div>
+        <div class="strudel-custom">
+          <h4>Custom Pattern</h4>
+          <textarea
+            id="strudelPatternInput"
+            class="pattern-input"
+            placeholder='s("bd sd bd sd").fast(2)'
+          ></textarea>
+          <button class="test-pattern-btn" onclick="testStrudelPattern()">▶ Test Pattern</button>
+        </div>
+        <div class="saved-sequences" id="saved-strudel-sequences">
+          <h4>Your Saved Sequences</h4>
+          <div class="sequences-list" id="strudel-sequences-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- AutoMoog Content -->
+      <div class="beat-source-content" id="source-moog" style="display: none;">
+        <div class="moog-panel">
+          <div class="moog-header">
+            <h4>🎹 AutoMoog Synthesizer</h4>
+            <p>Generate live accompaniment for your battle</p>
+          </div>
+          <div class="moog-moods">
+            <h5>Select Mood</h5>
+            <div class="mood-grid">
+              <button class="mood-btn" data-mood="aggressive" onclick="selectMoogMood('aggressive')">
+                <span>🔥</span> Aggressive
+              </button>
+              <button class="mood-btn" data-mood="groove" onclick="selectMoogMood('groove')">
+                <span>🎵</span> Groove
+              </button>
+              <button class="mood-btn" data-mood="ambient" onclick="selectMoogMood('ambient')">
+                <span>🌌</span> Ambient
+              </button>
+              <button class="mood-btn" data-mood="chaos" onclick="selectMoogMood('chaos')">
+                <span>⚡</span> Chaos
+              </button>
+            </div>
+          </div>
+          <div class="moog-controls">
+            <div class="control-row">
+              <label>Energy</label>
+              <input type="range" id="moogEnergy" min="0" max="100" value="70">
+              <span id="moogEnergyVal">70%</span>
+            </div>
+            <div class="control-row">
+              <label>Warmth</label>
+              <input type="range" id="moogWarmth" min="0" max="100" value="50">
+              <span id="moogWarmthVal">50%</span>
+            </div>
+          </div>
+          <button class="moog-launch-btn" onclick="launchMoogForBattle()">
+            🚀 Launch AutoMoog
+          </button>
+        </div>
+      </div>
+
+      <!-- Upload Content -->
+      <div class="beat-source-content" id="source-upload" style="display: none;">
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon">📁</div>
+          <p>Drag & drop your beat here</p>
+          <p class="upload-hint">or click to browse</p>
+          <input type="file" id="beat-upload-input" accept="audio/*" style="display: none;">
+        </div>
+        <div class="uploaded-file" id="uploaded-file-info" style="display: none;">
+          <span class="file-icon">🎵</span>
+          <span class="file-name" id="uploaded-file-name">-</span>
+          <button class="remove-file-btn" onclick="removeUploadedFile()">&times;</button>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="step-nav">
+        <button class="nav-btn back" onclick="goToStep(1)">← Back</button>
+        <button class="nav-btn next" id="step2-next" onclick="goToStep(3)" disabled>
+          Continue →
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Battle Details & Ready -->
+    <div class="setup-step" id="setup-step-3" style="display: none;">
+      <div class="battle-config">
+        <!-- Create Mode Config -->
+        <div class="config-section" id="create-config">
+          <div class="config-row">
+            <label>Battle Title</label>
+            <input type="text" id="battleTitle" placeholder="Epic Freestyle Showdown" maxlength="50">
+          </div>
+          <div class="config-row">
+            <label>Battle Type</label>
+            <div class="type-selector">
+              <button class="type-btn active" data-type="freestyle">🎙️ Freestyle</button>
+              <button class="type-btn" data-type="written">📝 Written</button>
+              <button class="type-btn" data-type="acapella">🎤 A Capella</button>
+            </div>
+          </div>
+          <div class="config-row">
+            <label>Stakes (XP)</label>
+            <div class="stakes-selector">
+              <button class="stakes-btn" data-stakes="25">25</button>
+              <button class="stakes-btn active" data-stakes="50">50</button>
+              <button class="stakes-btn" data-stakes="100">100</button>
+              <button class="stakes-btn" data-stakes="250">250</button>
+            </div>
+          </div>
+          <div class="config-row">
+            <label>Duration</label>
+            <select id="battleDuration">
+              <option value="24">24 Hours</option>
+              <option value="48">48 Hours</option>
+              <option value="72" selected>3 Days</option>
+              <option value="168">1 Week</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="battle-summary">
+          <h4>Battle Summary</h4>
+          <div class="summary-item">
+            <span class="summary-label">Mode:</span>
+            <span class="summary-value" id="summary-mode">Create</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Beat:</span>
+            <span class="summary-value" id="summary-beat">None selected</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Stakes:</span>
+            <span class="summary-value" id="summary-stakes">50 XP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final Actions -->
+      <div class="final-actions">
+        <button class="nav-btn back" onclick="goToStep(2)">← Back</button>
+        <button class="launch-battle-btn" id="launch-battle-btn" onclick="launchBattle()">
+          <span class="btn-icon">🚀</span>
+          <span class="btn-text">LAUNCH BATTLE</span>
+          <span class="btn-glow"></span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+/* Modal Overlay */
+.battle-setup-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(12px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.battle-setup-modal.active {
+  display: flex;
+}
+
+.battle-setup-content {
+  background: linear-gradient(180deg, #0d1220 0%, #080c14 100%);
+  border: 1px solid rgba(112, 214, 255, 0.2);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow:
+    0 0 60px rgba(112, 214, 255, 0.1),
+    0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Close Button */
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 56, 100, 0.2);
+  border-color: #ff3864;
+  color: #ff3864;
+}
+
+/* Header */
+.setup-header {
+  text-align: center;
+  padding: 2rem 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-glow {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(112, 214, 255, 0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.setup-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0;
+  color: white;
+}
+
+.title-icon {
+  font-size: 2.5rem;
+}
+
+.title-text {
+  background: linear-gradient(135deg, #70d6ff, #ff9770);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+}
+
+.setup-subtitle {
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+}
+
+/* Step Indicator */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 0.4;
+  transition: opacity 0.3s;
+}
+
+.step.active {
+  opacity: 1;
+}
+
+.step.completed {
+  opacity: 0.8;
+}
+
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: white;
+}
+
+.step.active .step-num {
+  background: linear-gradient(135deg, #70d6ff, #00ff9c);
+  border-color: transparent;
+  color: #000;
+}
+
+.step.completed .step-num {
+  background: #00ff9c;
+  border-color: transparent;
+  color: #000;
+}
+
+.step-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.step-line {
+  width: 60px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 0.5rem;
+}
+
+/* Setup Steps */
+.setup-step {
+  padding: 1.5rem 2rem 2rem;
+}
+
+/* Mode Cards */
+.mode-cards {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.mode-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-card:hover {
+  border-color: rgba(112, 214, 255, 0.4);
+  transform: translateY(-4px);
+}
+
+.mode-card.selected {
+  border-color: #00ff9c;
+  background: rgba(0, 255, 156, 0.05);
+}
+
+.mode-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 100px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.create-glow {
+  background: radial-gradient(ellipse, rgba(112, 214, 255, 0.3), transparent 70%);
+}
+
+.join-glow {
+  background: radial-gradient(ellipse, rgba(255, 151, 112, 0.3), transparent 70%);
+}
+
+.mode-card:hover .mode-glow,
+.mode-card.selected .mode-glow {
+  opacity: 1;
+}
+
+.mode-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+}
+
+.mode-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.5rem;
+  letter-spacing: 1px;
+}
+
+.mode-desc {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 1rem;
+}
+
+.mode-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.mode-features li {
+  padding: 0.25rem 0;
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.mode-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #00ff9c;
+}
+
+.mode-divider {
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.join-code-input {
+  margin-top: 1rem;
+}
+
+.join-code-input input {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 1.2rem;
+  text-align: center;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-family: monospace;
+}
+
+.join-code-input input:focus {
+  outline: none;
+  border-color: #ff9770;
+}
+
+/* Practice Mode Banner */
+.practice-mode-banner {
+  background: linear-gradient(135deg, rgba(112, 214, 255, 0.15), rgba(0, 255, 156, 0.1));
+  border: 1px solid #70d6ff;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: practice-pulse 2s infinite;
+}
+
+@keyframes practice-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(112, 214, 255, 0.3); }
+  50% { box-shadow: 0 0 15px 0 rgba(112, 214, 255, 0.2); }
+}
+
+.practice-icon {
+  font-size: 1.25rem;
+}
+
+.practice-text {
+  flex: 1;
+  color: #70d6ff;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.exit-practice-btn {
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exit-practice-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Practice Mode Section */
+.practice-mode-section {
+  margin-top: 1.5rem;
+}
+
+.practice-divider {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.practice-divider::before,
+.practice-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.practice-divider span {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.practice-card {
+  background: linear-gradient(135deg, rgba(112, 214, 255, 0.08), rgba(255, 151, 112, 0.05));
+  border: 1px dashed rgba(112, 214, 255, 0.3);
+  border-radius: 12px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.practice-card:hover {
+  border-color: #70d6ff;
+  border-style: solid;
+  background: linear-gradient(135deg, rgba(112, 214, 255, 0.12), rgba(255, 151, 112, 0.08));
+  transform: translateY(-2px);
+}
+
+.practice-card-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.practice-card-content {
+  flex: 1;
+}
+
+.practice-card-content h4 {
+  color: #70d6ff;
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.practice-card-content p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  margin: 0 0 0.75rem;
+  line-height: 1.4;
+}
+
+.practice-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.practice-features li {
+  background: rgba(0, 255, 156, 0.1);
+  border: 1px solid rgba(0, 255, 156, 0.2);
+  border-radius: 12px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.7rem;
+  color: #00ff9c;
+}
+
+.practice-card-arrow {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s;
+}
+
+.practice-card:hover .practice-card-arrow {
+  transform: translateX(4px);
+  color: #70d6ff;
+}
+
+/* Help Link */
+.help-link-section {
+  margin-top: 1.25rem;
+  text-align: center;
+}
+
+.help-link-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+
+.help-link-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.playground-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+  color: #ff9770;
+  font-size: 0.8rem;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+
+.playground-link:hover {
+  background: rgba(255, 151, 112, 0.1);
+  color: #ff9770;
+}
+
+/* Beat Source Tabs */
+.beat-source-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.source-tab {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.75rem 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.source-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+.source-tab.active {
+  background: rgba(112, 214, 255, 0.1);
+  border-color: #70d6ff;
+  color: #70d6ff;
+}
+
+.tab-icon {
+  font-size: 1.25rem;
+}
+
+/* Beat Source Content */
+.beat-source-content {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.25rem;
+  min-height: 250px;
+}
+
+/* Bank Selector */
+.bank-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.bank-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bank-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.bank-btn.active {
+  background: #00ff9c;
+  border-color: #00ff9c;
+  color: #000;
+}
+
+/* Beats Grid */
+.beats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.beat-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.beat-item:hover {
+  border-color: #70d6ff;
+  background: rgba(112, 214, 255, 0.05);
+}
+
+.beat-item.selected {
+  border-color: #00ff9c;
+  background: rgba(0, 255, 156, 0.1);
+}
+
+.beat-name {
+  font-size: 0.85rem;
+  color: white;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.beat-meta {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.loading-beats {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Selected Beat Preview */
+.selected-beat-preview {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(0, 255, 156, 0.1);
+  border: 1px solid #00ff9c;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.preview-icon {
+  font-size: 1.25rem;
+}
+
+.preview-name {
+  color: white;
+  font-weight: 600;
+}
+
+.preview-bpm {
+  color: #70d6ff;
+  font-size: 0.8rem;
+}
+
+.preview-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.preview-btn {
+  padding: 0.4rem 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.preview-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.preview-btn.stop {
+  border-color: #ff3864;
+  color: #ff3864;
+}
+
+/* Strudel Presets */
+.strudel-presets h4,
+.strudel-custom h4,
+.saved-sequences h4 {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.preset-btn {
+  padding: 0.75rem 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.preset-btn:hover {
+  border-color: #ff9770;
+  background: rgba(255, 151, 112, 0.1);
+}
+
+.preset-btn.selected {
+  border-color: #00ff9c;
+  background: rgba(0, 255, 156, 0.1);
+}
+
+.preset-icon {
+  font-size: 1.5rem;
+}
+
+.preset-name {
+  font-size: 0.75rem;
+}
+
+.pattern-input {
+  width: 100%;
+  height: 60px;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #00ff9c;
+  font-family: monospace;
+  font-size: 0.85rem;
+  resize: none;
+}
+
+.pattern-input:focus {
+  outline: none;
+  border-color: #00ff9c;
+}
+
+.test-pattern-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 255, 156, 0.1);
+  border: 1px solid #00ff9c;
+  border-radius: 6px;
+  color: #00ff9c;
+  cursor: pointer;
+}
+
+.sequences-list {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* Moog Panel */
+.moog-panel {
+  text-align: center;
+}
+
+.moog-header h4 {
+  color: #ff9770;
+  margin: 0 0 0.25rem;
+}
+
+.moog-header p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  margin: 0 0 1.5rem;
+}
+
+.moog-moods h5 {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+}
+
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mood-btn {
+  padding: 0.75rem 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.8rem;
+}
+
+.mood-btn:hover {
+  border-color: #ff9770;
+}
+
+.mood-btn.selected {
+  border-color: #ff9770;
+  background: rgba(255, 151, 112, 0.15);
+}
+
+.moog-controls {
+  margin-bottom: 1.5rem;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.control-row label {
+  width: 60px;
+  text-align: right;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+}
+
+.control-row input[type="range"] {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.control-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #ff9770;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.control-row span {
+  width: 40px;
+  color: #ff9770;
+  font-size: 0.85rem;
+}
+
+.moog-launch-btn {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #ff9770, #ff4fd8);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.moog-launch-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Upload Zone */
+.upload-zone {
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-zone:hover {
+  border-color: #70d6ff;
+  background: rgba(112, 214, 255, 0.05);
+}
+
+.upload-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.upload-zone p {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0.25rem 0;
+}
+
+.upload-hint {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.uploaded-file {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 255, 156, 0.1);
+  border: 1px solid #00ff9c;
+  border-radius: 8px;
+}
+
+.file-icon {
+  font-size: 1.5rem;
+}
+
+.file-name {
+  flex: 1;
+  color: white;
+}
+
+.remove-file-btn {
+  background: none;
+  border: none;
+  color: #ff3864;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+/* Step Navigation */
+.step-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-btn.back {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn.back:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-btn.next {
+  background: linear-gradient(135deg, #70d6ff, #00ff9c);
+  border: none;
+  color: #000;
+  font-weight: 700;
+}
+
+.nav-btn.next:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.nav-btn.next:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+/* Battle Config */
+.battle-config {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.config-section {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.config-row {
+  margin-bottom: 1rem;
+}
+
+.config-row:last-child {
+  margin-bottom: 0;
+}
+
+.config-row label {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.config-row input[type="text"],
+.config-row select {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 0.95rem;
+}
+
+.config-row input:focus,
+.config-row select:focus {
+  outline: none;
+  border-color: #70d6ff;
+}
+
+.type-selector,
+.stakes-selector {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.type-btn,
+.stakes-btn {
+  flex: 1;
+  padding: 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.type-btn:hover,
+.stakes-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.type-btn.active,
+.stakes-btn.active {
+  background: rgba(112, 214, 255, 0.15);
+  border-color: #70d6ff;
+  color: #70d6ff;
+}
+
+/* Battle Summary */
+.battle-summary {
+  background: rgba(112, 214, 255, 0.05);
+  border: 1px solid rgba(112, 214, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.battle-summary h4 {
+  color: #70d6ff;
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+.summary-value {
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Final Actions */
+.final-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.launch-battle-btn {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #00ff9c, #70d6ff);
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.launch-battle-btn:hover {
+  transform: scale(1.02);
+}
+
+.btn-glow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: translateX(-100%);
+  animation: btn-shine 2s infinite;
+}
+
+@keyframes btn-shine {
+  0% { transform: translateX(-100%); }
+  50%, 100% { transform: translateX(100%); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .mode-cards {
+    flex-direction: column;
+  }
+
+  .mode-divider {
+    transform: rotate(90deg);
+    padding: 0.5rem 0;
+  }
+
+  .preset-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mood-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .beat-source-tabs {
+    flex-wrap: wrap;
+  }
+
+  .source-tab {
+    min-width: calc(50% - 0.25rem);
+  }
+}
+</style>
+
+<script is:inline>
+// Battle Setup State
+let battleSetupState = {
+  mode: null,        // 'create', 'join', or 'practice'
+  isPracticeMode: false,
+  joinCode: '',
+  beatSource: 'sampler',
+  selectedBeat: null,
+  selectedBank: 'drums',
+  strudelPattern: null,
+  moogMood: null,
+  uploadedFile: null,
+  battleType: 'freestyle',
+  stakes: 50
+};
+
+// Strudel Presets
+const strudelPresets = {
+  hiphop: 's("bd sd:1 bd sd:2").bank("RolandTR808")',
+  trap: 's("bd*2 ~ hh*4 sd ~ hh*4 ~").bank("RolandTR808").speed(0.8)',
+  boom: 's("bd ~ sd ~ bd bd sd ~").bank("RolandTR808")',
+  lofi: 's("bd sd:3 ~ sd").bank("RolandTR808").lpf(800).speed(0.9)',
+  drill: 's("bd ~ ~ bd sd ~ bd ~").bank("RolandTR808").fast(1.2)',
+  afro: 's("bd ~ sd bd ~ sd bd sd").bank("RolandTR808").swing(0.2)'
+};
+
+// Open/Close Modal
+function openBattleSetup() {
+  document.getElementById('battleSetupModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  loadSamplerBeats();
+  loadSavedSequences();
+}
+
+function closeBattleSetup() {
+  document.getElementById('battleSetupModal').classList.remove('active');
+  document.body.style.overflow = '';
+  stopAllAudio();
+}
+
+// Mode Selection
+function selectBattleMode(mode) {
+  battleSetupState.mode = mode;
+
+  document.querySelectorAll('.mode-card').forEach(card => {
+    card.classList.toggle('selected', card.dataset.mode === mode);
+  });
+
+  if (mode === 'join') {
+    const code = document.getElementById('joinCodeInput').value.trim();
+    if (code.length === 6) {
+      battleSetupState.joinCode = code;
+      goToStep(3);
+    }
+  } else {
+    goToStep(2);
+  }
+}
+
+// Step Navigation
+function goToStep(step) {
+  // Update step indicators
+  document.querySelectorAll('.step-indicator .step').forEach((s, i) => {
+    s.classList.remove('active', 'completed');
+    if (i + 1 < step) s.classList.add('completed');
+    if (i + 1 === step) s.classList.add('active');
+  });
+
+  // Show/hide steps
+  document.querySelectorAll('.setup-step').forEach((s, i) => {
+    s.style.display = i + 1 === step ? 'block' : 'none';
+  });
+
+  // Update summary on step 3
+  if (step === 3) {
+    updateSummary();
+  }
+}
+
+// Beat Source Switching
+function switchBeatSource(source) {
+  battleSetupState.beatSource = source;
+
+  document.querySelectorAll('.source-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.source === source);
+  });
+
+  document.querySelectorAll('.beat-source-content').forEach(content => {
+    content.style.display = content.id === `source-${source}` ? 'block' : 'none';
+  });
+}
+
+// Bank Selection
+function selectBank(bank) {
+  battleSetupState.selectedBank = bank;
+
+  document.querySelectorAll('.bank-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.bank === bank);
+  });
+
+  loadSamplerBeats();
+}
+
+// Load Sampler Beats
+function loadSamplerBeats() {
+  const grid = document.getElementById('sampler-beats-grid');
+  const bank = battleSetupState.selectedBank;
+
+  // Try to get from localStorage
+  const samplerData = JSON.parse(localStorage.getItem('samplerSequences') || '[]');
+  const backingTracks = JSON.parse(localStorage.getItem('nftBackingTracks') || '[]');
+
+  // Sample beats by bank type
+  const sampleBeats = {
+    drums: [
+      { id: 'drum1', name: 'Boom Bap Kit', bpm: 90 },
+      { id: 'drum2', name: 'Trap Kit 808', bpm: 140 },
+      { id: 'drum3', name: 'Lo-Fi Drums', bpm: 85 },
+      { id: 'drum4', name: 'Drill Pattern', bpm: 145 }
+    ],
+    bass: [
+      { id: 'bass1', name: 'Sub Bass', bpm: 90 },
+      { id: 'bass2', name: '808 Slide', bpm: 140 },
+      { id: 'bass3', name: 'Funk Bass', bpm: 100 }
+    ],
+    synth: [
+      { id: 'synth1', name: 'Dark Pad', bpm: 90 },
+      { id: 'synth2', name: 'Lead Stab', bpm: 120 },
+      { id: 'synth3', name: 'Choir Pad', bpm: 80 }
+    ],
+    fx: [
+      { id: 'fx1', name: 'Vinyl Crackle', bpm: 0 },
+      { id: 'fx2', name: 'Riser', bpm: 0 },
+      { id: 'fx3', name: 'Impact Hit', bpm: 0 }
+    ]
+  };
+
+  const beats = [...(sampleBeats[bank] || []), ...samplerData.filter(s => s.bank === bank)];
+
+  if (beats.length === 0) {
+    grid.innerHTML = `<div class="loading-beats">No ${bank} beats found. Create some in the Sampler!</div>`;
+    return;
+  }
+
+  grid.innerHTML = beats.map(beat => `
+    <div class="beat-item" data-id="${beat.id}" onclick="selectBeat('${beat.id}', '${beat.name}', ${beat.bpm || 120})">
+      <div class="beat-name">${beat.name}</div>
+      <div class="beat-meta">${beat.bpm ? beat.bpm + ' BPM' : 'FX'}</div>
+    </div>
+  `).join('');
+}
+
+// Select Beat
+function selectBeat(id, name, bpm) {
+  battleSetupState.selectedBeat = { id, name, bpm };
+
+  document.querySelectorAll('.beat-item').forEach(item => {
+    item.classList.toggle('selected', item.dataset.id === id);
+  });
+
+  // Show preview
+  const preview = document.getElementById('sampler-preview');
+  preview.style.display = 'flex';
+  document.getElementById('preview-beat-name').textContent = name;
+  document.getElementById('preview-beat-bpm').textContent = `${bpm} BPM`;
+
+  // Enable next button
+  document.getElementById('step2-next').disabled = false;
+}
+
+// Strudel Presets
+function selectStrudelPreset(preset) {
+  battleSetupState.strudelPattern = strudelPresets[preset];
+  battleSetupState.selectedBeat = { id: preset, name: preset.charAt(0).toUpperCase() + preset.slice(1), type: 'strudel' };
+
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.pattern === preset);
+  });
+
+  document.getElementById('strudelPatternInput').value = strudelPresets[preset];
+  document.getElementById('step2-next').disabled = false;
+}
+
+function testStrudelPattern() {
+  const pattern = document.getElementById('strudelPatternInput').value;
+  if (pattern && window.strudel) {
+    try {
+      // Stop existing
+      if (typeof hush === 'function') hush();
+      // Play new
+      eval(pattern);
+    } catch (e) {
+      console.error('Strudel error:', e);
+      alert('Pattern error: ' + e.message);
+    }
+  }
+}
+
+// Load Saved Sequences
+function loadSavedSequences() {
+  const list = document.getElementById('strudel-sequences-list');
+  const sequences = JSON.parse(localStorage.getItem('samplerSequences') || '[]');
+
+  if (sequences.length === 0) {
+    list.innerHTML = '<p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">No saved sequences yet.</p>';
+    return;
+  }
+
+  list.innerHTML = sequences.slice(0, 5).map(seq => `
+    <div class="beat-item" onclick="selectSavedSequence('${seq.id}')">
+      <div class="beat-name">${seq.name || 'Untitled'}</div>
+      <div class="beat-meta">${seq.bpm || 120} BPM</div>
+    </div>
+  `).join('');
+}
+
+function selectSavedSequence(id) {
+  const sequences = JSON.parse(localStorage.getItem('samplerSequences') || '[]');
+  const seq = sequences.find(s => s.id === id);
+  if (seq) {
+    battleSetupState.selectedBeat = seq;
+    battleSetupState.strudelPattern = seq.combinedStrudelPattern || seq.strudelPattern;
+    document.getElementById('step2-next').disabled = false;
+  }
+}
+
+// Moog
+function selectMoogMood(mood) {
+  battleSetupState.moogMood = mood;
+
+  document.querySelectorAll('.mood-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.mood === mood);
+  });
+}
+
+function launchMoogForBattle() {
+  battleSetupState.selectedBeat = {
+    id: 'moog',
+    name: `AutoMoog (${battleSetupState.moogMood || 'ambient'})`,
+    type: 'moog',
+    mood: battleSetupState.moogMood
+  };
+  document.getElementById('step2-next').disabled = false;
+
+  // Actually launch Moog modal if available
+  if (typeof openMoogModal === 'function') {
+    closeBattleSetup();
+    openMoogModal();
+  }
+}
+
+// Moog controls
+document.getElementById('moogEnergy')?.addEventListener('input', (e) => {
+  document.getElementById('moogEnergyVal').textContent = e.target.value + '%';
+});
+
+document.getElementById('moogWarmth')?.addEventListener('input', (e) => {
+  document.getElementById('moogWarmthVal').textContent = e.target.value + '%';
+});
+
+// File Upload
+const uploadZone = document.getElementById('upload-zone');
+const uploadInput = document.getElementById('beat-upload-input');
+
+uploadZone?.addEventListener('click', () => uploadInput.click());
+
+uploadZone?.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadZone.style.borderColor = '#70d6ff';
+});
+
+uploadZone?.addEventListener('dragleave', () => {
+  uploadZone.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+});
+
+uploadZone?.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('audio/')) {
+    handleUploadedFile(file);
+  }
+});
+
+uploadInput?.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) handleUploadedFile(file);
+});
+
+function handleUploadedFile(file) {
+  battleSetupState.uploadedFile = file;
+  battleSetupState.selectedBeat = { id: 'upload', name: file.name, type: 'file', file };
+
+  document.getElementById('upload-zone').style.display = 'none';
+  document.getElementById('uploaded-file-info').style.display = 'flex';
+  document.getElementById('uploaded-file-name').textContent = file.name;
+  document.getElementById('step2-next').disabled = false;
+}
+
+function removeUploadedFile() {
+  battleSetupState.uploadedFile = null;
+  battleSetupState.selectedBeat = null;
+  document.getElementById('upload-zone').style.display = 'block';
+  document.getElementById('uploaded-file-info').style.display = 'none';
+  document.getElementById('step2-next').disabled = true;
+}
+
+// Battle Type & Stakes Selection
+document.querySelectorAll('.type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    battleSetupState.battleType = btn.dataset.type;
+    updateSummary();
+  });
+});
+
+document.querySelectorAll('.stakes-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.stakes-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    battleSetupState.stakes = parseInt(btn.dataset.stakes);
+    updateSummary();
+  });
+});
+
+// Update Summary
+function updateSummary() {
+  document.getElementById('summary-mode').textContent =
+    battleSetupState.mode === 'create' ? 'Create New Battle' : 'Join Battle';
+  document.getElementById('summary-beat').textContent =
+    battleSetupState.selectedBeat?.name || 'None selected';
+  document.getElementById('summary-stakes').textContent =
+    battleSetupState.stakes + ' XP';
+}
+
+// Launch Battle
+function launchBattle() {
+  const title = document.getElementById('battleTitle')?.value || 'Rap Battle';
+
+  if (battleSetupState.mode === 'join') {
+    // Join existing battle
+    const code = battleSetupState.joinCode || document.getElementById('joinCodeInput').value;
+    if (window.wb1Challenges) {
+      const result = window.wb1Challenges.joinChallengeByCode(code.toUpperCase());
+      if (result?.success) {
+        closeBattleSetup();
+        // Redirect or show lobby
+        if (typeof showBattleLobby === 'function') {
+          showBattleLobby();
+        }
+      } else {
+        alert(result?.error || 'Could not join battle');
+      }
+    }
+    return;
+  }
+
+  // Create new battle
+  if (window.wb1Challenges) {
+    const challenge = window.wb1Challenges.createChallenge({
+      type: 'rap_battle',
+      mode: '1v1',
+      title: title,
+      description: `${battleSetupState.battleType} rap battle`,
+      stakesAmount: battleSetupState.stakes,
+      metadata: {
+        beatSource: battleSetupState.beatSource,
+        beat: battleSetupState.selectedBeat,
+        strudelPattern: battleSetupState.strudelPattern
+      }
+    });
+
+    if (challenge) {
+      window.wb1Challenges.updateChallengeState(challenge.id, 'pending');
+      closeBattleSetup();
+
+      // Store beat info for battle page
+      localStorage.setItem('currentBattleBeat', JSON.stringify(battleSetupState.selectedBeat));
+      localStorage.setItem('currentBattlePattern', battleSetupState.strudelPattern || '');
+
+      // Open invite modal
+      if (typeof openInviteModal === 'function') {
+        openInviteModal(challenge.id);
+      }
+
+      // Or go to battle page
+      // window.location.href = `/rap-battle?id=${challenge.id}`;
+    }
+  }
+}
+
+// Preview/Stop Audio
+let previewAudio = null;
+
+function previewBeat() {
+  stopPreview();
+
+  if (battleSetupState.selectedBeat?.type === 'strudel' && battleSetupState.strudelPattern) {
+    testStrudelPattern();
+  } else if (battleSetupState.uploadedFile) {
+    previewAudio = new Audio(URL.createObjectURL(battleSetupState.uploadedFile));
+    previewAudio.play();
+  }
+}
+
+function stopPreview() {
+  if (previewAudio) {
+    previewAudio.pause();
+    previewAudio = null;
+  }
+  if (typeof hush === 'function') hush();
+}
+
+function stopAllAudio() {
+  stopPreview();
+}
+
+// Join code input handler
+document.getElementById('joinCodeInput')?.addEventListener('input', (e) => {
+  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  battleSetupState.joinCode = e.target.value;
+});
+
+document.getElementById('joinCodeInput')?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && e.target.value.length === 6) {
+    selectBattleMode('join');
+  }
+});
+
+// Practice Mode Functions
+function enterPracticeMode() {
+  battleSetupState.isPracticeMode = true;
+  battleSetupState.mode = 'practice';
+  battleSetupState.stakes = 0;
+
+  // Show practice banner
+  const banner = document.getElementById('practice-mode-banner');
+  if (banner) banner.style.display = 'flex';
+
+  // Store practice mode flag
+  localStorage.setItem('battlePracticeMode', 'true');
+
+  // Go directly to beat selection
+  goToStep(2);
+
+  console.log('🎓 Practice mode enabled');
+}
+
+function exitPracticeMode() {
+  battleSetupState.isPracticeMode = false;
+  battleSetupState.mode = null;
+  battleSetupState.stakes = 50;
+
+  // Hide practice banner
+  const banner = document.getElementById('practice-mode-banner');
+  if (banner) banner.style.display = 'none';
+
+  // Clear practice mode flag
+  localStorage.removeItem('battlePracticeMode');
+
+  // Reset to step 1
+  goToStep(1);
+
+  console.log('🎓 Practice mode disabled');
+}
+
+// Guided Tour
+const tourSteps = [
+  {
+    element: '.mode-card[data-mode="create"]',
+    title: 'Create a Battle',
+    text: 'Click here to start a new rap battle challenge. You\'ll choose your beat, set stakes, and invite opponents.',
+    position: 'bottom'
+  },
+  {
+    element: '.mode-card[data-mode="join"]',
+    title: 'Join a Battle',
+    text: 'Have an invite code? Enter it here to join an existing battle created by someone else.',
+    position: 'bottom'
+  },
+  {
+    element: '.practice-card',
+    title: 'Practice Mode',
+    text: 'New to battles? Start here! Practice with no stakes, unlimited retries, and explore all the beats.',
+    position: 'top'
+  },
+  {
+    element: '.beat-source-tabs',
+    title: 'Choose Your Beat',
+    text: 'Select from Sampler Bank (pre-made beats), Strudel (live-coded patterns), AutoMoog (AI synth), or upload your own.',
+    position: 'bottom',
+    step: 2
+  },
+  {
+    element: '.launch-battle-btn',
+    title: 'Launch Your Battle',
+    text: 'Once you\'ve configured everything, hit this button to start your battle and invite opponents!',
+    position: 'top',
+    step: 3
+  }
+];
+
+let currentTourStep = 0;
+let tourOverlay = null;
+
+function startGuidedTour() {
+  currentTourStep = 0;
+  createTourOverlay();
+  showTourStep(0);
+}
+
+function createTourOverlay() {
+  // Remove existing overlay if any
+  if (tourOverlay) tourOverlay.remove();
+
+  tourOverlay = document.createElement('div');
+  tourOverlay.className = 'tour-overlay';
+  tourOverlay.innerHTML = `
+    <div class="tour-highlight"></div>
+    <div class="tour-tooltip">
+      <div class="tour-tooltip-title"></div>
+      <div class="tour-tooltip-text"></div>
+      <div class="tour-tooltip-nav">
+        <span class="tour-step-count"></span>
+        <div class="tour-btns">
+          <button class="tour-skip-btn" onclick="endTour()">Skip</button>
+          <button class="tour-next-btn" onclick="nextTourStep()">Next</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(tourOverlay);
+
+  // Add styles if not already present
+  if (!document.getElementById('tour-styles')) {
+    const style = document.createElement('style');
+    style.id = 'tour-styles';
+    style.textContent = `
+      .tour-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        pointer-events: none;
+      }
+      .tour-highlight {
+        position: absolute;
+        border: 2px solid #70d6ff;
+        border-radius: 8px;
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75), 0 0 20px rgba(112, 214, 255, 0.5);
+        transition: all 0.3s ease;
+        pointer-events: none;
+      }
+      .tour-tooltip {
+        position: absolute;
+        background: linear-gradient(180deg, #1a2235, #0d1220);
+        border: 1px solid #70d6ff;
+        border-radius: 12px;
+        padding: 1.25rem;
+        max-width: 320px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        pointer-events: auto;
+        z-index: 100001;
+      }
+      .tour-tooltip-title {
+        color: #70d6ff;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .tour-tooltip-text {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+      }
+      .tour-tooltip-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .tour-step-count {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.8rem;
+      }
+      .tour-btns {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .tour-skip-btn, .tour-next-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .tour-skip-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .tour-skip-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .tour-next-btn {
+        background: linear-gradient(135deg, #70d6ff, #00ff9c);
+        border: none;
+        color: #000;
+        font-weight: 700;
+      }
+      .tour-next-btn:hover {
+        transform: scale(1.05);
+      }
+      .tour-tooltip::before {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: #1a2235;
+        border-left: 1px solid #70d6ff;
+        border-top: 1px solid #70d6ff;
+        transform: rotate(45deg);
+      }
+      .tour-tooltip.position-bottom::before {
+        top: -7px;
+        left: 50%;
+        margin-left: -6px;
+      }
+      .tour-tooltip.position-top::before {
+        bottom: -7px;
+        left: 50%;
+        margin-left: -6px;
+        transform: rotate(225deg);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+function showTourStep(index) {
+  const step = tourSteps[index];
+  if (!step) {
+    endTour();
+    return;
+  }
+
+  // Navigate to correct step if needed
+  if (step.step && step.step !== getCurrentVisibleStep()) {
+    goToStep(step.step);
+    // Wait for transition
+    setTimeout(() => showTourStep(index), 300);
+    return;
+  }
+
+  const element = document.querySelector(step.element);
+  if (!element) {
+    // Skip to next if element not found
+    nextTourStep();
+    return;
+  }
+
+  const rect = element.getBoundingClientRect();
+  const highlight = tourOverlay.querySelector('.tour-highlight');
+  const tooltip = tourOverlay.querySelector('.tour-tooltip');
+
+  // Position highlight
+  highlight.style.top = (rect.top - 4) + 'px';
+  highlight.style.left = (rect.left - 4) + 'px';
+  highlight.style.width = (rect.width + 8) + 'px';
+  highlight.style.height = (rect.height + 8) + 'px';
+
+  // Position tooltip
+  tooltip.className = 'tour-tooltip position-' + step.position;
+  if (step.position === 'bottom') {
+    tooltip.style.top = (rect.bottom + 16) + 'px';
+    tooltip.style.left = Math.max(16, rect.left + rect.width/2 - 160) + 'px';
+  } else {
+    tooltip.style.top = (rect.top - tooltip.offsetHeight - 16) + 'px';
+    tooltip.style.left = Math.max(16, rect.left + rect.width/2 - 160) + 'px';
+  }
+
+  // Update content
+  tooltip.querySelector('.tour-tooltip-title').textContent = step.title;
+  tooltip.querySelector('.tour-tooltip-text').textContent = step.text;
+  tooltip.querySelector('.tour-step-count').textContent = `${index + 1} of ${tourSteps.length}`;
+
+  // Update button
+  const nextBtn = tooltip.querySelector('.tour-next-btn');
+  nextBtn.textContent = index === tourSteps.length - 1 ? 'Finish' : 'Next';
+}
+
+function getCurrentVisibleStep() {
+  if (document.getElementById('setup-step-1').style.display !== 'none') return 1;
+  if (document.getElementById('setup-step-2').style.display !== 'none') return 2;
+  return 3;
+}
+
+function nextTourStep() {
+  currentTourStep++;
+  if (currentTourStep >= tourSteps.length) {
+    endTour();
+  } else {
+    showTourStep(currentTourStep);
+  }
+}
+
+function endTour() {
+  if (tourOverlay) {
+    tourOverlay.remove();
+    tourOverlay = null;
+  }
+  // Mark tour as completed
+  localStorage.setItem('battleTourCompleted', 'true');
+
+  // Reset to step 1
+  goToStep(1);
+}
+
+// Check if should show tour on first visit
+function checkFirstVisitTour() {
+  const tourCompleted = localStorage.getItem('battleTourCompleted');
+  const hasVisited = localStorage.getItem('battleArenaVisited');
+
+  if (!hasVisited) {
+    localStorage.setItem('battleArenaVisited', 'true');
+    // Don't auto-start tour, let user click the help link
+  }
+}
+
+// ========== TOOLTIP HELP SYSTEM ==========
+
+const tooltipDefinitions = {
+  'sampler': {
+    title: 'Sampler Bank',
+    content: 'Pre-loaded drum kits, bass lines, and sound effects. Great for beginners - just pick a beat and go!'
+  },
+  'strudel': {
+    title: 'Strudel Patterns',
+    content: 'Live-coded beat patterns using Strudel. Choose from presets or write your own code for unique sounds.'
+  },
+  'moog': {
+    title: 'AutoMoog Synthesizer',
+    content: 'AI-powered synthesizer that generates live accompaniment based on your selected mood. Experimental and unique!'
+  },
+  'upload': {
+    title: 'Upload Your Beat',
+    content: 'Bring your own beats! Upload MP3, WAV, or OGG files to use as your backing track.'
+  },
+  'stakes': {
+    title: 'Battle Stakes',
+    content: 'XP you\'re willing to risk. Winner takes the combined stakes. Higher stakes = bigger rewards!'
+  },
+  'freestyle': {
+    title: 'Freestyle Battle',
+    content: 'No rules, no topic - just pure improvisation. Show off your flow and creativity!'
+  },
+  'written': {
+    title: 'Written Battle',
+    content: 'Prepare your bars in advance. Focus on wordplay, metaphors, and punchlines.'
+  },
+  'practice': {
+    title: 'Practice Mode',
+    content: 'No stakes, no pressure. Record as many takes as you want and save your favorites. Perfect for warming up!'
+  }
+};
+
+let activeTooltip = null;
+
+function showTooltip(key, element) {
+  const def = tooltipDefinitions[key];
+  if (!def) return;
+
+  hideTooltip();
+
+  const tooltip = document.createElement('div');
+  tooltip.className = 'help-tooltip';
+  tooltip.innerHTML = `
+    <div class="help-tooltip-title">${def.title}</div>
+    <div class="help-tooltip-content">${def.content}</div>
+  `;
+
+  document.body.appendChild(tooltip);
+  activeTooltip = tooltip;
+
+  // Position tooltip
+  const rect = element.getBoundingClientRect();
+  tooltip.style.top = (rect.bottom + 8) + 'px';
+  tooltip.style.left = Math.max(16, rect.left + rect.width/2 - 150) + 'px';
+
+  // Add styles if not present
+  if (!document.getElementById('tooltip-styles')) {
+    const style = document.createElement('style');
+    style.id = 'tooltip-styles';
+    style.textContent = `
+      .help-tooltip {
+        position: fixed;
+        background: linear-gradient(180deg, #1a2540, #0d1220);
+        border: 1px solid #70d6ff;
+        border-radius: 10px;
+        padding: 1rem;
+        max-width: 280px;
+        z-index: 100002;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        animation: tooltip-fade-in 0.2s ease;
+      }
+      @keyframes tooltip-fade-in {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .help-tooltip-title {
+        color: #70d6ff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+      }
+      .help-tooltip-content {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+      .help-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(112, 214, 255, 0.2);
+        color: #70d6ff;
+        font-size: 0.7rem;
+        cursor: help;
+        margin-left: 0.5rem;
+        transition: all 0.2s;
+      }
+      .help-icon:hover {
+        background: rgba(112, 214, 255, 0.4);
+        transform: scale(1.1);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+function hideTooltip() {
+  if (activeTooltip) {
+    activeTooltip.remove();
+    activeTooltip = null;
+  }
+}
+
+// Add help icons to elements after modal opens
+function addHelpIcons() {
+  // Add help icons to source tabs
+  document.querySelectorAll('.source-tab').forEach(tab => {
+    const source = tab.dataset.source;
+    if (tooltipDefinitions[source] && !tab.querySelector('.help-icon')) {
+      const icon = document.createElement('span');
+      icon.className = 'help-icon';
+      icon.textContent = '?';
+      icon.onmouseenter = (e) => showTooltip(source, e.target);
+      icon.onmouseleave = hideTooltip;
+      tab.appendChild(icon);
+    }
+  });
+}
+
+// Call after modal opens
+const originalOpenBattleSetup = openBattleSetup;
+openBattleSetup = function() {
+  originalOpenBattleSetup();
+  setTimeout(addHelpIcons, 100);
+};
+
+// Expose globally
+window.openBattleSetup = openBattleSetup;
+window.closeBattleSetup = closeBattleSetup;
+window.selectBattleMode = selectBattleMode;
+window.goToStep = goToStep;
+window.switchBeatSource = switchBeatSource;
+window.selectBank = selectBank;
+window.selectBeat = selectBeat;
+window.selectStrudelPreset = selectStrudelPreset;
+window.testStrudelPattern = testStrudelPattern;
+window.selectMoogMood = selectMoogMood;
+window.launchMoogForBattle = launchMoogForBattle;
+window.previewBeat = previewBeat;
+window.stopPreview = stopPreview;
+window.removeUploadedFile = removeUploadedFile;
+window.launchBattle = launchBattle;
+window.enterPracticeMode = enterPracticeMode;
+window.exitPracticeMode = exitPracticeMode;
+window.startGuidedTour = startGuidedTour;
+window.nextTourStep = nextTourStep;
+window.endTour = endTour;
+
+// Check for first visit
+checkFirstVisitTour();
+</script>

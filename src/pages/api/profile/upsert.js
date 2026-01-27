@@ -4,13 +4,20 @@
 
 import { neon } from '@neondatabase/serverless';
 
+export const prerender = false;
+
 export async function POST({ request }) {
   try {
-    // Check if request has body
+    // Check if request has body and correct content-type
     const contentType = request.headers.get('content-type');
+
+    // DEBUG LOG - Check your terminal/console where Astro is running
+    console.log('DEBUG: Received Content-Type:', contentType);
+
     if (!contentType || !contentType.includes('application/json')) {
       return new Response(JSON.stringify({
         error: 'Invalid content type',
+        received: contentType,
         message: 'Request must have Content-Type: application/json'
       }), {
         status: 400,
@@ -64,7 +71,19 @@ export async function POST({ request }) {
     }
 
     // Connect to Nile DB using Neon serverless driver
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.lab_NILEDB_URL);
+    const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL || process.env.lab_POSTGRES_URL;
+
+    if (!dbUrl) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Database not configured'
+      }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const sql = neon(dbUrl);
 
     // Use PostgreSQL UPSERT (INSERT ... ON CONFLICT ... UPDATE)
     const result = await sql`

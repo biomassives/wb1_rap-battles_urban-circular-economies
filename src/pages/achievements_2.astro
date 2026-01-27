@@ -1,0 +1,273 @@
+---
+/**
+ * achievements.astro - Worldbridger One Edition
+ * Features:
+ * - Utility-first cards (GPL Access, Mentoring, On-Chain Verification)
+ * - Impact-based categorization (Water, Sanitation, Air, Circular Economy)
+ * - Transparent data links for Biodiversity Tokens
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Impact & Achievements" 
+  description="Verify your contributions to global sustainable development"
+  activeSection="achievements"
+>
+
+  <section class="achievements-hero">
+    <div class="container mx-auto">
+      <h1 class="hero-title">🌍 Worldbridger Impact</h1>
+      <p class="hero-subtitle">
+        Your verifiable contributions to Water, Sanitation, Air Quality, and the Circular Economy.
+      </p>
+      
+      <div id="impact-dashboard" class="impact-metrics-grid">
+        <div class="metric-card">
+          <span class="metric-icon">💧</span>
+          <div class="metric-value" id="water-metric">0L</div>
+          <div class="metric-label">Water Sanitized</div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">♻️</span>
+          <div class="metric-value" id="gpl-metric">0</div>
+          <div class="metric-label">GPL Resources Shared</div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">🍃</span>
+          <div class="metric-value" id="air-metric">0%</div>
+          <div class="metric-label">Air Quality Impact</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="filters-section">
+    <div class="container mx-auto">
+      <div class="filter-flex-container">
+        <div class="filter-chips" id="category-filters">
+          <button class="filter-chip active" data-category="all">All Contributions</button>
+          <button class="filter-chip" data-category="water">💧 Water & Sanitation</button>
+          <button class="filter-chip" data-category="air">🌬️ Air Quality</button>
+          <button class="filter-chip" data-category="circular">♻️ Circular Economy</button>
+          <button class="filter-chip" data-category="educational">📚 Education/GPL</button>
+          <button class="filter-chip" data-category="kakuma">🏕️ Kakuma Projects</button>
+        </div>
+        
+        <div class="utility-toggles">
+          <select id="status-filter" class="form-select-minimal">
+            <option value="all">Status: All</option>
+            <option value="earned">Verified Credentials</option>
+            <option value="in-progress">In Training</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-section">
+    <div class="container mx-auto">
+      <div id="achievements-grid" class="wb-grid">
+        </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  class WorldbridgerManager {
+    constructor() {
+      this.credentials = [];
+      this.userStats = { water: 0, gpl: 0, air: 0 };
+    }
+
+    async initialize() {
+      await this.loadData();
+      this.setupFilters();
+      this.render();
+    }
+
+    async loadData() {
+      // Logic: Fetch from your Express/Postgres API
+      // For now, using your requested "teachable" sample data structure
+      this.credentials = [
+        {
+          id: 'w-001',
+          name: 'Sand Filter Architect',
+          category: 'water',
+          description: 'Design and deployment of a biological sand filtration system.',
+          badge: '⏳',
+          rarity: 'rare',
+          impact_value: '500L/day',
+          gpl_link: '/archive/sand-filter-v1.pdf',
+          on_chain_id: '0xbiodiv...88',
+          is_mentor: true,
+          status: 'earned'
+        },
+        {
+          id: 'ce-002',
+          name: 'GPL Resource Creator',
+          category: 'circular',
+          description: 'Contributed 5+ verified training modules to the public archive.',
+          badge: '📖',
+          rarity: 'uncommon',
+          impact_value: '5 Contributions',
+          gpl_link: '/archive/edu-pack.zip',
+          status: 'earned'
+        }
+      ];
+    }
+
+    setupFilters() {
+      document.querySelectorAll('.filter-chip').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          this.render(btn.dataset.category);
+        });
+      });
+    }
+
+    render(filter = 'all') {
+      const container = document.getElementById('achievements-grid');
+      const filtered = filter === 'all' 
+        ? this.credentials 
+        : this.credentials.filter(c => c.category === filter);
+
+      container.innerHTML = filtered.map(c => `
+        <div class="wb-card ${c.status}">
+          <div class="card-header">
+            <span class="badge-icon">${c.badge}</span>
+            <span class="impact-tag">${c.impact_value}</span>
+          </div>
+          
+          <h3 class="card-title">${c.name}</h3>
+          <p class="card-desc">${c.description}</p>
+
+          <div class="utility-zone">
+            ${c.gpl_link ? `<a href="${c.gpl_link}" class="btn-util">📥 GPL Source</a>` : ''}
+            ${c.is_mentor ? `<button class="btn-util mentor">🤝 Mentor Peers</button>` : ''}
+          </div>
+
+          <div class="card-footer">
+            ${c.on_chain_id ? `<span class="chain-link">⛓️ Verified: ${c.on_chain_id.slice(0,6)}...</span>` : '<span>Local Credential</span>'}
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  const manager = new WorldbridgerManager();
+  manager.initialize();
+</script>
+
+<style>
+  :root {
+    --wb-primary: #2d5a27; /* Nature green */
+    --wb-accent: #3b82f6; /* Water blue */
+    --wb-bg: #f8fafc;
+    --wb-card-bg: #ffffff;
+    --wb-text: #1e293b;
+  }
+
+  .achievements-hero {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: white;
+    padding: 6rem 1rem;
+    text-align: center;
+  }
+
+  .impact-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 900px;
+    margin: 3rem auto 0;
+  }
+
+  .metric-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+
+  .metric-value { font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0; }
+  .metric-label { font-size: 0.875rem; opacity: 0.8; text-transform: uppercase; }
+
+  .filter-flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .filter-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .filter-chip {
+    padding: 0.5rem 1rem;
+    border-radius: 99px;
+    background: #e2e8f0;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .filter-chip.active { background: var(--wb-primary); color: white; }
+
+  .wb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    padding-bottom: 5rem;
+  }
+
+  .wb-card {
+    background: var(--wb-card-bg);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+  }
+  .wb-card:hover { transform: translateY(-5px); border-color: var(--wb-accent); }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .badge-icon { font-size: 2.5rem; }
+  .impact-tag { background: #dcfce7; color: #166534; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+
+  .card-title { margin: 1rem 0 0.5rem; font-size: 1.25rem; color: var(--wb-text); }
+  .card-desc { font-size: 0.9rem; color: #64748b; flex-grow: 1; margin-bottom: 1.5rem; }
+
+  .utility-zone {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .btn-util {
+    padding: 0.6rem;
+    font-size: 0.8rem;
+    text-align: center;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: var(--wb-text);
+    text-decoration: none;
+    border: 1px solid #cbd5e1;
+    font-weight: 600;
+  }
+  .btn-util:hover { background: #e2e8f0; }
+  .btn-util.mentor { border-color: var(--wb-accent); color: var(--wb-accent); }
+
+  .card-footer {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 1rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-family: monospace;
+  }
+</style>

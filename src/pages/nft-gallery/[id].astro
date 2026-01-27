@@ -1,0 +1,1006 @@
+---
+/**
+ * NFT Detail Page
+ * Individual NFT token details with full information
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// NFT Configuration (must match nft-gallery.astro)
+const animalSpirits = {
+  farm: ['Chicken', 'Cat', 'Goat', 'Dog', 'Bunny'],
+  sky: ['Pigeon', 'Cooper\'s Hawk', 'Eagle'],
+  wild: ['Lion', 'Coywolf']
+};
+
+const rarities = [
+  { name: 'Common', weight: 40, color: '#00ff00', glow: '0 0 10px #00ff00' },
+  { name: 'Uncommon', weight: 30, color: '#00ffff', glow: '0 0 15px #00ffff' },
+  { name: 'Rare', weight: 20, color: '#ffff00', glow: '0 0 20px #ffff00' },
+  { name: 'Legendary', weight: 10, color: '#ff00ff', glow: '0 0 30px #ff00ff' }
+];
+
+const hairstyles = ['Dreads', 'Fade', 'Afro', 'Braids', 'Bun', 'Waves'];
+const skinTones = ['#8d5524', '#c68642', '#e0ac69', '#f1c27d', '#ffdbac', '#fef0e0'];
+
+// Generate NFT card from ID
+function generateNFTCard(id: number) {
+  const today = new Date();
+  const dailySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const seed = dailySeed + (id - 1);
+  const i = id - 1;
+
+  const rand = (max: number) => Math.floor((seed * (i + 1) * 9301 + 49297) % 233280 / 233280 * max);
+
+  // Determine rarity
+  let rarityRoll = rand(100);
+  let selectedRarity = rarities[0];
+  let cumulative = 0;
+  for (const rarity of rarities) {
+    cumulative += rarity.weight;
+    if (rarityRoll < cumulative) {
+      selectedRarity = rarity;
+      break;
+    }
+  }
+
+  // Pick animal spirit
+  const allAnimals = [...animalSpirits.farm, ...animalSpirits.sky, ...animalSpirits.wild];
+  const animalSpirit = allAnimals[rand(allAnimals.length)];
+
+  // Determine category
+  let category = 'farm';
+  if (animalSpirits.sky.includes(animalSpirit)) category = 'sky';
+  if (animalSpirits.wild.includes(animalSpirit)) category = 'wild';
+
+  return {
+    id,
+    name: `${animalSpirit} Rapper #${id}`,
+    animalSpirit,
+    category,
+    gender: rand(2) === 0 ? 'male' : 'female',
+    skinTone: skinTones[rand(skinTones.length)],
+    hairstyle: hairstyles[rand(hairstyles.length)],
+    rarity: selectedRarity,
+    soundFreq: 200 + rand(600),
+    soundWave: ['sine', 'square', 'sawtooth', 'triangle'][rand(4)],
+    badges: rand(3) + 1
+  };
+}
+
+// Generate static paths for all 55 NFTs
+export function getStaticPaths() {
+  return Array.from({ length: 55 }, (_, i) => ({
+    params: { id: String(i + 1) }
+  }));
+}
+
+// Get current NFT
+const { id } = Astro.params;
+const nftId = parseInt(id || '1');
+const nft = generateNFTCard(nftId);
+
+// Get emoji for animal
+const animalEmoji =
+  nft.animalSpirit === 'Chicken' ? '🐓' :
+  nft.animalSpirit === 'Cat' ? '🐱' :
+  nft.animalSpirit === 'Goat' ? '🐐' :
+  nft.animalSpirit === 'Dog' ? '🐕' :
+  nft.animalSpirit === 'Bunny' ? '🐰' :
+  nft.animalSpirit === 'Pigeon' ? '🕊️' :
+  nft.animalSpirit === "Cooper's Hawk" ? '🦅' :
+  nft.animalSpirit === 'Eagle' ? '🦅' :
+  nft.animalSpirit === 'Lion' ? '🦁' :
+  '🐺';
+
+// Category details
+const categoryInfo = {
+  farm: { emoji: '🐓', label: 'Farm Spirit', description: 'Connected to agricultural wisdom and domestic harmony' },
+  sky: { emoji: '🦅', label: 'Sky Spirit', description: 'Embodies freedom, vision, and higher perspective' },
+  wild: { emoji: '🦁', label: 'Wild Spirit', description: 'Channels raw power and untamed creativity' }
+};
+
+const category = categoryInfo[nft.category as keyof typeof categoryInfo];
+
+// Utility benefits based on rarity
+const utilities = {
+  'Common': {
+    mentorLevel: 'Bronze',
+    xpBoost: '+10%',
+    sessionsPerMonth: '2',
+    features: [
+      'Access to basic rap lessons',
+      'Community forum access',
+      'Monthly beat pack download',
+      '10% XP boost on all activities'
+    ]
+  },
+  'Uncommon': {
+    mentorLevel: 'Silver',
+    xpBoost: '+20%',
+    sessionsPerMonth: '4',
+    features: [
+      'Access to intermediate rap lessons',
+      'Priority community support',
+      'Weekly beat pack download',
+      '20% XP boost on all activities',
+      'Exclusive Discord channel access'
+    ]
+  },
+  'Rare': {
+    mentorLevel: 'Gold',
+    xpBoost: '+35%',
+    sessionsPerMonth: '8',
+    features: [
+      'Access to advanced rap lessons',
+      '1-on-1 mentor session credits',
+      'Daily beat pack download',
+      '35% XP boost on all activities',
+      'Exclusive Discord + voice channels',
+      'Early access to new features'
+    ]
+  },
+  'Legendary': {
+    mentorLevel: 'Platinum',
+    xpBoost: '+50%',
+    sessionsPerMonth: 'Unlimited',
+    features: [
+      'Access to all rap lessons & masterclasses',
+      'Unlimited 1-on-1 mentor sessions',
+      'Full beat library access',
+      '50% XP boost on all activities',
+      'VIP Discord + private channels',
+      'Early access to new features',
+      'NFT collab opportunities',
+      'Revenue sharing from platform'
+    ]
+  }
+};
+
+const util = utilities[nft.rarity.name as keyof typeof utilities];
+---
+
+<BaseLayout
+  title={`${nft.name} - NFT Detail`}
+  description={`Detailed view of ${nft.name} - ${nft.rarity.name} rarity ${nft.animalSpirit} rapper NFT`}
+  activeSection="gallery"
+>
+
+<div class="nft-detail-page scanlines">
+  <div class="container mx-auto">
+
+    <!-- Back Button -->
+    <nav class="detail-nav">
+      <a href="/nft-gallery" class="btn-retro">← BACK TO GALLERY</a>
+      <div class="nav-pagination mono">
+        {nftId > 1 && <a href={`/nft-gallery/${nftId - 1}`} class="btn-retro">← PREV</a>}
+        <span class="page-indicator">#{String(nftId).padStart(3, '0')} / 055</span>
+        {nftId < 55 && <a href={`/nft-gallery/${nftId + 1}`} class="btn-retro">NEXT →</a>}
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="detail-hero pixel-border arcade-screen">
+      <div class="hero-grid">
+
+        <!-- NFT Preview -->
+        <div class="hero-preview">
+          <div
+            class="nft-preview-card"
+            style={`--rarity-color: ${nft.rarity.color}; --rarity-glow: ${nft.rarity.glow};`}
+          >
+            <div class="preview-badge mono" style={`color: ${nft.rarity.color}; text-shadow: ${nft.rarity.glow};`}>
+              {nft.rarity.name.toUpperCase()}
+            </div>
+            <div
+              class="preview-image"
+              style={`background: linear-gradient(135deg, ${nft.skinTone} 0%, ${nft.rarity.color}22 100%);`}
+            >
+              <div class="preview-emoji">{animalEmoji}</div>
+              <div class="preview-gender mono">{nft.gender.toUpperCase()}</div>
+            </div>
+
+            <!-- Sound Wave Indicator -->
+            <div class="preview-sound-indicator">
+              <div class="sound-wave" data-active="false">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span class="sound-label mono">{nft.soundWave.toUpperCase()} WAVE</span>
+            </div>
+
+            <!-- Play Sound Button -->
+            <button
+              class="preview-play-btn btn-retro-neon mono"
+              id="playSoundBtn"
+              data-freq={nft.soundFreq}
+              data-wave={nft.soundWave}
+              data-playing="false"
+            >
+              <span class="play-icon">▶</span>
+              <span class="play-text">PLAY SOUND</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- NFT Info -->
+        <div class="hero-info">
+          <h1 class="nft-title glitch">{nft.name}</h1>
+
+          <div class="nft-meta card-retro">
+            <div class="meta-row">
+              <span class="meta-label mono">TOKEN ID:</span>
+              <span class="meta-value mono text-neon">#{String(nftId).padStart(3, '0')}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label mono">ANIMAL SPIRIT:</span>
+              <span class="meta-value mono">{nft.animalSpirit}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label mono">CATEGORY:</span>
+              <span class="meta-value mono">{category.emoji} {category.label}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label mono">HAIRSTYLE:</span>
+              <span class="meta-value mono">{nft.hairstyle}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label mono">GENDER:</span>
+              <span class="meta-value mono">{nft.gender}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label mono">BADGES:</span>
+              <span class="meta-value">{'⭐'.repeat(nft.badges)}</span>
+            </div>
+          </div>
+
+          <div class="category-description card-retro">
+            <h3 class="description-title mono neon-text">{category.label}</h3>
+            <p class="mono">{category.description}</p>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <button class="btn-retro-neon" onclick="alert('Connect wallet to claim!')">
+              CLAIM NFT
+            </button>
+            <button class="btn-retro" onclick="navigator.share?.({title: '{nft.name}', url: window.location.href}) || alert('Share feature not available')">
+              SHARE
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Utilities & Benefits -->
+    <section class="utilities-section">
+      <h2 class="section-title mono neon-text">UTILITIES & BENEFITS</h2>
+
+      <div class="utilities-grid">
+
+        <!-- Quick Stats -->
+        <div class="utility-card card-retro-neon">
+          <h3 class="utility-title mono">QUICK STATS</h3>
+          <div class="stats-list">
+            <div class="stat-item">
+              <span class="stat-icon">🎖️</span>
+              <div class="stat-info">
+                <div class="stat-label mono">Mentor Level</div>
+                <div class="stat-value mono text-neon">{util.mentorLevel}</div>
+              </div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">⚡</span>
+              <div class="stat-info">
+                <div class="stat-label mono">XP Boost</div>
+                <div class="stat-value mono text-cyan">{util.xpBoost}</div>
+              </div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">📅</span>
+              <div class="stat-info">
+                <div class="stat-label mono">Sessions/Month</div>
+                <div class="stat-value mono text-yellow">{util.sessionsPerMonth}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features List -->
+        <div class="utility-card card-retro">
+          <h3 class="utility-title mono">HOLDER BENEFITS</h3>
+          <ul class="benefits-list mono">
+            {util.features.map(feature => (
+              <li class="benefit-item">
+                <span class="benefit-check text-neon">✓</span>
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="utility-card card-retro">
+          <h3 class="utility-title mono">TECHNICAL DETAILS</h3>
+          <div class="tech-details mono">
+            <div class="tech-row">
+              <span class="tech-label">Sound Frequency:</span>
+              <span class="tech-value text-cyan">{nft.soundFreq} Hz</span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Waveform Type:</span>
+              <span class="tech-value text-neon">{nft.soundWave}</span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Rarity Weight:</span>
+              <span class="tech-value text-yellow">{nft.rarity.weight}%</span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Category:</span>
+              <span class="tech-value">{nft.category.toUpperCase()}</span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Blockchain:</span>
+              <span class="tech-value">Solana</span>
+            </div>
+            <div class="tech-row">
+              <span class="tech-label">Standard:</span>
+              <span class="tech-value">Metaplex</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Owner Information -->
+    <section class="owner-section card-retro">
+      <h2 class="section-title mono neon-text">OWNERSHIP</h2>
+      <div class="owner-info mono">
+        <div class="owner-status">
+          <span class="status-badge unclaimed">UNCLAIMED</span>
+          <p class="status-text">This NFT is available for minting. Connect your wallet to claim it!</p>
+        </div>
+        <div class="owner-actions">
+          <button class="btn-retro-neon" onclick="alert('Connect wallet feature coming soon!')">
+            CONNECT WALLET
+          </button>
+          <button class="btn-retro" onclick="window.location.href='/profile'">
+            VIEW MY NFTS
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Related NFTs -->
+    <section class="related-section">
+      <h2 class="section-title mono neon-text">MORE FROM THIS COLLECTION</h2>
+      <div class="related-grid">
+        {[
+          nftId > 1 ? nftId - 1 : 55,
+          nftId < 55 ? nftId + 1 : 1,
+          (nftId + 10) % 55 || 55
+        ].map(relatedId => {
+          const related = generateNFTCard(relatedId);
+          const relatedEmoji =
+            related.animalSpirit === 'Chicken' ? '🐓' :
+            related.animalSpirit === 'Cat' ? '🐱' :
+            related.animalSpirit === 'Goat' ? '🐐' :
+            related.animalSpirit === 'Dog' ? '🐕' :
+            related.animalSpirit === 'Bunny' ? '🐰' :
+            related.animalSpirit === 'Pigeon' ? '🕊️' :
+            related.animalSpirit === "Cooper's Hawk" ? '🦅' :
+            related.animalSpirit === 'Eagle' ? '🦅' :
+            related.animalSpirit === 'Lion' ? '🦁' :
+            '🐺';
+
+          return (
+            <a
+              href={`/nft-gallery/${relatedId}`}
+              class="related-card card-retro-neon"
+              style={`--rarity-color: ${related.rarity.color}; --rarity-glow: ${related.rarity.glow};`}
+            >
+              <div class="related-number mono">#{String(relatedId).padStart(3, '0')}</div>
+              <div
+                class="related-preview"
+                style={`background: linear-gradient(135deg, ${related.skinTone} 0%, ${related.rarity.color}22 100%);`}
+              >
+                <div class="related-emoji">{relatedEmoji}</div>
+              </div>
+              <div class="related-name mono">{related.name}</div>
+              <div
+                class="related-rarity mono"
+                style={`color: ${related.rarity.color}; text-shadow: ${related.rarity.glow};`}
+              >
+                {related.rarity.name}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  /**
+   * NFT Detail Page Interactivity
+   */
+
+  // Audio Context
+  let audioContext: AudioContext | null = null;
+  let currentOscillator: OscillatorNode | null = null;
+  let currentGain: GainNode | null = null;
+
+  function initAudio() {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+  }
+
+  function playSound(frequency: number, waveType: OscillatorType) {
+    initAudio();
+    if (!audioContext) return;
+
+    // Stop current sound
+    stopSound();
+
+    // Create oscillator
+    currentOscillator = audioContext.createOscillator();
+    currentGain = audioContext.createGain();
+
+    currentOscillator.type = waveType;
+    currentOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+    // ADSR envelope
+    currentGain.gain.setValueAtTime(0, audioContext.currentTime);
+    currentGain.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.05);
+    currentGain.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.1);
+    currentGain.gain.setValueAtTime(0.2, audioContext.currentTime + 1.5);
+    currentGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 2);
+
+    currentOscillator.connect(currentGain);
+    currentGain.connect(audioContext.destination);
+
+    currentOscillator.start();
+    currentOscillator.stop(audioContext.currentTime + 2);
+
+    return currentOscillator;
+  }
+
+  function stopSound() {
+    if (currentOscillator) {
+      try {
+        currentOscillator.stop();
+      } catch (e) {}
+      currentOscillator.disconnect();
+      currentOscillator = null;
+    }
+    if (currentGain) {
+      currentGain.disconnect();
+      currentGain = null;
+    }
+  }
+
+  // Event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    const playBtn = document.getElementById('playSoundBtn') as HTMLElement;
+    const soundWave = document.querySelector('.sound-wave') as HTMLElement;
+
+    if (playBtn) {
+      playBtn.addEventListener('click', () => {
+        const freq = parseFloat(playBtn.dataset.freq || '440');
+        const wave = playBtn.dataset.wave as OscillatorType || 'sine';
+        const isPlaying = playBtn.dataset.playing === 'true';
+
+        if (isPlaying) {
+          stopSound();
+          playBtn.dataset.playing = 'false';
+          const playIcon = playBtn.querySelector('.play-icon');
+          const playText = playBtn.querySelector('.play-text');
+          if (playIcon) playIcon.textContent = '▶';
+          if (playText) playText.textContent = 'PLAY SOUND';
+          if (soundWave) soundWave.setAttribute('data-active', 'false');
+        } else {
+          const osc = playSound(freq, wave);
+          if (osc) {
+            playBtn.dataset.playing = 'true';
+            const playIcon = playBtn.querySelector('.play-icon');
+            const playText = playBtn.querySelector('.play-text');
+            if (playIcon) playIcon.textContent = '■';
+            if (playText) playText.textContent = 'PLAYING...';
+            if (soundWave) soundWave.setAttribute('data-active', 'true');
+
+            osc.onended = () => {
+              playBtn.dataset.playing = 'false';
+              if (playIcon) playIcon.textContent = '▶';
+              if (playText) playText.textContent = 'PLAY SOUND';
+              if (soundWave) soundWave.setAttribute('data-active', 'false');
+            };
+          }
+        }
+      });
+    }
+  });
+
+  // Cleanup
+  window.addEventListener('beforeunload', () => {
+    stopSound();
+    if (audioContext) {
+      audioContext.close();
+    }
+  });
+</script>
+
+<style>
+  .nft-detail-page {
+    min-height: 100vh;
+    background: var(--color-black);
+    padding: 2rem 1rem;
+  }
+
+  /* Navigation */
+  .detail-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .nav-pagination {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .page-indicator {
+    padding: 0.5rem 1rem;
+    background: var(--color-near-black);
+    border: 2px solid var(--color-neon-green);
+    color: var(--color-neon-green);
+    font-weight: 700;
+  }
+
+  /* Hero Section */
+  .detail-hero {
+    padding: 3rem 2rem;
+    margin-bottom: 3rem;
+    background: var(--color-near-black);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  /* NFT Preview */
+  .nft-preview-card {
+    background: var(--color-black);
+    border: 3px solid var(--rarity-color);
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  .nft-preview-card::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    background: var(--rarity-color);
+    opacity: 0.3;
+    filter: blur(15px);
+    z-index: -1;
+  }
+
+  .preview-badge {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+  }
+
+  .preview-image {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--color-white);
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .preview-emoji {
+    font-size: 8rem;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+  }
+
+  .preview-gender {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: var(--color-black);
+    border: 2px solid var(--color-white);
+    padding: 0.5rem 1rem;
+    font-weight: 700;
+  }
+
+  .preview-sound-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--color-near-black);
+    border: 2px solid var(--color-white);
+    margin-bottom: 1rem;
+  }
+
+  .sound-wave {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 30px;
+  }
+
+  .sound-wave span {
+    width: 5px;
+    height: 10px;
+    background: var(--color-neon-green);
+    transition: height 0.1s ease;
+  }
+
+  .sound-wave[data-active="true"] span {
+    animation: soundBars 0.5s ease-in-out infinite;
+  }
+
+  .sound-wave[data-active="true"] span:nth-child(2) { animation-delay: 0.1s; }
+  .sound-wave[data-active="true"] span:nth-child(3) { animation-delay: 0.2s; }
+  .sound-wave[data-active="true"] span:nth-child(4) { animation-delay: 0.3s; }
+  .sound-wave[data-active="true"] span:nth-child(5) { animation-delay: 0.4s; }
+
+  @keyframes soundBars {
+    0%, 100% { height: 10px; }
+    50% { height: 28px; }
+  }
+
+  .sound-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-light-gray);
+  }
+
+  .preview-play-btn {
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .preview-play-btn[data-playing="true"] {
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Hero Info */
+  .nft-title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    font-family: var(--font-mono);
+    line-height: 1.2;
+  }
+
+  .nft-meta {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-dark-gray);
+  }
+
+  .meta-row:last-child {
+    border-bottom: none;
+  }
+
+  .meta-label {
+    font-size: 0.875rem;
+    color: var(--color-light-gray);
+    font-weight: 700;
+  }
+
+  .meta-value {
+    font-size: 1rem;
+    color: var(--color-white);
+    font-weight: 700;
+  }
+
+  .category-description {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: var(--color-near-black);
+  }
+
+  .description-title {
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 0.75rem;
+  }
+
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  /* Utilities Section */
+  .utilities-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  .utilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .utility-card {
+    padding: 2rem;
+  }
+
+  .utility-title {
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: var(--color-neon-green);
+    letter-spacing: 1px;
+  }
+
+  /* Quick Stats */
+  .stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+  }
+
+  .stat-info {
+    flex: 1;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--color-light-gray);
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 900;
+  }
+
+  /* Benefits List */
+  .benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-dark-gray);
+    line-height: 1.6;
+  }
+
+  .benefit-item:last-child {
+    border-bottom: none;
+  }
+
+  .benefit-check {
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  /* Technical Details */
+  .tech-details {
+    font-size: 0.95rem;
+  }
+
+  .tech-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-dark-gray);
+  }
+
+  .tech-row:last-child {
+    border-bottom: none;
+  }
+
+  .tech-label {
+    color: var(--color-light-gray);
+  }
+
+  .tech-value {
+    font-weight: 700;
+    color: var(--color-white);
+  }
+
+  /* Owner Section */
+  .owner-section {
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .owner-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .owner-status {
+    flex: 1;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    font-weight: 900;
+    font-family: var(--font-mono);
+    margin-bottom: 1rem;
+  }
+
+  .status-badge.unclaimed {
+    background: var(--color-yellow);
+    color: var(--color-black);
+  }
+
+  .status-text {
+    line-height: 1.6;
+    color: var(--color-light-gray);
+  }
+
+  .owner-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  /* Related NFTs */
+  .related-section {
+    margin-bottom: 3rem;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .related-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-near-black);
+    border: 2px solid var(--rarity-color);
+    padding: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .related-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--rarity-glow);
+  }
+
+  .related-number {
+    font-size: 0.875rem;
+    color: var(--color-light-gray);
+    margin-bottom: 0.75rem;
+  }
+
+  .related-preview {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-white);
+    margin-bottom: 0.75rem;
+  }
+
+  .related-emoji {
+    font-size: 3rem;
+  }
+
+  .related-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-white);
+    margin-bottom: 0.5rem;
+  }
+
+  .related-rarity {
+    font-size: 0.875rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .nft-title {
+      font-size: 2rem;
+    }
+
+    .quick-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .utilities-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .owner-info {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .owner-actions {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .owner-actions button {
+      width: 100%;
+    }
+
+    .detail-nav {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .nav-pagination {
+      justify-content: space-between;
+    }
+  }
+</style>
+
+</BaseLayout>

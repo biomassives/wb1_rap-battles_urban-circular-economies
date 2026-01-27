@@ -1,11 +1,16 @@
 ---
 /**
- * MoogLooper.astro
- * Moog-style synth controls with loop playback
- * Compact component for immediate use on homepage and music page
+ * MoogLooper.astro - AutoMoog Engine
  *
- * Props:
- * - compact: Boolean - minimal layout for homepage
+ * DSP-focused analog-style generative music engine.
+ * Features:
+ * - Analog oscillators with drift
+ * - Moog ladder filter with saturation
+ * - 3D parameter space with psychoacoustic mapping
+ * - Mood system with smooth transitions
+ * - Multiple motion generators (Perlin, Lorenz, Lissajous)
+ *
+ * Sound quality takes priority over visual novelty.
  */
 
 interface Props {
@@ -15,722 +20,1876 @@ interface Props {
 const { compact = false } = Astro.props;
 ---
 
-<div class="moog-looper" data-compact={compact}>
-  <div class="moog-header">
-    {!compact && <h3>🎛️ Moog Synth Looper</h3>}
-    <div class="preset-selector">
-      <select id="moog-preset" class="preset-select">
-        <option value="rap">Rap / Battle</option>
-        <option value="reggae">Reggae / Dub</option>
-        <option value="healing">Healing</option>
-        <option value="speech">Speech</option>
-        <option value="singing">Singing</option>
+<div class="automoog-engine" data-compact={compact}>
+  <!-- Header with mood selector -->
+  <div class="engine-header">
+    <div class="engine-title">
+      <span class="title-icon">◈</span>
+      <span class="title-text">AutoMoog</span>
+      <span class="engine-status" id="engine-status">●</span>
+    </div>
+    <div class="header-controls">
+      <select id="mood-selector" class="mood-select">
+        <option value="ambient">Ambient</option>
+        <option value="meditation">Meditation</option>
+        <option value="groove">Groove</option>
+        <option value="deep">Deep</option>
+        <option value="aggressive">Aggressive</option>
+        <option value="chaos">Chaos</option>
       </select>
     </div>
   </div>
 
-  <div class="moog-visualizer">
-    <canvas id="moog-waveform" width="600" height="100"></canvas>
-  </div>
+  <!-- 3D Parameter Space Visualization -->
+  <div class="space-container">
+    <!-- Hidden 2D Canvas (kept for fallback) -->
+    <canvas id="space-canvas" class="viz-canvas viz-hidden"></canvas>
 
-  <div class="moog-dials">
-    <!-- Frequency -->
-    <div class="dial-group">
-      <label>Freq (Hz)</label>
-      <div class="dial-visual" data-param="freq">
-        <svg class="dial-svg" width="60" height="60" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" fill="#1a1f26" stroke="#30363d" stroke-width="2"/>
-          <path class="dial-arc" fill="none" stroke="#58a6ff" stroke-width="4" stroke-linecap="round"/>
-          <line class="dial-needle" x1="50" y1="50" x2="50" y2="15" stroke="#58a6ff" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="50" cy="50" r="8" fill="#58a6ff"/>
-        </svg>
-        <div class="dial-value" id="freq-value">180</div>
-      </div>
-      <input type="range" id="moog-freq" min="20" max="2000" value="180" step="1" class="dial-input" />
+    <!-- 3D Canvas -->
+    <canvas id="space-canvas-3d" class="viz-canvas"></canvas>
+
+    <!-- 3D Camera View Controls -->
+    <div class="view-3d-controls" id="view-3d-controls">
+      <button class="view-btn active" data-view="perspective" title="Perspective View">◆</button>
+      <button class="view-btn" data-view="left" title="Left View">◀</button>
+      <button class="view-btn" data-view="right" title="Right View">▶</button>
+      <button class="view-btn" data-view="top" title="Top View (Looking Down)">▼</button>
     </div>
 
-    <!-- Duration -->
-    <div class="dial-group">
-      <label>Duration (s)</label>
-      <div class="dial-visual" data-param="duration">
-        <svg class="dial-svg" width="60" height="60" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" fill="#1a1f26" stroke="#30363d" stroke-width="2"/>
-          <path class="dial-arc" fill="none" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/>
-          <line class="dial-needle" x1="50" y1="50" x2="50" y2="15" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="50" cy="50" r="8" fill="#7c3aed"/>
-        </svg>
-        <div class="dial-value" id="duration-value">0.6</div>
+    <div class="space-info">
+      <div class="axis-labels">
+        <span class="axis-x">X: Timbre</span>
+        <span class="axis-y">Y: Brightness</span>
+        <span class="axis-z">Z: Motion</span>
       </div>
-      <input type="range" id="moog-duration" min="0.1" max="15" value="0.6" step="0.1" class="dial-input" />
-    </div>
-
-    <!-- Intensity -->
-    <div class="dial-group">
-      <label>Intensity</label>
-      <div class="dial-visual" data-param="intensity">
-        <svg class="dial-svg" width="60" height="60" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" fill="#1a1f26" stroke="#30363d" stroke-width="2"/>
-          <path class="dial-arc" fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round"/>
-          <line class="dial-needle" x1="50" y1="50" x2="50" y2="15" stroke="#10b981" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="50" cy="50" r="8" fill="#10b981"/>
-        </svg>
-        <div class="dial-value" id="intensity-value">0.9</div>
+      <div class="position-display" id="position-display">
+        <span>X: 0.50</span>
+        <span>Y: 0.50</span>
+        <span>Z: 0.50</span>
       </div>
-      <input type="range" id="moog-intensity" min="0" max="1" value="0.9" step="0.05" class="dial-input" />
-    </div>
-
-    <!-- Modulation -->
-    <div class="dial-group">
-      <label>Mod (Hz)</label>
-      <div class="dial-visual" data-param="modulation">
-        <svg class="dial-svg" width="60" height="60" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" fill="#1a1f26" stroke="#30363d" stroke-width="2"/>
-          <path class="dial-arc" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
-          <line class="dial-needle" x1="50" y1="50" x2="50" y2="15" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="50" cy="50" r="8" fill="#f59e0b"/>
-        </svg>
-        <div class="dial-value" id="modulation-value">40</div>
-      </div>
-      <input type="range" id="moog-modulation" min="0" max="200" value="40" step="1" class="dial-input" />
     </div>
   </div>
 
-  <div class="moog-controls">
-    <div class="playback-controls">
-      <button class="moog-btn moog-btn-play" id="moog-play">
-        <span id="moog-play-icon">▶️</span>
-        <span id="moog-play-text">Play</span>
-      </button>
-      <button class="moog-btn moog-btn-loop" id="moog-loop">
-        <span>🔁</span>
-        <span>Loop</span>
-      </button>
-      <button class="moog-btn moog-btn-stop" id="moog-stop">
-        <span>⏹️</span>
-        <span>Stop</span>
-      </button>
+  <!-- Motion Mode Selector -->
+  <div class="motion-controls">
+    <div class="motion-modes">
+      <button class="motion-btn" data-mode="manual" title="Manual XY">Manual</button>
+      <button class="motion-btn active" data-mode="lissajous" title="Looping Path">Lissajous</button>
+      <button class="motion-btn" data-mode="perlin" title="Organic Drift">Perlin</button>
+      <button class="motion-btn" data-mode="lorenz" title="Chaotic">Lorenz</button>
     </div>
-    <div class="export-controls">
-      <button class="moog-btn moog-btn-secondary" id="moog-export">
-        💾 Export WAV
-      </button>
-      {!compact && (
-        <button class="moog-btn moog-btn-secondary" id="moog-save">
-          🧾 Save JSON
-        </button>
-      )}
+    <div class="motion-speed">
+      <label>Speed</label>
+      <input type="range" id="motion-speed" min="0.1" max="3" value="1" step="0.1" />
     </div>
   </div>
 
-  {!compact && (
-    <div class="moog-info">
-      💡 Adjust dials to shape your sound • Loop for continuous playback
+  <!-- Performance Macro Controls -->
+  <div class="performance-controls">
+    <div class="perf-control">
+      <label>Energy</label>
+      <input type="range" id="perf-energy" min="0" max="1" value="0.5" step="0.01" />
+      <span class="perf-value" id="energy-val">0.50</span>
     </div>
-  )}
+    <div class="perf-control">
+      <label>Warmth</label>
+      <input type="range" id="perf-warmth" min="0" max="1" value="0.5" step="0.01" />
+      <span class="perf-value" id="warmth-val">0.50</span>
+    </div>
+    <div class="perf-control">
+      <label>Density</label>
+      <input type="range" id="perf-density" min="0" max="1" value="0.5" step="0.01" />
+      <span class="perf-value" id="density-val">0.50</span>
+    </div>
+    <div class="perf-control">
+      <label>Chaos</label>
+      <input type="range" id="perf-chaos" min="0" max="1" value="0.3" step="0.01" />
+      <span class="perf-value" id="chaos-val">0.30</span>
+    </div>
+  </div>
+
+  <!-- DSP Parameters (Advanced) -->
+  <details class="dsp-params" {compact ? '' : 'open'}>
+    <summary>DSP Parameters</summary>
+    <div class="dsp-grid">
+      <div class="dsp-control">
+        <label>Base Freq</label>
+        <input type="range" id="dsp-freq" min="30" max="500" value="110" />
+        <span id="freq-val">110 Hz</span>
+      </div>
+      <div class="dsp-control">
+        <label>Filter Cutoff</label>
+        <input type="range" id="dsp-cutoff" min="0" max="1" value="0.5" step="0.01" />
+        <span id="cutoff-val">1000 Hz</span>
+      </div>
+      <div class="dsp-control">
+        <label>Resonance</label>
+        <input type="range" id="dsp-resonance" min="0" max="1" value="0.3" step="0.01" />
+        <span id="res-val">0.30</span>
+      </div>
+      <div class="dsp-control">
+        <label>Drive</label>
+        <input type="range" id="dsp-drive" min="0.5" max="4" value="1.5" step="0.1" />
+        <span id="drive-val">1.5</span>
+      </div>
+    </div>
+  </details>
+
+  <!-- Classic Moog Features -->
+  <div class="classic-features">
+    <div class="feature-toggle">
+      <label class="toggle-label" for="hard-sync">
+        <input type="checkbox" id="hard-sync" />
+        <span class="toggle-switch"></span>
+        <span class="toggle-text">Hard Sync</span>
+      </label>
+      <span class="feature-hint">OSC1→OSC2 sync</span>
+    </div>
+    <div class="feature-slider">
+      <label>Ring Mod</label>
+      <input type="range" id="ring-mod" min="0" max="1" value="0" step="0.01" />
+      <span class="feature-value" id="ring-val">0%</span>
+    </div>
+    <div class="feature-slider">
+      <label>Key Track</label>
+      <input type="range" id="key-track" min="0" max="1" value="0.5" step="0.01" />
+      <span class="feature-value" id="track-val">50%</span>
+    </div>
+  </div>
+
+  <!-- Playback Controls -->
+  <div class="playback-controls">
+    <button class="play-btn" id="play-btn">
+      <span class="play-icon">▶</span>
+      <span class="play-text">Start Engine</span>
+    </button>
+    <button class="stop-btn" id="stop-btn" disabled>
+      <span>◼</span>
+      <span>Stop</span>
+    </button>
+    <button class="freeze-btn" id="freeze-btn" title="Hold Position">
+      <span>❄</span>
+      <span>Freeze</span>
+    </button>
+    <button class="export-btn" id="export-btn" title="Export to Rap Battle / Beat Playground">
+      <span>↗</span>
+      <span>Export</span>
+    </button>
+  </div>
+
+  <!-- Mood Transition Indicator -->
+  <div class="transition-indicator" id="transition-indicator">
+    <div class="transition-bar"></div>
+    <span class="transition-text">Transitioning...</span>
+  </div>
 </div>
 
 <style>
-  .moog-looper {
-    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+  .automoog-engine {
+    background: linear-gradient(180deg, #0a0c10 0%, #0d1117 100%);
     border-radius: 12px;
-    padding: 1.5rem;
-    border: 2px solid #30363d;
-    color: #e6edf3;
+    padding: 1.25rem;
+    border: 1px solid #21262d;
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
-  .moog-looper[data-compact="true"] {
+  .automoog-engine[data-compact="true"] {
     padding: 1rem;
   }
 
-  .moog-header {
+  /* Header */
+  .engine-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #21262d;
   }
 
-  .moog-header h3 {
-    margin: 0;
-    font-size: 1.5rem;
+  .engine-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
     font-weight: 600;
-    background: linear-gradient(135deg, #58a6ff, #7c3aed);
+  }
+
+  .title-icon {
+    color: #58a6ff;
+    font-size: 1.1rem;
+  }
+
+  .title-text {
+    background: linear-gradient(90deg, #58a6ff, #a371f7);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .preset-select {
-    padding: 0.5rem 1rem;
-    background: #0d1117;
-    color: #e6edf3;
+  .engine-status {
+    font-size: 0.6rem;
+    color: #484f58;
+    transition: color 0.3s;
+  }
+
+  .engine-status.active {
+    color: #3fb950;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .mood-select {
+    padding: 0.35rem 0.75rem;
+    background: #161b22;
+    color: #c9d1d9;
     border: 1px solid #30363d;
     border-radius: 6px;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     cursor: pointer;
-    transition: all 0.2s;
   }
 
-  .preset-select:hover {
+  .mood-select:hover {
     border-color: #58a6ff;
   }
 
-  .preset-select:focus {
-    outline: none;
-    border-color: #58a6ff;
-    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
-  }
-
-  .moog-visualizer {
-    background: #000;
+  /* Space Canvas */
+  .space-container {
+    position: relative;
+    background: #010409;
     border-radius: 8px;
-    padding: 0.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    border: 1px solid #21262d;
+  }
+
+  .viz-canvas {
+    width: 100%;
+    height: 200px;
+    display: block;
+    cursor: crosshair;
+  }
+
+  .viz-hidden {
+    display: none !important;
+  }
+
+  .automoog-engine[data-compact="true"] .viz-canvas {
+    height: 160px;
+  }
+
+  /* View Mode Toggle */
+  .view-toggle {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.2rem;
+    z-index: 10;
+  }
+
+  .viz-btn {
+    padding: 0.2rem 0.5rem;
+    background: rgba(22, 27, 34, 0.9);
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    color: #8b949e;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .viz-btn:hover {
+    background: #21262d;
+    color: #c9d1d9;
+  }
+
+  .viz-btn.active {
+    background: #58a6ff;
+    color: white;
+    border-color: #58a6ff;
+  }
+
+  /* 3D Camera View Controls */
+  .view-3d-controls {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.25rem;
+    z-index: 10;
+    background: rgba(22, 27, 34, 0.85);
+    padding: 0.25rem;
+    border-radius: 6px;
     border: 1px solid #30363d;
   }
 
-  #moog-waveform {
-    width: 100%;
-    height: 100px;
-    display: block;
-  }
-
-  .moog-dials {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .moog-looper[data-compact="true"] .moog-dials {
-    gap: 0.75rem;
-  }
-
-  .dial-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .dial-group label {
-    font-size: 0.75rem;
+  .view-btn {
+    padding: 0.3rem 0.5rem;
+    background: transparent;
+    border: 1px solid #30363d;
+    border-radius: 4px;
     color: #8b949e;
-    font-weight: 500;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 28px;
     text-align: center;
   }
 
-  .dial-visual {
-    position: relative;
+  .view-btn:hover {
+    background: #21262d;
+    color: #c9d1d9;
+    border-color: #58a6ff;
+  }
+
+  .view-btn.active {
+    background: #238636;
+    color: white;
+    border-color: #238636;
+  }
+
+  .space-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    font-size: 0.65rem;
+    font-family: 'SF Mono', Monaco, monospace;
+  }
+
+  .axis-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    color: #484f58;
+  }
+
+  .axis-x { color: #f85149; }
+  .axis-y { color: #3fb950; }
+  .axis-z { color: #58a6ff; }
+
+  .position-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    color: #8b949e;
+  }
+
+  /* Motion Controls */
+  .motion-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+  }
+
+  .motion-modes {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .motion-btn {
+    padding: 0.35rem 0.6rem;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    color: #8b949e;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .motion-btn:hover {
+    background: #21262d;
+    color: #c9d1d9;
+  }
+
+  .motion-btn.active {
+    background: #238636;
+    border-color: #238636;
+    color: white;
+  }
+
+  .motion-speed {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .motion-speed label {
+    font-size: 0.7rem;
+    color: #8b949e;
+  }
+
+  .motion-speed input {
+    width: 80px;
+    height: 4px;
+    -webkit-appearance: none;
+    background: #30363d;
+    border-radius: 2px;
+  }
+
+  .motion-speed input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #58a6ff;
+    border-radius: 50%;
     cursor: pointer;
   }
 
-  .dial-svg {
-    transition: transform 0.1s;
+  /* Performance Controls */
+  .performance-controls {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #161b22;
+    border-radius: 8px;
+    border: 1px solid #21262d;
   }
 
-  .dial-svg:hover {
-    transform: scale(1.05);
-  }
-
-  .dial-value {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #e6edf3;
-    pointer-events: none;
-  }
-
-  .dial-input {
-    opacity: 0;
-    position: absolute;
-    pointer-events: none;
-  }
-
-  .moog-controls {
+  .perf-control {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    align-items: center;
+    gap: 0.3rem;
   }
 
-  .playback-controls,
-  .export-controls {
+  .perf-control label {
+    font-size: 0.65rem;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .perf-control input {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    background: #30363d;
+    border-radius: 2px;
+  }
+
+  .perf-control input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(135deg, #58a6ff, #a371f7);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .perf-value {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.7rem;
+    color: #58a6ff;
+  }
+
+  /* DSP Parameters */
+  .dsp-params {
+    margin-bottom: 1rem;
+  }
+
+  .dsp-params summary {
+    font-size: 0.75rem;
+    color: #8b949e;
+    cursor: pointer;
+    padding: 0.5rem;
+    background: #161b22;
+    border-radius: 6px;
+    border: 1px solid #21262d;
+  }
+
+  .dsp-params summary:hover {
+    color: #c9d1d9;
+  }
+
+  .dsp-params[open] summary {
+    border-radius: 6px 6px 0 0;
+    border-bottom: none;
+  }
+
+  .dsp-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+  }
+
+  .dsp-control {
     display: flex;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .dsp-control label {
+    font-size: 0.65rem;
+    color: #8b949e;
+  }
+
+  .dsp-control input {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    background: #30363d;
+    border-radius: 2px;
+  }
+
+  .dsp-control input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #f0883e;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .dsp-control span {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.65rem;
+    color: #f0883e;
+  }
+
+  /* Classic Moog Features */
+  .classic-features {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.6rem 0.75rem;
+    background: linear-gradient(135deg, rgba(163, 113, 247, 0.1), rgba(88, 166, 255, 0.05));
+    border-radius: 8px;
+    border: 1px solid rgba(163, 113, 247, 0.3);
+    align-items: center;
     flex-wrap: wrap;
   }
 
-  .moog-btn {
-    flex: 1;
-    min-width: 100px;
-    padding: 0.625rem 1rem;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s;
+  .feature-toggle {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
   }
 
-  .moog-btn-play {
-    background: linear-gradient(135deg, #58a6ff, #4a9eff);
-    color: #000;
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    font-size: 0.7rem;
   }
 
-  .moog-btn-play:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(88, 166, 255, 0.4);
+  .toggle-label input {
+    display: none;
   }
 
-  .moog-btn-play.playing {
-    background: linear-gradient(135deg, #f59e0b, #f97316);
-  }
-
-  .moog-btn-loop {
+  .toggle-switch {
+    width: 32px;
+    height: 18px;
     background: #30363d;
-    color: #e6edf3;
-    border: 1px solid #444c56;
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
   }
 
-  .moog-btn-loop.active {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    border: none;
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #8b949e;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all 0.2s;
   }
 
-  .moog-btn-loop:hover {
-    background: #3d444d;
-    border-color: #58a6ff;
+  .toggle-label input:checked + .toggle-switch {
+    background: #a371f7;
   }
 
-  .moog-btn-loop.active:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.4);
+  .toggle-label input:checked + .toggle-switch::after {
+    left: 16px;
+    background: #fff;
   }
 
-  .moog-btn-stop {
-    background: #30363d;
-    color: #e6edf3;
-    border: 1px solid #444c56;
+  .toggle-text {
+    color: #c9d1d9;
+    font-weight: 600;
   }
 
-  .moog-btn-stop:hover {
-    background: #ef4444;
-    color: white;
-    border-color: #ef4444;
-  }
-
-  .moog-btn-secondary {
-    background: #30363d;
-    color: #e6edf3;
-    border: 1px solid #444c56;
-  }
-
-  .moog-btn-secondary:hover {
-    background: #3d444d;
-    border-color: #58a6ff;
-  }
-
-  .moog-info {
-    margin-top: 1rem;
-    padding: 0.75rem;
-    background: rgba(88, 166, 255, 0.1);
-    border-radius: 6px;
-    font-size: 0.75rem;
+  .feature-hint {
+    font-size: 0.6rem;
     color: #8b949e;
-    text-align: center;
   }
 
+  .feature-slider {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .feature-slider label {
+    font-size: 0.65rem;
+    color: #a371f7;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .feature-slider input {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    background: #30363d;
+    border-radius: 2px;
+    max-width: 80px;
+  }
+
+  .feature-slider input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #a371f7;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .feature-value {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.6rem;
+    color: #a371f7;
+    min-width: 28px;
+  }
+
+  /* Playback Controls */
+  .playback-controls {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .play-btn, .stop-btn, .freeze-btn, .export-btn {
+    flex: 1;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.15s;
+  }
+
+  .play-btn {
+    background: linear-gradient(135deg, #238636, #2ea043);
+    color: white;
+  }
+
+  .play-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4);
+  }
+
+  .play-btn.playing {
+    background: linear-gradient(135deg, #f0883e, #d29922);
+  }
+
+  .stop-btn {
+    background: #161b22;
+    color: #8b949e;
+    border: 1px solid #30363d;
+  }
+
+  .stop-btn:hover:not(:disabled) {
+    background: #da3633;
+    color: white;
+    border-color: #da3633;
+  }
+
+  .stop-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .freeze-btn {
+    background: #161b22;
+    color: #8b949e;
+    border: 1px solid #30363d;
+  }
+
+  .freeze-btn:hover {
+    border-color: #58a6ff;
+    color: #58a6ff;
+  }
+
+  .freeze-btn.frozen {
+    background: #1f6feb;
+    color: white;
+    border-color: #1f6feb;
+  }
+
+  .export-btn {
+    background: #161b22;
+    color: #a371f7;
+    border: 1px solid #a371f7;
+  }
+
+  .export-btn:hover {
+    background: #a371f7;
+    color: white;
+  }
+
+  .export-btn.exported {
+    background: #238636;
+    color: white;
+    border-color: #238636;
+  }
+
+  /* Transition Indicator */
+  .transition-indicator {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background: #161b22;
+    border-radius: 4px;
+  }
+
+  .transition-indicator.visible {
+    display: flex;
+  }
+
+  .transition-bar {
+    flex: 1;
+    height: 3px;
+    background: #30363d;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .transition-bar::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #58a6ff, #a371f7);
+    transition: width 0.1s linear;
+  }
+
+  .transition-text {
+    font-size: 0.65rem;
+    color: #8b949e;
+  }
+
+  /* Responsive */
   @media (max-width: 640px) {
-    .moog-dials {
+    .performance-controls {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    .moog-btn {
-      min-width: 80px;
-      font-size: 0.75rem;
-      padding: 0.5rem 0.75rem;
+    .motion-controls {
+      flex-wrap: wrap;
+    }
+
+    .motion-speed {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 0.5rem;
+    }
+
+    .dsp-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>
 
+<!-- Three.js for 3D visualization -->
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
-  class MoogLooper {
+  // ============================================================================
+  // AUTOMOOG ENGINE CONTROLLER
+  // ============================================================================
+
+  class AutoMoogController {
     constructor() {
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      this.isPlaying = false;
-      this.isLooping = false;
-      this.currentSource = null;
-      this.loopTimeout = null;
+      this.audioContext = null;
+      this.voice = null;
+      this.space = null;
+      this.moods = null;
 
-      this.params = {
-        freq: 180,
-        duration: 0.6,
-        intensity: 0.9,
-        modulation: 40
-      };
+      this.isRunning = false;
+      this.isFrozen = false;
 
-      this.presets = {
-        rap: { freq: 180, duration: 0.6, intensity: 0.9, modulation: 40 },
-        reggae: { freq: 41.2, duration: 2, intensity: 0.8, modulation: 7.83 },
-        healing: { freq: 528, duration: 10, intensity: 0.5, modulation: 7.83 },
-        speech: { freq: 220, duration: 3, intensity: 0.6, modulation: 174 },
-        singing: { freq: 256, duration: 6, intensity: 0.7, modulation: 128 }
-      };
+      // 2D Canvas
+      this.canvas = document.getElementById('space-canvas');
+      this.ctx = this.canvas?.getContext('2d');
+
+      // 3D Canvas and Three.js
+      this.canvas3D = document.getElementById('space-canvas-3d');
+      this.scene3D = null;
+      this.camera3D = null;
+      this.renderer3D = null;
+      this.is3DMode = true; // Default to 3D
+      this.current3DView = 'perspective';
+
+      // 3D Objects
+      this.orbGroup3D = null;
+      this.trajectoryLine3D = null;
+      this.boundsBox3D = null;
+      this.frameCount = 0;
+
+      // Trajectory history for visualization
+      this.trajectoryHistory = [];
+      this.maxTrajectoryLength = 80;
+
+      // Animation
+      this._animationFrame = null;
+
+      // Camera drag state
+      this.isDragging3D = false;
+      this.previousMouse = { x: 0, y: 0 };
+      this.cameraAngle = { theta: Math.PI / 4, phi: Math.PI / 4 };
 
       this.init();
     }
 
-    init() {
-      this.setupDials();
-      this.setupControls();
-      this.setupPreset();
-      this.updateAllDials();
+    async init() {
+      this.setupCanvas();
+      this.setupCanvas3D();
+      this.setupEventListeners();
+      this.setup3DEventListeners();
+      this.startVisualization();
+
+      // Load DSP modules dynamically
+      await this.loadModules();
     }
 
-    setupDials() {
-      const dialParams = {
-        freq: { min: 20, max: 2000, input: 'moog-freq' },
-        duration: { min: 0.1, max: 15, input: 'moog-duration' },
-        intensity: { min: 0, max: 1, input: 'moog-intensity' },
-        modulation: { min: 0, max: 200, input: 'moog-modulation' }
-      };
+    setupCanvas3D() {
+      if (!this.canvas3D || typeof THREE === 'undefined') {
+        console.warn('Three.js not loaded or 3D canvas not found');
+        return;
+      }
 
-      Object.entries(dialParams).forEach(([param, config]) => {
-        const visual = document.querySelector(`.dial-visual[data-param="${param}"]`);
-        const input = document.getElementById(config.input);
+      const rect = this.canvas3D.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height || 200;
 
-        if (!visual || !input) return;
+      // Scene
+      this.scene3D = new THREE.Scene();
+      this.scene3D.background = new THREE.Color(0x010409);
 
-        let isDragging = false;
+      // Camera
+      this.camera3D = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+      this.setView3D('perspective');
 
-        const handleMove = (e) => {
-          if (!isDragging) return;
+      // Renderer
+      this.renderer3D = new THREE.WebGLRenderer({
+        canvas: this.canvas3D,
+        antialias: true
+      });
+      this.renderer3D.setSize(width, height);
+      this.renderer3D.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-          const rect = visual.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
+      // Create scene elements
+      this.create3DAxes();
+      this.create3DGrid();
+      this.create3DOrb();
 
-          const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-          const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+      // Handle resize
+      window.addEventListener('resize', () => {
+        const rect = this.canvas3D.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          this.camera3D.aspect = rect.width / rect.height;
+          this.camera3D.updateProjectionMatrix();
+          this.renderer3D.setSize(rect.width, rect.height);
+        }
+      });
 
-          const dx = clientX - centerX;
-          const dy = clientY - centerY;
-          let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+      console.log('3D visualization initialized');
+    }
 
-          if (angle < -135) angle = -135;
-          if (angle > 135) angle = 135;
+    create3DAxes() {
+      const axisLength = 5;
 
-          const normalized = (angle + 135) / 270;
-          const value = config.min + normalized * (config.max - config.min);
+      // X axis (Timbre - red)
+      const xGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(axisLength, 0, 0)
+      ]);
+      const xLine = new THREE.Line(xGeo, new THREE.LineBasicMaterial({ color: 0xf85149 }));
+      this.scene3D.add(xLine);
 
-          input.value = value;
-          this.params[param] = value;
-          this.updateDial(param, value, config);
-        };
+      // Y axis (Brightness - green)
+      const yGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, axisLength, 0)
+      ]);
+      const yLine = new THREE.Line(yGeo, new THREE.LineBasicMaterial({ color: 0x3fb950 }));
+      this.scene3D.add(yLine);
 
-        visual.addEventListener('mousedown', (e) => {
-          isDragging = true;
-          e.preventDefault();
+      // Z axis (Motion - blue)
+      const zGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0, axisLength)
+      ]);
+      const zLine = new THREE.Line(zGeo, new THREE.LineBasicMaterial({ color: 0x58a6ff }));
+      this.scene3D.add(zLine);
+
+      // Add arrow cones
+      this.addArrowCone(axisLength, 0, 0, 0xf85149, 'x');
+      this.addArrowCone(0, axisLength, 0, 0x3fb950, 'y');
+      this.addArrowCone(0, 0, axisLength, 0x58a6ff, 'z');
+    }
+
+    addArrowCone(x, y, z, color, axis) {
+      const geometry = new THREE.ConeGeometry(0.08, 0.2, 8);
+      const material = new THREE.MeshBasicMaterial({ color });
+      const cone = new THREE.Mesh(geometry, material);
+
+      if (axis === 'x') {
+        cone.rotation.z = -Math.PI / 2;
+        cone.position.set(x + 0.1, 0, 0);
+      } else if (axis === 'y') {
+        cone.position.set(0, y + 0.1, 0);
+      } else if (axis === 'z') {
+        cone.rotation.x = Math.PI / 2;
+        cone.position.set(0, 0, z + 0.1);
+      }
+
+      this.scene3D.add(cone);
+    }
+
+    create3DGrid() {
+      // Floor grid (XZ plane)
+      const gridHelper = new THREE.GridHelper(5, 10, 0x21262d, 0x161b22);
+      this.scene3D.add(gridHelper);
+
+      // Back wall grid (XY plane) - subtle
+      const gridXY = new THREE.GridHelper(5, 10, 0x21262d, 0x161b22);
+      gridXY.rotation.x = Math.PI / 2;
+      gridXY.position.z = 0;
+      gridXY.material.opacity = 0.3;
+      gridXY.material.transparent = true;
+      this.scene3D.add(gridXY);
+    }
+
+    create3DOrb() {
+      // Inner bright orb
+      const orbGeo = new THREE.SphereGeometry(0.08, 24, 24);
+      const orbMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const orb = new THREE.Mesh(orbGeo, orbMat);
+
+      // Outer glow
+      const glowGeo = new THREE.SphereGeometry(0.18, 24, 24);
+      const glowMat = new THREE.MeshBasicMaterial({
+        color: 0x58a6ff,
+        transparent: true,
+        opacity: 0.4
+      });
+      const glow = new THREE.Mesh(glowGeo, glowMat);
+
+      // Ring indicator
+      const ringGeo = new THREE.RingGeometry(0.22, 0.25, 32);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0xa371f7,
+        transparent: true,
+        opacity: 0.6,
+        side: THREE.DoubleSide
+      });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+
+      // Group them
+      this.orbGroup3D = new THREE.Group();
+      this.orbGroup3D.add(orb);
+      this.orbGroup3D.add(glow);
+      this.orbGroup3D.add(ring);
+      this.orbGroup3D.userData = { orb, glow, ring };
+      this.scene3D.add(this.orbGroup3D);
+    }
+
+    setView3D(view) {
+      this.current3DView = view;
+      const center = new THREE.Vector3(2.5, 2.5, 2.5);
+      const distance = 8;
+
+      switch (view) {
+        case 'left':
+          this.camera3D.position.set(-distance, 2.5, 2.5);
+          this.cameraAngle = { theta: Math.PI, phi: Math.PI / 2 };
+          break;
+        case 'right':
+          this.camera3D.position.set(distance, 2.5, 2.5);
+          this.cameraAngle = { theta: 0, phi: Math.PI / 2 };
+          break;
+        case 'top':
+          this.camera3D.position.set(2.5, distance, 2.5);
+          this.cameraAngle = { theta: 0, phi: 0.01 };
+          break;
+        case 'perspective':
+        default:
+          this.camera3D.position.set(6, 5, 6);
+          this.cameraAngle = { theta: Math.PI / 4, phi: Math.PI / 4 };
+          break;
+      }
+
+      this.camera3D.lookAt(center);
+    }
+
+    setup3DEventListeners() {
+      // View toggle (2D/3D)
+      document.querySelectorAll('.viz-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mode = btn.dataset.viz;
+          this.toggleVisualization(mode);
+        });
+      });
+
+      // 3D view buttons
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          this.setView3D(btn.dataset.view);
+        });
+      });
+
+      // Export button
+      document.getElementById('export-btn')?.addEventListener('click', () => {
+        this.exportToRapBattle();
+      });
+
+      // 3D canvas drag rotation
+      if (this.canvas3D) {
+        this.canvas3D.addEventListener('mousedown', (e) => {
+          this.isDragging3D = true;
+          this.previousMouse = { x: e.clientX, y: e.clientY };
+          this.canvas3D.style.cursor = 'grabbing';
         });
 
-        visual.addEventListener('touchstart', (e) => {
-          isDragging = true;
-          e.preventDefault();
+        this.canvas3D.addEventListener('mousemove', (e) => {
+          if (!this.isDragging3D || this.current3DView !== 'perspective') return;
+
+          const deltaX = e.clientX - this.previousMouse.x;
+          const deltaY = e.clientY - this.previousMouse.y;
+
+          this.cameraAngle.theta -= deltaX * 0.005;
+          this.cameraAngle.phi = Math.max(0.1, Math.min(Math.PI - 0.1, this.cameraAngle.phi - deltaY * 0.005));
+
+          const radius = 8;
+          const center = new THREE.Vector3(2.5, 2.5, 2.5);
+
+          this.camera3D.position.x = center.x + radius * Math.sin(this.cameraAngle.phi) * Math.cos(this.cameraAngle.theta);
+          this.camera3D.position.y = center.y + radius * Math.cos(this.cameraAngle.phi);
+          this.camera3D.position.z = center.z + radius * Math.sin(this.cameraAngle.phi) * Math.sin(this.cameraAngle.theta);
+          this.camera3D.lookAt(center);
+
+          this.previousMouse = { x: e.clientX, y: e.clientY };
         });
 
-        document.addEventListener('mousemove', handleMove);
-        document.addEventListener('touchmove', handleMove);
-        document.addEventListener('mouseup', () => isDragging = false);
-        document.addEventListener('touchend', () => isDragging = false);
-
-        // Input changes
-        input.addEventListener('input', (e) => {
-          this.params[param] = parseFloat(e.target.value);
-          this.updateDial(param, this.params[param], config);
+        this.canvas3D.addEventListener('mouseup', () => {
+          this.isDragging3D = false;
+          this.canvas3D.style.cursor = 'grab';
         });
 
-        // Scroll wheel
-        visual.addEventListener('wheel', (e) => {
-          e.preventDefault();
-          const step = (config.max - config.min) / 100;
-          let value = this.params[param];
-          value += e.deltaY > 0 ? -step : step;
-          value = Math.max(config.min, Math.min(config.max, value));
-
-          input.value = value;
-          this.params[param] = value;
-          this.updateDial(param, value, config);
+        this.canvas3D.addEventListener('mouseleave', () => {
+          this.isDragging3D = false;
+          this.canvas3D.style.cursor = 'grab';
         });
+
+        this.canvas3D.style.cursor = 'grab';
+      }
+    }
+
+    toggleVisualization(mode) {
+      this.is3DMode = (mode === '3d');
+
+      const canvas2D = document.getElementById('space-canvas');
+      const canvas3D = document.getElementById('space-canvas-3d');
+      const controls3D = document.getElementById('view-3d-controls');
+
+      canvas2D.classList.toggle('viz-hidden', this.is3DMode);
+      canvas3D.classList.toggle('viz-hidden', !this.is3DMode);
+      controls3D.classList.toggle('viz-hidden', !this.is3DMode);
+
+      document.querySelectorAll('.viz-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.viz === mode);
       });
     }
 
-    updateDial(param, value, config) {
-      const visual = document.querySelector(`.dial-visual[data-param="${param}"]`);
-      if (!visual) return;
+    exportToRapBattle() {
+      const mood = document.getElementById('mood-selector')?.value || 'ambient';
+      const settings = {
+        mood,
+        energy: document.getElementById('perf-energy')?.value || 0.5,
+        warmth: document.getElementById('perf-warmth')?.value || 0.5,
+        density: document.getElementById('perf-density')?.value || 0.5,
+        chaos: document.getElementById('perf-chaos')?.value || 0.3,
+        baseFreq: document.getElementById('dsp-freq')?.value || 110,
+        cutoff: document.getElementById('dsp-cutoff')?.value || 0.5,
+        resonance: document.getElementById('dsp-resonance')?.value || 0.3,
+        drive: document.getElementById('dsp-drive')?.value || 1.5,
+        motionMode: document.querySelector('.motion-btn.active')?.dataset.mode || 'lissajous',
+        motionSpeed: document.getElementById('motion-speed')?.value || 1
+      };
 
-      const normalized = (value - config.min) / (config.max - config.min);
-      const angle = -135 + (normalized * 270);
+      const exportData = {
+        id: `moog_${Date.now()}`,
+        name: `AutoMoog ${mood.charAt(0).toUpperCase() + mood.slice(1)}`,
+        type: 'moog',
+        mood: mood,
+        bpm: 120,
+        timestamp: new Date().toISOString(),
+        settings: settings,
+        source: 'automoog_engine'
+      };
 
-      const needle = visual.querySelector('.dial-needle');
-      const arc = visual.querySelector('.dial-arc');
-      const valueDisplay = document.getElementById(`${param}-value`);
+      // Save to nftBackingTracks for rap battle
+      const backingTracks = JSON.parse(localStorage.getItem('nftBackingTracks') || '[]');
+      backingTracks.unshift(exportData);
+      if (backingTracks.length > 20) backingTracks.pop();
+      localStorage.setItem('nftBackingTracks', JSON.stringify(backingTracks));
 
-      if (needle) {
-        needle.setAttribute('transform', `rotate(${angle} 50 50)`);
-      }
+      // Set as current battle beat
+      localStorage.setItem('currentBattleBeat', JSON.stringify({
+        name: exportData.name,
+        type: 'moog',
+        id: exportData.id,
+        mood: mood,
+        settings: settings
+      }));
 
-      if (arc) {
-        const radius = 40;
-        const startAngle = -135;
-        const endAngle = angle;
-        const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+      // Visual feedback
+      const btn = document.getElementById('export-btn');
+      btn.classList.add('exported');
+      btn.querySelector('span:last-child').textContent = 'Exported!';
 
-        const start = this.polarToCartesian(50, 50, radius, startAngle);
-        const end = this.polarToCartesian(50, 50, radius, endAngle);
+      setTimeout(() => {
+        btn.classList.remove('exported');
+        btn.querySelector('span:last-child').textContent = 'Export';
+      }, 2000);
 
-        const d = `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}`;
-        arc.setAttribute('d', d);
-      }
+      // Dispatch event for other components
+      window.dispatchEvent(new CustomEvent('moog-exported', { detail: exportData }));
 
-      if (valueDisplay) {
-        const precision = param === 'intensity' ? 2 : (param === 'duration' ? 1 : 0);
-        valueDisplay.textContent = value.toFixed(precision);
+      console.log('Exported to Rap Battle:', exportData);
+    }
+
+    async loadModules() {
+      try {
+        // Check if modules are already loaded
+        if (window.AutoMoogDSP && window.AutoMoogSpace && window.AutoMoogMoods) {
+          console.log('AutoMoog modules already loaded');
+          return;
+        }
+
+        // Load scripts
+        const scripts = [
+          '/scripts/automoog-dsp.js',
+          '/scripts/automoog-space.js',
+          '/scripts/automoog-moods.js'
+        ];
+
+        for (const src of scripts) {
+          await this.loadScript(src);
+        }
+
+        console.log('AutoMoog modules loaded');
+      } catch (error) {
+        console.error('Failed to load AutoMoog modules:', error);
       }
     }
 
-    updateAllDials() {
-      const configs = {
-        freq: { min: 20, max: 2000 },
-        duration: { min: 0.1, max: 15 },
-        intensity: { min: 0, max: 1 },
-        modulation: { min: 0, max: 200 }
-      };
+    loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const existing = document.querySelector(`script[src="${src}"]`);
+        if (existing) {
+          resolve();
+          return;
+        }
 
-      Object.entries(this.params).forEach(([param, value]) => {
-        this.updateDial(param, value, configs[param]);
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
       });
     }
 
-    polarToCartesian(cx, cy, r, angle) {
-      const rad = (angle - 90) * Math.PI / 180;
-      return {
-        x: cx + r * Math.cos(rad),
-        y: cy + r * Math.sin(rad)
+    setupCanvas() {
+      if (!this.canvas) return;
+
+      const resize = () => {
+        const rect = this.canvas.getBoundingClientRect();
+        this.canvas.width = rect.width * window.devicePixelRatio;
+        this.canvas.height = rect.height * window.devicePixelRatio;
+        this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
       };
+
+      resize();
+      window.addEventListener('resize', resize);
     }
 
-    setupControls() {
-      const playBtn = document.getElementById('moog-play');
-      const loopBtn = document.getElementById('moog-loop');
-      const stopBtn = document.getElementById('moog-stop');
-      const exportBtn = document.getElementById('moog-export');
-      const saveBtn = document.getElementById('moog-save');
+    setupEventListeners() {
+      // Play button
+      document.getElementById('play-btn')?.addEventListener('click', () => {
+        if (this.isRunning) {
+          this.pause();
+        } else {
+          this.start();
+        }
+      });
 
-      playBtn?.addEventListener('click', () => this.togglePlay());
-      loopBtn?.addEventListener('click', () => this.toggleLoop());
-      stopBtn?.addEventListener('click', () => this.stop());
-      exportBtn?.addEventListener('click', () => this.exportWAV());
-      saveBtn?.addEventListener('click', () => this.saveJSON());
+      // Stop button
+      document.getElementById('stop-btn')?.addEventListener('click', () => {
+        this.stop();
+      });
+
+      // Freeze button
+      document.getElementById('freeze-btn')?.addEventListener('click', () => {
+        this.toggleFreeze();
+      });
+
+      // Mood selector
+      document.getElementById('mood-selector')?.addEventListener('change', (e) => {
+        if (this.moods) {
+          this.moods.transitionTo(e.target.value, 3);
+          this.showTransitionIndicator();
+        }
+      });
+
+      // Motion mode buttons
+      document.querySelectorAll('.motion-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.motion-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          if (this.space) {
+            this.space.setMotionMode(btn.dataset.mode);
+          }
+
+          if (this.moods) {
+            this.moods.setManualOverride(btn.dataset.mode === 'manual');
+          }
+        });
+      });
+
+      // Motion speed
+      document.getElementById('motion-speed')?.addEventListener('input', (e) => {
+        if (this.space) {
+          this.space.setMotionSpeed(parseFloat(e.target.value));
+        }
+      });
+
+      // Performance controls
+      this.setupPerformanceControl('energy', (val) => {
+        this.moods?.setEnergy(val);
+        this.voice?.setEnergy(val);
+      });
+
+      this.setupPerformanceControl('warmth', (val) => {
+        this.moods?.setWarmth(val);
+        this.voice?.setWarmth(val);
+      });
+
+      this.setupPerformanceControl('density', (val) => {
+        this.moods?.setDensity(val);
+      });
+
+      this.setupPerformanceControl('chaos', (val) => {
+        this.moods?.setChaos(val);
+      });
+
+      // DSP controls
+      document.getElementById('dsp-freq')?.addEventListener('input', (e) => {
+        const freq = parseInt(e.target.value);
+        document.getElementById('freq-val').textContent = `${freq} Hz`;
+        if (this.voice && this.isRunning) {
+          this.voice.noteOn(freq);
+        }
+      });
+
+      document.getElementById('dsp-cutoff')?.addEventListener('input', (e) => {
+        const norm = parseFloat(e.target.value);
+        const freq = 40 * Math.pow(400, norm);
+        document.getElementById('cutoff-val').textContent = `${Math.round(freq)} Hz`;
+        this.voice?.filter?.setCutoff(freq);
+      });
+
+      document.getElementById('dsp-resonance')?.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        document.getElementById('res-val').textContent = val.toFixed(2);
+        this.voice?.filter?.setResonance(val);
+      });
+
+      document.getElementById('dsp-drive')?.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        document.getElementById('drive-val').textContent = val.toFixed(1);
+        this.voice?.saturation?.setDrive(val);
+      });
+
+      // Classic Moog Features
+      document.getElementById('hard-sync')?.addEventListener('change', (e) => {
+        this.voice?.setHardSync(e.target.checked);
+        console.log('Hard Sync:', e.target.checked ? 'ON' : 'OFF');
+      });
+
+      document.getElementById('ring-mod')?.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        document.getElementById('ring-val').textContent = `${Math.round(val * 100)}%`;
+        this.voice?.setRingMod(val);
+      });
+
+      document.getElementById('key-track')?.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        document.getElementById('track-val').textContent = `${Math.round(val * 100)}%`;
+        this.voice?.setKeyboardTracking(val);
+      });
+
+      // Canvas interaction for manual mode
+      this.canvas?.addEventListener('mousedown', (e) => this.handleCanvasPointer(e));
+      this.canvas?.addEventListener('mousemove', (e) => {
+        if (e.buttons === 1) this.handleCanvasPointer(e);
+      });
+      this.canvas?.addEventListener('touchstart', (e) => this.handleCanvasPointer(e));
+      this.canvas?.addEventListener('touchmove', (e) => this.handleCanvasPointer(e));
     }
 
-    setupPreset() {
-      const presetSelect = document.getElementById('moog-preset');
-      presetSelect?.addEventListener('change', (e) => {
-        const preset = this.presets[e.target.value];
-        if (!preset) return;
+    setupPerformanceControl(name, callback) {
+      const input = document.getElementById(`perf-${name}`);
+      const display = document.getElementById(`${name}-val`);
 
-        this.params = { ...preset };
-
-        // Update inputs
-        document.getElementById('moog-freq').value = preset.freq;
-        document.getElementById('moog-duration').value = preset.duration;
-        document.getElementById('moog-intensity').value = preset.intensity;
-        document.getElementById('moog-modulation').value = preset.modulation;
-
-        this.updateAllDials();
+      input?.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        display.textContent = val.toFixed(2);
+        callback(val);
       });
     }
 
-    togglePlay() {
-      if (this.isPlaying) {
-        this.pause();
-      } else {
-        this.play();
-      }
+    handleCanvasPointer(e) {
+      if (!this.space) return;
+
+      const activeMode = document.querySelector('.motion-btn.active')?.dataset.mode;
+      if (activeMode !== 'manual') return;
+
+      const rect = this.canvas.getBoundingClientRect();
+      const clientX = e.clientX || e.touches?.[0]?.clientX;
+      const clientY = e.clientY || e.touches?.[0]?.clientY;
+
+      const x = (clientX - rect.left) / rect.width;
+      const y = 1 - (clientY - rect.top) / rect.height; // Invert Y
+
+      // Map to parameter space (X and Y visible, Z controlled by slider)
+      const z = parseFloat(document.getElementById('perf-chaos')?.value || 0.3);
+      this.space.setPosition(x, y, z);
     }
 
-    play() {
-      this.isPlaying = true;
-      const playBtn = document.getElementById('moog-play');
-      playBtn?.classList.add('playing');
+    async start() {
+      try {
+        // Ensure modules are loaded first
+        if (!window.AutoMoogDSP || !window.AutoMoogSpace || !window.AutoMoogMoods) {
+          console.log('Waiting for AutoMoog modules to load...');
+          await this.loadModules();
 
-      const icon = document.getElementById('moog-play-icon');
-      const text = document.getElementById('moog-play-text');
-      if (icon) icon.textContent = '⏸️';
-      if (text) text.textContent = 'Pause';
+          // Wait a bit for modules to initialize
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
 
-      this.synthesize();
+        // Check modules loaded successfully
+        if (!window.AutoMoogDSP) {
+          console.error('AutoMoogDSP module not available');
+          alert('Failed to load audio engine. Please refresh the page.');
+          return;
+        }
 
-      if (this.isLooping) {
-        this.scheduleLoop();
-      }
+        console.log('AutoMoogDSP loaded:', Object.keys(window.AutoMoogDSP));
 
-      // Award XP
-      if (window.progressManager) {
-        window.progressManager.awardXP(3, 'music_creation', 'Played Moog synth');
+        // Initialize audio context
+        if (!this.audioContext) {
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          console.log('AudioContext created:', this.audioContext.state, 'sampleRate:', this.audioContext.sampleRate);
+        }
+
+        if (this.audioContext.state === 'suspended') {
+          await this.audioContext.resume();
+          console.log('AudioContext resumed:', this.audioContext.state);
+        }
+
+        // Simple audio test to verify audio context works
+        if (!this._audioTested) {
+          console.log('Testing audio output with simple tone...');
+          const testOsc = this.audioContext.createOscillator();
+          const testGain = this.audioContext.createGain();
+          testGain.gain.value = 0.1;
+          testOsc.connect(testGain);
+          testGain.connect(this.audioContext.destination);
+          testOsc.frequency.value = 440;
+          testOsc.start();
+          setTimeout(() => {
+            testOsc.stop();
+            testOsc.disconnect();
+            console.log('Test tone completed (native oscillator works)');
+          }, 200);
+
+          // Also test ScriptProcessor-based audio
+          console.log('Testing ScriptProcessor audio...');
+          const testProcessor = this.audioContext.createScriptProcessor(256, 0, 1);
+          const testProcGain = this.audioContext.createGain();
+          testProcGain.gain.value = 0.1;
+          let testPhase = 0;
+          const testFreq = 330;
+          const testInvSR = 1 / this.audioContext.sampleRate;
+          testProcessor.onaudioprocess = (e) => {
+            const output = e.outputBuffer.getChannelData(0);
+            for (let i = 0; i < output.length; i++) {
+              output[i] = Math.sin(testPhase * Math.PI * 2) * 0.5;
+              testPhase += testFreq * testInvSR;
+              if (testPhase > 1) testPhase -= 1;
+            }
+          };
+          testProcessor.connect(testProcGain);
+          testProcGain.connect(this.audioContext.destination);
+          setTimeout(() => {
+            testProcessor.disconnect();
+            testProcGain.disconnect();
+            console.log('ScriptProcessor test completed');
+          }, 300);
+
+          this._audioTested = true;
+        }
+
+        // Initialize DSP voice
+        if (!this.voice) {
+          console.log('Creating AutoMoogVoice...');
+          try {
+            this.voice = new window.AutoMoogDSP.AutoMoogVoice(this.audioContext);
+            console.log('Voice instance created');
+            this.voice.connect(this.audioContext.destination);
+            console.log('Voice connected to destination');
+          } catch (voiceError) {
+            console.error('Error creating voice:', voiceError);
+            throw voiceError;
+          }
+        }
+
+        // Initialize parameter space
+        if (!this.space && window.AutoMoogSpace) {
+          console.log('Creating ParameterSpace...');
+          this.space = new window.AutoMoogSpace.ParameterSpace();
+
+          // Subscribe to parameter changes
+          this.space.onChange((position, mapped) => {
+            this.updateVoiceFromSpace(mapped);
+            this.updatePositionDisplay(position);
+          });
+        }
+
+        // Initialize mood system
+        if (!this.moods && window.AutoMoogMoods && this.space) {
+          console.log('Creating MoodManager...');
+          this.moods = new window.AutoMoogMoods.MoodManager(this.space);
+          this.moods.setMood(document.getElementById('mood-selector')?.value || 'ambient');
+        }
+
+        // Start systems
+        console.log('Starting voice...');
+        try {
+          this.voice.start();
+          console.log('Voice started, oscillators running');
+        } catch (startError) {
+          console.error('Error starting voice:', startError);
+        }
+
+        this.space?.start();
+        this.moods?.start();
+
+        // Small delay to let oscillators initialize
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+        // Trigger note
+        const freq = parseInt(document.getElementById('dsp-freq')?.value || 110);
+        console.log('Triggering note at', freq, 'Hz');
+        try {
+          this.voice.noteOn(freq);
+          console.log('Note triggered, ampEnv state:', this.voice.ampEnv?.getState());
+        } catch (noteError) {
+          console.error('Error triggering note:', noteError);
+        }
+
+        this.isRunning = true;
+        this.updateUI();
+
+        console.log('AutoMoog engine started successfully');
+        console.log('Master gain value:', this.voice.masterGain?.gain?.value);
+        console.log('Amp env gain value:', this.voice.ampEnv?.gainNode?.gain?.value);
+      } catch (error) {
+        console.error('Failed to start AutoMoog:', error);
+        alert('Audio error: ' + error.message);
       }
     }
 
     pause() {
-      this.isPlaying = false;
-      const playBtn = document.getElementById('moog-play');
-      playBtn?.classList.remove('playing');
-
-      const icon = document.getElementById('moog-play-icon');
-      const text = document.getElementById('moog-play-text');
-      if (icon) icon.textContent = '▶️';
-      if (text) text.textContent = 'Play';
-
-      if (this.currentSource) {
-        this.currentSource.stop();
-        this.currentSource = null;
-      }
-
-      if (this.loopTimeout) {
-        clearTimeout(this.loopTimeout);
-        this.loopTimeout = null;
-      }
+      this.voice?.noteOff();
+      this.isRunning = false;
+      this.updateUI();
     }
 
     stop() {
-      this.pause();
-      this.isPlaying = false;
+      this.voice?.stop();
+      this.space?.stop();
+      this.moods?.stop();
+      this.isRunning = false;
+      this.trajectoryHistory = [];
+      this.updateUI();
     }
 
-    toggleLoop() {
-      this.isLooping = !this.isLooping;
-      const loopBtn = document.getElementById('moog-loop');
-      loopBtn?.classList.toggle('active', this.isLooping);
+    toggleFreeze() {
+      this.isFrozen = !this.isFrozen;
 
-      if (this.isLooping && this.isPlaying) {
-        this.scheduleLoop();
+      if (this.isFrozen) {
+        this.moods?.setManualOverride(true);
+      } else {
+        const activeMode = document.querySelector('.motion-btn.active')?.dataset.mode;
+        this.moods?.setManualOverride(activeMode === 'manual');
       }
+
+      document.getElementById('freeze-btn')?.classList.toggle('frozen', this.isFrozen);
     }
 
-    scheduleLoop() {
-      if (this.loopTimeout) {
-        clearTimeout(this.loopTimeout);
-      }
+    updateVoiceFromSpace(mapped) {
+      if (!this.voice || !this.isRunning) return;
 
-      this.loopTimeout = setTimeout(() => {
-        if (this.isLooping && this.isPlaying) {
-          this.synthesize();
-          this.scheduleLoop();
-        }
-      }, this.params.duration * 1000);
+      // Apply psychoacoustically mapped parameters
+      this.voice.setTimbre(mapped.timbre.raw);
+      this.voice.setBrightness(mapped.brightness.raw);
+      this.voice.setMotion(mapped.motion.raw);
     }
 
-    synthesize() {
-      const { freq, duration, intensity, modulation } = this.params;
+    updatePositionDisplay(position) {
+      const display = document.getElementById('position-display');
+      if (!display) return;
 
-      const oscillator = this.audioContext.createOscillator();
-      const modulator = this.audioContext.createOscillator();
-      const modulatorGain = this.audioContext.createGain();
-      const gainNode = this.audioContext.createGain();
+      display.innerHTML = `
+        <span>X: ${position.x.toFixed(2)}</span>
+        <span>Y: ${position.y.toFixed(2)}</span>
+        <span>Z: ${position.z.toFixed(2)}</span>
+      `;
 
-      // Setup modulation
-      modulator.frequency.value = modulation;
-      modulatorGain.gain.value = freq * 0.3;
-
-      modulator.connect(modulatorGain);
-      modulatorGain.connect(oscillator.frequency);
-
-      // Setup main oscillator
-      oscillator.type = 'sine';
-      oscillator.frequency.value = freq;
-
-      gainNode.gain.setValueAtTime(intensity, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
-
-      oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-
-      // Draw waveform
-      this.drawWaveform(freq, duration, intensity, modulation);
-
-      oscillator.start();
-      modulator.start();
-      oscillator.stop(this.audioContext.currentTime + duration);
-      modulator.stop(this.audioContext.currentTime + duration);
-
-      this.currentSource = oscillator;
-    }
-
-    drawWaveform(freq, duration, intensity, modulation) {
-      const canvas = document.getElementById('moog-waveform');
-      if (!canvas) return;
-
-      const ctx = canvas.getContext('2d');
-      const width = canvas.width;
-      const height = canvas.height;
-
-      ctx.clearRect(0, 0, width, height);
-      ctx.strokeStyle = '#58a6ff';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-
-      const samples = 1000;
-      for (let i = 0; i < samples; i++) {
-        const t = (i / samples) * duration;
-        const x = (i / samples) * width;
-
-        const modValue = Math.sin(2 * Math.PI * modulation * t) * 0.3;
-        const envelope = Math.exp(-t * 2);
-        const y = height / 2 +
-          Math.sin(2 * Math.PI * freq * t + modValue) *
-          envelope * intensity * (height / 2 - 10);
-
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
+      // Store for trajectory
+      if (!this.isFrozen) {
+        this.trajectoryHistory.push({ ...position, time: performance.now() });
+        if (this.trajectoryHistory.length > this.maxTrajectoryLength) {
+          this.trajectoryHistory.shift();
         }
       }
-
-      ctx.stroke();
     }
 
-    exportWAV() {
-      alert('WAV export coming soon!');
-      // TODO: Implement WAV export
+    updateUI() {
+      const playBtn = document.getElementById('play-btn');
+      const stopBtn = document.getElementById('stop-btn');
+      const status = document.getElementById('engine-status');
+
+      if (playBtn) {
+        playBtn.classList.toggle('playing', this.isRunning);
+        playBtn.querySelector('.play-icon').textContent = this.isRunning ? '⏸' : '▶';
+        playBtn.querySelector('.play-text').textContent = this.isRunning ? 'Pause' : 'Start Engine';
+      }
+
+      if (stopBtn) {
+        stopBtn.disabled = !this.isRunning;
+      }
+
+      if (status) {
+        status.classList.toggle('active', this.isRunning);
+      }
     }
 
-    saveJSON() {
-      const config = {
-        preset: document.getElementById('moog-preset')?.value,
-        params: this.params,
-        timestamp: new Date().toISOString()
+    showTransitionIndicator() {
+      const indicator = document.getElementById('transition-indicator');
+      if (!indicator) return;
+
+      indicator.classList.add('visible');
+
+      // Animate progress
+      const bar = indicator.querySelector('.transition-bar');
+      let progress = 0;
+
+      const animate = () => {
+        if (!this.moods?.isTransitioning()) {
+          indicator.classList.remove('visible');
+          return;
+        }
+
+        progress = this.moods.getTransitionProgress();
+        bar.style.setProperty('--progress', `${progress * 100}%`);
+        bar.querySelector('::after')?.style?.setProperty('width', `${progress * 100}%`);
+
+        requestAnimationFrame(animate);
       };
 
-      const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `moog-${config.preset}-config.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      animate();
+
+      // Hide after transition
+      setTimeout(() => {
+        if (!this.moods?.isTransitioning()) {
+          indicator.classList.remove('visible');
+        }
+      }, 3500);
+    }
+
+    startVisualization() {
+      const draw = () => {
+        if (this.is3DMode) {
+          this.draw3DSpace();
+        } else {
+          this.drawSpace();
+        }
+        this._animationFrame = requestAnimationFrame(draw);
+      };
+      draw();
+    }
+
+    draw3DSpace() {
+      if (!this.renderer3D || !this.scene3D || !this.camera3D) return;
+
+      this.frameCount++;
+
+      const pos = this.space?.getPosition();
+      if (pos && this.orbGroup3D) {
+        // Update orb position (scale 0-1 to 0-5)
+        this.orbGroup3D.position.set(pos.x * 5, pos.y * 5, pos.z * 5);
+
+        // Pulse glow based on Z
+        const scale = 1 + pos.z * 0.5;
+        this.orbGroup3D.userData.glow?.scale.setScalar(scale);
+
+        // Update glow color based on mood
+        const mood = this.moods?.getCurrentMood();
+        if (mood?.color && this.orbGroup3D.userData.glow) {
+          this.orbGroup3D.userData.glow.material.color.set(mood.color);
+        }
+
+        // Rotate ring for visual interest
+        if (this.orbGroup3D.userData.ring) {
+          this.orbGroup3D.userData.ring.rotation.x += 0.02;
+          this.orbGroup3D.userData.ring.rotation.y += 0.01;
+        }
+      }
+
+      // Update trajectory every 3 frames for performance
+      if (this.frameCount % 3 === 0 && this.trajectoryHistory.length > 1) {
+        this.update3DTrajectory();
+      }
+
+      // Update bounds box
+      if (this.frameCount % 30 === 0) {
+        this.update3DBoundsBox();
+      }
+
+      this.renderer3D.render(this.scene3D, this.camera3D);
+    }
+
+    update3DTrajectory() {
+      // Remove old trajectory
+      if (this.trajectoryLine3D) {
+        this.scene3D.remove(this.trajectoryLine3D);
+        this.trajectoryLine3D.geometry.dispose();
+        this.trajectoryLine3D.material.dispose();
+      }
+
+      if (this.trajectoryHistory.length < 2) return;
+
+      // Create points from history
+      const points = this.trajectoryHistory.map(p =>
+        new THREE.Vector3(p.x * 5, p.y * 5, p.z * 5)
+      );
+
+      // Create line with gradient effect via vertex colors
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const colors = [];
+
+      for (let i = 0; i < points.length; i++) {
+        const t = i / points.length;
+        // Fade from dim to bright (cyan to purple)
+        colors.push(0.34 + t * 0.31, 0.65 - t * 0.21, 0.97);
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+      const material = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        linewidth: 2
+      });
+
+      this.trajectoryLine3D = new THREE.Line(geometry, material);
+      this.scene3D.add(this.trajectoryLine3D);
+    }
+
+    update3DBoundsBox() {
+      // Remove old bounds
+      if (this.boundsBox3D) {
+        this.scene3D.remove(this.boundsBox3D);
+        this.boundsBox3D.geometry?.dispose();
+        this.boundsBox3D.material?.dispose();
+      }
+
+      const mood = this.moods?.getCurrentMood();
+      if (!mood?.bounds) return;
+
+      const b = mood.bounds;
+      const width = (b.x.max - b.x.min) * 5;
+      const height = (b.y.max - b.y.min) * 5;
+      const depth = (b.z.max - b.z.min) * 5;
+
+      const geometry = new THREE.BoxGeometry(width, height, depth);
+      const edges = new THREE.EdgesGeometry(geometry);
+      const material = new THREE.LineBasicMaterial({
+        color: mood.color || 0x58a6ff,
+        transparent: true,
+        opacity: 0.4
+      });
+
+      this.boundsBox3D = new THREE.LineSegments(edges, material);
+      this.boundsBox3D.position.set(
+        ((b.x.min + b.x.max) / 2) * 5,
+        ((b.y.min + b.y.max) / 2) * 5,
+        ((b.z.min + b.z.max) / 2) * 5
+      );
+
+      this.scene3D.add(this.boundsBox3D);
+    }
+
+    drawSpace() {
+      if (!this.ctx || !this.canvas) return;
+
+      const w = this.canvas.width / window.devicePixelRatio;
+      const h = this.canvas.height / window.devicePixelRatio;
+
+      // Clear
+      this.ctx.fillStyle = '#010409';
+      this.ctx.fillRect(0, 0, w, h);
+
+      // Draw grid
+      this.ctx.strokeStyle = '#21262d';
+      this.ctx.lineWidth = 1;
+
+      for (let i = 0; i <= 10; i++) {
+        const x = (i / 10) * w;
+        const y = (i / 10) * h;
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, 0);
+        this.ctx.lineTo(x, h);
+        this.ctx.stroke();
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, y);
+        this.ctx.lineTo(w, y);
+        this.ctx.stroke();
+      }
+
+      // Draw mood bounds if available
+      if (this.moods) {
+        const mood = this.moods.getCurrentMood();
+        if (mood?.bounds) {
+          this.ctx.strokeStyle = mood.color || '#58a6ff';
+          this.ctx.lineWidth = 2;
+          this.ctx.setLineDash([4, 4]);
+          this.ctx.strokeRect(
+            mood.bounds.x.min * w,
+            (1 - mood.bounds.y.max) * h,
+            (mood.bounds.x.max - mood.bounds.x.min) * w,
+            (mood.bounds.y.max - mood.bounds.y.min) * h
+          );
+          this.ctx.setLineDash([]);
+        }
+      }
+
+      // Draw trajectory
+      if (this.trajectoryHistory.length > 1) {
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = '#58a6ff';
+        this.ctx.lineWidth = 1.5;
+
+        this.trajectoryHistory.forEach((point, i) => {
+          const x = point.x * w;
+          const y = (1 - point.y) * h;
+          const alpha = i / this.trajectoryHistory.length;
+
+          if (i === 0) {
+            this.ctx.moveTo(x, y);
+          } else {
+            this.ctx.lineTo(x, y);
+          }
+        });
+
+        this.ctx.stroke();
+      }
+
+      // Draw current position
+      const pos = this.space?.getPosition();
+      if (pos) {
+        const cx = pos.x * w;
+        const cy = (1 - pos.y) * h;
+        const z = pos.z;
+
+        // Z-based glow size
+        const glowSize = 15 + z * 20;
+
+        // Glow
+        const glow = this.ctx.createRadialGradient(cx, cy, 0, cx, cy, glowSize);
+        glow.addColorStop(0, 'rgba(88, 166, 255, 0.4)');
+        glow.addColorStop(0.5, 'rgba(163, 113, 247, 0.2)');
+        glow.addColorStop(1, 'transparent');
+        this.ctx.fillStyle = glow;
+        this.ctx.beginPath();
+        this.ctx.arc(cx, cy, glowSize, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Orb
+        const orbGradient = this.ctx.createRadialGradient(cx - 2, cy - 2, 0, cx, cy, 8);
+        orbGradient.addColorStop(0, '#ffffff');
+        orbGradient.addColorStop(0.3, '#58a6ff');
+        orbGradient.addColorStop(1, '#a371f7');
+        this.ctx.fillStyle = orbGradient;
+        this.ctx.beginPath();
+        this.ctx.arc(cx, cy, 6 + z * 4, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Z indicator ring
+        this.ctx.strokeStyle = `rgba(88, 166, 255, ${0.3 + z * 0.5})`;
+        this.ctx.lineWidth = 1.5;
+        this.ctx.beginPath();
+        this.ctx.arc(cx, cy, 10 + z * 8, 0, Math.PI * 2);
+        this.ctx.stroke();
+      }
     }
   }
 
   // Initialize
-  if (document.querySelector('.moog-looper')) {
-    window.moogLooper = new MoogLooper();
+  if (document.querySelector('.automoog-engine')) {
+    window.autoMoogController = new AutoMoogController();
   }
 </script>

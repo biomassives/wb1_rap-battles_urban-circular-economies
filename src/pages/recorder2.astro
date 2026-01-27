@@ -1,0 +1,231 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Bio-Acoustic Collection Tool">
+
+<style>
+  :root {
+    --nile-green: #00ffcc;
+    --star-gold: #ffcc00;
+    --rock-gray: #a1a1a1;
+    --dark-bg: #0f0f11;
+    --glass: rgba(255, 255, 255, 0.05);
+  }
+
+  .recorder-interface { max-width: 900px; margin: 40px auto; color: white; font-family: 'Inter', sans-serif; }
+
+  /* Expanded Icon Picker */
+  .collection-picker {
+    display: flex;
+    justify-content: space-around;
+    background: #1a1a1c;
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid #333;
+    margin-bottom: 20px;
+  }
+
+  .icon-opt {
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 10px;
+    text-align: center;
+    transition: 0.3s;
+    border: 1px solid transparent;
+    filter: grayscale(1);
+  }
+  .icon-opt.selected { 
+    background: var(--glass); 
+    border-color: var(--nile-green); 
+    filter: grayscale(0);
+    transform: translateY(-5px);
+  }
+
+  /* Main Recording Strip */
+  .main-band {
+    display: flex;
+    align-items: center;
+    background: var(--dark-bg);
+    border: 1px solid #333;
+    border-radius: 20px;
+    padding: 15px 25px;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .vis-area { flex: 1; height: 80px; background: #000; border-radius: 12px; position: relative; overflow: hidden; }
+  canvas { width: 100%; height: 100%; }
+
+  .rec-circle {
+    width: 60px; height: 60px; border-radius: 50%; border: none;
+    background: #ff4444; color: white; cursor: pointer; font-size: 1.5rem;
+  }
+  .rec-circle.active { animation: pulse 1s infinite; border-radius: 15px; }
+
+  /* Bank Gallery */
+  .bank-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 30px;
+  }
+
+  .bank-tile {
+    background: #1a1a1c;
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .download-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px;
+    background: var(--nile-green);
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.7rem;
+  }
+
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+</style>
+
+<div class="recorder-interface">
+  
+  <div class="collection-picker" id="icon-picker">
+    <div class="icon-opt selected" data-icon="🐦"><div>🐦</div><small>Fauna</small></div>
+    <div class="icon-opt" data-icon="🌿"><div>🌿</div><small>Flora</small></div>
+    <div class="icon-opt" data-icon="🌊"><div>🌊</div><small>Water</small></div>
+    <div class="icon-opt" data-icon="⭐"><div>⭐</div><small>Stars</small></div>
+    <div class="icon-opt" data-icon="🪨"><div>🪨</div><small>Rocks</small></div>
+  </div>
+
+  <div class="main-band">
+    <button id="rec-btn" class="rec-circle">●</button>
+    <div class="vis-area"><canvas id="canvas"></canvas></div>
+    <button id="save-btn" class="rec-circle" style="background:#444" disabled>💾</button>
+  </div>
+
+  <div class="bank-grid" id="bank-root"></div>
+</div>
+
+<script>
+  const DB_NAME = "BioSampleMaster";
+  const STORE = "samples";
+  let activeCategory = "🐦";
+  let mediaRecorder, chunks = [], animationId;
+
+  /** DB SETUP **/
+  async function openDB() {
+    return new Promise(r => {
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = () => req.result.createObjectStore(STORE, { keyPath: "id", autoIncrement: true });
+      req.onsuccess = () => r(req.result);
+    });
+  }
+
+  /** CATEGORY SELECTION **/
+  document.querySelectorAll('.icon-opt').forEach(opt => {
+    opt.onclick = () => {
+      document.querySelector('.icon-opt.selected').classList.remove('selected');
+      opt.classList.add('selected');
+      activeCategory = opt.dataset.icon;
+    };
+  });
+
+  /** VISUALIZER **/
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  function visualize(stream) {
+    const audioCtx = new AudioContext();
+    const source = audioCtx.createMediaStreamSource(stream);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+
+    const render = () => {
+      animationId = requestAnimationFrame(render);
+      analyser.getByteFrequencyData(data);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width / data.length;
+      data.forEach((v, i) => {
+        const h = (v / 255) * canvas.height;
+        ctx.fillStyle = `rgba(0, 255, 204, ${v/255 + 0.3})`;
+        ctx.fillRect(i * w, (canvas.height - h)/2, w - 2, h);
+      });
+    };
+    render();
+  }
+
+  /** RECORDING **/
+  document.getElementById('rec-btn').onclick = async function() {
+    if (this.classList.contains('active')) {
+      mediaRecorder.stop();
+      cancelAnimationFrame(animationId);
+      this.classList.remove('active');
+      document.getElementById('save-btn').disabled = false;
+    } else {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      visualize(stream);
+      mediaRecorder = new MediaRecorder(stream);
+      chunks = [];
+      mediaRecorder.ondataavailable = e => chunks.push(e.data);
+      mediaRecorder.start();
+      this.classList.add('active');
+    }
+  };
+
+  document.getElementById('save-btn').onclick = async function() {
+    const blob = new Blob(chunks, { type: 'audio/webm' });
+    const db = await openDB();
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).add({ category: activeCategory, blob, date: new Date().toISOString() });
+    tx.oncomplete = () => {
+      this.disabled = true;
+      renderBanks();
+    };
+  };
+
+  /** EXPORT BANK **/
+  window.downloadBank = async (cat) => {
+    const db = await openDB();
+    const tx = db.transaction(STORE, "readonly");
+    tx.objectStore(STORE).getAll().onsuccess = async (e) => {
+      const samples = e.target.result.filter(s => s.category === cat);
+      const manifest = { category: cat, count: samples.length, data: samples };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `BioBank_${cat}.json`;
+      a.click();
+    };
+  };
+
+  async function renderBanks() {
+    const db = await openDB();
+    db.transaction(STORE, "readonly").objectStore(STORE).getAll().onsuccess = (e) => {
+      const all = e.target.result;
+      const grouped = all.reduce((acc, s) => { acc[s.category] = (acc[s.category] || 0) + 1; return acc; }, {});
+      
+      document.getElementById('bank-root').innerHTML = Object.entries(grouped).map(([cat, count]) => `
+        <div class="bank-tile">
+          <div style="font-size: 2rem;">${cat}</div>
+          <div style="font-size: 0.8rem; margin: 5px 0;">${count} Samples</div>
+          <button class="download-btn" onclick="downloadBank('${cat}')">EXPORT BANK</button>
+        </div>
+      `).join('');
+    };
+  }
+
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  renderBanks();
+</script>
+
+</BaseLayout>

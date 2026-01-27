@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Worldbridger One - Desert Digital</title>
+    <style>
+        :root {
+            --bg-color: #0a0a1a; 
+            --bubble-top: #70d6ff;
+            --bubble-bottom: #ff9770;
+            --lcd-neon: #39ff14; /* Sharper "Alien" Green */
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1b1b3a 0%, #05050a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* 1. Improved Scanline & CRT Flicker */
+        body::after {
+            content: " ";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 10;
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+
+        /* 2. Advanced 3D Bubble Text with "Double Image" Ghosting */
+        .worldbridger {
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 0;
+            background: linear-gradient(180deg, var(--bubble-top), var(--bubble-bottom));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* Stacked shadows for the fluting depth + a red/blue "ghost" offset */
+            text-shadow: 
+                -2px -2px 0px rgba(255,0,0,0.3), 
+                2px 2px 0px rgba(0,255,255,0.3),
+                0px 5px 0px #2d1b4d,
+                0px 10px 0px #1a1a2e,
+                0px 20px 30px rgba(0,0,0,0.8);
+            letter-spacing: -3px;
+            filter: url(#organic-glow);
+        }
+
+        .one {
+            font-size: 14rem;
+            line-height: 0.7;
+            margin-top: -20px;
+        }
+
+        /* 3. Glass-morphism LCD Panel */
+        .details-container {
+            margin-top: 50px;
+            padding: 30px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transform: rotateX(10deg); /* Slight tilt for the "bowl" perspective */
+        }
+
+        .lcd-text {
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--lcd-neon);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--lcd-neon);
+            margin: 12px 0;
+            font-weight: bold;
+        }
+
+        .nft-line {
+            font-size: 0.75rem;
+            color: #fff;
+            opacity: 0.6;
+            margin-top: 15px;
+            border-top: 1px dashed rgba(255,255,255,0.2);
+            padding-top: 15px;
+        }
+
+        /* 4. Drifting Spores (Bioluminescent) */
+        .spore {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: 0 0 10px #fff, 0 0 20px var(--bubble-top);
+            animation: drift 20s infinite ease-in-out;
+            z-index: -1;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translate(100px, -100vh) scale(1.5); opacity: 0; }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <svg width="0" height="0" style="position:absolute;">
+        <filter id="organic-glow">
+            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
+        </filter>
+    </svg>
+
+    <div class="spore" style="width: 4px; height: 4px; left: 15%; bottom: -10%; animation-delay: 0s;"></div>
+    <div class="spore" style="width: 6px; height: 6px; left: 45%; bottom: -10%; animation-delay: 4s;"></div>
+    <div class="spore" style="width: 3px; height: 3px; left: 85%; bottom: -10%; animation-delay: 8s;"></div>
+
+    <div class="header-container">
+        <h1 class="worldbridger">Worldbridger</h1>
+        <h1 class="worldbridger one">One</h1>
+    </div>
+
+    <div class="details-container">
+        <div class="lcd-text">How it works</div>
+        <div class="lcd-text">Get Free Airdrop NFTs</div>
+        <div class="lcd-text nft-line">DS4C DAO - Directly Support for Creatives DAO</div>
+    </div>
+
+    <div class="details-container">
+        <div class="lcd-text">Rap Battle w/ Fana Ke</div>
+        <div class="lcd-text">Reggae Production with OT</div>
+        <div class="lcd-text nft-line">ECOCITY / EXOTOPIA NFT REWARDS</div>
+    </div>
+
+    <script>
+        // Teachable Vanilla JS: Generate more spores dynamically
+        const body = document.body;
+        for (let i = 0; i < 15; i++) {
+            let s = document.createElement('div');
+            s.className = 'spore';
+            s.style.left = Math.random() * 100 + 'vw';
+            s.style.bottom = '-5%';
+            s.style.width = s.style.height = Math.random() * 5 + 'px';
+            s.style.animationDelay = Math.random() * 20 + 's';
+            s.style.opacity = Math.random();
+            body.appendChild(s);
+        }
+    </script>
+</body>
+</html>

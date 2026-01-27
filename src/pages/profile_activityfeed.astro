@@ -1,0 +1,2264 @@
+---
+/**
+ * profile-v2.astro
+ * Space Invaders Themed Profile - Mission Control for WorldBridger One
+ *
+ * Features:
+ * - Retro gaming aesthetic with pixel art vibes
+ * - XP/Level system integrated throughout
+ * - Eco Projects management hub
+ * - Music/Creative content studio
+ * - Safe sharing controls for WorldBridger One
+ */
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import OracleStatusBand from "../components/OracleStatusBand.astro";
+---
+
+<BaseLayout
+  title="Mission Control"
+  description="Your command center for eco projects, music creation, and WorldBridger One operations"
+  activeSection="profile"
+>
+  <script src="/scripts/form-storage.js" is:inline></script>
+
+  <div class="mission-control">
+    <div class="container mx-auto">
+
+      <!-- ============================================ -->
+      <!-- COMMANDER HEADER - Space Invaders Style -->
+      <!-- ============================================ -->
+      <div class="commander-header pixel-border">
+        <div class="status-bar pixel-text">
+          <span class="status-item">█ MISSION_CONTROL</span>
+          <span class="status-item">▲ LEVEL_<span id="header-level">1</span></span>
+          <span class="status-item blink">◆ ONLINE</span>
+        <section id="transparency-feed" class="profile-section mt-12 border-t pt-8 px-4">
+  <div class="max-w-4xl mx-auto">
+    <h3 class="text-2xl font-bold text-green-800 mb-6 flex items-center gap-2">
+      🌱 Global Impact Feed
+    </h3>
+    <ul id="activity-list" class="space-y-3">
+      <li class="p-4 bg-gray-50 rounded-lg animate-pulse text-gray-400">
+        Fetching biodiversity ledger facts...
+      </li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+        <div class="commander-profile">
+          <!-- Avatar with Space Invader Style -->
+          <div class="commander-avatar pixel-art">
+            <div class="pixel-character" id="player-avatar">
+              <div class="pixel-row">▓▓▓▓▓</div>
+              <div class="pixel-row">▓█▓█▓</div>
+              <div class="pixel-row">▓▓▓▓▓</div>
+              <div class="pixel-row">▓▓▓▓▓</div>
+            </div>
+            <button class="avatar-change-btn pixel-btn" onclick="changeAvatar()">
+              <span>⚙</span>
+            </button>
+          </div>
+
+          <div class="commander-info">
+            <div class="rank-display">
+              <span class="rank-label pixel-text">COMMANDER</span>
+              <h1 class="commander-name glow-text" id="commander-name">LOADING...</h1>
+            </div>
+
+            <div class="id-chip pixel-border">
+              <span class="id-label">ID:</span>
+              <span class="id-value monospace" id="wallet-id">----</span>
+            </div>
+
+            <!-- XP Progress Bar - Arcade Style -->
+            <div class="xp-display">
+              <div class="xp-label-row">
+                <span class="xp-label pixel-text">EXPERIENCE</span>
+                <span class="xp-value glow-text"><span id="current-xp">0</span> XP</span>
+              </div>
+              <div class="xp-bar-container pixel-border">
+                <div class="xp-bar-fill pixel-gradient" id="xp-bar" style="width: 0%">
+                  <div class="xp-bar-shine"></div>
+                </div>
+              </div>
+              <div class="xp-next pixel-text">NEXT_LEVEL: <span id="xp-to-next">100</span> XP</div>
+            </div>
+          </div>
+
+          <!-- Stats Display - Retro Style -->
+          <div class="quick-stats-grid">
+            <div class="stat-box pixel-border">
+              <div class="stat-icon">▲</div>
+              <div class="stat-value glow-text" id="stat-level">1</div>
+              <div class="stat-label pixel-text">LEVEL</div>
+            </div>
+            <div class="stat-box pixel-border">
+              <div class="stat-icon">♫</div>
+              <div class="stat-value glow-text" id="stat-tracks">0</div>
+              <div class="stat-label pixel-text">TRACKS</div>
+            </div>
+            <div class="stat-box pixel-border">
+              <div class="stat-icon">🌍</div>
+              <div class="stat-value glow-text" id="stat-projects">0</div>
+              <div class="stat-label pixel-text">ECO_OPS</div>
+            </div>
+            <div class="stat-box pixel-border">
+              <div class="stat-icon">⚔</div>
+              <div class="stat-value glow-text" id="stat-battles">0</div>
+              <div class="stat-label pixel-text">BATTLES</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E8 Oracle Status -->
+      <OracleStatusBand />
+
+      <!-- ============================================ -->
+      <!-- NAVIGATION TABS - Arcade Button Style -->
+      <!-- ============================================ -->
+      <div class="mission-tabs">
+        <button class="mission-tab pixel-btn active" data-tab="overview">
+          <span class="tab-icon">█</span>
+          <span class="tab-label">OVERVIEW</span>
+        </button>
+        <button class="mission-tab pixel-btn" data-tab="eco-projects">
+          <span class="tab-icon">🌍</span>
+          <span class="tab-label">ECO_PROJECTS</span>
+        </button>
+        <button class="mission-tab pixel-btn" data-tab="music-studio">
+          <span class="tab-icon">♫</span>
+          <span class="tab-label">MUSIC_STUDIO</span>
+        </button>
+        <button class="mission-tab pixel-btn" data-tab="nft-collection">
+          <span class="tab-icon">💎</span>
+          <span class="tab-label">NFT_VAULT</span>
+        </button>
+        <button class="mission-tab pixel-btn" data-tab="shared-content">
+          <span class="tab-icon">📡</span>
+          <span class="tab-label">SHARED_DATA</span>
+        </button>
+        <button class="mission-tab pixel-btn" data-tab="achievements">
+          <span class="tab-icon">⭐</span>
+          <span class="tab-label">ACHIEVEMENTS</span>
+        </button>
+        <button class="mission-tab pixel-btn" data-tab="settings">
+          <span class="tab-icon">⚙</span>
+          <span class="tab-label">SETTINGS</span>
+        </button>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB: OVERVIEW - Mission Stats -->
+      <!-- ============================================ -->
+      <div id="tab-overview" class="tab-content active">
+        <div class="section-header pixel-border">
+          <h2 class="section-title glow-text">█ MISSION_OVERVIEW</h2>
+          <p class="section-subtitle pixel-text">YOUR_WORLDBRIDGER_ONE_STATISTICS</p>
+        </div>
+
+        <div class="overview-grid">
+          <!-- Recent Activity Feed -->
+          <div class="activity-feed pixel-border">
+            <div class="feed-header">
+              <span class="pixel-text">▼ RECENT_ACTIVITY</span>
+            </div>
+            <div class="activity-list" id="activity-list">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Level Progress Card -->
+          <div class="progress-card pixel-border">
+            <div class="card-header pixel-text">▲ LEVEL_PROGRESSION</div>
+            <div class="level-visual">
+              <div class="level-circle glow-border">
+                <span class="level-number glow-text" id="level-display">1</span>
+              </div>
+              <div class="level-bars">
+                <div class="level-bar pixel-border">
+                  <div class="level-bar-fill" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="level-info">
+              <p class="pixel-text">RANK: <span class="glow-text" id="rank-name">CADET</span></p>
+              <p class="pixel-text">NEXT_RANK: <span id="next-rank">SCOUT</span></p>
+            </div>
+          </div>
+
+          <!-- Achievements Preview -->
+          <div class="achievements-preview pixel-border">
+            <div class="card-header pixel-text">⭐ LATEST_ACHIEVEMENTS</div>
+            <div class="achievement-slots" id="achievement-preview">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB: ECO PROJECTS - Environmental Operations -->
+      <!-- ============================================ -->
+      <div id="tab-eco-projects" class="tab-content" style="display: none;">
+        <div class="section-header pixel-border">
+          <h2 class="section-title glow-text">🌍 ECO_PROJECT_OPERATIONS</h2>
+          <p class="section-subtitle pixel-text">MANAGE_ENVIRONMENTAL_INITIATIVES</p>
+        </div>
+
+        <!-- Project Creation -->
+        <div class="action-panel pixel-border">
+          <button class="primary-action-btn pixel-btn" onclick="createNewProject()">
+            <span class="btn-icon">+</span>
+            <span>LAUNCH_NEW_PROJECT</span>
+          </button>
+        </div>
+
+        <!-- Active Projects Grid -->
+        <div class="projects-grid">
+          <!-- Project Card Template -->
+          <div class="project-card pixel-border">
+            <div class="project-header">
+              <span class="project-status active pixel-text">● ACTIVE</span>
+              <span class="project-type pixel-text">[REFORESTATION]</span>
+            </div>
+            <h3 class="project-title glow-text">Kakuma_Forest_Initiative</h3>
+            <div class="project-stats">
+              <div class="project-stat">
+                <span class="stat-label pixel-text">IMPACT:</span>
+                <span class="stat-value glow-text">127 TREES</span>
+              </div>
+              <div class="project-stat">
+                <span class="stat-label pixel-text">PARTICIPANTS:</span>
+                <span class="stat-value glow-text">43 USERS</span>
+              </div>
+              <div class="project-stat">
+                <span class="stat-label pixel-text">XP_EARNED:</span>
+                <span class="stat-value glow-text">+2,450 XP</span>
+              </div>
+            </div>
+            <div class="project-progress">
+              <div class="progress-label pixel-text">COMPLETION: 67%</div>
+              <div class="progress-bar pixel-border">
+                <div class="progress-fill pixel-gradient" style="width: 67%"></div>
+              </div>
+            </div>
+            <div class="project-actions">
+              <button class="action-btn pixel-btn">VIEW_DETAILS</button>
+              <button class="action-btn pixel-btn">UPDATE_STATUS</button>
+              <button class="action-btn pixel-btn">SHARE_REPORT</button>
+            </div>
+          </div>
+
+          <!-- Add more project cards populated by JS -->
+          <div class="empty-slot pixel-border dashed">
+            <span class="pixel-text">+ CREATE_PROJECT</span>
+          </div>
+        </div>
+
+        <!-- Impact Metrics Dashboard -->
+        <div class="impact-dashboard pixel-border">
+          <h3 class="dashboard-title glow-text">▼ COLLECTIVE_IMPACT_METRICS</h3>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon">🌳</div>
+              <div class="metric-value glow-text">1,247</div>
+              <div class="metric-label pixel-text">TREES_PLANTED</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">💧</div>
+              <div class="metric-value glow-text">8,492</div>
+              <div class="metric-label pixel-text">LITERS_SAVED</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">♻️</div>
+              <div class="metric-value glow-text">342</div>
+              <div class="metric-label pixel-text">KG_RECYCLED</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">🏕️</div>
+              <div class="metric-value glow-text">156</div>
+              <div class="metric-label pixel-text">YOUTH_IMPACTED</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB: MUSIC STUDIO - Creative Content Hub -->
+      <!-- ============================================ -->
+      <div id="tab-music-studio" class="tab-content" style="display: none;">
+        <div class="section-header pixel-border">
+          <h2 class="section-title glow-text">♫ MUSIC_STUDIO_CONTROL</h2>
+          <p class="section-subtitle pixel-text">CREATE_SHARE_AND_BATTLE</p>
+        </div>
+
+        <!-- Creation Tools -->
+        <div class="studio-tools">
+          <button class="tool-btn pixel-btn" onclick="openSampler()">
+            <span class="tool-icon">🎹</span>
+            <span class="tool-label">SAMPLER_PADS</span>
+          </button>
+          <button class="tool-btn pixel-btn" onclick="openRemixLab()">
+            <span class="tool-icon">🎚️</span>
+            <span class="tool-label">REMIX_LAB</span>
+          </button>
+          <button class="tool-btn pixel-btn" onclick="openBattleArena()">
+            <span class="tool-icon">⚔</span>
+            <span class="tool-label">BATTLE_ARENA</span>
+          </button>
+        </div>
+
+        <!-- Your Tracks Library -->
+        <div class="tracks-library pixel-border">
+          <div class="library-header">
+            <h3 class="glow-text">▼ YOUR_TRACKS</h3>
+            <button class="pixel-btn" onclick="uploadTrack()">+ UPLOAD_NEW</button>
+          </div>
+
+          <div class="tracks-grid" id="tracks-grid">
+            <!-- Track Card Template -->
+            <div class="track-card pixel-border">
+              <div class="track-visualizer">
+                <div class="waveform">
+                  <span>█</span><span>▓</span><span>█</span><span>▓</span>
+                  <span>█</span><span>▓</span><span>█</span><span>▓</span>
+                </div>
+              </div>
+              <div class="track-info">
+                <h4 class="track-title glow-text">Beat_001_Final</h4>
+                <p class="track-meta pixel-text">2:34 • 156 BPM • 2024-01-15</p>
+              </div>
+              <div class="track-stats">
+                <span class="stat pixel-text">👁 247</span>
+                <span class="stat pixel-text">❤ 89</span>
+                <span class="stat pixel-text">💬 23</span>
+              </div>
+              <div class="track-actions">
+                <button class="icon-btn pixel-btn" onclick="playTrack()">▶</button>
+                <button class="icon-btn pixel-btn" onclick="editTrack()">✎</button>
+                <button class="icon-btn pixel-btn" onclick="shareTrack()">📤</button>
+                <button class="icon-btn pixel-btn" onclick="deleteTrack()">✕</button>
+              </div>
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-slot pixel-border dashed">
+              <span class="pixel-text">+ CREATE_FIRST_TRACK</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Battle Stats -->
+        <div class="battle-stats pixel-border">
+          <h3 class="glow-text">⚔ BATTLE_RECORD</h3>
+          <div class="stats-row">
+            <div class="battle-stat">
+              <span class="stat-value glow-text">12</span>
+              <span class="stat-label pixel-text">WINS</span>
+            </div>
+            <div class="battle-stat">
+              <span class="stat-value glow-text">5</span>
+              <span class="stat-label pixel-text">LOSSES</span>
+            </div>
+            <div class="battle-stat">
+              <span class="stat-value glow-text">71%</span>
+              <span class="stat-label pixel-text">WIN_RATE</span>
+            </div>
+            <div class="battle-stat">
+              <span class="stat-value glow-text">5</span>
+              <span class="stat-label pixel-text">STREAK</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB: NFT COLLECTION - Personal NFT Vault -->
+      <!-- ============================================ -->
+      <div id="tab-nft-collection" class="tab-content" style="display: none;">
+        <div class="section-header pixel-border">
+          <h2 class="section-title glow-text">💎 NFT_VAULT</h2>
+          <p class="section-subtitle pixel-text">YOUR_PERSONAL_RAPPER_COLLECTION</p>
+        </div>
+
+        <!-- Collection Summary -->
+        <div class="collection-summary pixel-border">
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <span class="stat-value glow-text" id="owned-count">0</span>
+              <span class="stat-label pixel-text">OWNED</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-value glow-text" id="collection-value">0</span>
+              <span class="stat-label pixel-text">TOTAL_VALUE_SOL</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-value glow-text" id="rare-count">0</span>
+              <span class="stat-label pixel-text">RARE+</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-value glow-text" id="nft-benefits">0</span>
+              <span class="stat-label pixel-text">ACTIVE_BENEFITS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Sort Controls -->
+        <div class="nft-controls pixel-border">
+          <div class="control-group">
+            <label class="control-label pixel-text">FILTER:</label>
+            <select id="nft-rarity-filter" class="pixel-select">
+              <option value="all">All Rarities</option>
+              <option value="Common">Common</option>
+              <option value="Uncommon">Uncommon</option>
+              <option value="Rare">Rare</option>
+              <option value="Legendary">Legendary</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label pixel-text">SORT:</label>
+            <select id="nft-sort" class="pixel-select">
+              <option value="recent">Recently Acquired</option>
+              <option value="rarity">By Rarity</option>
+              <option value="id">By ID Number</option>
+              <option value="value">By Value</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <button class="pixel-btn" onclick="viewFullGallery()">
+              <span>VIEW_FULL_GALLERY →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Owned NFTs Grid -->
+        <div class="owned-nfts-grid" id="owned-nfts-grid">
+          <!-- NFT Card Template (Owned) -->
+          <div class="owned-nft-card pixel-border" data-nft-id="1" data-rarity="Uncommon">
+            <!-- Card Header with Rarity -->
+            <div class="nft-card-header">
+              <span class="nft-number pixel-text">#001</span>
+              <span class="nft-rarity pixel-text" style="color: #00ffff; text-shadow: 0 0 10px #00ffff;">UNCOMMON</span>
+            </div>
+
+            <!-- NFT Preview -->
+            <div class="nft-preview">
+              <div class="nft-preview-image" style="background: linear-gradient(135deg, #8d5524 0%, #00ffff22 100%);">
+                <div class="nft-avatar">🐓</div>
+                <div class="ownership-badge pixel-border">
+                  <span class="pixel-text">OWNED</span>
+                </div>
+              </div>
+              <!-- Sound Wave Indicator -->
+              <div class="nft-sound-indicator">
+                <button class="sound-play-btn pixel-btn" onclick="playNFTSound(1)">
+                  <span>▶ PLAY_SOUND</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- NFT Info -->
+            <div class="nft-info">
+              <h4 class="nft-name glow-text">Chicken Rapper #001</h4>
+              <div class="nft-details pixel-text">
+                <div class="detail-line">
+                  <span>Spirit:</span>
+                  <span class="glow-text">Chicken</span>
+                </div>
+                <div class="detail-line">
+                  <span>Style:</span>
+                  <span class="glow-text">Dreads</span>
+                </div>
+                <div class="detail-line">
+                  <span>Value:</span>
+                  <span class="glow-text">0.5 SOL</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Holder Benefits -->
+            <div class="nft-benefits pixel-border">
+              <div class="benefit-header pixel-text">▼ HOLDER_BENEFITS:</div>
+              <div class="benefit-list">
+                <div class="benefit-item pixel-text">✓ +10% XP_BOOST</div>
+                <div class="benefit-item pixel-text">✓ EXCLUSIVE_SOUNDS</div>
+                <div class="benefit-item pixel-text">✓ PRIORITY_BATTLES</div>
+              </div>
+            </div>
+
+            <!-- Management Actions -->
+            <div class="nft-actions">
+              <button class="action-btn pixel-btn" onclick="viewNFTDetails(1)">
+                <span>VIEW_DETAILS</span>
+              </button>
+              <button class="action-btn pixel-btn" onclick="listNFTForSale(1)">
+                <span>LIST_FOR_SALE</span>
+              </button>
+              <button class="action-btn pixel-btn" onclick="transferNFT(1)">
+                <span>TRANSFER</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Empty State (shown when no NFTs owned) -->
+          <div class="empty-vault pixel-border dashed" id="empty-vault" style="display: none;">
+            <div class="empty-icon">💎</div>
+            <h3 class="pixel-text">NO_NFTs_IN_VAULT</h3>
+            <p class="pixel-text">Visit the gallery to acquire your first NFT</p>
+            <button class="pixel-btn" onclick="viewFullGallery()">
+              <span>BROWSE_COLLECTION →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Actions Panel -->
+        <div class="nft-quick-actions pixel-border">
+          <h3 class="glow-text">⚡ QUICK_ACTIONS</h3>
+          <div class="quick-actions-grid">
+            <button class="quick-action-btn pixel-btn" onclick="claimFreeNFT()">
+              <span class="action-icon">🎁</span>
+              <span class="action-label">CLAIM_FREE_NFT</span>
+            </button>
+            <button class="quick-action-btn pixel-btn" onclick="viewMarketplace()">
+              <span class="action-icon">🛒</span>
+              <span class="action-label">MARKETPLACE</span>
+            </button>
+            <button class="quick-action-btn pixel-btn" onclick="viewMyListings()">
+              <span class="action-icon">📋</span>
+              <span class="action-label">MY_LISTINGS</span>
+            </button>
+            <button class="quick-action-btn pixel-btn" onclick="viewOffers()">
+              <span class="action-icon">💬</span>
+              <span class="action-label">VIEW_OFFERS</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB: SHARED CONTENT - WorldBridger One Data -->
+      <!-- ============================================ -->
+      <div id="tab-shared-content" class="tab-content" style="display: none;">
+        <div class="section-header pixel-border">
+          <h2 class="section-title glow-text">📡 SHARED_CONTENT_CONTROL</h2>
+          <p class="section-subtitle pixel-text">MANAGE_WORLDBRIDGER_ONE_SHARING</p>
+        </div>
+
+        <!-- Privacy Controls -->
+        <div class="privacy-panel pixel-border">
+          <h3 class="glow-text">🔒 PRIVACY_SETTINGS</h3>
+          <div class="privacy-toggles">
+            <div class="toggle-row">
+              <label class="toggle-label pixel-text">
+                <input type="checkbox" class="privacy-toggle" data-permission="profile_visible" checked />
+                <span class="toggle-switch pixel-border"></span>
+                <span class="toggle-text">PROFILE_VISIBILITY</span>
+              </label>
+              <span class="toggle-status pixel-text">PUBLIC</span>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle-label pixel-text">
+                <input type="checkbox" class="privacy-toggle" data-permission="music_sharing" checked />
+                <span class="toggle-switch pixel-border"></span>
+                <span class="toggle-text">MUSIC_SHARING</span>
+              </label>
+              <span class="toggle-status pixel-text">ENABLED</span>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle-label pixel-text">
+                <input type="checkbox" class="privacy-toggle" data-permission="project_sharing" checked />
+                <span class="toggle-switch pixel-border"></span>
+                <span class="toggle-text">PROJECT_SHARING</span>
+              </label>
+              <span class="toggle-status pixel-text">ENABLED</span>
+            </div>
+            <div class="toggle-row">
+              <label class="toggle-label pixel-text">
+                <input type="checkbox" class="privacy-toggle" data-permission="activity_feed" />
+                <span class="toggle-switch pixel-border"></span>
+                <span class="toggle-text">ACTIVITY_FEED</span>
+              </label>
+              <span class="toggle-status pixel-text">PRIVATE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Permissions -->
+        <div class="permissions-grid">
+          <div class="permission-card pixel-border">
+            <h4 class="card-title glow-text">♫ MUSIC_CONTENT</h4>
+            <p class="pixel-text">Control who can access your tracks and remixes</p>
+            <div class="permission-options">
+              <label class="radio-option pixel-text">
+                <input type="radio" name="music_permission" value="public" checked />
+                <span>PUBLIC - All users</span>
+              </label>
+              <label class="radio-option pixel-text">
+                <input type="radio" name="music_permission" value="community" />
+                <span>COMMUNITY - Verified only</span>
+              </label>
+              <label class="radio-option pixel-text">
+                <input type="radio" name="music_permission" value="private" />
+                <span>PRIVATE - Only me</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="permission-card pixel-border">
+            <h4 class="card-title glow-text">🌍 ECO_PROJECTS</h4>
+            <p class="pixel-text">Control visibility of your environmental work</p>
+            <div class="permission-options">
+              <label class="radio-option pixel-text">
+                <input type="radio" name="project_permission" value="public" checked />
+                <span>PUBLIC - All users</span>
+              </label>
+              <label class="radio-option pixel-text">
+                <input type="radio" name="project_permission" value="community" />
+                <span>COMMUNITY - Verified only</span>
+              </label>
+              <label class="radio-option pixel-text">
+                <input type="radio" name="project_permission" value="private" />
+                <span>PRIVATE - Only me</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Export -->
+        <div class="data-export pixel-border">
+          <h3 class="glow-text">📥 DATA_MANAGEMENT</h3>
+          <div class="export-options">
+            <button class="action-btn pixel-btn" onclick="exportProfile()">
+              <span>EXPORT_PROFILE_DATA</span>
+            </button>
+            <button class="action-btn pixel-btn" onclick="exportTracks()">
+              <span>EXPORT_MUSIC_LIBRARY</span>
+            </button>
+            <button class="action-btn pixel-btn" onclick="exportProjects()">
+              <span>EXPORT_PROJECT_DATA</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB: ACHIEVEMENTS - Unlocked Badges -->
+      <!-- ============================================ -->
+      <div id="tab-achievements" class="tab-content" style="display: none;">
+        <div class="section-header pixel-border">
+          <h2 class="section-title glow-text">⭐ ACHIEVEMENT_COLLECTION</h2>
+          <p class="section-subtitle pixel-text">UNLOCKED_BADGES: <span id="achievement-count">0</span>/50</p>
+        </div>
+
+        <div class="achievements-grid" id="achievements-grid">
+          <!-- Achievement Badge Template -->
+          <div class="achievement-badge pixel-border unlocked">
+            <div class="badge-icon glow-text">⭐</div>
+            <h4 class="badge-title pixel-text">FIRST_STEPS</h4>
+            <p class="badge-description">Created your wallet</p>
+            <div class="badge-xp pixel-text">+200 XP</div>
+          </div>
+
+          <div class="achievement-badge pixel-border locked">
+            <div class="badge-icon">🔒</div>
+            <h4 class="badge-title pixel-text">???</h4>
+            <p class="badge-description">Locked achievement</p>
+          </div>
+
+          <!-- More achievement slots populated by JS -->
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TAB: SETTINGS - System Configuration -->
+      <!-- ============================================ -->
+      <div id="tab-settings" class="tab-content" style="display: none;">
+        <div class="section-header pixel-border">
+          <h2 class="section-title glow-text">⚙ SYSTEM_SETTINGS</h2>
+          <p class="section-subtitle pixel-text">CONFIGURE_YOUR_EXPERIENCE</p>
+        </div>
+
+        <form id="settings-form" class="settings-form">
+          <!-- Profile Settings -->
+          <div class="settings-section pixel-border">
+            <h3 class="section-title pixel-text">▼ PROFILE_CONFIGURATION</h3>
+
+            <div class="form-group">
+              <label class="form-label pixel-text">COMMANDER_NAME</label>
+              <input type="text" id="username" name="username" class="pixel-input" placeholder="Enter name..." />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label pixel-text">BIO_DATA</label>
+              <textarea id="bio" name="bio" class="pixel-textarea" rows="4" placeholder="Tell your story..."></textarea>
+              <span class="char-count pixel-text"><span id="bio-count">0</span>/500</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label pixel-text">LOCATION_TAG</label>
+              <input type="text" id="location" name="location" class="pixel-input" placeholder="e.g., Nairobi, Kenya" />
+            </div>
+          </div>
+
+          <!-- Display Settings -->
+          <div class="settings-section pixel-border">
+            <h3 class="section-title pixel-text">▼ DISPLAY_OPTIONS</h3>
+
+            <div class="setting-row">
+              <label class="pixel-text">THEME_MODE</label>
+              <select class="pixel-select" name="theme">
+                <option value="dark">DARK_MODE</option>
+                <option value="light">LIGHT_MODE</option>
+                <option value="auto">AUTO_DETECT</option>
+              </select>
+            </div>
+
+            <div class="setting-row">
+              <label class="pixel-text">
+                <input type="checkbox" name="reduce_motion" />
+                REDUCE_ANIMATIONS
+              </label>
+            </div>
+
+            <div class="setting-row">
+              <label class="pixel-text">
+                <input type="checkbox" name="show_xp_notifications" checked />
+                XP_NOTIFICATIONS
+              </label>
+            </div>
+          </div>
+
+          <!-- Notification Settings -->
+          <div class="settings-section pixel-border">
+            <h3 class="section-title pixel-text">▼ NOTIFICATION_PREFERENCES</h3>
+
+            <div class="setting-row">
+              <label class="pixel-text">
+                <input type="checkbox" name="notify_battles" checked />
+                BATTLE_INVITATIONS
+              </label>
+            </div>
+
+            <div class="setting-row">
+              <label class="pixel-text">
+                <input type="checkbox" name="notify_projects" checked />
+                PROJECT_UPDATES
+              </label>
+            </div>
+
+            <div class="setting-row">
+              <label class="pixel-text">
+                <input type="checkbox" name="notify_achievements" checked />
+                ACHIEVEMENT_UNLOCKS
+              </label>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="secondary-btn pixel-btn" onclick="resetSettings()">
+              RESET_DEFAULTS
+            </button>
+            <button type="submit" class="primary-btn pixel-btn">
+              SAVE_CONFIGURATION
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+// Add this inside a <script> tag on your page
+async function renderGlobalFeed() {
+    const feedEl = document.getElementById('global-feed');
+    
+    try {
+        const response = await fetch('/api/environmental/global-feed');
+        const activities = await response.json();
+
+        if (activities.length === 0) {
+            feedEl.innerHTML = `<p class="text-gray-500">No activity yet. Be the first to contribute!</p>`;
+            return;
+        }
+
+        feedEl.innerHTML = activities.map(event => {
+            const date = new Date(event.created_at).toLocaleDateString();
+            const details = event.payload; // This is your JSONB data
+            
+            return `
+                <div class="activity-card" style="border-left: 4px solid #4ade80; padding: 1rem; margin-bottom: 1rem; background: #f9fafb;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>${formatEventType(event.event_type)}</strong>
+                        <span style="font-size: 0.8rem; color: #666;">${date}</span>
+                    </div>
+                    <p style="margin: 0.5rem 0; font-family: monospace; font-size: 0.9rem;">
+                        User: ${event.wallet_address.substring(0, 6)}...${event.wallet_address.slice(-4)}
+                    </p>
+                    <div class="payload-details" style="font-size: 0.85rem; color: #444; font-style: italic;">
+                        ${formatPayload(event.event_type, details)}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error("Feed Render Error:", err);
+        feedEl.innerHTML = `<p>Failed to load feed.</p>`;
+    }
+}
+
+// Simple helpers to keep logic readable
+function formatEventType(type) {
+    return type.replace(/_/g, ' ').toUpperCase();
+}
+
+function formatPayload(type, data) {
+    if (type === 'observation_submitted') {
+        return `Spotted ${data.count}x ${data.species} at ${data.location}`;
+    }
+    if (type === 'course_completed') {
+        return `Earned certification in ${data.title}`;
+    }
+    return JSON.stringify(data);
+}
+
+renderGlobalFeed();
+
+
+
+
+/**
+ * Mission Control Manager
+ * Handles profile data, XP display, and content management
+ */
+class MissionControlManager {
+  constructor() {
+    this.userData = null;
+    this.currentTab = 'overview';
+  }
+
+  async initialize() {
+    const walletAddress = window.walletManager?.connectedWallet;
+    if (!walletAddress) {
+      window.location.href = "/";
+      return;
+    }
+
+    // Load user data
+    await this.loadUserData(walletAddress);
+    this.setupEventListeners();
+    this.startAnimations();
+  }
+
+  async loadUserData(walletAddress) {
+    try {
+      // Load progress from progressManager
+      const progress = window.progressManager?.currentProgress;
+
+      if (progress) {
+        this.userData = progress;
+        this.updateAllDisplays();
+      }
+    } catch (error) {
+      console.error('Failed to load user data:', error);
+    }
+  }
+
+  updateAllDisplays() {
+    if (!this.userData) return;
+
+    const { progression, music, environmental } = this.userData;
+
+    // Update header
+    document.getElementById('commander-name').textContent =
+      this.userData.user?.username || 'COMMANDER';
+    document.getElementById('wallet-id').textContent =
+      this.formatWalletId(this.userData.user?.wallet_address);
+
+    // Update XP displays
+    document.getElementById('header-level').textContent = progression.currentLevel;
+    document.getElementById('current-xp').textContent = progression.totalXP;
+    document.getElementById('stat-level').textContent = progression.currentLevel;
+    document.getElementById('level-display').textContent = progression.currentLevel;
+
+    // Calculate XP bar
+    const nextLevelXP = (progression.currentLevel + 1) * 100;
+    const currentLevelXP = progression.currentLevel * 100;
+    const progressToNext = progression.totalXP - currentLevelXP;
+    const xpNeeded = nextLevelXP - currentLevelXP;
+    const percentage = (progressToNext / xpNeeded) * 100;
+
+    document.getElementById('xp-bar').style.width = `${percentage}%`;
+    document.getElementById('xp-to-next').textContent = xpNeeded - progressToNext;
+
+    // Update stats
+    document.getElementById('stat-tracks').textContent = music?.publishedTracks || 0;
+    document.getElementById('stat-projects').textContent = environmental?.projectsParticipated || 0;
+    document.getElementById('stat-battles').textContent = music?.battles?.total || 0;
+
+    // Update rank name
+    document.getElementById('rank-name').textContent = this.getRankName(progression.currentLevel);
+    document.getElementById('next-rank').textContent = this.getRankName(progression.currentLevel + 1);
+  }
+
+  formatWalletId(address) {
+    if (!address) return '----';
+    return `${address.substring(0, 4)}...${address.substring(address.length - 4)}`;
+  }
+
+  getRankName(level) {
+    if (level < 5) return 'CADET';
+    if (level < 10) return 'SCOUT';
+    if (level < 20) return 'OFFICER';
+    if (level < 35) return 'COMMANDER';
+    if (level < 50) return 'CAPTAIN';
+    if (level < 75) return 'MAJOR';
+    if (level < 100) return 'GENERAL';
+    return 'LEGEND';
+  }
+
+  setupEventListeners() {
+    // Tab switching
+    document.querySelectorAll('.mission-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        this.switchTab(tabName);
+      });
+    });
+
+    // Bio character counter
+    const bioInput = document.getElementById('bio');
+    if (bioInput) {
+      bioInput.addEventListener('input', (e) => {
+        document.getElementById('bio-count').textContent = e.target.value.length;
+      });
+    }
+
+    // Settings form
+    const settingsForm = document.getElementById('settings-form');
+    if (settingsForm) {
+      settingsForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await this.saveSettings();
+      });
+    }
+  }
+
+  switchTab(tabName) {
+    // Update active tab
+    document.querySelectorAll('.mission-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+    // Show corresponding content
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.style.display = 'none';
+    });
+    document.getElementById(`tab-${tabName}`).style.display = 'block';
+
+    this.currentTab = tabName;
+
+    // Load data for specific tabs
+    if (tabName === 'nft-collection') {
+      loadOwnedNFTs();
+    }
+  }
+
+  async saveSettings() {
+    // Save settings logic here
+    console.log('Saving settings...');
+
+    // Award XP for updating profile
+    await window.progressManager?.awardXP(25, 'profile_updated', 'Updated profile settings');
+
+    alert('✅ SETTINGS_SAVED');
+  }
+
+  startAnimations() {
+    // Blink animation for online status
+    setInterval(() => {
+      const blinkElements = document.querySelectorAll('.blink');
+      blinkElements.forEach(el => {
+        el.style.opacity = el.style.opacity === '0' ? '1' : '0';
+      });
+    }, 500);
+  }
+}
+
+// Global functions for button actions
+window.changeAvatar = () => {
+  alert('🎨 AVATAR_CUSTOMIZATION_COMING_SOON');
+};
+
+window.createNewProject = () => {
+  alert('🌍 PROJECT_CREATION_INTERFACE_LOADING...');
+};
+
+window.openSampler = () => {
+  window.location.href = '/sampler';
+};
+
+window.openRemixLab = () => {
+  window.location.href = '/audio-remix-lab';
+};
+
+window.openBattleArena = () => {
+  alert('⚔ BATTLE_ARENA_COMING_SOON');
+};
+
+window.uploadTrack = () => {
+  alert('♫ TRACK_UPLOAD_INTERFACE_LOADING...');
+};
+
+window.exportProfile = () => {
+  alert('📥 EXPORTING_PROFILE_DATA...');
+};
+
+window.exportTracks = () => {
+  alert('📥 EXPORTING_MUSIC_LIBRARY...');
+};
+
+window.exportProjects = () => {
+  alert('📥 EXPORTING_PROJECT_DATA...');
+};
+
+window.resetSettings = () => {
+  if (confirm('Reset all settings to defaults?')) {
+    document.getElementById('settings-form').reset();
+  }
+};
+
+// NFT Collection Functions
+window.viewFullGallery = () => {
+  window.location.href = '/nft-gallery';
+};
+
+window.viewNFTDetails = (nftId) => {
+  window.location.href = `/nft-gallery/${nftId}`;
+};
+
+window.playNFTSound = (nftId) => {
+  // Audio playback logic (integrate with nft-gallery audio system)
+  alert(`🔊 PLAYING_NFT_${nftId}_SOUND...`);
+};
+
+window.listNFTForSale = async (mintAddress) => {
+  try {
+    const price = prompt('Enter listing price (in SOL):');
+    if (!price || parseFloat(price) <= 0) return;
+
+    const priceFloat = parseFloat(price);
+    const walletAddress = window.walletManager?.connectedWallet;
+
+    if (!walletAddress) {
+      alert('❌ Please connect your wallet first');
+      return;
+    }
+
+    // Call API to create listing
+    const response = await fetch('/api/nft/list-for-sale', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mintAddress,
+        sellerAddress: walletAddress,
+        price: priceFloat,
+        duration: 30
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert(`✅ NFT listed for ${priceFloat} SOL!\nListing ID: ${result.listing.listingId}`);
+    } else {
+      alert(`❌ Listing failed: ${result.error}`);
+    }
+  } catch (error) {
+    console.error('Listing error:', error);
+    alert('❌ Failed to list NFT');
+  }
+};
+
+window.transferNFT = async (mintAddress) => {
+  try {
+    const recipient = prompt('Enter recipient wallet address:');
+    if (!recipient) return;
+
+    // Validate address format
+    if (recipient.length < 32) {
+      alert('❌ Invalid wallet address');
+      return;
+    }
+
+    if (!confirm(`Transfer NFT to ${recipient}?`)) return;
+
+    const walletAddress = window.walletManager?.connectedWallet;
+    if (!walletAddress) {
+      alert('❌ Please connect your wallet first');
+      return;
+    }
+
+    alert('⏳ Preparing transfer transaction...');
+
+    // Use Solana NFT Manager to transfer
+    if (!window.nftManager) {
+      window.nftManager = new SolanaNFTManager();
+      await window.nftManager.initialize(window.walletManager);
+    }
+
+    const result = await window.nftManager.transferNFT(mintAddress, recipient);
+
+    if (result.success) {
+      alert(`✅ Transfer successful!\nSignature: ${result.signature}`);
+
+      // Record in API
+      await fetch('/api/nft/transfer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mintAddress,
+          fromAddress: walletAddress,
+          toAddress: recipient,
+          signature: result.signature
+        })
+      });
+
+      // Reload NFTs
+      await loadOwnedNFTs();
+    } else {
+      alert(`❌ Transfer failed: ${result.message}`);
+    }
+  } catch (error) {
+    console.error('Transfer error:', error);
+    alert('❌ Transfer failed: ' + error.message);
+  }
+};
+
+window.claimFreeNFT = () => {
+  // Check eligibility and claim
+  alert('🎁 CHECKING_ELIGIBILITY...\nVisit the gallery to claim your first NFT!');
+  window.location.href = '/nft-gallery';
+};
+
+window.viewMarketplace = () => {
+  alert('🛒 MARKETPLACE_COMING_SOON');
+};
+
+window.viewMyListings = () => {
+  alert('📋 MY_LISTINGS_COMING_SOON');
+};
+
+window.viewOffers = () => {
+  alert('💬 OFFERS_INBOX_COMING_SOON');
+};
+
+// Load owned NFTs
+async function loadOwnedNFTs() {
+  const walletAddress = window.walletManager?.connectedWallet;
+  if (!walletAddress) {
+    console.log('⚠️ No wallet connected');
+    return;
+  }
+
+  try {
+    console.log('🔍 Loading NFTs for wallet:', walletAddress);
+
+    // Initialize NFT Manager if not already done
+    if (!window.nftManager) {
+      window.nftManager = new SolanaNFTManager();
+      await window.nftManager.initialize(window.walletManager);
+    }
+
+    // Fetch owned NFTs using Solana NFT Manager
+    const ownedNFTs = await window.nftManager.getOwnedNFTs(walletAddress);
+
+    console.log(`💎 Loaded ${ownedNFTs.length} NFTs`);
+
+    const grid = document.getElementById('owned-nfts-grid');
+    const emptyState = document.getElementById('empty-vault');
+    const templateCard = grid.querySelector('.owned-nft-card');
+
+    if (ownedNFTs.length === 0) {
+      // Show empty state
+      emptyState.style.display = 'flex';
+      if (templateCard) templateCard.style.display = 'none';
+    } else {
+      // Hide empty state
+      emptyState.style.display = 'none';
+
+      // Clear grid except empty state
+      const cardsToRemove = grid.querySelectorAll('.owned-nft-card');
+      cardsToRemove.forEach(card => card.remove());
+
+      // Render NFTs
+      ownedNFTs.forEach((nft, index) => {
+        const card = createNFTCard(nft, index + 1);
+        grid.insertBefore(card, emptyState);
+      });
+
+      // Update stats
+      updateNFTStats(ownedNFTs);
+    }
+  } catch (error) {
+    console.error('❌ Failed to load owned NFTs:', error);
+  }
+}
+
+// Create NFT card element
+function createNFTCard(nft, displayId) {
+  const card = document.createElement('div');
+  card.className = 'owned-nft-card pixel-border';
+  card.dataset.nftId = displayId;
+  card.dataset.rarity = nft.rarity || 'Common';
+
+  const rarityColors = {
+    'Common': { color: '#00ff00', glow: '0 0 10px #00ff00' },
+    'Uncommon': { color: '#00ffff', glow: '0 0 15px #00ffff' },
+    'Rare': { color: '#ffff00', glow: '0 0 20px #ffff00' },
+    'Legendary': { color: '#ff00ff', glow: '0 0 30px #ff00ff' }
+  };
+
+  const rarityStyle = rarityColors[nft.rarity] || rarityColors['Common'];
+
+  // Get benefits for this rarity
+  const benefits = window.nftManager.getNFTBenefits(nft.rarity || 'Common');
+
+  card.innerHTML = `
+    <!-- Card Header with Rarity -->
+    <div class="nft-card-header">
+      <span class="nft-number pixel-text">#${String(displayId).padStart(3, '0')}</span>
+      <span class="nft-rarity pixel-text" style="color: ${rarityStyle.color}; text-shadow: ${rarityStyle.glow};">
+        ${nft.rarity || 'COMMON'}
+      </span>
+    </div>
+
+    <!-- NFT Preview -->
+    <div class="nft-preview">
+      <div class="nft-preview-image" style="background: linear-gradient(135deg, #0a0e27 0%, ${rarityStyle.color}22 100%);">
+        <div class="nft-avatar">${nft.image || '💎'}</div>
+        <div class="ownership-badge pixel-border">
+          <span class="pixel-text">OWNED</span>
+        </div>
+      </div>
+      <div class="nft-sound-indicator">
+        <button class="sound-play-btn pixel-btn" onclick="playNFTSound('${nft.mint}')">
+          <span>▶ PLAY_SOUND</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- NFT Info -->
+    <div class="nft-info">
+      <h4 class="nft-name glow-text">${nft.name || 'NFT #' + displayId}</h4>
+      <div class="nft-details pixel-text">
+        <div class="detail-line">
+          <span>Spirit:</span>
+          <span class="glow-text">${nft.animalSpirit || 'Unknown'}</span>
+        </div>
+        <div class="detail-line">
+          <span>Mint:</span>
+          <span class="glow-text">${nft.mint.substring(0, 8)}...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Holder Benefits -->
+    <div class="nft-benefits pixel-border">
+      <div class="benefit-header pixel-text">▼ HOLDER_BENEFITS:</div>
+      <div class="benefit-list">
+        ${benefits.map(b => `<div class="benefit-item pixel-text">${b.icon} ${b.text}</div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Management Actions -->
+    <div class="nft-actions">
+      <button class="action-btn pixel-btn" onclick="viewNFTDetails('${nft.mint}')">
+        <span>VIEW_DETAILS</span>
+      </button>
+      <button class="action-btn pixel-btn" onclick="listNFTForSale('${nft.mint}')">
+        <span>LIST_FOR_SALE</span>
+      </button>
+      <button class="action-btn pixel-btn" onclick="transferNFT('${nft.mint}')">
+        <span>TRANSFER</span>
+      </button>
+    </div>
+  `;
+
+  return card;
+}
+
+function updateNFTStats(nfts) {
+  // Update summary stats
+  document.getElementById('owned-count').textContent = nfts.length;
+
+  const totalValue = nfts.reduce((sum, nft) => sum + (nft.value || 0), 0);
+  document.getElementById('collection-value').textContent = totalValue.toFixed(2);
+
+  const rareCount = nfts.filter(n =>
+    n.rarity === 'Rare' || n.rarity === 'Legendary'
+  ).length;
+  document.getElementById('rare-count').textContent = rareCount;
+
+  // Calculate active benefits
+  const benefitsCount = nfts.length * 3; // Assume 3 benefits per NFT
+  document.getElementById('nft-benefits').textContent = benefitsCount;
+}
+
+// NFT Filter/Sort handlers
+document.addEventListener('DOMContentLoaded', () => {
+  const rarityFilter = document.getElementById('nft-rarity-filter');
+  const sortSelect = document.getElementById('nft-sort');
+
+  if (rarityFilter) {
+    rarityFilter.addEventListener('change', filterOwnedNFTs);
+  }
+
+  if (sortSelect) {
+    sortSelect.addEventListener('change', sortOwnedNFTs);
+  }
+});
+
+function filterOwnedNFTs() {
+  const filter = document.getElementById('nft-rarity-filter').value;
+  const cards = document.querySelectorAll('.owned-nft-card');
+
+  cards.forEach(card => {
+    const rarity = card.dataset.rarity;
+    if (filter === 'all' || rarity === filter) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+function sortOwnedNFTs() {
+  const sortBy = document.getElementById('nft-sort').value;
+  const grid = document.getElementById('owned-nfts-grid');
+  const cards = Array.from(grid.querySelectorAll('.owned-nft-card'));
+
+  cards.sort((a, b) => {
+    switch (sortBy) {
+      case 'id':
+        return parseInt(a.dataset.nftId) - parseInt(b.dataset.nftId);
+      case 'rarity':
+        const rarityOrder = { 'Common': 1, 'Uncommon': 2, 'Rare': 3, 'Legendary': 4 };
+        return rarityOrder[b.dataset.rarity] - rarityOrder[a.dataset.rarity];
+      case 'value':
+        // TODO: Add value sorting when data available
+        return 0;
+      default: // recent
+        return 0;
+    }
+  });
+
+  cards.forEach(card => grid.appendChild(card));
+}
+
+// Initialize on page load
+window.missionControl = new MissionControlManager();
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    window.missionControl.initialize();
+  }, 500);
+});
+</script>
+
+<style>
+/* ============================================ */
+/* SPACE INVADERS THEME - Retro Gaming Style */
+/* ============================================ */
+
+:root {
+  --neon-green: #00ff41;
+  --neon-blue: #00d4ff;
+  --neon-pink: #ff10f0;
+  --neon-yellow: #ffff00;
+  --dark-bg: #0a0e27;
+  --darker-bg: #050812;
+  --pixel-border: #00ff41;
+}
+
+.mission-control {
+  background: var(--dark-bg);
+  min-height: 100vh;
+  padding: 2rem 0;
+  font-family: 'Courier New', monospace;
+}
+
+/* Pixel Art Text Styling */
+.pixel-text {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.glow-text {
+  color: var(--neon-green);
+  text-shadow:
+    0 0 5px var(--neon-green),
+    0 0 10px var(--neon-green),
+    0 0 20px var(--neon-green);
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+  from {
+    text-shadow:
+      0 0 5px var(--neon-green),
+      0 0 10px var(--neon-green);
+  }
+  to {
+    text-shadow:
+      0 0 10px var(--neon-green),
+      0 0 20px var(--neon-green),
+      0 0 30px var(--neon-green);
+  }
+}
+
+/* Pixel Borders */
+.pixel-border {
+  border: 3px solid var(--pixel-border);
+  background: var(--darker-bg);
+  box-shadow:
+    0 0 10px rgba(0, 255, 65, 0.3),
+    inset 0 0 10px rgba(0, 255, 65, 0.1);
+}
+
+.pixel-border.dashed {
+  border-style: dashed;
+}
+
+.glow-border {
+  border: 3px solid var(--neon-green);
+  box-shadow:
+    0 0 15px var(--neon-green),
+    0 0 30px var(--neon-green),
+    inset 0 0 15px rgba(0, 255, 65, 0.2);
+}
+
+/* Commander Header */
+.commander-header {
+  margin-bottom: 2rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+.status-bar {
+  background: var(--darker-bg);
+  padding: 0.75rem 1.5rem;
+  border-bottom: 2px solid var(--pixel-border);
+  display: flex;
+  justify-content: space-between;
+  color: var(--neon-green);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.commander-profile {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 2rem;
+  align-items: center;
+}
+
+/* Pixel Art Avatar */
+.commander-avatar {
+  position: relative;
+}
+
+.pixel-character {
+  font-family: monospace;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-green);
+}
+
+.pixel-row {
+  display: block;
+  letter-spacing: 0.2em;
+}
+
+.avatar-change-btn {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Commander Info */
+.commander-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rank-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rank-label {
+  font-size: 0.75rem;
+  color: var(--neon-blue);
+}
+
+.commander-name {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.id-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--darker-bg);
+  width: fit-content;
+}
+
+.id-label {
+  font-size: 0.75rem;
+  color: var(--neon-green);
+}
+
+.id-value {
+  color: var(--neon-blue);
+  font-size: 0.875rem;
+}
+
+.monospace {
+  font-family: 'Courier New', monospace;
+}
+
+/* XP Display */
+.xp-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 500px;
+}
+
+.xp-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.xp-label {
+  font-size: 0.75rem;
+  color: var(--neon-green);
+}
+
+.xp-value {
+  font-size: 1.25rem;
+}
+
+.xp-bar-container {
+  height: 20px;
+  background: var(--darker-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+  position: relative;
+  transition: width 0.5s ease;
+}
+
+.pixel-gradient {
+  background: linear-gradient(90deg,
+    var(--neon-green) 0%,
+    var(--neon-green) 25%,
+    var(--neon-blue) 50%,
+    var(--neon-green) 75%,
+    var(--neon-green) 100%
+  );
+  background-size: 200% 100%;
+  animation: gradientSlide 2s linear infinite;
+}
+
+@keyframes gradientSlide {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.xp-bar-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.xp-next {
+  font-size: 0.75rem;
+  color: var(--neon-blue);
+  text-align: right;
+}
+
+/* Quick Stats Grid */
+.quick-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.stat-box {
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: var(--darker-bg);
+  transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 0.625rem;
+  color: var(--neon-green);
+}
+
+/* Navigation Tabs */
+.mission-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.mission-tab {
+  padding: 0.75rem 1.5rem;
+  background: var(--darker-bg);
+  border: 2px solid var(--pixel-border);
+  color: var(--neon-green);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.mission-tab:hover {
+  background: rgba(0, 255, 65, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 255, 65, 0.3);
+}
+
+.mission-tab.active {
+  background: rgba(0, 255, 65, 0.2);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+}
+
+/* Pixel Button */
+.pixel-btn {
+  padding: 0.5rem 1rem;
+  background: var(--darker-bg);
+  border: 2px solid var(--pixel-border);
+  color: var(--neon-green);
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.pixel-btn:hover {
+  background: rgba(0, 255, 65, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+  transform: translateY(-2px);
+}
+
+.primary-btn {
+  background: rgba(0, 255, 65, 0.2);
+  border-color: var(--neon-green);
+}
+
+.secondary-btn {
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+}
+
+/* Tab Content */
+.tab-content {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section Header */
+.section-header {
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  color: var(--neon-blue);
+}
+
+/* Projects Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.project-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-status.active {
+  color: var(--neon-green);
+}
+
+.project-title {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.project-stats,
+.project-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.project-stat,
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-bar {
+  height: 12px;
+  background: var(--darker-bg);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+/* Empty Slot */
+.empty-slot {
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.empty-slot:hover {
+  background: rgba(0, 255, 65, 0.05);
+  transform: scale(1.02);
+}
+
+/* Form Elements */
+.pixel-input,
+.pixel-textarea,
+.pixel-select {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--darker-bg);
+  border: 2px solid var(--pixel-border);
+  color: var(--neon-green);
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.pixel-input:focus,
+.pixel-textarea:focus,
+.pixel-select:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.settings-section {
+  padding: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  color: var(--neon-green);
+  font-size: 0.875rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+/* ============================================ */
+/* NFT COLLECTION STYLES */
+/* ============================================ */
+
+/* Collection Summary */
+.collection-summary {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.summary-stat {
+  text-align: center;
+}
+
+.summary-stat .stat-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.summary-stat .stat-label {
+  font-size: 0.875rem;
+  color: var(--neon-blue);
+}
+
+/* NFT Controls */
+.nft-controls {
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.control-label {
+  font-size: 0.875rem;
+  color: var(--neon-green);
+  white-space: nowrap;
+}
+
+.pixel-select {
+  padding: 0.5rem 1rem;
+  background: var(--darker-bg);
+  border: 2px solid var(--pixel-border);
+  color: var(--neon-green);
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+}
+
+/* Owned NFTs Grid */
+.owned-nfts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.owned-nft-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.owned-nft-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+}
+
+/* NFT Card Header */
+.nft-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.nft-number {
+  font-size: 0.875rem;
+  color: var(--neon-blue);
+}
+
+.nft-rarity {
+  font-size: 0.875rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* NFT Preview */
+.nft-preview {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.nft-preview-image {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--pixel-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.nft-avatar {
+  font-size: 5rem;
+  filter: drop-shadow(0 0 15px rgba(0, 255, 65, 0.5));
+}
+
+.ownership-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0.25rem 0.75rem;
+  background: var(--darker-bg);
+  border: 2px solid var(--neon-green);
+}
+
+.ownership-badge .pixel-text {
+  font-size: 0.75rem;
+  color: var(--neon-green);
+}
+
+.nft-sound-indicator {
+  margin-top: 0.5rem;
+}
+
+.sound-play-btn {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* NFT Info */
+.nft-info {
+  margin-bottom: 1rem;
+}
+
+.nft-name {
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+}
+
+.nft-details {
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+/* NFT Benefits */
+.nft-benefits {
+  padding: 1rem;
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.benefit-header {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  color: var(--neon-green);
+}
+
+.benefit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.benefit-item {
+  font-size: 0.75rem;
+  color: var(--neon-blue);
+  padding: 0.25rem 0;
+}
+
+/* NFT Actions */
+.nft-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: var(--neon-green);
+  color: var(--darker-bg);
+}
+
+/* Empty Vault State */
+.empty-vault {
+  grid-column: 1 / -1;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-vault h3 {
+  color: var(--neon-green);
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-vault p {
+  color: var(--neon-blue);
+  margin-bottom: 1.5rem;
+}
+
+/* Quick Actions Panel */
+.nft-quick-actions {
+  padding: 2rem;
+}
+
+.nft-quick-actions h3 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.quick-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.quick-action-btn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  transform: translateY(-3px);
+}
+
+.action-icon {
+  font-size: 2rem;
+}
+
+.action-label {
+  font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .commander-profile {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .quick-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .summary-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .owned-nfts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .nft-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .control-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+</style>
+
+<script is:inline>
+
+async function loadCollaborativeStatus(wallet) {
+    const statusContainer = document.getElementById('collab-status');
+    
+    const response = await fetch(`/api/environmental/mentorship?wallet=${wallet}`);
+    const logs = await response.json();
+
+    if (logs.length > 0) {
+        statusContainer.innerHTML = logs.map(log => `
+            <div class="verification-badge" style="background: #dcfce7; color: #166534; padding: 5px 10px; border-radius: 15px; font-size: 0.8rem;">
+                ✓ Verified by ${log.mentor_wallet.substring(0,6)}: ${log.action_type}
+            </div>
+        `).join('');
+    }
+}
+
+
+  async function loadGlobalFeed() {
+    const list = document.getElementById('activity-list');
+    try {
+      const res = await fetch('/api/environmental/global-feed');
+      const json = await res.json();
+
+      if (!json.data || json.data.length === 0) {
+        list.innerHTML = '<li class="p-4 text-gray-500">The ledger is quiet. No observations yet.</li>';
+        return;
+      }
+
+      list.innerHTML = json.data.map(event => {
+        const wallet = `${event.wallet_address.slice(0, 6)}...${event.wallet_address.slice(-4)}`;
+        const time = new Date(event.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        let msg = event.event_type === 'observation_submitted' 
+          ? `recorded a <strong>biodiversity observation</strong>` 
+          : `contributed to the network`;
+
+        return `
+          <li class="flex items-center justify-between p-4 bg-white border border-gray-100 shadow-sm rounded-xl hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono bg-green-50 text-green-700 px-2 py-1 rounded">${time}</span>
+              <span class="text-sm"><code class="text-blue-600 font-bold">${wallet}</code> ${msg}</span>
+            </div>
+            <span class="text-xs text-gray-400 italic">${event.payload.location || ''}</span>
+          </li>
+        `;
+      }).join('');
+    } catch (e) {
+      list.innerHTML = '<li class="p-4 text-red-400">Feed temporarily unavailable.</li>';
+    }
+  }
+  loadGlobalFeed();
+</script>

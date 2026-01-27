@@ -1,0 +1,167 @@
+/* MISSION CONTROL V2.5 - "THE NEURAL STEWARD"
+  Astro + Vanilla JS + Bio-Token Interface
+*/
+
+:root {
+  /* THEME 01: STABLE_EMERALD (Deep Ecological Focus) */
+  --bg: #030503;
+  --panel: rgba(5, 15, 5, 0.8);
+  --accent: #00ff41;
+  --accent-glow: rgba(0, 255, 65, 0.4);
+  --text: #d1ffd1;
+  --border: #003b00;
+  --scanline: rgba(0, 255, 65, 0.05);
+  --noise: 0.02;
+}
+
+[data-theme="light"] {
+  /* THEME 02: GLITCH_OVERDRIVE (System Instability / High Energy) */
+  --bg: #0a000a;
+  --panel: rgba(20, 0, 20, 0.9);
+  --accent: #00ffff;
+  --accent-glow: rgba(0, 255, 255, 0.6);
+  --text: #ffffff;
+  --border: #ff00ff;
+  --scanline: rgba(255, 0, 255, 0.15);
+  --noise: 0.08;
+}
+
+/* --- BASE ARCHITECTURE --- */
+
+body.mission-control {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  overflow-x: hidden;
+  transition: background 0.5s ease;
+}
+
+/* --- THE ARCADE COMMAND DECK (Tabs) --- */
+
+.mission-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.mission-tab {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  padding: 16px;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.mission-tab::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: 0.5s;
+}
+
+.mission-tab:hover::before {
+  left: 100%;
+}
+
+.mission-tab:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px -10px var(--accent-glow);
+}
+
+.mission-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+  box-shadow: 0 0 25px var(--accent-glow);
+}
+
+.mission-tab.active .text-xs { color: rgba(0,0,0,0.6); }
+
+/* --- THE GLITCH ENGINE --- */
+
+[data-theme="light"] .glow-text {
+  text-shadow: 2px 0 var(--border), -2px 0 var(--accent);
+  animation: glitch-vibration 0.3s infinite;
+}
+
+@keyframes glitch-vibration {
+  0% { transform: translate(0); }
+  25% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, 1px); }
+  75% { transform: translate(1px, 1px); }
+  100% { transform: translate(0); }
+}
+
+/* --- TACTILE COMPONENTS --- */
+
+.pixel-border {
+  border: 2px solid var(--border);
+  box-shadow: 4px 4px 0px var(--border);
+  transition: all 0.1s;
+}
+
+.pixel-border:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--border);
+}
+
+/* CRT Scanline Overlay */
+.scanline-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    var(--scanline) 50%, 
+    transparent 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.5;
+}
+
+/* Glassmorphism for the Mission Hub */
+.commander-header {
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+/* --- STAT BARS --- */
+
+.xp-bar-container {
+  height: 8px;
+  background: #111;
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 15px var(--accent);
+  transition: width 1s ease-in-out;
+}
+
+/* --- FORM INPUTS --- */
+
+input, textarea {
+  background: rgba(0,0,0,0.5) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--accent) !important;
+  padding: 10px !important;
+  width: 100%;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent) !important;
+  background: rgba(0, 40, 0, 0.3) !important;
+}

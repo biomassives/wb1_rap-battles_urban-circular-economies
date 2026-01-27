@@ -551,8 +551,29 @@ const {
     }
   }
 
-  // Auto-initialize if container exists
-  if (document.getElementById('sampler-pad-grid')) {
-    window.samplerPadController = new SamplerPadController();
+// Initialize sampler - single consolidated function
+const initSampler = () => {
+  const grid = document.getElementById('sampler-pad-grid');
+
+  // Only initialize if grid exists and controller doesn't already exist
+  if (grid && !window.samplerPadController) {
+    // Clear existing content to prevent ghost pads
+    grid.innerHTML = '';
+    window.samplerPadController = new SamplerPadController('sampler-pad-grid');
+    console.log("✅ Worldbridger Sampler Initialized");
+  } else if (!grid) {
+    console.warn("⚠️ Sampler Grid not found in DOM");
+  } else {
+    console.log("ℹ️ Sampler already initialized");
   }
+};
+
+// Handle both initial load and Astro page swaps
+document.addEventListener('astro:page-load', initSampler);
+
+// Fallback for non-transition loads
+if (document.readyState === 'complete') {
+  initSampler();
+}
+
 </script>

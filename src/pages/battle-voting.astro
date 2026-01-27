@@ -1,0 +1,2279 @@
+---
+/**
+ * Battle Voting Page
+ * - Sequential player for back-and-forth battle entries
+ * - Clean voting interface
+ * - Battle tree display
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Battle Voting"
+  description="Vote on rap battles - Listen to entries and pick your winner"
+  activeSection="music"
+>
+  <div class="battle-voting-page">
+
+    <!-- Header -->
+    <header class="voting-header">
+      <div class="header-content">
+        <h1>Battle Arena</h1>
+        <p class="subtitle">Listen. Vote. Crown the Champion.</p>
+      </div>
+      <div class="header-actions">
+        <a href="/improved-sampler" class="btn-secondary">Create Entry</a>
+        <a href="/rap-battle" class="btn-ghost">Live Battles</a>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="voting-main">
+
+      <!-- Active Battles List -->
+      <section class="battles-section">
+        <div class="section-header">
+          <h2>Active Battles</h2>
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All</button>
+            <button class="filter-tab" data-filter="voting">Voting Open</button>
+            <button class="filter-tab" data-filter="my-votes">My Votes</button>
+          </div>
+        </div>
+
+        <div id="battles-list" class="battles-list">
+          <!-- Battles loaded by JS -->
+          <div class="loading-state">Loading battles...</div>
+        </div>
+      </section>
+
+      <!-- Battle Player Modal / Expanded View -->
+      <div id="battle-player" class="battle-player" style="display: none;">
+
+        <!-- Battle Info -->
+        <div class="battle-info-bar">
+          <button id="close-player" class="btn-close">&times;</button>
+          <div class="battle-title-area">
+            <h2 id="battle-title">Battle Title</h2>
+            <span class="battle-status" id="battle-status">Voting Open</span>
+          </div>
+          <div class="battle-meta">
+            <span id="battle-round-info">Round 1 of 3</span>
+            <span class="separator">|</span>
+            <span id="battle-votes-count">0 votes</span>
+          </div>
+        </div>
+
+        <!-- Sequential Player -->
+        <div class="sequential-player">
+
+          <!-- Contestant A -->
+          <div class="contestant-panel" data-contestant="A">
+            <div class="contestant-header">
+              <div class="contestant-avatar" id="avatar-A">A</div>
+              <div class="contestant-info">
+                <h3 id="name-A">Contestant A</h3>
+                <span class="entry-label" id="round-A">Opening</span>
+              </div>
+              <div class="vote-indicator" id="vote-indicator-A" style="display: none;">
+                <span class="check-icon">✓</span>
+                <span>Your Vote</span>
+              </div>
+            </div>
+            <div class="waveform-container" id="waveform-A">
+              <div class="waveform-placeholder">Loading audio...</div>
+            </div>
+            <div class="player-controls" data-for="A">
+              <button class="play-btn" data-contestant="A">▶</button>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-A"></div>
+              </div>
+              <span class="time-display" id="time-A">0:00 / 0:00</span>
+            </div>
+          </div>
+
+          <!-- VS Divider -->
+          <div class="vs-divider">
+            <div class="vs-badge">VS</div>
+            <div class="auto-play-toggle">
+              <label class="toggle-label">
+                <input type="checkbox" id="auto-play-toggle" checked>
+                <span>Auto-play next</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Contestant B -->
+          <div class="contestant-panel" data-contestant="B">
+            <div class="contestant-header">
+              <div class="contestant-avatar" id="avatar-B">B</div>
+              <div class="contestant-info">
+                <h3 id="name-B">Contestant B</h3>
+                <span class="entry-label" id="round-B">Rebuttal</span>
+              </div>
+              <div class="vote-indicator" id="vote-indicator-B" style="display: none;">
+                <span class="check-icon">✓</span>
+                <span>Your Vote</span>
+              </div>
+            </div>
+            <div class="waveform-container" id="waveform-B">
+              <div class="waveform-placeholder">Loading audio...</div>
+            </div>
+            <div class="player-controls" data-for="B">
+              <button class="play-btn" data-contestant="B">▶</button>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-B"></div>
+              </div>
+              <span class="time-display" id="time-B">0:00 / 0:00</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Back-and-Forth Timeline -->
+        <div class="battle-timeline">
+          <h3>Battle Timeline</h3>
+          <div id="timeline-entries" class="timeline-entries">
+            <!-- Timeline entries loaded by JS -->
+          </div>
+          <div class="timeline-controls">
+            <button id="play-all-btn" class="btn-secondary">
+              ▶ Play Full Battle
+            </button>
+            <button id="replay-btn" class="btn-ghost">
+              ↻ Replay
+            </button>
+          </div>
+        </div>
+
+        <!-- Voting Section -->
+        <div class="voting-section">
+          <h3>Cast Your Vote</h3>
+          <p class="voting-prompt">Who delivered the better performance?</p>
+
+          <div class="vote-buttons">
+            <button class="vote-btn" data-vote="A" id="vote-btn-A">
+              <span class="vote-avatar" id="vote-avatar-A">A</span>
+              <span class="vote-name" id="vote-name-A">Contestant A</span>
+              <span class="vote-percentage" id="vote-pct-A">--</span>
+            </button>
+
+            <span class="vote-or">or</span>
+
+            <button class="vote-btn" data-vote="B" id="vote-btn-B">
+              <span class="vote-avatar" id="vote-avatar-B">B</span>
+              <span class="vote-name" id="vote-name-B">Contestant B</span>
+              <span class="vote-percentage" id="vote-pct-B">--</span>
+            </button>
+          </div>
+
+          <div id="vote-confirmation" class="vote-confirmation" style="display: none;">
+            <div class="confirmation-icon">✓</div>
+            <p>Vote recorded! Thank you for participating.</p>
+          </div>
+
+          <!-- Voting Criteria (optional detail) -->
+          <div class="voting-criteria">
+            <h4>Judging Criteria</h4>
+            <div class="criteria-list">
+              <span class="criteria-item">Flow</span>
+              <span class="criteria-item">Lyrics</span>
+              <span class="criteria-item">Delivery</span>
+              <span class="criteria-item">Creativity</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Battle Tree View (for tournaments) -->
+    <section id="battle-tree-section" class="battle-tree-section" style="display: none;">
+      <h2>Tournament Bracket</h2>
+      <div id="battle-tree" class="battle-tree">
+        <!-- Tournament bracket generated by JS -->
+      </div>
+    </section>
+
+    <!-- Leaderboard Preview -->
+    <section class="leaderboard-preview">
+      <h2>Top Battlers This Week</h2>
+      <div id="leaderboard-list" class="leaderboard-list">
+        <!-- Leaderboard loaded by JS -->
+      </div>
+      <a href="/leaderboard" class="btn-ghost btn-full">View Full Leaderboard</a>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<script>
+console.log('⚔️ Battle Voting page loading...');
+
+/**
+ * BattleVotingController - Manages battle playback and voting
+ * Connected to database via API endpoints
+ */
+class BattleVotingController {
+  constructor() {
+    this.battles = [];
+    this.currentBattle = null;
+    this.audioA = null;
+    this.audioB = null;
+    this.isPlayingA = false;
+    this.isPlayingB = false;
+    this.currentlyPlaying = null;
+    this.autoPlayEnabled = true;
+    this.currentFilter = 'all';
+    this.isLoading = false;
+
+    // Get user wallet for voting
+    this.userWallet = localStorage.getItem('connectedWallet') ||
+                      localStorage.getItem('anonymousWallet') ||
+                      null;
+
+    this.init();
+  }
+
+  async init() {
+    console.log('🔧 Initializing Battle Voting...');
+    console.log('User wallet:', this.userWallet);
+
+    // Load battles from database
+    await this.loadBattles();
+
+    // Load leaderboard from database
+    await this.loadLeaderboard();
+
+    // Setup event listeners
+    this.setupEventListeners();
+
+    console.log('✅ Battle Voting initialized');
+  }
+
+  /**
+   * Load battles from the database API
+   */
+  async loadBattles(filter = 'all') {
+    this.isLoading = true;
+    this.currentFilter = filter;
+    this.showLoadingState();
+
+    try {
+      // Build query params
+      const params = new URLSearchParams();
+
+      if (filter === 'voting') {
+        params.set('status', 'voting');
+      } else if (filter === 'my-votes' && this.userWallet) {
+        params.set('status', 'all');
+      } else {
+        params.set('status', 'all');
+      }
+
+      params.set('limit', '20');
+      if (this.userWallet) {
+        params.set('walletAddress', this.userWallet);
+      }
+
+      const response = await fetch(`/api/battles/list?${params.toString()}`);
+      const data = await response.json();
+
+      if (data.success) {
+        this.battles = data.battles;
+
+        // Filter for "my-votes" locally if needed
+        if (filter === 'my-votes') {
+          this.battles = this.battles.filter(b => b.userVote !== null);
+        }
+
+        console.log(`✅ Loaded ${this.battles.length} battles from database`);
+      } else {
+        console.warn('API returned error, falling back to demo data:', data.error);
+        this.battles = this.getDemoBattles();
+      }
+    } catch (error) {
+      console.warn('Failed to fetch battles from API, using demo data:', error.message);
+      this.battles = this.getDemoBattles();
+    }
+
+    this.isLoading = false;
+    this.renderBattlesList();
+  }
+
+  /**
+   * Load full battle details from database
+   */
+  async loadBattleDetails(battleId) {
+    try {
+      const params = new URLSearchParams();
+      if (this.userWallet) {
+        params.set('walletAddress', this.userWallet);
+      }
+
+      const response = await fetch(`/api/battles/${battleId}?${params.toString()}`);
+      const data = await response.json();
+
+      if (data.success) {
+        return data.battle;
+      }
+    } catch (error) {
+      console.error('Failed to load battle details:', error);
+    }
+
+    // Fall back to cached battle data
+    return this.battles.find(b => b.id === battleId);
+  }
+
+  /**
+   * Load leaderboard from database
+   */
+  async loadLeaderboard() {
+    try {
+      const response = await fetch('/api/battles/leaderboard?period=week&limit=5');
+      const data = await response.json();
+
+      if (data.success && data.leaderboard.length > 0) {
+        this.renderLeaderboardFromData(data.leaderboard);
+        return;
+      }
+    } catch (error) {
+      console.warn('Failed to load leaderboard from API:', error.message);
+    }
+
+    // Fall back to demo data
+    this.renderLeaderboard();
+  }
+
+  /**
+   * Submit vote to database
+   */
+  async submitVote(contestant) {
+    if (!this.currentBattle) return;
+
+    // Check if user has wallet
+    if (!this.userWallet) {
+      this.showToast('Please connect a wallet to vote', 'info');
+      return;
+    }
+
+    // Check if already voted (from battle data)
+    if (this.currentBattle.userVote) {
+      this.showToast('You have already voted on this battle', 'info');
+      return;
+    }
+
+    // Check voting eligibility
+    if (!this.currentBattle.canVote) {
+      if (this.currentBattle.contestantA?.wallet === this.userWallet ||
+          this.currentBattle.contestantB?.wallet === this.userWallet) {
+        this.showToast('You cannot vote on your own battle', 'info');
+      } else {
+        this.showToast('Voting is not available for this battle', 'info');
+      }
+      return;
+    }
+
+    // Show loading state on button
+    const voteBtn = document.getElementById(`vote-btn-${contestant}`);
+    const originalText = voteBtn?.innerHTML;
+    if (voteBtn) {
+      voteBtn.innerHTML = '<span class="loading-spinner">...</span>';
+      voteBtn.disabled = true;
+    }
+
+    try {
+      const response = await fetch('/api/battles/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          battleId: this.currentBattle.id,
+          voterWallet: this.userWallet,
+          vote: contestant
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local battle data
+        this.currentBattle.votes = data.votes;
+        this.currentBattle.userVote = contestant;
+        this.currentBattle.canVote = false;
+
+        // Update the battle in the list
+        const battleIndex = this.battles.findIndex(b => b.id === this.currentBattle.id);
+        if (battleIndex !== -1) {
+          this.battles[battleIndex].votes = data.votes;
+          this.battles[battleIndex].userVote = contestant;
+        }
+
+        // Update UI
+        this.renderBattlePlayer(this.currentBattle);
+        this.renderBattlesList();
+
+        // Show confirmation
+        document.getElementById('vote-confirmation').style.display = 'block';
+        this.showToast(`Vote submitted! +${data.xpAwarded} XP`, 'success');
+
+        // Award XP locally too for immediate feedback
+        if (window.progressManager) {
+          window.progressManager.awardXPLocally(this.userWallet, data.xpAwarded, 'battle_vote', 'Voted on a rap battle');
+        }
+      } else {
+        this.showToast(data.error || 'Failed to submit vote', 'error');
+      }
+    } catch (error) {
+      console.error('Vote submission error:', error);
+      this.showToast('Failed to submit vote. Please try again.', 'error');
+    } finally {
+      // Restore button
+      if (voteBtn) {
+        voteBtn.innerHTML = originalText;
+        voteBtn.disabled = false;
+      }
+    }
+  }
+
+  showLoadingState() {
+    const list = document.getElementById('battles-list');
+    if (list) {
+      list.innerHTML = '<div class="loading-state">Loading battles...</div>';
+    }
+  }
+
+  getDemoBattles() {
+    // Demo/fallback battles when database is unavailable
+    return [
+      {
+        id: 'demo_battle_1',
+        title: 'Championship Showdown',
+        status: 'voting',
+        rounds: 3,
+        category: 'freestyle',
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        contestantA: {
+          wallet: 'demo_mc_flow',
+          name: 'MC Flow',
+          avatar: 'F',
+          entries: [
+            { round: 'opener', duration: 45 },
+            { round: 'verse1', duration: 60 },
+            { round: 'closer', duration: 45 }
+          ]
+        },
+        contestantB: {
+          wallet: 'demo_lyrical_king',
+          name: 'Lyrical King',
+          avatar: 'L',
+          entries: [
+            { round: 'rebuttal', duration: 50 },
+            { round: 'verse2', duration: 55 },
+            { round: 'finale', duration: 50 }
+          ]
+        },
+        votes: { A: 127, B: 89, total: 216 },
+        userVote: null,
+        canVote: true
+      },
+      {
+        id: 'demo_battle_2',
+        title: 'Underground Clash',
+        status: 'voting',
+        rounds: 1,
+        category: 'conscious',
+        expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
+        contestantA: {
+          wallet: 'demo_street_poet',
+          name: 'Street Poet',
+          avatar: 'S',
+          entries: [{ round: 'verse1', duration: 90 }]
+        },
+        contestantB: {
+          wallet: 'demo_rhyme_master',
+          name: 'Rhyme Master',
+          avatar: 'R',
+          entries: [{ round: 'verse1', duration: 85 }]
+        },
+        votes: { A: 45, B: 62, total: 107 },
+        userVote: null,
+        canVote: true
+      },
+      {
+        id: 'demo_battle_3',
+        title: 'Rookie Rumble',
+        status: 'completed',
+        rounds: 1,
+        category: 'freestyle',
+        winner: 'demo_new_kid',
+        contestantA: {
+          wallet: 'demo_new_kid',
+          name: 'New Kid',
+          avatar: 'N',
+          entries: [{ round: 'verse1', duration: 60 }]
+        },
+        contestantB: {
+          wallet: 'demo_fresh_face',
+          name: 'Fresh Face',
+          avatar: 'F',
+          entries: [{ round: 'verse1', duration: 55 }]
+        },
+        votes: { A: 234, B: 198, total: 432 },
+        userVote: null,
+        canVote: false
+      }
+    ];
+  }
+
+  renderBattlesList() {
+    const list = document.getElementById('battles-list');
+    if (!list) return;
+
+    if (this.battles.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">⚔️</span>
+          <h3>No Active Battles</h3>
+          <p>Be the first to create a battle entry!</p>
+          <a href="/improved-sampler" class="btn-primary">Create Entry</a>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = this.battles.map(battle => {
+      const userVote = battle.userVote;
+      const timeLeft = this.getTimeLeft(battle.expiresAt);
+      const totalVotes = battle.votes?.total || 0;
+      const isWinnerA = battle.winner === battle.contestantA?.wallet;
+      const isWinnerB = battle.winner === battle.contestantB?.wallet;
+
+      return `
+        <div class="battle-card ${battle.status}" data-battle-id="${battle.id}">
+          <div class="battle-card-header">
+            <span class="battle-type">${battle.rounds > 1 ? 'Tournament' : 'Quick Battle'}</span>
+            <span class="battle-category">${battle.category || 'freestyle'}</span>
+            ${battle.status === 'voting' ? `<span class="time-left">${timeLeft}</span>` : ''}
+            ${battle.status === 'completed' ? '<span class="status-badge completed">Completed</span>' : ''}
+            ${battle.status === 'active' ? '<span class="status-badge active">In Progress</span>' : ''}
+          </div>
+
+          <h3 class="battle-card-title">${battle.title}</h3>
+
+          <div class="battle-matchup">
+            <div class="matchup-contestant ${userVote === 'A' ? 'voted' : ''} ${isWinnerA ? 'winner' : ''}">
+              <div class="contestant-mini-avatar">${battle.contestantA?.avatar || 'A'}</div>
+              <span class="contestant-mini-name">${battle.contestantA?.name || 'Challenger'}</span>
+              ${isWinnerA ? '<span class="winner-badge">Winner</span>' : ''}
+            </div>
+
+            <div class="matchup-vs">VS</div>
+
+            <div class="matchup-contestant ${userVote === 'B' ? 'voted' : ''} ${isWinnerB ? 'winner' : ''}">
+              <div class="contestant-mini-avatar">${battle.contestantB?.avatar || 'B'}</div>
+              <span class="contestant-mini-name">${battle.contestantB?.name || 'Opponent'}</span>
+              ${isWinnerB ? '<span class="winner-badge">Winner</span>' : ''}
+            </div>
+          </div>
+
+          <div class="battle-card-footer">
+            <div class="vote-count">
+              <span class="vote-icon">🗳️</span>
+              <span>${totalVotes} votes</span>
+            </div>
+            <button class="btn-view-battle" data-battle-id="${battle.id}">
+              ${battle.status === 'voting' ? (userVote ? 'View Results' : 'Vote Now') : 'View Results'}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Add click listeners
+    list.querySelectorAll('.btn-view-battle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const battleId = btn.dataset.battleId;
+        this.openBattle(battleId);
+      });
+    });
+
+    list.querySelectorAll('.battle-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.btn-view-battle')) {
+          const battleId = card.dataset.battleId;
+          this.openBattle(battleId);
+        }
+      });
+    });
+  }
+
+  getTimeLeft(endDate) {
+    if (!endDate) return '';
+
+    const now = new Date();
+    const end = new Date(endDate);
+    const diff = end - now;
+
+    if (diff <= 0) return 'Ended';
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (hours > 24) {
+      const days = Math.floor(hours / 24);
+      return `${days}d left`;
+    }
+
+    return `${hours}h ${minutes}m left`;
+  }
+
+  async openBattle(battleId) {
+    // Show loading state
+    document.getElementById('battle-player').style.display = 'block';
+    document.getElementById('battle-title').textContent = 'Loading...';
+
+    // Try to load full battle details from API
+    const battle = await this.loadBattleDetails(battleId);
+
+    if (!battle) {
+      this.showToast('Failed to load battle details', 'error');
+      document.getElementById('battle-player').style.display = 'none';
+      return;
+    }
+
+    this.currentBattle = battle;
+    this.renderBattlePlayer(battle);
+
+    document.getElementById('battle-player').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  closeBattle() {
+    this.stopAllAudio();
+    this.currentBattle = null;
+    document.getElementById('battle-player').style.display = 'none';
+  }
+
+  renderBattlePlayer(battle) {
+    // Update battle info
+    document.getElementById('battle-title').textContent = battle.title;
+
+    const statusText = {
+      'voting': 'Voting Open',
+      'active': 'In Progress',
+      'completed': 'Completed',
+      'pending': 'Pending'
+    };
+    document.getElementById('battle-status').textContent = statusText[battle.status] || battle.status;
+    document.getElementById('battle-status').className = `battle-status status-${battle.status}`;
+
+    const currentRound = battle.currentRound || 1;
+    const totalRounds = battle.rounds || 1;
+    document.getElementById('battle-round-info').textContent = `Round ${currentRound} of ${totalRounds}`;
+
+    const totalVotes = battle.votes?.total || 0;
+    document.getElementById('battle-votes-count').textContent = `${totalVotes} votes`;
+
+    // Contestant A
+    const contestantA = battle.contestantA || {};
+    document.getElementById('avatar-A').textContent = contestantA.avatar || 'A';
+    document.getElementById('name-A').textContent = contestantA.name || 'Challenger';
+    document.getElementById('round-A').textContent = contestantA.entries?.[0]?.round || 'Verse';
+
+    // Contestant B
+    const contestantB = battle.contestantB || {};
+    document.getElementById('avatar-B').textContent = contestantB.avatar || 'B';
+    document.getElementById('name-B').textContent = contestantB.name || 'Opponent';
+    document.getElementById('round-B').textContent = contestantB.entries?.[0]?.round || 'Verse';
+
+    // Vote buttons
+    document.getElementById('vote-avatar-A').textContent = contestantA.avatar || 'A';
+    document.getElementById('vote-name-A').textContent = contestantA.name || 'Challenger';
+    document.getElementById('vote-avatar-B').textContent = contestantB.avatar || 'B';
+    document.getElementById('vote-name-B').textContent = contestantB.name || 'Opponent';
+
+    // Show vote percentages if voting is complete or user has voted
+    const userVote = battle.userVote;
+    if (battle.status === 'completed' || userVote) {
+      const total = totalVotes || 1;
+      const pctA = Math.round(((battle.votes?.A || 0) / total) * 100);
+      const pctB = Math.round(((battle.votes?.B || 0) / total) * 100);
+
+      document.getElementById('vote-pct-A').textContent = `${pctA}%`;
+      document.getElementById('vote-pct-B').textContent = `${pctB}%`;
+    } else {
+      document.getElementById('vote-pct-A').textContent = '--';
+      document.getElementById('vote-pct-B').textContent = '--';
+    }
+
+    // Show user's vote indicator
+    document.getElementById('vote-indicator-A').style.display = userVote === 'A' ? 'flex' : 'none';
+    document.getElementById('vote-indicator-B').style.display = userVote === 'B' ? 'flex' : 'none';
+
+    // Update vote buttons
+    const voteBtnA = document.getElementById('vote-btn-A');
+    const voteBtnB = document.getElementById('vote-btn-B');
+
+    voteBtnA.classList.toggle('selected', userVote === 'A');
+    voteBtnB.classList.toggle('selected', userVote === 'B');
+
+    // Disable voting if not eligible
+    const canVote = battle.canVote && battle.status === 'voting';
+    voteBtnA.disabled = !canVote;
+    voteBtnB.disabled = !canVote;
+
+    if (!canVote && !userVote) {
+      voteBtnA.classList.add('disabled');
+      voteBtnB.classList.add('disabled');
+    } else {
+      voteBtnA.classList.remove('disabled');
+      voteBtnB.classList.remove('disabled');
+    }
+
+    // Render timeline
+    this.renderTimeline(battle);
+
+    // Load audio (if available)
+    this.loadBattleAudio(battle);
+
+    // Show/hide vote confirmation
+    document.getElementById('vote-confirmation').style.display = userVote ? 'block' : 'none';
+  }
+
+  renderTimeline(battle) {
+    const container = document.getElementById('timeline-entries');
+    if (!container) return;
+
+    // Check if battle has a pre-built timeline (from API)
+    if (battle.timeline && battle.timeline.length > 0) {
+      container.innerHTML = battle.timeline.map((entry, index) => `
+        <div class="timeline-entry" data-index="${index}" data-contestant="${entry.contestant}">
+          <div class="timeline-marker ${entry.contestant === 'A' ? 'marker-a' : 'marker-b'}">
+            ${index + 1}
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-avatar">${entry.contestant}</div>
+            <div class="timeline-info">
+              <span class="timeline-name">${entry.contestantName || entry.contestant}</span>
+              <span class="timeline-round">${entry.round || 'Verse'}</span>
+            </div>
+            ${entry.audioUrl ? `<button class="timeline-play-btn" data-index="${index}" data-url="${entry.audioUrl}">▶</button>` : '<span class="no-audio">No audio</span>'}
+          </div>
+        </div>
+      `).join('');
+
+      this.timelineEntries = battle.timeline;
+    } else {
+      // Build timeline from contestant entries
+      const allEntries = [];
+      const contestantA = battle.contestantA || {};
+      const contestantB = battle.contestantB || {};
+      const entriesA = contestantA.entries || [];
+      const entriesB = contestantB.entries || [];
+
+      const maxEntries = Math.max(entriesA.length, entriesB.length);
+
+      for (let i = 0; i < maxEntries; i++) {
+        if (entriesA[i]) {
+          allEntries.push({
+            ...entriesA[i],
+            contestant: 'A',
+            name: contestantA.name || 'Challenger',
+            avatar: contestantA.avatar || 'A'
+          });
+        }
+        if (entriesB[i]) {
+          allEntries.push({
+            ...entriesB[i],
+            contestant: 'B',
+            name: contestantB.name || 'Opponent',
+            avatar: contestantB.avatar || 'B'
+          });
+        }
+      }
+
+      container.innerHTML = allEntries.map((entry, index) => `
+        <div class="timeline-entry" data-index="${index}" data-contestant="${entry.contestant}">
+          <div class="timeline-marker ${entry.contestant === 'A' ? 'marker-a' : 'marker-b'}">
+            ${index + 1}
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-avatar">${entry.avatar}</div>
+            <div class="timeline-info">
+              <span class="timeline-name">${entry.name}</span>
+              <span class="timeline-round">${entry.round || 'Verse'}</span>
+            </div>
+            <span class="timeline-duration">${this.formatDuration(entry.duration)}</span>
+            ${entry.audioUrl ? `<button class="timeline-play-btn" data-index="${index}" data-url="${entry.audioUrl}">▶</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      this.timelineEntries = allEntries;
+    }
+
+    // Add click listeners for play buttons
+    container.querySelectorAll('.timeline-play-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const index = parseInt(btn.dataset.index);
+        const url = btn.dataset.url;
+        if (url) {
+          this.playTimelineEntryByUrl(url, btn);
+        } else {
+          this.playTimelineEntry(index, this.timelineEntries);
+        }
+      });
+    });
+  }
+
+  playTimelineEntryByUrl(url, btn) {
+    // Stop any currently playing audio
+    this.stopAllAudio();
+
+    // Create and play audio
+    const audio = new Audio(url);
+    this.currentTimelineAudio = audio;
+
+    audio.addEventListener('ended', () => {
+      btn.textContent = '▶';
+    });
+
+    audio.play();
+    btn.textContent = '⏸';
+
+    // Toggle on click
+    btn.onclick = () => {
+      if (audio.paused) {
+        audio.play();
+        btn.textContent = '⏸';
+      } else {
+        audio.pause();
+        btn.textContent = '▶';
+      }
+    };
+  }
+
+  formatDuration(seconds) {
+    if (!seconds) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  async loadBattleAudio(battle) {
+    // Load audio from IndexedDB if available
+    const audioUrlA = battle.contestantA.audioUrl;
+    const audioUrlB = battle.contestantB.audioUrl;
+
+    // For demo, create placeholder audio players
+    if (audioUrlA) {
+      this.audioA = new Audio(audioUrlA);
+      this.setupAudioPlayer(this.audioA, 'A');
+    }
+
+    if (audioUrlB) {
+      this.audioB = new Audio(audioUrlB);
+      this.setupAudioPlayer(this.audioB, 'B');
+    }
+
+    // Try to load from IndexedDB
+    try {
+      if (battle.contestantA.id) {
+        const blobA = await this.loadBlobFromIndexedDB(battle.contestantA.id);
+        if (blobA) {
+          this.audioA = new Audio(URL.createObjectURL(blobA));
+          this.setupAudioPlayer(this.audioA, 'A');
+        }
+      }
+
+      if (battle.contestantB.id) {
+        const blobB = await this.loadBlobFromIndexedDB(battle.contestantB.id);
+        if (blobB) {
+          this.audioB = new Audio(URL.createObjectURL(blobB));
+          this.setupAudioPlayer(this.audioB, 'B');
+        }
+      }
+    } catch (error) {
+      console.log('No IndexedDB audio found');
+    }
+  }
+
+  async loadBlobFromIndexedDB(id) {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('BattleDB', 1);
+
+      request.onsuccess = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('recordings')) {
+          resolve(null);
+          return;
+        }
+        const tx = db.transaction('recordings', 'readonly');
+        const store = tx.objectStore('recordings');
+        const getRequest = store.get(id);
+
+        getRequest.onsuccess = () => {
+          resolve(getRequest.result?.blob || null);
+        };
+
+        getRequest.onerror = () => resolve(null);
+      };
+
+      request.onerror = () => resolve(null);
+    });
+  }
+
+  setupAudioPlayer(audio, contestant) {
+    const progressEl = document.getElementById(`progress-${contestant}`);
+    const timeEl = document.getElementById(`time-${contestant}`);
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        const progress = (audio.currentTime / audio.duration) * 100;
+        progressEl.style.width = `${progress}%`;
+
+        const current = this.formatDuration(audio.currentTime);
+        const total = this.formatDuration(audio.duration);
+        timeEl.textContent = `${current} / ${total}`;
+      }
+    });
+
+    audio.addEventListener('ended', () => {
+      this.onAudioEnded(contestant);
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      const total = this.formatDuration(audio.duration);
+      timeEl.textContent = `0:00 / ${total}`;
+    });
+  }
+
+  playContestant(contestant) {
+    const audio = contestant === 'A' ? this.audioA : this.audioB;
+    const otherAudio = contestant === 'A' ? this.audioB : this.audioA;
+
+    if (!audio) {
+      this.showToast('Audio not available for this entry', 'info');
+      return;
+    }
+
+    // Stop other audio
+    if (otherAudio) {
+      otherAudio.pause();
+      otherAudio.currentTime = 0;
+    }
+
+    // Update UI
+    document.querySelectorAll('.play-btn').forEach(btn => {
+      btn.textContent = '▶';
+      btn.classList.remove('playing');
+    });
+
+    const playBtn = document.querySelector(`.play-btn[data-contestant="${contestant}"]`);
+
+    if (this.currentlyPlaying === contestant && !audio.paused) {
+      // Pause
+      audio.pause();
+      this.currentlyPlaying = null;
+    } else {
+      // Play
+      audio.play();
+      playBtn.textContent = '⏸';
+      playBtn.classList.add('playing');
+      this.currentlyPlaying = contestant;
+    }
+  }
+
+  onAudioEnded(contestant) {
+    const playBtn = document.querySelector(`.play-btn[data-contestant="${contestant}"]`);
+    playBtn.textContent = '▶';
+    playBtn.classList.remove('playing');
+
+    // Auto-play next if enabled
+    if (this.autoPlayEnabled && contestant === 'A' && this.audioB) {
+      setTimeout(() => {
+        this.playContestant('B');
+      }, 500);
+    }
+
+    this.currentlyPlaying = null;
+  }
+
+  stopAllAudio() {
+    if (this.audioA) {
+      this.audioA.pause();
+      this.audioA.currentTime = 0;
+    }
+    if (this.audioB) {
+      this.audioB.pause();
+      this.audioB.currentTime = 0;
+    }
+    if (this.currentTimelineAudio) {
+      this.currentTimelineAudio.pause();
+      this.currentTimelineAudio.currentTime = 0;
+      this.currentTimelineAudio = null;
+    }
+    this.currentlyPlaying = null;
+
+    document.querySelectorAll('.play-btn').forEach(btn => {
+      btn.textContent = '▶';
+      btn.classList.remove('playing');
+    });
+
+    document.querySelectorAll('.timeline-play-btn').forEach(btn => {
+      btn.textContent = '▶';
+    });
+  }
+
+  playTimelineEntry(index, entries) {
+    // For now, just play the corresponding contestant
+    const entry = entries[index];
+    if (entry) {
+      this.playContestant(entry.contestant);
+    }
+  }
+
+  playFullBattle() {
+    // Play A first, then B
+    this.stopAllAudio();
+    this.playContestant('A');
+  }
+
+  /**
+   * Render leaderboard from API data
+   */
+  renderLeaderboardFromData(leaderboard) {
+    const list = document.getElementById('leaderboard-list');
+    if (!list) return;
+
+    if (leaderboard.length === 0) {
+      list.innerHTML = '<div class="empty-leaderboard">No battle stats yet. Be the first to compete!</div>';
+      return;
+    }
+
+    list.innerHTML = leaderboard.map(entry => `
+      <div class="leaderboard-entry">
+        <span class="leaderboard-rank">#${entry.rank}</span>
+        <div class="leaderboard-avatar">${entry.avatar}</div>
+        <div class="leaderboard-info">
+          <span class="leaderboard-name">${entry.name}</span>
+          <span class="leaderboard-level">Lvl ${entry.level || 1}</span>
+        </div>
+        <span class="leaderboard-record">${entry.wins}W - ${entry.losses}L</span>
+        <span class="leaderboard-winrate">${entry.winRate || 0}%</span>
+      </div>
+    `).join('');
+  }
+
+  /**
+   * Fallback demo leaderboard
+   */
+  renderLeaderboard() {
+    const list = document.getElementById('leaderboard-list');
+    if (!list) return;
+
+    // Demo leaderboard data
+    const leaderboard = [
+      { rank: 1, name: 'MC Flow', wins: 15, losses: 3, avatar: 'F', level: 42, winRate: 83 },
+      { rank: 2, name: 'Lyrical King', wins: 12, losses: 5, avatar: 'L', level: 38, winRate: 71 },
+      { rank: 3, name: 'Street Poet', wins: 10, losses: 4, avatar: 'S', level: 35, winRate: 71 },
+      { rank: 4, name: 'Rhyme Master', wins: 8, losses: 6, avatar: 'R', level: 29, winRate: 57 },
+      { rank: 5, name: 'New Kid', wins: 5, losses: 2, avatar: 'N', level: 15, winRate: 71 }
+    ];
+
+    this.renderLeaderboardFromData(leaderboard);
+  }
+
+  setupEventListeners() {
+    // Close player
+    document.getElementById('close-player')?.addEventListener('click', () => {
+      this.closeBattle();
+    });
+
+    // Play buttons
+    document.querySelectorAll('.play-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.playContestant(btn.dataset.contestant);
+      });
+    });
+
+    // Auto-play toggle
+    document.getElementById('auto-play-toggle')?.addEventListener('change', (e) => {
+      this.autoPlayEnabled = e.target.checked;
+    });
+
+    // Play full battle
+    document.getElementById('play-all-btn')?.addEventListener('click', () => {
+      this.playFullBattle();
+    });
+
+    // Replay
+    document.getElementById('replay-btn')?.addEventListener('click', () => {
+      this.stopAllAudio();
+      this.playFullBattle();
+    });
+
+    // Vote buttons
+    document.getElementById('vote-btn-A')?.addEventListener('click', () => {
+      this.submitVote('A');
+    });
+
+    document.getElementById('vote-btn-B')?.addEventListener('click', () => {
+      this.submitVote('B');
+    });
+
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        this.loadBattles(tab.dataset.filter);
+      });
+    });
+
+    // Progress bar seeking
+    document.querySelectorAll('.progress-bar').forEach(bar => {
+      bar.addEventListener('click', (e) => {
+        const rect = bar.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
+        const contestant = bar.closest('.player-controls')?.dataset.for;
+        const audio = contestant === 'A' ? this.audioA : this.audioB;
+
+        if (audio && audio.duration) {
+          audio.currentTime = percent * audio.duration;
+        }
+      });
+    });
+  }
+
+  showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+}
+
+// Initialize
+function initBattleVoting() {
+  if (!window.battleVoting) {
+    window.battleVoting = new BattleVotingController();
+    console.log('✅ Battle Voting ready');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initBattleVoting);
+document.addEventListener('astro:page-load', initBattleVoting);
+
+if (document.readyState !== 'loading') {
+  initBattleVoting();
+}
+</script>
+
+<style>
+  .battle-voting-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+    color: white;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .voting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+  }
+
+  .voting-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ef4444, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+  }
+
+  .subtitle {
+    margin: 0.25rem 0 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  /* Battles Section */
+  .battles-section {
+    margin-bottom: 2rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .filter-tab {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filter-tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .filter-tab.active {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+
+  /* Battles List */
+  .battles-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+  }
+
+  .battle-card {
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .battle-card:hover {
+    border-color: rgba(239, 68, 68, 0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(239, 68, 68, 0.1);
+  }
+
+  .battle-card.completed {
+    opacity: 0.8;
+  }
+
+  .battle-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .battle-type {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .time-left {
+    font-size: 0.75rem;
+    color: #f59e0b;
+    font-weight: 600;
+  }
+
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+  }
+
+  .status-badge.completed {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+  }
+
+  .battle-card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+  }
+
+  /* Matchup Display */
+  .battle-matchup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .matchup-contestant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    flex: 1;
+  }
+
+  .matchup-contestant.voted {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .matchup-contestant.winner {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid #10b981;
+  }
+
+  .contestant-mini-avatar {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #ef4444, #f59e0b);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .contestant-mini-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .winner-badge {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.5rem;
+    background: #10b981;
+    color: white;
+    border-radius: 0.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .matchup-vs {
+    font-weight: 900;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .battle-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .vote-count {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .btn-view-battle {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #ef4444, #f59e0b);
+    border: none;
+    border-radius: 0.5rem;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-view-battle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  }
+
+  /* Battle Player */
+  .battle-player {
+    background: rgba(20, 20, 30, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+
+  .battle-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-close {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .battle-title-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .battle-title-area h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .battle-status {
+    padding: 0.25rem 0.75rem;
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .battle-meta {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .battle-meta .separator {
+    margin: 0 0.5rem;
+  }
+
+  /* Sequential Player */
+  .sequential-player {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .contestant-panel {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 1rem;
+  }
+
+  .contestant-panel[data-contestant="A"] {
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  .contestant-panel[data-contestant="B"] {
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .contestant-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .contestant-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  [data-contestant="A"] .contestant-avatar {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+
+  [data-contestant="B"] .contestant-avatar {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  .contestant-info h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .entry-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: capitalize;
+  }
+
+  .vote-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  .waveform-container {
+    height: 60px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .waveform-placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.875rem;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .play-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .play-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .play-btn.playing {
+    background: rgba(16, 185, 129, 0.3);
+    border-color: #10b981;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ef4444, #f59e0b);
+    width: 0;
+    transition: width 0.1s linear;
+  }
+
+  .time-display {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: monospace;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  /* VS Divider */
+  .vs-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .vs-badge {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #ef4444, #f59e0b);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1rem;
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+  }
+
+  .auto-play-toggle {
+    text-align: center;
+  }
+
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+  }
+
+  .toggle-label input {
+    accent-color: #ef4444;
+  }
+
+  /* Battle Timeline */
+  .battle-timeline {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .battle-timeline h3 {
+    font-size: 1rem;
+    margin: 0 0 1rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .timeline-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .timeline-entry {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .timeline-entry:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .timeline-marker {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .timeline-marker.marker-a {
+    background: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+  }
+
+  .timeline-marker.marker-b {
+    background: rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+  }
+
+  .timeline-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  .timeline-avatar {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .timeline-info {
+    flex: 1;
+  }
+
+  .timeline-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .timeline-round {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: capitalize;
+    display: block;
+  }
+
+  .timeline-duration {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: monospace;
+  }
+
+  .timeline-play-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .timeline-play-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .timeline-controls {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  /* Voting Section */
+  .voting-section {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+  }
+
+  .voting-section h3 {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .voting-prompt {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 1.5rem;
+  }
+
+  .vote-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .vote-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 150px;
+  }
+
+  .vote-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-4px);
+  }
+
+  .vote-btn[data-vote="A"]:hover {
+    border-color: #ef4444;
+    box-shadow: 0 8px 30px rgba(239, 68, 68, 0.2);
+  }
+
+  .vote-btn[data-vote="B"]:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.2);
+  }
+
+  .vote-btn.selected {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+  }
+
+  .vote-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+
+  .vote-btn[data-vote="A"] .vote-avatar {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+
+  .vote-btn[data-vote="B"] .vote-avatar {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  .vote-name {
+    font-weight: 600;
+  }
+
+  .vote-percentage {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .vote-or {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+  }
+
+  .vote-confirmation {
+    padding: 1rem;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid #10b981;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .confirmation-icon {
+    font-size: 2rem;
+    color: #10b981;
+    margin-bottom: 0.5rem;
+  }
+
+  .vote-confirmation p {
+    margin: 0;
+    color: #10b981;
+  }
+
+  .voting-criteria {
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .voting-criteria h4 {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 0.75rem;
+  }
+
+  .criteria-list {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .criteria-item {
+    padding: 0.375rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Leaderboard Preview */
+  .leaderboard-preview {
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .leaderboard-preview h2 {
+    font-size: 1.125rem;
+    margin: 0 0 1rem;
+  }
+
+  .leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .leaderboard-entry {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0.5rem;
+  }
+
+  .leaderboard-rank {
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+    min-width: 32px;
+  }
+
+  .leaderboard-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #ef4444, #f59e0b);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  .leaderboard-name {
+    flex: 1;
+    font-weight: 600;
+  }
+
+  .leaderboard-record {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Buttons */
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444, #f59e0b);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  }
+
+  .btn-secondary {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .btn-full {
+    width: 100%;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state h3 {
+    margin: 0 0 0.5rem;
+  }
+
+  .empty-state p {
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 1.5rem;
+  }
+
+  .loading-state {
+    text-align: center;
+    padding: 3rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    padding: 1rem 1.5rem;
+    background: rgba(20, 20, 30, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 3000;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  .toast-success {
+    border-color: #10b981;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+  }
+
+  .toast-info {
+    border-color: #58a6ff;
+    box-shadow: 0 4px 20px rgba(88, 166, 255, 0.3);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .voting-header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .sequential-player {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .vs-divider {
+      flex-direction: row;
+      padding: 0.5rem 0;
+    }
+
+    .vote-buttons {
+      flex-direction: column;
+    }
+
+    .vote-btn {
+      width: 100%;
+    }
+
+    .filter-tabs {
+      overflow-x: auto;
+    }
+
+    .battles-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Database Integration Styles */
+
+  /* Battle Category Badge */
+  .battle-category {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.375rem;
+    background: rgba(88, 166, 255, 0.2);
+    color: #58a6ff;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Status Badges */
+  .status-badge.active {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+  }
+
+  .battle-status.status-voting {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+  }
+
+  .battle-status.status-active {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+  }
+
+  .battle-status.status-completed {
+    background: rgba(107, 114, 128, 0.2);
+    color: #9ca3af;
+  }
+
+  .battle-status.status-pending {
+    background: rgba(88, 166, 255, 0.2);
+    color: #58a6ff;
+  }
+
+  /* Vote Button States */
+  .vote-btn:disabled,
+  .vote-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .vote-btn:disabled:hover,
+  .vote-btn.disabled:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Updated Leaderboard Styles */
+  .leaderboard-entry {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0.5rem;
+  }
+
+  .leaderboard-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .leaderboard-level {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .leaderboard-winrate {
+    font-size: 0.75rem;
+    color: #10b981;
+    font-weight: 600;
+  }
+
+  .empty-leaderboard {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* No Audio Indicator */
+  .no-audio {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+  }
+
+  /* Timeline Audio Button Active State */
+  .timeline-play-btn.playing {
+    background: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+  }
+
+  /* Toast Error State */
+  .toast-error {
+    border-color: #ef4444;
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+  }
+
+  /* Connection Status Indicator */
+  .connection-status {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(20, 20, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 100;
+  }
+
+  .connection-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .connection-dot.online {
+    background: #10b981;
+  }
+
+  .connection-dot.offline {
+    background: #ef4444;
+  }
+</style>

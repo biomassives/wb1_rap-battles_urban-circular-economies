@@ -1,0 +1,565 @@
+---
+/**
+ * data-test.astro
+ * Test page to verify localStorage and Nile DB data retention
+ * Tests profile progress, XP sync, and form storage
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Data Retention Test"
+  description="Test localStorage and Nile DB data sync"
+  activeSection="test"
+>
+  <div class="test-container">
+    <div class="test-header pixel-border">
+      <h1 class="glow-text">DATA RETENTION TEST</h1>
+      <p class="pixel-text">Testing localStorage + Nile DB Sync</p>
+    </div>
+
+    <!-- Test Controls -->
+    <div class="test-controls pixel-border">
+      <h2 class="section-title">Test Actions</h2>
+      <div class="button-grid">
+        <button class="pixel-btn" onclick="loadLocalStorageData()">
+          Load localStorage Data
+        </button>
+        <button class="pixel-btn" onclick="testUserProgressAPI()">
+          Test User Progress API
+        </button>
+        <button class="pixel-btn" onclick="testEnvironmentalAPI()">
+          Test Environmental API
+        </button>
+        <button class="pixel-btn" onclick="testAwardXP()">
+          Test Award 25 XP
+        </button>
+        <button class="pixel-btn" onclick="testProfileSync()">
+          Test Profile Sync
+        </button>
+        <button class="pixel-btn warning" onclick="clearLocalStorage()">
+          Clear localStorage
+        </button>
+      </div>
+    </div>
+
+    <!-- Wallet Status -->
+    <div class="test-section pixel-border">
+      <h2 class="section-title">Wallet Status</h2>
+      <div id="wallet-status" class="status-display">
+        <div class="status-row">
+          <span class="label">Connected Wallet:</span>
+          <span id="wallet-address" class="value">---</span>
+        </div>
+        <div class="status-row">
+          <span class="label">Wallet Type:</span>
+          <span id="wallet-type" class="value">---</span>
+        </div>
+        <div class="status-row">
+          <span class="label">Is Anonymous:</span>
+          <span id="is-anonymous" class="value">---</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- localStorage Progress Data -->
+    <div class="test-section pixel-border">
+      <h2 class="section-title">localStorage Progress Data</h2>
+      <pre id="local-progress" class="code-block">Click "Load localStorage Data" to view</pre>
+    </div>
+
+    <!-- API Response: User Progress -->
+    <div class="test-section pixel-border">
+      <h2 class="section-title">API: User Progress (/api/gamification/user-progress)</h2>
+      <pre id="api-user-progress" class="code-block">Click "Test User Progress API" to test</pre>
+    </div>
+
+    <!-- API Response: Environmental Progress -->
+    <div class="test-section pixel-border">
+      <h2 class="section-title">API: Environmental Progress (/api/environmental/user-progress)</h2>
+      <pre id="api-environmental" class="code-block">Click "Test Environmental API" to test</pre>
+    </div>
+
+    <!-- API Response: Award XP -->
+    <div class="test-section pixel-border">
+      <h2 class="section-title">API: Award XP (/api/gamification/award-xp)</h2>
+      <pre id="api-award-xp" class="code-block">Click "Test Award 25 XP" to test</pre>
+    </div>
+
+    <!-- API Response: Profile Sync -->
+    <div class="test-section pixel-border">
+      <h2 class="section-title">API: Profile Sync (/api/profile/upsert)</h2>
+      <pre id="api-profile-sync" class="code-block">Click "Test Profile Sync" to test</pre>
+    </div>
+
+    <!-- Form Storage Data -->
+    <div class="test-section pixel-border">
+      <h2 class="section-title">Form Storage Data</h2>
+      <pre id="form-storage" class="code-block">---</pre>
+    </div>
+
+    <!-- All localStorage Keys -->
+    <div class="test-section pixel-border">
+      <h2 class="section-title">All localStorage Keys</h2>
+      <pre id="all-keys" class="code-block">---</pre>
+    </div>
+
+    <!-- Data Sync Summary -->
+    <div class="test-section pixel-border summary">
+      <h2 class="section-title">Data Sync Summary</h2>
+      <div id="sync-summary" class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-icon">💾</span>
+          <span class="summary-label">localStorage</span>
+          <span id="local-status" class="summary-status pending">Pending</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-icon">🗄️</span>
+          <span class="summary-label">Nile DB</span>
+          <span id="db-status" class="summary-status pending">Pending</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-icon">🔄</span>
+          <span class="summary-label">Sync Status</span>
+          <span id="sync-status" class="summary-status pending">Pending</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  // Wait for page load and managers to initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initializeTest, 1000);
+  });
+
+  function initializeTest() {
+    // Update wallet status
+    updateWalletStatus();
+    // Load initial data
+    loadLocalStorageData();
+    loadFormStorageData();
+    listAllKeys();
+  }
+
+  function updateWalletStatus() {
+    const wallet = window.walletManager?.connectedWallet || 'Not connected';
+    const isAnon = window.walletManager?.isAnonymous || false;
+    const type = isAnon ? 'Anonymous' : (wallet.startsWith('TEST_') ? 'Test' : 'Real');
+
+    document.getElementById('wallet-address').textContent = wallet;
+    document.getElementById('wallet-type').textContent = type;
+    document.getElementById('is-anonymous').textContent = isAnon ? 'Yes' : 'No';
+  }
+
+  function loadLocalStorageData() {
+    const wallet = window.walletManager?.connectedWallet;
+    if (!wallet) {
+      document.getElementById('local-progress').textContent = 'No wallet connected';
+      updateSummary('local', 'error', 'No Wallet');
+      return;
+    }
+
+    const progressKey = `progress_${wallet}`;
+    const data = localStorage.getItem(progressKey);
+
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        document.getElementById('local-progress').textContent = JSON.stringify(parsed, null, 2);
+        updateSummary('local', 'success', `XP: ${parsed.progression?.totalXP || 0}`);
+      } catch (e) {
+        document.getElementById('local-progress').textContent = 'Error parsing: ' + e.message;
+        updateSummary('local', 'error', 'Parse Error');
+      }
+    } else {
+      document.getElementById('local-progress').textContent = 'No progress data found in localStorage';
+      updateSummary('local', 'warning', 'No Data');
+    }
+  }
+
+  async function testUserProgressAPI() {
+    const wallet = window.walletManager?.connectedWallet;
+    if (!wallet) {
+      document.getElementById('api-user-progress').textContent = 'No wallet connected';
+      return;
+    }
+
+    document.getElementById('api-user-progress').textContent = 'Loading...';
+
+    try {
+      const response = await fetch(`/api/gamification/user-progress?walletAddress=${wallet}`);
+      const data = await response.json();
+      document.getElementById('api-user-progress').textContent =
+        `Status: ${response.status}\n\n` + JSON.stringify(data, null, 2);
+
+      if (data.success) {
+        updateSummary('db', 'success', `Source: ${data.source || 'database'}`);
+        checkSync();
+      } else {
+        updateSummary('db', 'error', data.error || 'Failed');
+      }
+    } catch (error) {
+      document.getElementById('api-user-progress').textContent = 'Error: ' + error.message;
+      updateSummary('db', 'error', 'Network Error');
+    }
+  }
+
+  async function testEnvironmentalAPI() {
+    const wallet = window.walletManager?.connectedWallet;
+    if (!wallet) {
+      document.getElementById('api-environmental').textContent = 'No wallet connected';
+      return;
+    }
+
+    document.getElementById('api-environmental').textContent = 'Loading...';
+
+    try {
+      const response = await fetch(`/api/environmental/user-progress?walletAddress=${wallet}`);
+      const data = await response.json();
+      document.getElementById('api-environmental').textContent =
+        `Status: ${response.status}\n\n` + JSON.stringify(data, null, 2);
+    } catch (error) {
+      document.getElementById('api-environmental').textContent = 'Error: ' + error.message;
+    }
+  }
+
+  async function testAwardXP() {
+    const wallet = window.walletManager?.connectedWallet;
+    if (!wallet) {
+      document.getElementById('api-award-xp').textContent = 'No wallet connected';
+      return;
+    }
+
+    document.getElementById('api-award-xp').textContent = 'Awarding 25 XP...';
+
+    // First award locally
+    if (window.progressManager) {
+      window.progressManager.awardXP(25, 'test_action', 'Data retention test XP award');
+    }
+
+    // Then check API response
+    try {
+      const response = await fetch('/api/gamification/award-xp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: wallet,
+          xpAmount: 25,
+          activityType: 'test_action',
+          description: 'Data retention test XP award'
+        })
+      });
+      const data = await response.json();
+      document.getElementById('api-award-xp').textContent =
+        `Status: ${response.status}\n\n` + JSON.stringify(data, null, 2);
+
+      // Refresh local data display
+      loadLocalStorageData();
+    } catch (error) {
+      document.getElementById('api-award-xp').textContent = 'Error: ' + error.message;
+    }
+  }
+
+  async function testProfileSync() {
+    const wallet = window.walletManager?.connectedWallet;
+    if (!wallet) {
+      document.getElementById('api-profile-sync').textContent = 'No wallet connected';
+      return;
+    }
+
+    document.getElementById('api-profile-sync').textContent = 'Syncing profile...';
+
+    try {
+      const response = await fetch('/api/profile/upsert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: wallet,
+          username: 'Test_User_' + Date.now(),
+          bio: 'Testing data retention at ' + new Date().toISOString()
+        })
+      });
+      const data = await response.json();
+      document.getElementById('api-profile-sync').textContent =
+        `Status: ${response.status}\n\n` + JSON.stringify(data, null, 2);
+    } catch (error) {
+      document.getElementById('api-profile-sync').textContent = 'Error: ' + error.message;
+    }
+  }
+
+  function loadFormStorageData() {
+    if (!window.formStorage) {
+      document.getElementById('form-storage').textContent = 'FormStorage not loaded';
+      return;
+    }
+
+    const savedForms = window.formStorage.getSavedForms();
+    if (savedForms.length === 0) {
+      document.getElementById('form-storage').textContent = 'No saved forms';
+    } else {
+      document.getElementById('form-storage').textContent = JSON.stringify(savedForms, null, 2);
+    }
+  }
+
+  function listAllKeys() {
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      const size = value ? value.length : 0;
+      keys.push({
+        key: key,
+        size: size > 1000 ? `${(size / 1024).toFixed(2)} KB` : `${size} bytes`
+      });
+    }
+    document.getElementById('all-keys').textContent = JSON.stringify(keys, null, 2);
+  }
+
+  function clearLocalStorage() {
+    if (confirm('Clear all localStorage data? This cannot be undone.')) {
+      const wallet = window.walletManager?.connectedWallet;
+      if (wallet) {
+        localStorage.removeItem(`progress_${wallet}`);
+      }
+      loadLocalStorageData();
+      listAllKeys();
+      updateSummary('local', 'warning', 'Cleared');
+    }
+  }
+
+  function updateSummary(type, status, text) {
+    const statusEl = document.getElementById(`${type}-status`);
+    if (statusEl) {
+      statusEl.className = `summary-status ${status}`;
+      statusEl.textContent = text;
+    }
+  }
+
+  function checkSync() {
+    const wallet = window.walletManager?.connectedWallet;
+    if (!wallet) return;
+
+    const localData = localStorage.getItem(`progress_${wallet}`);
+    if (!localData) {
+      updateSummary('sync', 'warning', 'No Local Data');
+      return;
+    }
+
+    try {
+      const local = JSON.parse(localData);
+      const localXP = local.progression?.totalXP || 0;
+
+      // Compare with last API response
+      const apiText = document.getElementById('api-user-progress').textContent;
+      if (apiText.includes('"totalXP"')) {
+        const match = apiText.match(/"totalXP":\s*(\d+)/);
+        if (match) {
+          const dbXP = parseInt(match[1]);
+          if (localXP === dbXP) {
+            updateSummary('sync', 'success', 'In Sync');
+          } else if (localXP > dbXP) {
+            updateSummary('sync', 'warning', `Local ahead (+${localXP - dbXP} XP)`);
+          } else {
+            updateSummary('sync', 'warning', `DB ahead (+${dbXP - localXP} XP)`);
+          }
+        }
+      }
+    } catch (e) {
+      updateSummary('sync', 'error', 'Error');
+    }
+  }
+</script>
+
+<style>
+  .test-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .test-header {
+    text-align: center;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, rgba(0, 255, 65, 0.1), rgba(0, 212, 255, 0.1));
+  }
+
+  .test-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .test-controls {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .pixel-btn {
+    padding: 0.75rem 1rem;
+    background: var(--darker-bg, #050812);
+    border: 2px solid var(--neon-green, #00ff41);
+    color: var(--neon-green, #00ff41);
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+  }
+
+  .pixel-btn:hover {
+    background: rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+  }
+
+  .pixel-btn.warning {
+    border-color: #ff4141;
+    color: #ff4141;
+  }
+
+  .pixel-btn.warning:hover {
+    background: rgba(255, 65, 65, 0.2);
+    box-shadow: 0 0 15px rgba(255, 65, 65, 0.5);
+  }
+
+  .test-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    color: var(--neon-green, #00ff41);
+    margin-bottom: 1rem;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .status-display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .status-row {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .status-row .label {
+    color: var(--neon-blue, #00d4ff);
+    min-width: 150px;
+  }
+
+  .status-row .value {
+    color: var(--neon-green, #00ff41);
+    font-family: monospace;
+  }
+
+  .code-block {
+    background: #000;
+    border: 1px solid var(--neon-green, #00ff41);
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: #0f0;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .summary {
+    background: linear-gradient(135deg, rgba(0, 255, 65, 0.05), rgba(0, 212, 255, 0.05));
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 1px solid rgba(0, 255, 65, 0.3);
+    border-radius: 8px;
+  }
+
+  .summary-icon {
+    font-size: 2rem;
+  }
+
+  .summary-label {
+    font-size: 0.8rem;
+    color: var(--neon-blue, #00d4ff);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .summary-status {
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+  }
+
+  .summary-status.pending {
+    background: rgba(255, 255, 0, 0.2);
+    color: #ffff00;
+  }
+
+  .summary-status.success {
+    background: rgba(0, 255, 65, 0.2);
+    color: #00ff41;
+  }
+
+  .summary-status.warning {
+    background: rgba(255, 165, 0, 0.2);
+    color: #ffa500;
+  }
+
+  .summary-status.error {
+    background: rgba(255, 65, 65, 0.2);
+    color: #ff4141;
+  }
+
+  .pixel-border {
+    border: 3px solid var(--neon-green, #00ff41);
+    background: var(--darker-bg, #050812);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+  }
+
+  .glow-text {
+    color: var(--neon-green, #00ff41);
+    text-shadow: 0 0 10px var(--neon-green, #00ff41);
+  }
+
+  .pixel-text {
+    font-family: 'Courier New', monospace;
+    color: var(--neon-blue, #00d4ff);
+  }
+
+  @media (max-width: 768px) {
+    .button-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .summary-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

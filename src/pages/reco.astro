@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Recorder + Sampler NFT" activeSection="music">
+
+<style>
+body {
+  background:#05070a;
+  color:#e6f1ff;
+  font-family: ui-monospace, monospace;
+}
+.panel {
+  border:1px solid #1e2a44;
+  background:#0b0f17;
+  padding:1rem;
+  margin-bottom:1.5rem;
+}
+button {
+  background:#05070a;
+  color:#00ff9c;
+  border:1px solid #00ff9c;
+  padding:.5rem;
+}
+</style>
+
+<h1>👾 Sampler NFT Vocal Recorder</h1>
+
+<section class="panel">
+  <h2>Load Sampler NFT</h2>
+  <input type="file" id="nft-json" accept="application/json" />
+  <button id="play-sampler">▶ Play Sampler</button>
+</section>
+
+<section class="panel">
+  <h2>Record Vocals</h2>
+  <button id="record">🎙 Record</button>
+  <button id="stop">⏹ Stop</button>
+  <audio id="preview" controls></audio>
+</section>
+
+<section class="panel">
+  <h2>Mint NFT</h2>
+  <input id="name" placeholder="NFT name" />
+  <textarea id="desc" placeholder="Description"></textarea>
+  <select id="standard">
+    <option value="erc721">ERC-721</option>
+    <option value="erc1155">ERC-1155</option>
+  </select>
+  <button id="mint">Mint</button>
+</section>
+
+<script>
+let samplerMeta;
+let recorder;
+let chunks = [];
+let recordedBlob;
+
+/*********************************
+ * Load Sampler NFT
+ *********************************/
+document.getElementById('nft-json').onchange = async e => {
+  const text = await e.target.files[0].text();
+  samplerMeta = JSON.parse(text);
+
+  await window.nftStrudelPlayer.loadFromMetadata(samplerMeta);
+};
+
+/*********************************
+ * Playback
+ *********************************/
+document.getElementById('play-sampler').onclick = () => {
+  window.nftStrudelPlayer.play();
+};
+
+/*********************************
+ * Recording
+ *********************************/
+document.getElementById('record').onclick = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+  recorder = new MediaRecorder(stream);
+  chunks = [];
+
+  recorder.ondataavailable = e => chunks.push(e.data);
+  recorder.onstop = () => {
+    recordedBlob = new Blob(chunks, { type:'audio/webm' });
+    document.getElementById('preview').src =
+      URL.createObjectURL(recordedBlob);
+  };
+
+  window.nftStrudelPlayer.play();
+  recorder.start();
+};
+
+document.getElementById('stop').onclick = () => {
+  recorder.stop();
+  window.nftStrudelPlayer.stop();
+};
+
+/*********************************
+ * Mint NFT
+ *********************************/
+document.getElementById('mint').onclick = async () => {
+  const files = [
+    { name:'vocals.webm', blob: recordedBlob }
+  ];
+
+  const ipfs = await window.cryptoManager.uploadToIPFS(files);
+
+  const metadata = {
+    name: document.getElementById('name').value,
+    description: document.getElementById('desc').value,
+    sources: {
+      sampler: samplerMeta,
+      vocals: ipfs['vocals.webm']
+    }
+  };
+
+  await window.cryptoManager.mintNFT(
+    metadata,
+    document.getElementById('standard').value
+  );
+
+  alert('NFT Minted 🚀');
+};
+</script>
+
+</BaseLayout>
+

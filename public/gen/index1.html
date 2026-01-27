@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generative Biodiversity Token Lab</title>
+    <style>
+        body { background: #d1d1d6; color: #222; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; }
+        .ui-layer { background: rgba(255,255,255,0.9); padding: 15px; border-bottom: 2px solid #000; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .control-group { display: flex; flex-direction: column; font-size: 10px; font-weight: bold; }
+        svg { width: 90vw; height: 70vh; margin-top: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); }
+    </style>
+</head>
+<body>
+
+<div class="ui-layer">
+    <div class="control-group">
+        <label>SHIELD SIZE</label>
+        <input type="range" id="size" min="0.5" max="1.5" step="0.05" value="1">
+    </div>
+    <div class="control-group">
+        <label>COLOR BALANCE (PURPLE -> CYAN)</label>
+        <input type="range" id="colorShift" min="0" max="360" step="1" value="280">
+    </div>
+    <div class="control-group">
+        <label>TURBULENCE DENSITY</label>
+        <input type="range" id="density" min="0.005" max="0.06" step="0.005" value="0.015">
+    </div>
+    <div class="control-group">
+        <label>PRIMARY TEXT</label>
+        <input type="text" id="textMain" placeholder="WORLDBRIDGER">
+    </div>
+    <div class="control-group">
+        <label>SUB TEXT</label>
+        <input type="text" id="textSub" placeholder="ONE">
+    </div>
+    <div class="control-group">
+        <button onclick="updateURL()">COPY CONFIG URL</button>
+    </div>
+</div>
+
+<svg id="viz" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <pattern id="crossHatch" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+            <rect width="4" height="4" fill="#ff4500" />
+            <path d="M 4 0 L 0 0 0 4" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="1"/>
+        </pattern>
+
+        <filter id="organicNoise">
+            <feTurbulence id="turbNode" type="fractalNoise" baseFrequency="0.015" numOctaves="4" />
+            <feColorMatrix id="matrixNode" type="hueRotate" values="0" />
+        </filter>
+
+        <filter id="digitalGlow">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+    </defs>
+
+    <rect width="800" height="800" fill="#c0c0c8" />
+    
+    <rect id="blotchLayer" width="800" height="800" filter="url(#organicNoise)" opacity="0.6" fill="purple"/>
+
+    <g id="shieldGroup" transform="translate(400, 400) scale(1)">
+        <path d="M -320 -140 L 320 -140 L 180 180 L -180 180 Z" fill="rgba(25,25,30,0.95)" transform="translate(0,0)" />
+        <g filter="url(#digitalGlow)" font-family="monospace" font-weight="900" text-anchor="middle">
+            <text id="svgMain" x="0" y="-20" fill="url(#crossHatch)" font-size="80" letter-spacing="-2">WORLDBRIDGER</text>
+            <text id="svgSub" x="0" y="120" fill="url(#crossHatch)" font-size="150" letter-spacing="-5">ONE</text>
+        </g>
+    </g>
+</svg>
+
+<script>
+    const state = {
+        size: document.getElementById('size'),
+        color: document.getElementById('colorShift'),
+        dens: document.getElementById('density'),
+        t1: document.getElementById('textMain'),
+        t2: document.getElementById('textSub')
+    };
+
+    const elements = {
+        shield: document.getElementById('shieldGroup'),
+        matrix: document.getElementById('matrixNode'),
+        turb: document.getElementById('turbNode'),
+        svgT1: document.getElementById('svgMain'),
+        svgT2: document.getElementById('svgSub')
+    };
+
+    function apply() {
+        elements.shield.setAttribute('transform', `translate(400, 400) scale(${state.size.value})`);
+        elements.matrix.setAttribute('values', state.color.value);
+        elements.turb.setAttribute('baseFrequency', state.dens.value);
+        if(state.t1.value) elements.svgT1.textContent = state.t1.value.toUpperCase();
+        if(state.t2.value) elements.svgT2.textContent = state.t2.value.toUpperCase();
+    }
+
+    // URL Path/Query Logic
+    function loadFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('t1')) state.t1.value = params.get('t1');
+        if (params.has('t2')) state.t2.value = params.get('t2');
+        if (params.has('s')) state.size.value = params.get('s');
+        if (params.has('c')) state.color.value = params.get('c');
+        apply();
+    }
+
+    function updateURL() {
+        const query = `?t1=${encodeURIComponent(state.t1.value)}&t2=${encodeURIComponent(state.t2.value)}&s=${state.size.value}&c=${state.color.value}`;
+        window.history.pushState({}, '', query);
+        alert("URL Updated with current config!");
+    }
+
+    document.querySelectorAll('input').forEach(i => i.addEventListener('input', apply));
+    window.addEventListener('load', loadFromURL);
+</script>
+</body>
+</html>

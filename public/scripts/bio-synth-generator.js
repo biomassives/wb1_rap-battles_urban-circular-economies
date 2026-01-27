@@ -682,14 +682,18 @@ class BioSynthGenerator {
 window.BioSynthGenerator = BioSynthGenerator;
 
 // Convenience function
-window.generateBioSynthSamples = async function() {
-  const generator = new BioSynthGenerator();
-  const samples = await generator.generateAllSamples();
-
-  console.log(`\n🎵 Generated ${samples.length} samples!`);
-  console.log('Total size:', (samples.reduce((sum, s) => sum + s.size, 0) / 1024).toFixed(1), 'KB');
-
-  return samples;
+BioSynthGenerator.prototype.generateByType = function(type) {
+  switch (type) {
+    case "kick": return this.generateKick();
+    case "snare": return this.generateSnare();
+    case "shout": return this.generateShout();
+    case "water": return this.generateWater();
+    case "electric": return this.generateElectric();
+    default:
+      console.warn("[BioSynth] Unknown type:", type);
+      return null;
+  }
 };
+
 
 console.log('🧬 Bio Synth Generator loaded! Use generateBioSynthSamples() to create WAV files.');

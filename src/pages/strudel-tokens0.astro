@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const today = new Date();
+const dailySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+
+// Testing Edition Recipes
+const biodiversityTokens = [
+  { 
+    id: "WB-001", 
+    name: "Mycelium Pulse", 
+    spirit: "Fungi",
+    rarity: { name: 'Rare', color: '#ffff00', glow: '0 0 20px #ffff00' },
+    code: `s("bd [sd bd] bd sd, hh*16").bank("RolandTR909")`,
+    dataPoint: "Soil Conductivity: 4.2ms"
+  },
+  { 
+    id: "WB-002", 
+    name: "Apex Aviary", 
+    spirit: "Eagle",
+    rarity: { name: 'Legendary', color: '#ff00ff', glow: '0 0 30px #ff00ff' },
+    code: `note("<[c2 c3]*4 [bb1 bb2]*4>").s("sawtooth").lpf(800)`,
+    dataPoint: "Migratory Speed: 80km/h"
+  }
+];
+---
+
+<BaseLayout title="Strudel Bio-Tokens" activeSection="audio-tools">
+  <div class="nft-gallery-page scanlines">
+    <div class="container mx-auto">
+      
+      <header class="gallery-header pixel-border arcade-screen">
+        <div class="header-badge">
+          <span class="neon-text blink">▶ WORLDBRIDGER ONE LAB ◀</span>
+        </div>
+        <h1 class="gallery-title glitch">
+          <span class="block text-white">GENERATIVE</span>
+          <span class="block neon-text">BIO-TOKENS</span>
+        </h1>
+        <p class="gallery-subtitle mono">
+          > PARTNERSHIP WHITE-LABEL TOOLS AVAILABLE<br/>
+          > CREATE YOUR OWN PFP SERIES BELOW
+        </p>
+      </header>
+
+      <div class="collection-grid">
+        {biodiversityTokens.map(token => (
+          <article class="nft-card card-retro-neon" style={`--rarity-color: ${token.rarity.color}; --rarity-glow: ${token.rarity.glow};`}>
+            <div class="card-header">
+              <div class="card-number mono">{token.id}</div>
+              <div class="card-rarity mono" style={`color: ${token.rarity.color};`}>{token.rarity.name}</div>
+            </div>
+
+            <div class="card-preview">
+               <div class="code-overlay mono">{token.spirit}</div>
+               <div class="strudel-visualizer">
+                  <div class="wave-animation"></div>
+                  <code>{token.code}</code>
+               </div>
+            </div>
+
+            <div class="card-actions">
+              <button class="play-strudel-btn btn-retro mono" data-strudel-code={token.code}>
+                ▶ EXECUTE DNA
+              </button>
+            </div>
+          </article>
+        ))}
+
+        <article class="nft-card card-retro-neon custom-card" style="--rarity-color: #00ffff; --rarity-glow: 0 0 15px #00ffff;">
+            <div class="card-header"><div class="card-rarity mono">PARTNER TOOL</div></div>
+            <div class="card-preview custom-preview">
+                <span class="plus-icon">+</span>
+            </div>
+            <div class="card-info">
+                <h3 class="card-name mono">YOUR PFP SERIES</h3>
+                <p class="mono text-xs">Bridge your data to audio.</p>
+            </div>
+            <div class="card-actions">
+                <a href="/audio-tools/token-builder" class="btn-retro-neon mono text-center">CREATE TRACK</a>
+            </div>
+        </article>
+      </div>
+
+      <nav class="gallery-nav">
+        <button id="hush-all" class="btn-retro">🛑 HUSH ALL</button>
+        <a href="/nft-gallery" class="btn-retro">← RAPPER GALLERY</a>
+      </nav>
+    </div>
+  </div>
+</BaseLayout>
+
+<script src="https://unpkg.com/@strudel/web@1.0.3"></script>
+
+<script is:inline>
+  function startStrudelEngine() {
+    if (typeof initStrudel === 'undefined') {
+      console.warn("Strudel not ready yet, retrying...");
+      setTimeout(startStrudelEngine, 100);
+      return;
+    }
+    
+    // Initialize the engine
+    initStrudel();
+    console.log("Strudel Engine Initialized via Worldbridger One");
+
+    const playButtons = document.querySelectorAll('.play-strudel-btn');
+    const hushBtn = document.getElementById('hush-all');
+
+    playButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const code = btn.getAttribute('data-strudel-code');
+        hush(); // Global strudel stop function
+        
+        try {
+          // Evaluating the NFT metadata code
+          eval(code + '.play()');
+          
+          playButtons.forEach(b => b.classList.remove('playing'));
+          btn.classList.add('playing');
+          btn.innerText = "■ STOPPING...";
+          setTimeout(() => { btn.innerText = "■ PLAYING"; }, 200);
+        } catch (e) {
+          console.error("Strudel Metadata Error:", e);
+        }
+      });
+    });
+
+    hushBtn?.addEventListener('click', () => {
+      hush();
+      playButtons.forEach(b => {
+        b.classList.remove('playing');
+        b.innerText = "▶ EXECUTE DNA";
+      });
+    });
+  }
+
+  // Start the engine after window loads
+  window.addEventListener('load', startStrudelEngine);
+</script>
+
+<style>
+  .strudel-visualizer {
+    background: #000;
+    height: 120px;
+    padding: 10px;
+    font-size: 0.65rem;
+    color: #00ff88;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #222;
+  }
+  
+  .code-overlay {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #000;
+    border: 1px solid var(--rarity-color);
+    padding: 2px 6px;
+    z-index: 10;
+  }
+
+  .custom-card {
+    border-style: dashed;
+    opacity: 0.8;
+  }
+
+  .custom-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    font-size: 3rem;
+    color: #00ffff;
+  }
+
+  .playing {
+    background: #00ff88 !important;
+    color: #000 !important;
+    box-shadow: 0 0 20px #00ff88;
+  }
+
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+</style>

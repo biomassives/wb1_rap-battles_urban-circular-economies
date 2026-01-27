@@ -1,0 +1,1332 @@
+---
+/**
+ * ChallengeModal.astro
+ * Multi-purpose modal for challenge workflow:
+ * - Create new challenges
+ * - View/respond to invites
+ * - Challenge dialogue/messaging
+ * - Send invites (email, SMS, NFT, link)
+ */
+---
+
+<!-- Challenge Creation Modal -->
+<div id="challengeCreateModal" class="challenge-modal" style="display: none;">
+  <div class="challenge-modal-content">
+    <button class="modal-close" onclick="closeChallengeModal('create')">&times;</button>
+
+    <div class="modal-header">
+      <h2>⚔️ Create Challenge</h2>
+      <p class="modal-subtitle">Set up a new battle or collaboration</p>
+    </div>
+
+    <form id="challengeCreateForm" class="challenge-form">
+      <!-- Challenge Type -->
+      <div class="form-section">
+        <label class="form-label">Challenge Type</label>
+        <div class="challenge-type-grid">
+          <button type="button" class="type-btn active" data-type="rap_battle">
+            <span class="type-icon">🎤</span>
+            <span class="type-name">Rap Battle</span>
+          </button>
+          <button type="button" class="type-btn" data-type="beat_battle">
+            <span class="type-icon">🥁</span>
+            <span class="type-name">Beat Battle</span>
+          </button>
+          <button type="button" class="type-btn" data-type="remix_challenge">
+            <span class="type-icon">🎚️</span>
+            <span class="type-name">Remix</span>
+          </button>
+          <button type="button" class="type-btn" data-type="freestyle">
+            <span class="type-icon">🎙️</span>
+            <span class="type-name">Freestyle</span>
+          </button>
+          <button type="button" class="type-btn" data-type="learning_race">
+            <span class="type-icon">📚</span>
+            <span class="type-name">Learning Race</span>
+          </button>
+          <button type="button" class="type-btn" data-type="eco_challenge">
+            <span class="type-icon">🌍</span>
+            <span class="type-name">Eco Challenge</span>
+          </button>
+        </div>
+        <input type="hidden" name="type" id="challengeType" value="rap_battle">
+      </div>
+
+      <!-- Challenge Mode -->
+      <div class="form-section">
+        <label class="form-label">Mode</label>
+        <div class="mode-toggle">
+          <button type="button" class="mode-btn active" data-mode="1v1">1v1</button>
+          <button type="button" class="mode-btn" data-mode="group">Group</button>
+          <button type="button" class="mode-btn" data-mode="open">Open</button>
+        </div>
+        <input type="hidden" name="mode" id="challengeMode" value="1v1">
+      </div>
+
+      <!-- Title -->
+      <div class="form-section">
+        <label class="form-label" for="challengeTitle">Title</label>
+        <input
+          type="text"
+          id="challengeTitle"
+          name="title"
+          placeholder="Name your challenge..."
+          class="form-input"
+          maxlength="100"
+        >
+      </div>
+
+      <!-- Description -->
+      <div class="form-section">
+        <label class="form-label" for="challengeDesc">Description (optional)</label>
+        <textarea
+          id="challengeDesc"
+          name="description"
+          placeholder="Describe the challenge, rules, or theme..."
+          class="form-textarea"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <!-- Stakes -->
+      <div class="form-section">
+        <label class="form-label">Stakes</label>
+        <div class="stakes-row">
+          <select name="stakesType" id="stakesType" class="form-select">
+            <option value="xp">XP Points</option>
+            <option value="bragging">Bragging Rights</option>
+            <option value="nft">NFT Prize</option>
+          </select>
+          <input
+            type="number"
+            name="stakesAmount"
+            id="stakesAmount"
+            value="50"
+            min="10"
+            max="500"
+            class="form-input stakes-input"
+          >
+        </div>
+      </div>
+
+      <!-- Duration -->
+      <div class="form-section">
+        <label class="form-label">Challenge Duration</label>
+        <select name="duration" id="challengeDuration" class="form-select">
+          <option value="24">24 Hours</option>
+          <option value="72" selected>3 Days</option>
+          <option value="168">1 Week</option>
+          <option value="336">2 Weeks</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-primary btn-create-challenge">
+        Create Challenge
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Invite Modal -->
+<div id="challengeInviteModal" class="challenge-modal" style="display: none;">
+  <div class="challenge-modal-content invite-modal">
+    <button class="modal-close" onclick="closeChallengeModal('invite')">&times;</button>
+
+    <div class="modal-header">
+      <h2>📨 Send Invite</h2>
+      <p class="modal-subtitle" id="inviteChallengeTitle">Invite to challenge</p>
+    </div>
+
+    <div class="invite-methods">
+      <!-- Internal/Username -->
+      <div class="invite-method">
+        <div class="method-header" onclick="toggleInviteMethod('internal')">
+          <span class="method-icon">👤</span>
+          <span class="method-name">By Username/Wallet</span>
+          <span class="method-arrow">▼</span>
+        </div>
+        <div class="method-content" id="inviteMethodInternal" style="display: none;">
+          <input
+            type="text"
+            id="inviteUsername"
+            placeholder="Username or wallet address..."
+            class="form-input"
+          >
+          <button class="btn-secondary" onclick="sendInviteByUsername()">
+            Send Invite
+          </button>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="invite-method">
+        <div class="method-header" onclick="toggleInviteMethod('email')">
+          <span class="method-icon">📧</span>
+          <span class="method-name">Email Invite</span>
+          <span class="method-arrow">▼</span>
+        </div>
+        <div class="method-content" id="inviteMethodEmail" style="display: none;">
+          <input
+            type="email"
+            id="inviteEmail"
+            placeholder="friend@example.com"
+            class="form-input"
+          >
+          <textarea
+            id="inviteEmailMessage"
+            placeholder="Add a personal message..."
+            class="form-textarea"
+            rows="2"
+          ></textarea>
+          <button class="btn-secondary" onclick="sendEmailInvite()">
+            Send Email
+          </button>
+        </div>
+      </div>
+
+      <!-- SMS -->
+      <div class="invite-method">
+        <div class="method-header" onclick="toggleInviteMethod('sms')">
+          <span class="method-icon">📱</span>
+          <span class="method-name">SMS Invite</span>
+          <span class="method-arrow">▼</span>
+        </div>
+        <div class="method-content" id="inviteMethodSms" style="display: none;">
+          <input
+            type="tel"
+            id="invitePhone"
+            placeholder="+1 234 567 8900"
+            class="form-input"
+          >
+          <button class="btn-secondary" onclick="sendSMSInvite()">
+            Send SMS
+          </button>
+        </div>
+      </div>
+
+      <!-- NFT Invite Token -->
+      <div class="invite-method">
+        <div class="method-header" onclick="toggleInviteMethod('nft')">
+          <span class="method-icon">🎫</span>
+          <span class="method-name">NFT Invite Token</span>
+          <span class="method-arrow">▼</span>
+        </div>
+        <div class="method-content" id="inviteMethodNft" style="display: none;">
+          <p class="method-desc">Mint a unique NFT that grants access to this challenge. The recipient can claim it to join.</p>
+          <input
+            type="text"
+            id="inviteNftWallet"
+            placeholder="Recipient wallet address..."
+            class="form-input"
+          >
+          <button class="btn-secondary btn-nft" onclick="mintNFTInvite()">
+            <span>🎫</span> Mint Invite NFT
+          </button>
+        </div>
+      </div>
+
+      <!-- Shareable Link -->
+      <div class="invite-method">
+        <div class="method-header" onclick="toggleInviteMethod('link')">
+          <span class="method-icon">🔗</span>
+          <span class="method-name">Shareable Link</span>
+          <span class="method-arrow">▼</span>
+        </div>
+        <div class="method-content" id="inviteMethodLink" style="display: none;">
+          <div class="link-display">
+            <input
+              type="text"
+              id="inviteLink"
+              readonly
+              class="form-input link-input"
+            >
+            <button class="btn-copy" onclick="copyInviteLink()">
+              📋 Copy
+            </button>
+          </div>
+          <div class="qr-container" id="inviteQR"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="invite-code-display">
+      <span class="code-label">Invite Code:</span>
+      <span class="code-value" id="inviteCodeDisplay">------</span>
+    </div>
+  </div>
+</div>
+
+<!-- Challenge Dialogue Modal -->
+<div id="challengeDialogueModal" class="challenge-modal" style="display: none;">
+  <div class="challenge-modal-content dialogue-modal">
+    <button class="modal-close" onclick="closeChallengeModal('dialogue')">&times;</button>
+
+    <!-- Challenge Header -->
+    <div class="dialogue-header">
+      <div class="challenge-info">
+        <h2 id="dialogueChallengeTitle">Challenge Title</h2>
+        <div class="challenge-meta">
+          <span class="challenge-type" id="dialogueChallengeType">🎤 Rap Battle</span>
+          <span class="challenge-status" id="dialogueChallengeStatus">In Progress</span>
+        </div>
+      </div>
+      <div class="participants-avatars" id="dialogueParticipants">
+        <!-- Participant avatars rendered here -->
+      </div>
+    </div>
+
+    <!-- Messages Area -->
+    <div class="dialogue-messages" id="dialogueMessages">
+      <!-- Messages rendered here -->
+    </div>
+
+    <!-- Input Area -->
+    <div class="dialogue-input">
+      <div class="input-actions">
+        <button class="action-btn" onclick="startVoiceMessage()" title="Voice Message">
+          🎤
+        </button>
+        <button class="action-btn" onclick="attachFile()" title="Attach File">
+          📎
+        </button>
+      </div>
+      <input
+        type="text"
+        id="dialogueMessageInput"
+        placeholder="Type a message..."
+        class="message-input"
+        onkeypress="handleMessageKeypress(event)"
+      >
+      <button class="btn-send" onclick="sendDialogueMessage()">
+        Send
+      </button>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dialogue-actions">
+      <button class="btn-action" onclick="submitEntry()" id="btnSubmitEntry">
+        📤 Submit Entry
+      </button>
+      <button class="btn-action" onclick="inviteMore()">
+        ➕ Invite More
+      </button>
+      <button class="btn-action danger" onclick="leaveChallenge()">
+        🚪 Leave
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Pending Invites Panel -->
+<div id="pendingInvitesPanel" class="invites-panel" style="display: none;">
+  <div class="panel-header">
+    <h3>⚔️ Challenge Invites</h3>
+    <button class="panel-close" onclick="closePendingInvites()">&times;</button>
+  </div>
+  <div class="invites-list" id="pendingInvitesList">
+    <!-- Pending invites rendered here -->
+  </div>
+</div>
+
+<style>
+  /* Modal Base */
+  .challenge-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 1rem;
+  }
+
+  .challenge-modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid rgba(112, 214, 255, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .dialogue-modal {
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .modal-close:hover {
+    color: white;
+  }
+
+  .modal-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .modal-subtitle {
+    margin: 0.5rem 0 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+  }
+
+  /* Form Styles */
+  .form-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .form-input:focus,
+  .form-textarea:focus,
+  .form-select:focus {
+    outline: none;
+    border-color: var(--wb-bubble-top, #70d6ff);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .form-textarea {
+    resize: vertical;
+  }
+
+  /* Challenge Type Grid */
+  .challenge-type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .type-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .type-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+
+  .type-btn.active {
+    border-color: var(--wb-bubble-top, #70d6ff);
+    background: rgba(112, 214, 255, 0.15);
+    color: white;
+  }
+
+  .type-icon {
+    font-size: 1.5rem;
+  }
+
+  .type-name {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Mode Toggle */
+  .mode-toggle {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .mode-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .mode-btn.active {
+    background: var(--wb-bubble-bottom, #ff9770);
+    border-color: var(--wb-bubble-bottom, #ff9770);
+    color: #000;
+    font-weight: 600;
+  }
+
+  /* Stakes Row */
+  .stakes-row {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .stakes-row .form-select {
+    flex: 2;
+  }
+
+  .stakes-input {
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--wb-bubble-top, #70d6ff), var(--wb-bubble-bottom, #ff9770));
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(112, 214, 255, 0.3);
+  }
+
+  .btn-secondary {
+    padding: 0.6rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Invite Methods */
+  .invite-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .invite-method {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .method-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .method-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .method-icon {
+    font-size: 1.2rem;
+  }
+
+  .method-name {
+    flex: 1;
+    color: white;
+    font-weight: 500;
+  }
+
+  .method-arrow {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+  }
+
+  .method-content {
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .method-desc {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+  }
+
+  .btn-nft {
+    background: linear-gradient(135deg, #9b59b6, #e74c3c);
+    border: none;
+    color: white;
+  }
+
+  .link-display {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .link-input {
+    flex: 1;
+    font-size: 0.8rem;
+  }
+
+  .btn-copy {
+    padding: 0.5rem 1rem;
+    background: var(--wb-bubble-top, #70d6ff);
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .qr-container {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .qr-container img {
+    border-radius: 8px;
+    background: white;
+    padding: 0.5rem;
+  }
+
+  .invite-code-display {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .code-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+  }
+
+  .code-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    color: var(--wb-bubble-top, #70d6ff);
+    letter-spacing: 4px;
+    margin-top: 0.5rem;
+  }
+
+  /* Dialogue Modal */
+  .dialogue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+  }
+
+  .challenge-info h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .challenge-meta {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .challenge-type {
+    color: var(--wb-bubble-top, #70d6ff);
+  }
+
+  .challenge-status {
+    padding: 0.2rem 0.6rem;
+    background: rgba(57, 255, 20, 0.2);
+    border-radius: 4px;
+    color: #39ff14;
+  }
+
+  .participants-avatars {
+    display: flex;
+    gap: -8px;
+  }
+
+  .participant-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--wb-bubble-top), var(--wb-bubble-bottom));
+    border: 2px solid #1a1a2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    margin-left: -8px;
+  }
+
+  .participant-avatar:first-child {
+    margin-left: 0;
+  }
+
+  /* Messages */
+  .dialogue-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .message {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .message.mine {
+    background: linear-gradient(135deg, rgba(112, 214, 255, 0.2), rgba(112, 214, 255, 0.1));
+    border: 1px solid rgba(112, 214, 255, 0.3);
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  }
+
+  .message.theirs {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+  }
+
+  .message.system {
+    background: rgba(255, 151, 112, 0.15);
+    border: 1px solid rgba(255, 151, 112, 0.3);
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .message-sender {
+    font-size: 0.75rem;
+    color: var(--wb-bubble-top, #70d6ff);
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+  }
+
+  .message-content {
+    color: white;
+    word-wrap: break-word;
+  }
+
+  .message-time {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 0.25rem;
+  }
+
+  .message-reactions {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .reaction {
+    padding: 0.2rem 0.4rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    font-size: 0.8rem;
+  }
+
+  /* Input Area */
+  .dialogue-input {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .input-actions {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .action-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+  }
+
+  .action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .message-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.95rem;
+  }
+
+  .message-input:focus {
+    outline: none;
+    border-color: var(--wb-bubble-top, #70d6ff);
+  }
+
+  .btn-send {
+    padding: 0.75rem 1.25rem;
+    background: var(--wb-bubble-top, #70d6ff);
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-send:hover {
+    transform: scale(1.05);
+  }
+
+  /* Quick Actions */
+  .dialogue-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 1rem;
+  }
+
+  .btn-action {
+    flex: 1;
+    padding: 0.6rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-action:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-action.danger {
+    border-color: rgba(231, 76, 60, 0.3);
+    color: #e74c3c;
+  }
+
+  .btn-action.danger:hover {
+    background: rgba(231, 76, 60, 0.2);
+  }
+
+  /* Pending Invites Panel */
+  .invites-panel {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 350px;
+    max-height: 400px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid rgba(112, 214, 255, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    z-index: 9000;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .panel-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: white;
+  }
+
+  .panel-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  .invites-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .invite-item {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s;
+  }
+
+  .invite-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .invite-title {
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.25rem;
+  }
+
+  .invite-from {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.75rem;
+  }
+
+  .invite-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-accept {
+    flex: 1;
+    padding: 0.5rem;
+    background: var(--wb-bubble-top, #70d6ff);
+    border: none;
+    border-radius: 6px;
+    color: #000;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .btn-decline {
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 600px) {
+    .challenge-modal-content {
+      padding: 1.5rem;
+      margin: 0.5rem;
+    }
+
+    .challenge-type-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .invites-panel {
+      right: 10px;
+      left: 10px;
+      width: auto;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Current challenge being worked with
+  let currentChallengeId = null;
+
+  // Open Challenge Create Modal
+  function openChallengeCreateModal() {
+    document.getElementById('challengeCreateModal').style.display = 'flex';
+  }
+
+  // Open Invite Modal
+  function openInviteModal(challengeId) {
+    currentChallengeId = challengeId;
+    const challenge = window.wb1Challenges?.getChallenge(challengeId);
+    if (challenge) {
+      document.getElementById('inviteChallengeTitle').textContent = challenge.title;
+      document.getElementById('inviteCodeDisplay').textContent = challenge.inviteCode;
+
+      // Generate invite link
+      const link = `${window.location.origin}/challenge/join/${challenge.inviteCode}`;
+      document.getElementById('inviteLink').value = link;
+
+      // Generate QR
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(link)}`;
+      document.getElementById('inviteQR').innerHTML = `<img src="${qrUrl}" alt="QR Code">`;
+    }
+    document.getElementById('challengeInviteModal').style.display = 'flex';
+  }
+
+  // Open Dialogue Modal
+  function openDialogueModal(challengeId) {
+    currentChallengeId = challengeId;
+    const challenge = window.wb1Challenges?.getChallenge(challengeId);
+    if (challenge) {
+      document.getElementById('dialogueChallengeTitle').textContent = challenge.title;
+      document.getElementById('dialogueChallengeType').textContent = getChallengeTypeDisplay(challenge.type);
+      document.getElementById('dialogueChallengeStatus').textContent = challenge.state;
+
+      renderParticipants(challenge.participants);
+      renderMessages(challengeId);
+    }
+    document.getElementById('challengeDialogueModal').style.display = 'flex';
+  }
+
+  // Close modals
+  function closeChallengeModal(type) {
+    const modals = {
+      'create': 'challengeCreateModal',
+      'invite': 'challengeInviteModal',
+      'dialogue': 'challengeDialogueModal'
+    };
+    document.getElementById(modals[type]).style.display = 'none';
+  }
+
+  // Toggle invite method expansion
+  function toggleInviteMethod(method) {
+    const content = document.getElementById('inviteMethod' + method.charAt(0).toUpperCase() + method.slice(1));
+    const isVisible = content.style.display === 'block';
+
+    // Close all
+    document.querySelectorAll('.method-content').forEach(el => {
+      el.style.display = 'none';
+    });
+
+    // Toggle current
+    content.style.display = isVisible ? 'none' : 'block';
+  }
+
+  // Challenge type display
+  function getChallengeTypeDisplay(type) {
+    const displays = {
+      'rap_battle': '🎤 Rap Battle',
+      'beat_battle': '🥁 Beat Battle',
+      'remix_challenge': '🎚️ Remix',
+      'freestyle': '🎙️ Freestyle',
+      'learning_race': '📚 Learning Race',
+      'eco_challenge': '🌍 Eco Challenge'
+    };
+    return displays[type] || type;
+  }
+
+  // Render participants
+  function renderParticipants(participants) {
+    const container = document.getElementById('dialogueParticipants');
+    container.innerHTML = participants.map(p => `
+      <div class="participant-avatar" title="${p.username}">
+        ${p.username.charAt(0).toUpperCase()}
+      </div>
+    `).join('');
+  }
+
+  // Render messages
+  function renderMessages(challengeId) {
+    const messages = window.wb1Challenges?.getMessages(challengeId) || [];
+    const container = document.getElementById('dialogueMessages');
+    const myWallet = window.wb1User?.getActiveWallet()?.address;
+
+    container.innerHTML = messages.map(msg => {
+      if (msg.type === 'system') {
+        return `<div class="message system">${msg.content}</div>`;
+      }
+
+      const isMine = msg.sender?.wallet === myWallet;
+      return `
+        <div class="message ${isMine ? 'mine' : 'theirs'}">
+          ${!isMine ? `<div class="message-sender">${msg.sender?.username || 'Unknown'}</div>` : ''}
+          <div class="message-content">${msg.content}</div>
+          <div class="message-time">${formatTime(msg.createdAt)}</div>
+          ${msg.reactions.length ? `
+            <div class="message-reactions">
+              ${msg.reactions.map(r => `<span class="reaction">${r.emoji}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+
+    // Scroll to bottom
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // Format time
+  function formatTime(isoString) {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // Send dialogue message
+  function sendDialogueMessage() {
+    const input = document.getElementById('dialogueMessageInput');
+    const text = input.value.trim();
+    if (!text || !currentChallengeId) return;
+
+    window.wb1Challenges?.sendMessage(currentChallengeId, text);
+    input.value = '';
+    renderMessages(currentChallengeId);
+  }
+
+  // Handle enter key in message input
+  function handleMessageKeypress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendDialogueMessage();
+    }
+  }
+
+  // Send invites
+  function sendInviteByUsername() {
+    const username = document.getElementById('inviteUsername').value.trim();
+    if (!username || !currentChallengeId) return;
+
+    window.wb1Challenges?.sendInvite(currentChallengeId, {
+      method: 'internal',
+      wallet: username,
+      username: username
+    });
+
+    document.getElementById('inviteUsername').value = '';
+    alert('Invite sent!');
+  }
+
+  function sendEmailInvite() {
+    const email = document.getElementById('inviteEmail').value.trim();
+    const message = document.getElementById('inviteEmailMessage').value.trim();
+    if (!email || !currentChallengeId) return;
+
+    window.wb1Challenges?.sendInvite(currentChallengeId, {
+      method: 'email',
+      email: email,
+      message: message
+    });
+
+    document.getElementById('inviteEmail').value = '';
+    document.getElementById('inviteEmailMessage').value = '';
+    alert('Email invite sent!');
+  }
+
+  function sendSMSInvite() {
+    const phone = document.getElementById('invitePhone').value.trim();
+    if (!phone || !currentChallengeId) return;
+
+    window.wb1Challenges?.sendInvite(currentChallengeId, {
+      method: 'sms',
+      phone: phone
+    });
+
+    document.getElementById('invitePhone').value = '';
+    alert('SMS invite sent!');
+  }
+
+  function mintNFTInvite() {
+    const wallet = document.getElementById('inviteNftWallet').value.trim();
+    if (!wallet || !currentChallengeId) return;
+
+    window.wb1Challenges?.sendInvite(currentChallengeId, {
+      method: 'nft_token',
+      wallet: wallet
+    });
+
+    document.getElementById('inviteNftWallet').value = '';
+    alert('NFT invite is being minted!');
+  }
+
+  function copyInviteLink() {
+    const link = document.getElementById('inviteLink').value;
+    navigator.clipboard.writeText(link).then(() => {
+      alert('Link copied to clipboard!');
+    });
+  }
+
+  // Submit entry
+  function submitEntry() {
+    // Open submission modal or file picker
+    alert('Submission feature coming soon! You can share your entry via message for now.');
+  }
+
+  // Invite more
+  function inviteMore() {
+    closeChallengeModal('dialogue');
+    openInviteModal(currentChallengeId);
+  }
+
+  // Leave challenge
+  function leaveChallenge() {
+    if (confirm('Are you sure you want to leave this challenge?')) {
+      // TODO: Implement leave logic
+      closeChallengeModal('dialogue');
+    }
+  }
+
+  // Voice message placeholder
+  function startVoiceMessage() {
+    alert('Voice message feature coming soon!');
+  }
+
+  // File attachment placeholder
+  function attachFile() {
+    alert('File attachment feature coming soon!');
+  }
+
+  // Pending invites
+  function showPendingInvites() {
+    const invites = window.wb1Challenges?.pendingInvites || [];
+    const container = document.getElementById('pendingInvitesList');
+
+    if (invites.length === 0) {
+      container.innerHTML = '<p style="padding: 1rem; text-align: center; color: rgba(255,255,255,0.5);">No pending invites</p>';
+    } else {
+      container.innerHTML = invites.map(invite => `
+        <div class="invite-item">
+          <div class="invite-title">Challenge Invite</div>
+          <div class="invite-from">Code: ${invite.inviteCode}</div>
+          <div class="invite-buttons">
+            <button class="btn-accept" onclick="acceptInvite('${invite.challengeId}')">Accept</button>
+            <button class="btn-decline" onclick="declineInvite('${invite.challengeId}')">Decline</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('pendingInvitesPanel').style.display = 'block';
+  }
+
+  function closePendingInvites() {
+    document.getElementById('pendingInvitesPanel').style.display = 'none';
+  }
+
+  function acceptInvite(challengeId) {
+    const result = window.wb1Challenges?.acceptChallenge(challengeId);
+    if (result?.success) {
+      showPendingInvites(); // Refresh list
+      openDialogueModal(challengeId);
+    }
+  }
+
+  function declineInvite(challengeId) {
+    window.wb1Challenges?.declineChallenge(challengeId);
+    showPendingInvites(); // Refresh list
+  }
+
+  // Form handlers
+  document.addEventListener('DOMContentLoaded', () => {
+    // Type selection
+    document.querySelectorAll('.type-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('challengeType').value = btn.dataset.type;
+      });
+    });
+
+    // Mode selection
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('challengeMode').value = btn.dataset.mode;
+      });
+    });
+
+    // Form submission
+    document.getElementById('challengeCreateForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const challenge = window.wb1Challenges?.createChallenge({
+        type: formData.get('type'),
+        mode: formData.get('mode'),
+        title: formData.get('title'),
+        description: formData.get('description'),
+        stakesType: formData.get('stakesType'),
+        stakesAmount: parseInt(formData.get('stakesAmount')),
+        expiresAt: new Date(Date.now() + parseInt(formData.get('duration')) * 60 * 60 * 1000).toISOString()
+      });
+
+      if (challenge) {
+        // Update state to pending
+        window.wb1Challenges.updateChallengeState(challenge.id, 'pending');
+
+        closeChallengeModal('create');
+        openInviteModal(challenge.id);
+      }
+    });
+
+    // Listen for new messages
+    window.addEventListener('wb1-message-added', (e) => {
+      if (e.detail.challengeId === currentChallengeId) {
+        renderMessages(currentChallengeId);
+      }
+    });
+  });
+
+  // Expose functions globally
+  window.openChallengeCreateModal = openChallengeCreateModal;
+  window.openInviteModal = openInviteModal;
+  window.openDialogueModal = openDialogueModal;
+  window.showPendingInvites = showPendingInvites;
+</script>

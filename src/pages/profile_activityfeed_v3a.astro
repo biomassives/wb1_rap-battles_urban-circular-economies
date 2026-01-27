@@ -1,0 +1,312 @@
+---
+/**
+ * Modified for WorldBridger One Living Systems
+ */
+export const prerender = false;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import OracleStatusBand from "../components/OracleStatusBand.astro";
+---
+
+<BaseLayout
+  title="Mission Control"
+  description="Command center for aquatic filters, medicinal gardens, and biodiversity tokens."
+  activeSection="profile"
+>
+  <script src="/scripts/form-storage.js" is:inline></script>
+  <script src="/scripts/metabolic-logic.js" is:inline></script>
+
+  <div class="mission-control bg-black text-green-500 font-mono p-4 min-h-screen">
+    <div class="max-w-6xl mx-auto space-y-6">
+
+<section class="credentials-grid mt-8">
+  
+  <div class="identity-stack">
+    <div class="pfp-container">
+      <div class="scanline-overlay"></div>
+      <div id="pfp-display" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-900 to-black">
+        <span class="text-6xl">🧑‍🌾</span> 
+      </div>
+      <div class="absolute bottom-0 w-full bg-green-600 text-black text-[10px] font-bold text-center py-1">
+        VERIFIED_STEWARD
+      </div>
+    </div>
+    
+    <div class="mt-4 p-2 border-l-4 border-orange-500 bg-orange-950/20">
+      <div class="text-[10px] text-orange-400">CURRENT_ROLE</div>
+      <div class="text-xl text-white font-bold tracking-widest uppercase" id="active-role-display">
+        Tech_Alchemist
+      </div>
+    </div>
+  </div>
+
+  <div class="vault-stack">
+    <h3 class="text-green-400 text-xs mb-4 border-b border-green-900 pb-1 flex justify-between">
+      <span>DIGITAL_VAULT // ASSETS_UNLOCKED</span>
+      <span class="animate-pulse">● ONLINE</span>
+    </h3>
+    
+    <div class="grid grid-cols-3 gap-3">
+      <div class="badge-slot">
+        <span class="text-3xl">🌱</span>
+        <span class="nft-label text-green-400">BIO_FOUNDER</span>
+      </div>
+
+      <div class="badge-slot">
+        <span class="text-3xl">🎙️</span>
+        <span class="nft-label text-magenta-500">VOICE_PROOFS</span>
+      </div>
+
+      <div class="badge-slot opacity-50 grayscale">
+        <span class="text-3xl">⚙️</span>
+        <span class="nft-label">NODE_RUNNER</span>
+      </div>
+
+      <div class="badge-slot border-orange-500/50">
+        <div class="w-10 h-10 bg-orange-500/20 rounded-full border border-orange-500 animate-spin-slow"></div>
+        <span class="nft-label text-orange-500">12.5_BTKNS</span>
+      </div>
+      
+      <div class="badge-slot border-dashed border-gray-800">
+        <span class="text-gray-800 text-xl font-bold">?</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div id="role-engine" class="mission-control bg-black text-green-500 font-mono p-4" data-role="default">
+  
+  <div class="role-module music-only pixel-border p-4 mb-4 border-magenta-500">
+    <h4 class="text-magenta-500">🎤 BATTLE_MODE_ACTIVE</h4>
+    <p class="text-xs text-white">Voting Oracle enabled for Rap Battle lyrics.</p>
+  </div>
+
+  <div class="role-module env-only pixel-border p-4 mb-4 border-lime-500">
+    <h4 class="text-lime-500">🌳 REFORESTATION_TRACKER</h4>
+    <p class="text-xs text-white">Active session: Soil health workshop.</p>
+  </div>
+
+  </div>
+
+<script is:inline>
+  // Simple "Accessible" Role Switcher
+  function applyRoleLayout() {
+    const params = new URLSearchParams(window.location.search);
+    const role = params.get('role') || 'default';
+    document.getElementById('role-engine').setAttribute('data-role', role);
+    
+    // Log for the tech-setup team
+    console.log(`[SYSTEM] Layout optimized for: ${role.toUpperCase()}`);
+  }
+  
+  // Run on load
+  window.addEventListener('DOMContentLoaded', applyRoleLayout);
+</script>
+
+
+
+      <section class="pixel-border bg-black/90 p-4">
+        <div class="flex justify-between text-[10px] mb-4 border-b border-green-900 pb-2">
+          <span>SYSTEM_ID: <span id="wallet-id" class="text-white">----</span></span>
+          <span class="text-orange-500">▲ BIO_RANK: <span id="header-level" class="text-white">1</span></span>
+          <span id="sync-status" class="blink text-blue-400">◆ SYNCING_ORACLE...</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="gauge-card border border-green-900 p-3" id="card-nitrates">
+            <label class="bg-orange-600 text-black px-1 text-[10px] font-bold">NITRATE_LEVEL</label>
+            <div class="text-3xl font-bold mt-2" id="nitrate-val">--</div>
+          </div>
+          <div class="gauge-card border border-green-900 p-3" id="card-o2">
+            <label class="bg-orange-600 text-black px-1 text-[10px] font-bold">O2_SATURATION</label>
+            <div class="text-3xl font-bold mt-2" id="o2-val">--</div>
+          </div>
+          <div class="gauge-card border border-green-900 p-3" id="card-ph">
+            <label class="bg-orange-600 text-black px-1 text-[10px] font-bold">PH_BALANCE</label>
+            <div class="text-3xl font-bold mt-2" id="ph-val">--</div>
+          </div>
+          <div class="gauge-card border border-orange-900 p-3 bg-orange-950/10" id="card-harvest">
+            <label class="bg-orange-600 text-black px-1 text-[10px] font-bold">HARVEST_ALERTS</label>
+            <div class="text-sm font-bold animate-pulse mt-2 text-orange-400" id="harvest-val">SCANNING...</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-2 gap-4">
+        <button onclick="logBioEvent('WATER_POLISHING')" class="action-btn border-blue-700 text-blue-400 hover:bg-blue-900/20 py-3 transition-all">
+          💧 LOG_POLISHING
+        </button>
+        <button onclick="logBioEvent('MEDICINAL_HARVEST')" class="action-btn border-green-700 text-green-400 hover:bg-green-900/20 py-3 transition-all">
+          🌿 LOG_HARVEST
+        </button>
+      </section>
+
+      <section class="grid md:grid-cols-3 gap-6 items-start">
+        <div class="md:col-span-2 pixel-border p-6 bg-black">
+          <h1 class="text-orange-500 text-2xl font-bold mb-4 tracking-tighter" id="commander-name">CADET_STEWARD</h1>
+          
+          <div class="xp-container">
+            <div class="flex justify-between text-[10px] mb-1">
+              <span>ECOLOGICAL_REPUTATION</span>
+              <span><span id="current-xp">1,250</span> / 5,000 XP</span>
+            </div>
+            <div class="w-full bg-gray-900 h-4 border border-green-900 p-[2px]">
+              <div class="bg-green-500 h-full shadow-[0_0_10px_#22c55e]" id="xp-bar" style="width: 25%"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 mt-8">
+            <div class="text-center">
+              <span class="block text-2xl">💧</span>
+              <div class="text-xl font-bold text-white" id="stat-water-polished">1.2k</div>
+              <div class="text-[8px] opacity-70">LITERS_CLEANED</div>
+            </div>
+            <div class="text-center">
+              <span class="block text-2xl">🌿</span>
+              <div class="text-xl font-bold text-white" id="stat-medicinals">14</div>
+              <div class="text-[8px] opacity-70">ACTIVE_SPECIES</div>
+            </div>
+            <div class="text-center">
+              <span class="block text-2xl">🐝</span>
+              <div class="text-xl font-bold text-white" id="stat-pollinators">240</div>
+              <div class="text-[8px] opacity-70">POLLINATOR_SIGHTINGS</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="oracle-wrapper h-full">
+           <OracleStatusBand />
+        </div>
+      </section>
+
+      <section id="transparency-feed" class="pixel-border border-green-900/50 p-4">
+        <div class="flex justify-between items-center mb-4 border-b border-green-900 pb-2">
+          <h3 class="text-lg font-bold flex items-center gap-2">🌱 LIQUID_LEDGER_FEED</h3>
+          <button class="text-[10px] border border-green-500 px-2 py-1 hover:bg-green-500 hover:text-black transition-colors" onclick="triggerManualLog()">
+            + LOG_BIO_DATA
+          </button>
+        </div>
+        
+        <ul id="activity-list" class="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+          <li class="p-3 bg-green-950/10 border-l-2 border-orange-500">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-orange-500 text-[10px] font-bold">[VERIFIED_HARVEST]</span>
+                <p class="text-sm text-gray-300 mt-1 italic">"Harvested 400g of **Watercress** from Rooftop Alpha."</p>
+              </div>
+              <span class="text-[9px] text-gray-600">2026-01-14_10:25:53</span>
+            </div>
+            <div class="mt-2 flex gap-4 text-[9px] font-bold text-green-600">
+              <span>+50 XP</span>
+              <span>+12 BIODIVERSITY_TOKENS</span>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .pixel-border {
+    border: 2px solid #1a2e1a;
+    box-shadow: 4px 4px 0px 0px #0a110a;
+  }
+  
+  .action-btn {
+    border: 2px solid;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    background: black;
+  }
+
+  .blink { animation: blinker 1.5s linear infinite; }
+  @keyframes blinker { 50% { opacity: 0; } }
+
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #050a05; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #15803d; }
+
+/* Default hidden state for specialized modules */
+.role-module { display: none; }
+
+/* Rap Battles / Musical Events: High Contrast & Energetic */
+[data-role="music"] {
+  --primary-green: #ff00ff; /* Neon Magenta */
+  --warn-orange: #00ffff;  /* Cyan */
+}
+[data-role="music"] .music-only { display: block; }
+
+/* Environmental Action: Earthy & Grounded */
+[data-role="environment"] {
+  --primary-green: #7cfc00; 
+  --warn-orange: #8b4513; 
+}
+[data-role="environment"] .env-only { display: block; }
+
+/* Poetics / Creative Arts: Minimal & Focused */
+[data-role="poetics"] {
+  --primary-green: #f5f5dc; 
+  --warn-orange: #4b0082;
+}
+[data-role="poetics"] .gauge-card { opacity: 0.3; } /* Dim sensors for focus */
+
+/* HIGH-CONTRAST CRT FIX */
+  .credentials-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+    background: rgba(0, 0, 0, 0.95); /* Deep black for text contrast */
+    border: 3px solid var(--primary-green);
+    padding: 24px;
+    box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.2);
+  }
+
+  .pfp-container {
+    position: relative;
+    border: 4px inset #333;
+    background: #111;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+  }
+
+  /* The "Glow" Badge Style */
+  .badge-slot {
+    background: #0a0a0a;
+    border: 1px solid #222;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .badge-slot:hover {
+    border-color: var(--warn-orange);
+    box-shadow: 0 0 15px var(--warn-orange);
+    transform: scale(1.05);
+  }
+
+  .nft-label {
+    font-size: 8px;
+    color: #fff; /* Solid white on dark background is readable */
+    text-transform: uppercase;
+    margin-top: 5px;
+    background: #000;
+  }
+
+  .scanline-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+  }
+
+
+</style>

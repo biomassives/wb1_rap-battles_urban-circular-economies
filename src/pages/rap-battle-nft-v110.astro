@@ -1,0 +1,620 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Bio-Acoustic Rap Battle v1.1.0"
+  description="Record audio, package assets, and prepare NFT metadata"
+  activeSection="music"
+>
+
+<style>
+/* ===== CRITICAL THEME STYLES ===== */
+
+:root {
+  --bg: #05070a;
+  --panel: #0b0f17;
+  --text: #e6f1ff;
+  --muted: #8aa2c1;
+  --neon-green: #00ff9c;
+  --neon-cyan: #00e5ff;
+  --neon-magenta: #ff4fd8;
+  --danger: #ff3864;
+  --border: #1e2a44;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(circle at top, #0b1020, #05070a 70%);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+h1, h2 {
+  letter-spacing: 0.05em;
+}
+
+h1 {
+  color: var(--neon-green);
+  text-shadow: 0 0 12px rgba(0,255,156,0.4);
+}
+
+h2 {
+  color: var(--neon-cyan);
+}
+
+p, li {
+  color: var(--muted);
+}
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 2rem 0;
+}
+
+/* Panels */
+.panel {
+  background: linear-gradient(180deg, #0b0f17, #070b12);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 0 1px rgba(0,255,255,0.05),
+              0 10px 30px rgba(0,0,0,0.6);
+}
+
+/* Buttons */
+button {
+  background: transparent;
+  color: var(--neon-green);
+  border: 1px solid var(--neon-green);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.08em;
+  transition: all 0.15s ease;
+}
+
+button:hover {
+  background: rgba(0,255,156,0.12);
+  box-shadow: 0 0 10px rgba(0,255,156,0.4);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Inputs */
+input, textarea, select {
+  width: 100%;
+  background: #05070a;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-family: inherit;
+}
+
+textarea {
+  min-height: 80px;
+}
+
+/* Audio */
+audio {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Output */
+pre {
+  background: #02040a;
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 6px;
+  color: var(--neon-magenta);
+  max-height: 260px;
+  overflow: auto;
+  font-size: 0.85rem;
+}
+
+/* Retro flair */
+.invader {
+  color: var(--neon-magenta);
+  text-shadow: 0 0 8px rgba(255,79,216,0.6);
+  font-size: 1.1rem;
+}
+
+/* Backing Track Source Tabs */
+.backing-source-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.source-tab {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.source-tab.active {
+  background: rgba(0, 255, 156, 0.1);
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+
+/* Sequences List */
+.sequences-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.sequence-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: #05070a;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sequence-item:hover {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+.sequence-item.selected {
+  border-color: var(--neon-green);
+  background: rgba(0, 255, 156, 0.1);
+}
+
+.sequence-item .seq-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sequence-item .seq-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.sequence-item .seq-bpm {
+  background: rgba(0, 229, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--neon-cyan);
+}
+
+.no-sequences {
+  text-align: center;
+  padding: 2rem;
+  color: var(--muted);
+}
+
+.no-sequences a {
+  color: var(--neon-green);
+  text-decoration: none;
+}
+
+.no-sequences a:hover {
+  text-decoration: underline;
+}
+
+/* Selected Sequence Info */
+.selected-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(0, 255, 156, 0.1);
+  border: 1px solid var(--neon-green);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.selected-info .info-icon {
+  font-size: 1.5rem;
+}
+
+#sequence-name {
+  flex: 1;
+  font-weight: 600;
+  color: var(--text);
+}
+
+#sequence-bpm {
+  background: rgba(0, 229, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--neon-cyan);
+}
+
+/* Source content */
+.source-content {
+  margin-bottom: 1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 1rem;
+  color: var(--muted);
+}
+</style>
+
+<h1>🌿 BIO-ACOUSTIC BATTLE v1.1.0 🌿</h1>
+
+<p class="invader">
+  ░░█▀█░█░█░▀█▀░█▀▀░█▀▄░█▀▀░█▀▄░░<br />
+  ░░█░█░█░█░░█░░█▀▀░█▀▄░█▀▀░█▀▄░░<br />
+  ░░▀▀▀░▀▀▀░░▀░░▀▀▀░▀░▀░▀▀▀░▀░▀░░
+</p>
+
+<p>
+Load a track. Record your voice. Mint the moment.
+</p>
+
+<hr />
+
+<section class="panel">
+  <h2>1 ▸ Load Backing Track</h2>
+
+  <!-- Sampler Sequences from localStorage -->
+  <div class="backing-source-tabs">
+    <button class="source-tab active" data-source="sampler">🎛️ Sampler Sequences</button>
+    <button class="source-tab" data-source="file">📁 Upload File</button>
+  </div>
+
+  <div class="source-content" id="sampler-source">
+    <div id="sampler-sequences-list" class="sequences-list">
+      <div class="loading">Loading saved sequences...</div>
+    </div>
+    <div id="selected-sequence-info" class="selected-info" style="display: none;">
+      <span class="info-icon">🎵</span>
+      <span id="sequence-name">-</span>
+      <span id="sequence-bpm">-</span>
+    </div>
+  </div>
+
+  <div class="source-content" id="file-source" style="display: none;">
+    <input id="audio-file" type="file" accept="audio/*" />
+  </div>
+
+  <audio id="playback" controls style="display: none;"></audio>
+</section>
+
+<section class="panel">
+  <h2>2 ▸ Record Live Audio</h2>
+  <p>Recording auto-syncs with playback.</p>
+
+  <button id="record-start">🎙 START</button>
+  <button id="record-stop" disabled>⏹ STOP</button>
+
+  <audio id="recorded-audio" controls></audio>
+</section>
+
+<section class="panel" id="mint-panel" hidden>
+  <h2>3 ▸ NFT CREATION</h2>
+
+  <label>Name</label>
+  <input id="mint-name" placeholder="Live Take #001" />
+
+  <br /><br />
+
+  <label>Description</label>
+  <textarea
+    id="mint-description"
+    placeholder="Recorded live in the void 🌌"
+  ></textarea>
+
+  <br /><br />
+
+  <label>NFT Standard</label>
+  <select id="mint-standard">
+    <option value="erc721">ERC-721 (1/1)</option>
+    <option value="erc1155">ERC-1155 (Edition)</option>
+  </select>
+
+  <br /><br />
+
+  <button id="mint-preview">👁 PREVIEW</button>
+  <button id="mint-pack">📦 PACK NFT</button>
+
+  <pre id="mint-output"></pre>
+</section>
+
+<!-- Load Strudel for sequence playback -->
+<script src="https://unpkg.com/@strudel/web@1.0.3"></script>
+
+<script>
+/**************************************
+ * State
+ **************************************/
+let backingFile = null;
+let selectedSequence = null;
+let backingSource = 'sampler'; // 'sampler' or 'file'
+let strudelPlaying = false;
+
+const playback = document.getElementById('playback');
+const fileInput = document.getElementById('audio-file');
+
+/**************************************
+ * Tab Switching
+ **************************************/
+document.querySelectorAll('.source-tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.source-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    backingSource = tab.dataset.source;
+
+    document.getElementById('sampler-source').style.display =
+      backingSource === 'sampler' ? 'block' : 'none';
+    document.getElementById('file-source').style.display =
+      backingSource === 'file' ? 'block' : 'none';
+  };
+});
+
+/**************************************
+ * Load Sampler Sequences from localStorage
+ **************************************/
+function loadSamplerSequences() {
+  const listEl = document.getElementById('sampler-sequences-list');
+
+  // Try nftBackingTracks first, fallback to samplerSequences
+  const backingTracks = JSON.parse(localStorage.getItem('nftBackingTracks') || '[]');
+  const savedSequences = JSON.parse(localStorage.getItem('samplerSequences') || '[]');
+
+  // Combine and dedupe
+  const allSequences = [...backingTracks];
+  savedSequences.forEach(seq => {
+    if (!allSequences.find(t => t.id === seq.id)) {
+      allSequences.push({
+        ...seq,
+        strudelPattern: seq.combinedStrudelPattern,
+        type: 'sampler_sequence'
+      });
+    }
+  });
+
+  if (allSequences.length === 0) {
+    listEl.innerHTML = `
+      <div class="no-sequences">
+        <p>No saved sequences found.</p>
+        <p><a href="/sampler">Create one in the Sampler</a></p>
+      </div>
+    `;
+    return;
+  }
+
+  // Sort by timestamp, newest first
+  allSequences.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  let html = '';
+  allSequences.forEach((seq, idx) => {
+    const name = seq.name || `Sequence #${idx + 1}`;
+    const bpm = seq.bpm || 120;
+    const notes = seq.totalNotes || seq.stats?.totalNotes || '?';
+    const date = seq.timestamp ? new Date(seq.timestamp).toLocaleDateString() : 'Unknown';
+
+    html += `
+      <div class="sequence-item" data-index="${idx}">
+        <div>
+          <div class="seq-name">${name}</div>
+          <div class="seq-meta">${notes} notes • ${date}</div>
+        </div>
+        <div class="seq-bpm">${bpm} BPM</div>
+      </div>
+    `;
+  });
+
+  listEl.innerHTML = html;
+
+  // Click handlers
+  document.querySelectorAll('.sequence-item').forEach((item, idx) => {
+    item.onclick = () => {
+      document.querySelectorAll('.sequence-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+
+      selectedSequence = allSequences[idx];
+      backingFile = null; // Clear file selection
+
+      // Show selected info
+      const infoEl = document.getElementById('selected-sequence-info');
+      infoEl.style.display = 'flex';
+      document.getElementById('sequence-name').textContent = selectedSequence.name || 'Untitled Sequence';
+      document.getElementById('sequence-bpm').textContent = `${selectedSequence.bpm || 120} BPM`;
+
+      console.log('🎛️ Selected sequence:', selectedSequence);
+    };
+  });
+
+  // Store sequences for later reference
+  window.samplerSequences = allSequences;
+}
+
+// Load on page load
+document.addEventListener('DOMContentLoaded', loadSamplerSequences);
+
+/**************************************
+ * File Upload Handler
+ **************************************/
+fileInput.onchange = (e) => {
+  backingFile = e.target.files[0] || null;
+  if (!backingFile) return;
+
+  selectedSequence = null; // Clear sequence selection
+  document.querySelectorAll('.sequence-item').forEach(i => i.classList.remove('selected'));
+  document.getElementById('selected-sequence-info').style.display = 'none';
+
+  playback.src = URL.createObjectURL(backingFile);
+  playback.style.display = 'block';
+  playback.load();
+};
+
+/**************************************
+ * Strudel Playback for Sequences
+ **************************************/
+function playStrudelSequence() {
+  if (!selectedSequence?.strudelPattern) {
+    console.warn('No Strudel pattern in selected sequence');
+    return false;
+  }
+
+  try {
+    // Stop any existing playback
+    if (typeof hush === 'function') hush();
+
+    // Play the pattern
+    eval(selectedSequence.strudelPattern);
+    strudelPlaying = true;
+    console.log('🎵 Playing Strudel sequence');
+    return true;
+  } catch (error) {
+    console.error('Strudel playback error:', error);
+    return false;
+  }
+}
+
+function stopStrudelSequence() {
+  if (typeof hush === 'function') {
+    hush();
+    strudelPlaying = false;
+    console.log('⏹️ Stopped Strudel sequence');
+  }
+}
+
+/**************************************
+ * Recording
+ **************************************/
+let mediaRecorder;
+let recordedChunks = [];
+let recordedBlob = null;
+
+const startBtn = document.getElementById('record-start');
+const stopBtn = document.getElementById('record-stop');
+const recordedAudio = document.getElementById('recorded-audio');
+const mintPanel = document.getElementById('mint-panel');
+
+startBtn.onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    recordedChunks = [];
+
+    mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      recordedBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+      recordedAudio.src = URL.createObjectURL(recordedBlob);
+      mintPanel.hidden = false;
+    };
+
+    // Start backing track playback
+    if (backingSource === 'sampler' && selectedSequence) {
+      // Play Strudel sequence as backing track
+      playStrudelSequence();
+    } else if (playback.src) {
+      // Play audio file as backing track
+      playback.currentTime = 0;
+      playback.play();
+    }
+
+    mediaRecorder.start();
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+
+    console.log('🎙️ Recording started');
+  } catch (error) {
+    console.error('Recording error:', error);
+    alert('Could not access microphone. Please grant permission.');
+  }
+};
+
+stopBtn.onclick = () => {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+  }
+
+  // Stop backing track
+  if (strudelPlaying) {
+    stopStrudelSequence();
+  }
+  playback.pause();
+
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+
+  console.log('⏹️ Recording stopped');
+};
+
+/**************************************
+ * Metadata
+ **************************************/
+function buildMetadata() {
+  const objectID = activeObjectID || 'ambient';
+  return {
+    name: document.getElementById('mint-name').value || 'New Observation',
+    status: 'staged',
+    category: activeDomain,
+    objectID: objectID,
+    description: document.getElementById('mint-description').value,
+    metadata: {
+      strudelPattern: `s("${objectID}").gain(1)`,
+      attributes: [
+        { trait_type: 'Domain', value: activeDomain },
+        { trait_type: 'Object', value: objectID },
+        { trait_type: 'Standard', value: 'v1.1.0-Bio' }
+      ]
+    }
+  };
+}
+
+
+document.getElementById('mint-preview').onclick = () => {
+  document.getElementById('mint-output').textContent =
+    JSON.stringify(buildMetadata(), null, 2);
+};
+
+document.getElementById('mint-pack').onclick = async () => {
+  const metadata = buildMetadata();
+  const nftId = `bio-${Date.now()}`;
+  
+  const packed = {
+    id: nftId,
+    ...metadata,
+    blob: recordedBlob, // The actual vocal take
+    packedAt: new Date().toISOString()
+  };
+
+  // Use the new shared library to save to IndexedDB
+  if (window.nftStrudelPlayer) {
+    const db = await window.nftStrudelPlayer.getDB();
+    const tx = db.transaction(['nfts'], 'readwrite');
+    tx.objectStore('nfts').add(packed);
+    
+    tx.oncomplete = () => {
+      document.getElementById('mint-output').textContent = "✅ STAGED IN LOCAL DB: " + nftId;
+      console.log('Bio-NFT Staged for Minting Page', packed);
+    };
+  }
+};
+
+</script>
+
+</BaseLayout>
+

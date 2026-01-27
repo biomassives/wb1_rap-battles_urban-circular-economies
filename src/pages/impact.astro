@@ -1,0 +1,292 @@
+---
+/**
+ * achievements.astro - Worldbridger One: Command Console
+ * Theme: Sci-Fi / Space Invaders / High-Contrast Accessible
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Impact Console" 
+  description="Verifiable Sustainable Development Tracking"
+  activeSection="achievements"
+>
+
+  <section class="scanline-overlay"></section>
+
+  <section class="achievements-hero">
+    <div class="container mx-auto">
+      <h1 class="glitch-text">SYSTEM::IMPACT_MONITOR</h1>
+      <p class="hero-subtitle">WORLD_BRIDGER_ONE // DATA_LAYER_01</p>
+      
+      <div id="impact-dashboard" class="impact-metrics-grid">
+        <div class="metric-card">
+          <span class="metric-icon">💧</span>
+          <div class="metric-value" id="water-metric">1,240L</div>
+          <div class="metric-label">H2O_PURIFIED</div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">☀️</span>
+          <div class="metric-value" id="energy-metric">450kWh</div>
+          <div class="metric-label">THERMAL_HARVEST</div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-icon">♻️</span>
+          <div class="metric-value" id="gpl-metric">12</div>
+          <div class="metric-label">GPL_UPLOADS</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="filters-section">
+    <div class="container mx-auto">
+      <div class="filter-flex-container">
+        <div class="filter-chips" id="category-filters">
+          <button class="filter-chip active" data-category="all">TOTAL_VIEW</button>
+          <button class="filter-chip" data-category="energy">SOLAR_FORCE</button>
+          <button class="filter-chip" data-category="water">AQUA_RESILIENCE</button>
+          <button class="filter-chip" data-category="circular">LOOP_ECONOMY</button>
+          <button class="filter-chip" data-category="educational">OPEN_SOURCE</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-section">
+    <div class="container mx-auto">
+      <div id="achievements-grid" class="wb-grid">
+        </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  :root {
+    --neon-green: #00ff41; /* Classic Matrix/Invaders Green */
+    --neon-blue: #00f2ff;
+    --neon-pink: #ff00ff;
+    --space-bg: #050505;
+    --card-bg: #111111;
+    --text-main: #ffffff;
+    --text-muted: #aaaaaa;
+  }
+
+  /* Scanline Effect */
+  .scanline-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  body {
+    background-color: var(--space-bg);
+    color: var(--text-main);
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .achievements-hero {
+    padding: 4rem 1rem;
+    border-bottom: 2px solid var(--neon-green);
+    background: #000;
+  }
+
+  .glitch-text {
+    font-size: 3rem;
+    color: var(--neon-green);
+    text-shadow: 2px 2px #ff0000, -2px -2px #0000ff;
+    letter-spacing: 5px;
+  }
+
+  .impact-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .metric-card {
+    border: 1px solid var(--neon-green);
+    padding: 1rem;
+    background: #000;
+  }
+
+  .wb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+  }
+
+  /* Achievement Cards */
+  .wb-card {
+    background: var(--card-bg);
+    border: 2px solid #333;
+    padding: 1.5rem;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .wb-card:hover {
+    border-color: var(--neon-blue);
+    transform: scale(1.02);
+    box-shadow: 0 0 15px var(--neon-blue);
+  }
+
+  .wb-card.earned {
+    border-color: var(--neon-green);
+  }
+
+  .card-title {
+    color: var(--neon-green);
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    text-transform: uppercase;
+  }
+
+  .card-desc {
+    color: var(--text-main); /* High contrast light on dark */
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+  }
+
+  .utility-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .btn-util {
+    background: #222;
+    color: var(--neon-blue);
+    border: 1px solid var(--neon-blue);
+    padding: 0.5rem;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+
+  .btn-util:hover {
+    background: var(--neon-blue);
+    color: #000;
+  }
+
+  .filter-chip {
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    margin-right: 0.5rem;
+  }
+
+  .filter-chip.active {
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+  }
+</style>
+
+<script>
+  class WorldbridgerManager {
+    constructor() {
+      this.credentials = [];
+    }
+
+    async initialize() {
+      this.loadData();
+      this.render();
+      this.setupFilters();
+    }
+
+    loadData() {
+      this.credentials = [
+        {
+          id: 'sol-001',
+          name: 'Thermal Concentrator',
+          category: 'energy',
+          description: 'Constructed a parabolic solar concentrator for clean cooking and steam generation.',
+          badge: '📡',
+          impact_value: '800°C Peak',
+          gpl_link: '/archive/thermal-concentrator-v1.zip',
+          on_chain_id: '0xsun_99',
+          is_mentor: true,
+          status: 'earned'
+        },
+        
+        {
+          id: 'w-101',
+          name: 'Aqua Filter Prime',
+          category: 'water',
+          description: 'Deployed bio-sand filtration for community sanitation in Kakuma.',
+          badge: '💧',
+          impact_value: '1000L/Day',
+          gpl_link: '/archive/water-kit.pdf',
+          on_chain_id: '0xwater_01',
+          status: 'earned'
+        },
+        {
+          id: 'air-202',
+          name: 'Atmo Monitor',
+          category: 'air',
+          description: 'Mesh-network air quality node using ESP32 and vanilla JS dashboard.',
+          badge: '🌬️',
+          impact_value: 'PM2.5 Tracked',
+          gpl_link: '/code/mesh-node.zip',
+          status: 'earned'
+        },
+        {
+          id: 'ce-303',
+          name: 'Plastic Alchemist',
+          category: 'circular',
+          description: 'Converting Type 2 plastics into construction-grade bricks.',
+          badge: '🧱',
+          impact_value: '50kg Upcycled',
+          status: 'in-progress'
+        }
+      ];
+    }
+
+    setupFilters() {
+      document.querySelectorAll('.filter-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          this.render(btn.dataset.category);
+        });
+      });
+    }
+
+    render(filter = 'all') {
+      const container = document.getElementById('achievements-grid');
+      const filtered = filter === 'all' ? this.credentials : this.credentials.filter(c => c.category === filter);
+
+      container.innerHTML = filtered.map(c => `
+        <div class="wb-card ${c.status}">
+          <div class="card-header">
+            <span class="badge-icon">${c.badge}</span>
+            <span class="impact-tag" style="color:var(--neon-pink)">${c.impact_value}</span>
+          </div>
+          <h3 class="card-title">${c.name}</h3>
+          <p class="card-desc">${c.description}</p>
+          <div class="utility-zone">
+            ${c.gpl_link ? `<a href="${c.gpl_link}" class="btn-util">DOWNLOAD_GPL_SRC</a>` : ''}
+            ${c.is_mentor ? `<button class="btn-util mentor" style="border-color:var(--neon-green); color:var(--neon-green)">INIT_MENTOR_MODE</button>` : ''}
+          </div>
+          <div class="card-footer" style="margin-top:1rem; font-size:0.7rem; color:var(--neon-blue)">
+            ID: ${c.on_chain_id || 'LOCAL_ONLY'}
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  const manager = new WorldbridgerManager();
+  manager.initialize();
+</script>

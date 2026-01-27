@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Worldbridger One - Brownian Physics</title>
+    <style>
+        :root {
+            --bg-color: #05050a; 
+            --bubble-top: #70d6ff;
+            --bubble-bottom: #ff9770;
+            --lcd-neon: #39ff14;
+        }
+
+        body {
+            background: radial-gradient(circle at bottom, #1a1b3a 0%, #05050a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* 1. CYCLING GLIMMER HEADER */
+        .worldbridger {
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 0;
+            background: linear-gradient(
+                120deg, 
+                var(--bubble-top) 20%, 
+                #ffffff 40%, 
+                #ffffff 60%,
+                var(--bubble-bottom) 80%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glimmer-cycle 6s linear infinite;
+            text-shadow: 0px 8px 0px #2d1b4d, 0px 15px 25px rgba(0,0,0,0.6);
+            filter: url(#organic-glow);
+        }
+
+        .one { font-size: 14rem; line-height: 0.7; margin-top: -15px; }
+
+        @keyframes glimmer-cycle {
+            to { background-position: -200% center; }
+        }
+
+        /* 2. DUAL-PHYSICS PARTICLES */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            /* We use CSS variables for individual physics */
+            animation: brownian-rise var(--duration) ease-in-out var(--delay) infinite;
+        }
+
+        @keyframes brownian-rise {
+            0% { 
+                transform: translate(0, 0) scale(0); 
+                opacity: 0; 
+            }
+            20% { opacity: var(--max-opacity); }
+            /* Mid-point "Wander" using the --drift variable */
+            50% { 
+                transform: translate(var(--drift), -50vh) scale(1.2); 
+            }
+            100% { 
+                transform: translate(calc(var(--drift) * -1), -110vh) scale(0.3); 
+                opacity: 0; 
+            }
+        }
+
+        /* 3. LCD STYLING */
+        .details-container {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--lcd-neon);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
+        }
+
+        .lcd-text {
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--lcd-neon);
+            text-shadow: 0 0 8px var(--lcd-neon);
+            letter-spacing: 2px;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <svg width="0" height="0" style="position:absolute;">
+        <filter id="organic-glow">
+            <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="1" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
+        </filter>
+    </svg>
+
+    <div class="header-container">
+        <h1 class="worldbridger">Worldbridger</h1>
+        <h1 class="worldbridger one">One</h1>
+    </div>
+
+    <div class="details-container">
+        <div class="lcd-text">RAP BATTLE w/ FANA KE</div>
+        <div class="lcd-text">REGGAE PRODUCTION with OT</div>
+        <div class="lcd-text" style="font-size: 0.8rem; opacity: 0.7;">ECOCITY / EXOTOPIA NFT REWARDS</div>
+    </div>
+
+    <script>
+        function spawnParticle(type) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            
+            // Physics Variables
+            const isSpore = type === 'spore';
+            const size = isSpore ? Math.random() * 3 : Math.random() * 6 + 2;
+            const drift = (Math.random() - 0.5) * (isSpore ? 400 : 150); // Spores wander wider
+            const duration = isSpore ? 8 + Math.random() * 5 : 4 + Math.random() * 3;
+            
+            p.style.setProperty('--duration', `${duration}s`);
+            p.style.setProperty('--delay', `${Math.random() * 5}s`);
+            p.style.setProperty('--drift', `${drift}px`);
+            p.style.setProperty('--max-opacity', isSpore ? '0.4' : '0.8');
+            
+            p.style.width = p.style.height = `${size}px`;
+            p.style.left = `${Math.random() * 100}vw`;
+            p.style.bottom = `-5vh`;
+            p.style.backgroundColor = isSpore ? '#70d6ff' : '#ffcc33';
+            if (!isSpore) p.style.boxShadow = `0 0 10px #ffcc33`;
+
+            document.body.appendChild(p);
+            
+            // Clean up
+            setTimeout(() => p.remove(), (duration + 5) * 1000);
+        }
+
+        // Spawn loop: Fast sparks and slow, drifting spores
+        setInterval(() => spawnParticle('spark'), 400);
+        setInterval(() => spawnParticle('spore'), 800);
+    </script>
+</body>
+</html>

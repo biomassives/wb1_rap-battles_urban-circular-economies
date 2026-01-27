@@ -3,7 +3,7 @@
  * Auto-saves form data to localStorage to prevent data loss
  * Restores form data when user returns
  */
-
+/*  */
 class FormStorage {
   constructor() {
     this.prefix = 'form_data_';
@@ -219,6 +219,73 @@ class FormStorage {
 
     console.log('All forms cleared from localStorage');
   }
+
+  /**
+   * Pushes the locally stored form data to the server API
+   */
+  async pushToServer(formId, endpoint = '/api/profile/upsert') {
+    const key = this.getKey(formId);
+    const savedData = JSON.parse(localStorage.getItem(key));
+
+    if (!savedData) return { success: false, error: 'No local data found' };
+
+    const walletAddress = window.walletManager?.connectedWallet;
+    if (!walletAddress) return { success: false, error: 'No wallet connected' };
+
+    try {
+      // 1. Prepare the payload to match your Nile DB schema
+      const payload = {
+        walletAddress: walletAddress,
+        username: savedData.fields.username || null,
+        email: savedData.fields.email || null,
+        bio: savedData.fields.bio || null,
+        location: savedData.fields.location || null,
+        // Convert array to stringified JSON for the Postgres JSONB column
+        favoriteAnimals: JSON.stringify(this.getMultiSelects(formId, 'favoriteAnimals')),
+        themePreference: savedData.fields.themeMode || 'auto',
+        notificationSettings: JSON.stringify({
+          emailDigest: savedData.fields.emailDigest || 'weekly',
+          marketing: !!savedData.fields.notifyKakumaImpact
+        })
+      };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json', // MUST MATCH API CHECK
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        return { success: true, profile: result.profile };
+      } else {
+        return { success: false, error: result.message || 'Server error' };
+      }
+    } catch (error) {
+      console.error("Network/Sync error:", error);
+      return { success: false, error: error.message };
+    }
+  }
+
+
+
+
+  /**
+   * Helper to grab multiple checkboxes for the JSONB field
+   */
+  getMultiSelects(formId, name) {
+    const form = document.getElementById(formId);
+    return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`))
+      .map(cb => cb.value);
+  }
+
+
+
 
   /**
    * Get all saved forms for current wallet

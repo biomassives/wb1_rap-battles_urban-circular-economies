@@ -421,8 +421,7 @@
     </div>
   </div>
 
-  <script is:inline src="/scripts/bio-synth-generator.js"></script>
-  <script is:inline>
+  <script>
     const sampleDefinitions = [
       { id: 'kick', name: 'Kick Drum', description: 'Bio-inspired frequency sweep', icon: '🥁' },
       { id: 'snare', name: 'Snare Drum', description: 'Fractal noise synthesis', icon: '🥁' },
@@ -460,6 +459,11 @@
       { id: 'reggae-b', name: 'Reggae Bass B', description: 'Dancehall energy', icon: '🎵', note: 'B' },
       { id: 'dub-e', name: 'Dub Echo E', description: 'Classic dub delay', icon: '🔊', note: 'E', dub: true },
     ];
+</script>
+<script src="/scripts/bio-synth-generator.js" client:load></script>
+<script src="/scripts/bio-synth-ui.js" client:load></script>
+<script>
+
 
     const generator = new BioSynthGenerator();
     const generatedSamples = new Map();

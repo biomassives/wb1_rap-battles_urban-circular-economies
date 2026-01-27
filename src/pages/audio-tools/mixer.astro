@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="WB1 Pro Mixer" activeSection="audio-tools">
+  <div class="mixer-page scanlines arcade-screen">
+    <div class="container mx-auto">
+      
+      <div id="battle-display" class="pixel-border mb-6 p-4 bg-black">
+        <div class="flex justify-between items-center">
+          <span class="neon-text blink">LIVE BATTLE MODE</span>
+          <div id="bpm-display" class="mono text-cyan text-xl">120 BPM</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <aside class="card-retro-neon p-4">
+          <h3 class="mono text-sm border-b border-gray-700 pb-2 mb-4">LOCAL_DB_TRACKS</h3>
+          <ul id="localTrackList" class="track-list mono text-xs">
+            <li class="opacity-50">Searching IndexedDB...</li>
+          </ul>
+        </aside>
+
+        <main class="lg:col-span-2 card-retro-neon p-4">
+           <div id="strudel-editor-container" class="h-64 mb-4">
+              <textarea id="liveCodeEditor" class="w-full h-full bg-black text-green-400 p-4 font-mono"></textarea>
+           </div>
+           
+           <div class="mixer-faders grid grid-cols-4 gap-4">
+             {['Bass', 'Lead', 'Bio', 'Amb'].map(label => (
+               <div class="fader-col text-center">
+                 <div class="fader-track">
+                   <input type="range" orient="vertical" class="wb1-fader" />
+                 </div>
+                 <span class="mono text-[10px]">{label}</span>
+               </div>
+             ))}
+           </div>
+        </main>
+
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline src="/scripts/sampler-local-tracks.js"></script>
+<script is:inline src="/scripts/battle-strudel-player.js"></script>
+
+<script is:inline>
+  // Bridge your scripts to the UI
+  window.addEventListener('load', async () => {
+    console.log("🛠️ WB1: Integrating Sampler & Battle Systems...");
+
+    // 1. Initialize Sampler Local Tracks
+    if (window.samplerLocalTracks) {
+        await window.samplerLocalTracks.init();
+        console.log("✅ Sampler DB Connected");
+    }
+
+    // 2. Initialize Battle Player
+    if (window.battleStrudelPlayer) {
+        window.battleStrudelPlayer.setup('#liveCodeEditor');
+        console.log("✅ Battle Engine Armed");
+    }
+  });
+
+  // Listen for track selection from your IndexedDB script
+  window.addEventListener('trackLoaded', (e) => {
+    const { trackName, strudelCode } = e.detail;
+    console.log(`Loading ${trackName} into Battle Player`);
+    
+    // Inject code from IndexedDB into the live editor
+    const editor = document.getElementById('liveCodeEditor');
+    editor.value = strudelCode;
+  });
+</script>
+
+<style>
+  .wb1-fader {
+    appearance: slider-vertical;
+    width: 20px;
+    height: 150px;
+    background: #111;
+  }
+  .track-list li {
+    padding: 8px;
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+  }
+  .track-list li:hover {
+    background: #00ff8822;
+    color: #00ff88;
+  }
+</style>
