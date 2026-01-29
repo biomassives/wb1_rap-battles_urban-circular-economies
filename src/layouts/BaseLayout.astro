@@ -16,6 +16,7 @@ import SecurityEducationModal from '../components/SecurityEducationModal.astro';
 import RecoveryPhraseModal from '../components/RecoveryPhraseModal.astro';
 import RecoveryPhraseVerification from '../components/RecoveryPhraseVerification.astro';
 import WalletPINSetup from '../components/WalletPINSetup.astro';
+import WalletUnlockModal from '../components/WalletUnlockModal.astro';
 
 // Challenge System
 import ChallengeModal from '../components/ChallengeModal.astro';
@@ -311,6 +312,352 @@ const currentYear = new Date().getFullYear();
       font-weight: 700;
     }
 
+    /* ============================================ */
+    /* SPACE INVADER MENU BAR - 1982 ARCADE STYLE  */
+    /* ============================================ */
+
+    /* Import pixel font for authentic 1982 feel */
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    /* The minimal top bar - zero height impact */
+    .arcade-menu-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      z-index: 10001;
+      background: linear-gradient(180deg,
+        rgba(0, 0, 0, 0.95) 0%,
+        rgba(0, 0, 0, 0.85) 100%);
+      border-bottom: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      transition: all 0.3s ease;
+      /* CRT Scanline effect */
+      background-image:
+        linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.85)),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 255, 65, 0.03) 2px,
+          rgba(0, 255, 65, 0.03) 4px
+        );
+    }
+
+    .arcade-menu-bar::before {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        #39ff14 20%,
+        #00ffff 50%,
+        #39ff14 80%,
+        transparent 100%);
+      opacity: 0.8;
+      animation: scanline-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes scanline-glow {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* Left side: Invader + Brand */
+    .arcade-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* CSS Pixel Art Space Invader - 11x8 grid */
+    .pixel-invader {
+      width: 22px;
+      height: 16px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .pixel-invader-sprite {
+      width: 100%;
+      height: 100%;
+      background-color: #39ff14;
+      /* Classic Space Invader shape using CSS clip-path */
+      clip-path: polygon(
+        /* Row 1 - antennae */
+        18% 0%, 27% 0%, 27% 12%, 18% 12%,
+        73% 0%, 82% 0%, 82% 12%, 73% 12%,
+        /* Row 2 */
+        27% 12%, 73% 12%, 73% 25%, 27% 25%,
+        /* Row 3 - full width */
+        9% 25%, 91% 25%, 91% 37%, 9% 37%,
+        /* Row 4 - with eyes */
+        0% 37%, 100% 37%, 100% 50%, 0% 50%,
+        /* Row 5 */
+        0% 50%, 100% 50%, 100% 62%, 0% 62%,
+        /* Row 6 - narrower */
+        18% 62%, 82% 62%, 82% 75%, 18% 75%,
+        /* Row 7 - legs */
+        18% 75%, 36% 75%, 36% 100%, 18% 100%,
+        64% 75%, 82% 75%, 82% 100%, 64% 100%
+      );
+      filter: drop-shadow(0 0 6px #39ff14) drop-shadow(0 0 12px #39ff14);
+      animation: invader-idle 1s steps(2) infinite;
+    }
+
+    /* Alternative: Use box-shadow pixel art for authentic look */
+    .pixel-invader-alt {
+      width: 2px;
+      height: 2px;
+      background: transparent;
+      /* 11x8 pixel invader using box-shadow */
+      box-shadow:
+        /* Row 1 - antennae */
+        4px 0 0 #39ff14, 18px 0 0 #39ff14,
+        /* Row 2 */
+        6px 2px 0 #39ff14, 8px 2px 0 #39ff14, 10px 2px 0 #39ff14, 12px 2px 0 #39ff14, 14px 2px 0 #39ff14, 16px 2px 0 #39ff14,
+        /* Row 3 */
+        2px 4px 0 #39ff14, 4px 4px 0 #39ff14, 6px 4px 0 #39ff14, 8px 4px 0 #39ff14, 10px 4px 0 #39ff14, 12px 4px 0 #39ff14, 14px 4px 0 #39ff14, 16px 4px 0 #39ff14, 18px 4px 0 #39ff14, 20px 4px 0 #39ff14,
+        /* Row 4 - with eye holes */
+        0px 6px 0 #39ff14, 2px 6px 0 #39ff14, 6px 6px 0 #39ff14, 8px 6px 0 #39ff14, 10px 6px 0 #39ff14, 12px 6px 0 #39ff14, 14px 6px 0 #39ff14, 16px 6px 0 #39ff14, 20px 6px 0 #39ff14, 22px 6px 0 #39ff14,
+        /* Row 5 */
+        0px 8px 0 #39ff14, 2px 8px 0 #39ff14, 4px 8px 0 #39ff14, 6px 8px 0 #39ff14, 8px 8px 0 #39ff14, 10px 8px 0 #39ff14, 12px 8px 0 #39ff14, 14px 8px 0 #39ff14, 16px 8px 0 #39ff14, 18px 8px 0 #39ff14, 20px 8px 0 #39ff14, 22px 8px 0 #39ff14,
+        /* Row 6 */
+        4px 10px 0 #39ff14, 6px 10px 0 #39ff14, 8px 10px 0 #39ff14, 10px 10px 0 #39ff14, 12px 10px 0 #39ff14, 14px 10px 0 #39ff14, 16px 10px 0 #39ff14, 18px 10px 0 #39ff14,
+        /* Row 7 - legs spread */
+        2px 12px 0 #39ff14, 6px 12px 0 #39ff14, 16px 12px 0 #39ff14, 20px 12px 0 #39ff14,
+        /* Row 8 - feet */
+        0px 14px 0 #39ff14, 2px 14px 0 #39ff14, 20px 14px 0 #39ff14, 22px 14px 0 #39ff14;
+      filter: drop-shadow(0 0 4px #39ff14);
+      transform: scale(0.9);
+    }
+
+    @keyframes invader-idle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1px); }
+    }
+
+    /* Hover animation - invader comes alive */
+    .pixel-invader:hover .pixel-invader-alt {
+      animation: invader-march 0.3s steps(2) infinite;
+      box-shadow:
+        /* Frame 2 - legs together */
+        4px 0 0 #39ff14, 18px 0 0 #39ff14,
+        6px 2px 0 #39ff14, 8px 2px 0 #39ff14, 10px 2px 0 #39ff14, 12px 2px 0 #39ff14, 14px 2px 0 #39ff14, 16px 2px 0 #39ff14,
+        2px 4px 0 #39ff14, 4px 4px 0 #39ff14, 6px 4px 0 #39ff14, 8px 4px 0 #39ff14, 10px 4px 0 #39ff14, 12px 4px 0 #39ff14, 14px 4px 0 #39ff14, 16px 4px 0 #39ff14, 18px 4px 0 #39ff14, 20px 4px 0 #39ff14,
+        0px 6px 0 #39ff14, 2px 6px 0 #39ff14, 6px 6px 0 #39ff14, 8px 6px 0 #39ff14, 10px 6px 0 #39ff14, 12px 6px 0 #39ff14, 14px 6px 0 #39ff14, 16px 6px 0 #39ff14, 20px 6px 0 #39ff14, 22px 6px 0 #39ff14,
+        0px 8px 0 #39ff14, 2px 8px 0 #39ff14, 4px 8px 0 #39ff14, 6px 8px 0 #39ff14, 8px 8px 0 #39ff14, 10px 8px 0 #39ff14, 12px 8px 0 #39ff14, 14px 8px 0 #39ff14, 16px 8px 0 #39ff14, 18px 8px 0 #39ff14, 20px 8px 0 #39ff14, 22px 8px 0 #39ff14,
+        4px 10px 0 #39ff14, 6px 10px 0 #39ff14, 8px 10px 0 #39ff14, 10px 10px 0 #39ff14, 12px 10px 0 #39ff14, 14px 10px 0 #39ff14, 16px 10px 0 #39ff14, 18px 10px 0 #39ff14,
+        /* Legs together */
+        4px 12px 0 #39ff14, 8px 12px 0 #39ff14, 14px 12px 0 #39ff14, 18px 12px 0 #39ff14,
+        6px 14px 0 #39ff14, 8px 14px 0 #39ff14, 14px 14px 0 #39ff14, 16px 14px 0 #39ff14;
+      filter: drop-shadow(0 0 8px #39ff14) drop-shadow(0 0 16px #00ffff);
+    }
+
+    @keyframes invader-march {
+      0%, 100% { transform: scale(0.9) translateX(0); }
+      50% { transform: scale(0.9) translateX(2px); }
+    }
+
+    /* Glitchy 1982 Pixel Font Brand Name */
+    .arcade-brand {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #39ff14;
+      text-shadow:
+        0 0 5px #39ff14,
+        0 0 10px #39ff14,
+        0 0 20px #00ff00,
+        2px 2px 0 #003300;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .arcade-brand::before {
+      content: 'WORLDBRIDGER';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #ff0040;
+      clip-path: inset(0 100% 0 0);
+      animation: glitch-1 3s infinite linear;
+    }
+
+    .arcade-brand::after {
+      content: 'ONE';
+      position: absolute;
+      right: -28px;
+      top: 0;
+      color: #00ffff;
+      text-shadow:
+        0 0 5px #00ffff,
+        0 0 10px #00ffff;
+      animation: glitch-2 2.5s infinite linear;
+    }
+
+    .arcade-brand .brand-one {
+      color: #00ffff;
+      margin-left: 4px;
+      text-shadow:
+        0 0 5px #00ffff,
+        0 0 10px #00ffff,
+        0 0 20px #0088ff;
+    }
+
+    @keyframes glitch-1 {
+      0%, 90%, 100% { clip-path: inset(0 100% 0 0); }
+      92% { clip-path: inset(0 0 0 0); transform: translateX(-2px); }
+      94% { clip-path: inset(0 100% 0 0); }
+      96% { clip-path: inset(0 0 0 0); transform: translateX(2px); }
+      98% { clip-path: inset(0 100% 0 0); }
+    }
+
+    @keyframes glitch-2 {
+      0%, 85%, 100% { opacity: 1; transform: translateX(0); }
+      87% { opacity: 0.8; transform: translateX(1px) skewX(5deg); }
+      89% { opacity: 1; transform: translateX(-1px); }
+      91% { opacity: 0.9; transform: translateX(0) skewX(-2deg); }
+    }
+
+    /* Right side: Menu toggle hint */
+    .arcade-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu-hint {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      color: rgba(57, 255, 20, 0.5);
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+    }
+
+    .arcade-menu-bar:hover .menu-hint {
+      color: #39ff14;
+      text-shadow: 0 0 5px #39ff14;
+    }
+
+    .menu-key {
+      display: inline-block;
+      padding: 2px 6px;
+      background: rgba(57, 255, 20, 0.1);
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      border-radius: 3px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      color: #39ff14;
+      margin-left: 4px;
+    }
+
+    /* When menu is expanded */
+    .arcade-menu-bar.menu-active {
+      background: linear-gradient(180deg,
+        rgba(0, 20, 0, 0.98) 0%,
+        rgba(0, 10, 0, 0.95) 100%);
+    }
+
+    .arcade-menu-bar.menu-active::before {
+      background: linear-gradient(90deg,
+        #ff0040 0%,
+        #39ff14 25%,
+        #00ffff 50%,
+        #39ff14 75%,
+        #ff0040 100%);
+      animation: rainbow-scan 2s linear infinite;
+    }
+
+    @keyframes rainbow-scan {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .arcade-menu-bar.menu-active .arcade-brand {
+      animation: brand-pulse 0.5s ease-out;
+    }
+
+    @keyframes brand-pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Hide the old toggle elements */
+    .space-invader-toggle,
+    .toggle-label,
+    .screen-space-indicator {
+      display: none !important;
+    }
+
+    /* Header hidden state */
+    .header-main {
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+      margin-top: 32px; /* Space for arcade bar */
+    }
+
+    .header-main.header-collapsed {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+    }
+
+    /* When menu is open, show header */
+    .header-main.header-expanded {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+      position: relative;
+    }
+
+    /* Main content - no padding adjustment needed, arcade bar is tiny */
+    .main-content {
+      transition: margin-top 0.4s ease;
+      margin-top: 0;
+    }
+
+    body.menu-collapsed .main-content {
+      margin-top: 0;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 480px) {
+      .arcade-brand {
+        font-size: 7px;
+      }
+      .arcade-brand .brand-one {
+        display: none;
+      }
+      .menu-hint {
+        display: none;
+      }
+      .pixel-invader-alt {
+        transform: scale(0.7);
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .pixel-invader-alt,
+      .arcade-brand::before,
+      .arcade-brand::after,
+      .arcade-menu-bar::before {
+        animation: none !important;
+      }
+    }
+
     /* Challenge navigation buttons */
     .challenge-nav-group {
       display: flex;
@@ -483,9 +830,30 @@ const currentYear = new Date().getFullYear();
   <div class="scanline-overlay"></div>
 
   <!-- ============================================ -->
+  <!-- ARCADE MENU BAR - 1982 SPACE INVADERS STYLE -->
+  <!-- ============================================ -->
+  <div id="arcade-menu-bar" class="arcade-menu-bar" role="navigation" aria-label="Main menu toggle">
+    <!-- Left: Invader + Brand -->
+    <div class="arcade-left">
+      <!-- Pixel Art Space Invader -->
+      <div class="pixel-invader" id="menu-invader" title="Click to toggle menu (or press M)" tabindex="0" role="button" aria-pressed="false">
+        <div class="pixel-invader-alt"></div>
+      </div>
+      <!-- Glitchy Brand Name -->
+      <div class="arcade-brand">
+        WORLDBRIDGER<span class="brand-one">ONE</span>
+      </div>
+    </div>
+    <!-- Right: Menu hint -->
+    <div class="arcade-right">
+      <span class="menu-hint">PRESS <span class="menu-key">M</span> FOR MENU</span>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
   <!-- HEADER & NAVIGATION -->
   <!-- ============================================ -->
-  <header class="header-main">
+  <header class="header-main header-collapsed" id="main-header">
     <div class="container mx-auto flex justify-between items-center">
       <nav class="nav-primary ">
         
@@ -775,6 +1143,7 @@ const currentYear = new Date().getFullYear();
   <RecoveryPhraseModal />
   <RecoveryPhraseVerification />
   <WalletPINSetup />
+  <WalletUnlockModal />
 
   <!-- ============================================ -->
   <!-- CHALLENGE SYSTEM MODALS -->
@@ -1026,8 +1395,14 @@ const currentYear = new Date().getFullYear();
       // Check if already has wallet using the proper wallet detection
       const hasExistingWallet = window.hasWallet && window.hasWallet();
       if (hasExistingWallet) {
-        console.log('ℹ️ Wallet already exists');
-        alert('Wallet unlock coming soon! For now, your existing wallet is active.');
+        console.log('ℹ️ Wallet already exists, showing unlock modal');
+        // Show unlock modal for existing wallet
+        if (window.showWalletUnlock) {
+          window.showWalletUnlock();
+        } else {
+          console.error('Unlock modal not loaded');
+          alert('Wallet unlock loading... Please refresh and try again.');
+        }
         return;
       }
 
@@ -1125,6 +1500,105 @@ const currentYear = new Date().getFullYear();
     } else {
       window.addEventListener('load', generateSpores);
     }
+
+    // ============================================
+    // ARCADE MENU BAR - 1982 SPACE INVADERS STYLE
+    // ============================================
+    function initArcadeMenuBar() {
+      const arcadeBar = document.getElementById('arcade-menu-bar');
+      const invader = document.getElementById('menu-invader');
+      const header = document.getElementById('main-header');
+      const menuHint = document.querySelector('.menu-hint');
+
+      if (!arcadeBar || !invader || !header) return;
+
+      // Load saved preference (default: collapsed for max screen space)
+      const menuState = localStorage.getItem('wb1_menu_state') || 'collapsed';
+
+      const expandMenu = () => {
+        header.classList.remove('header-collapsed');
+        header.classList.add('header-expanded');
+        arcadeBar.classList.add('menu-active');
+        invader.setAttribute('aria-pressed', 'true');
+        document.body.classList.remove('menu-collapsed');
+        if (menuHint) menuHint.innerHTML = 'PRESS <span class="menu-key">M</span> TO HIDE';
+        localStorage.setItem('wb1_menu_state', 'expanded');
+        console.log('👾 MENU_ACTIVATED');
+      };
+
+      const collapseMenu = () => {
+        header.classList.add('header-collapsed');
+        header.classList.remove('header-expanded');
+        arcadeBar.classList.remove('menu-active');
+        invader.setAttribute('aria-pressed', 'false');
+        document.body.classList.add('menu-collapsed');
+        if (menuHint) menuHint.innerHTML = 'PRESS <span class="menu-key">M</span> FOR MENU';
+        localStorage.setItem('wb1_menu_state', 'collapsed');
+        console.log('👾 MAX_SCREEN_MODE');
+      };
+
+      // Set initial state
+      if (menuState === 'expanded') {
+        expandMenu();
+      } else {
+        collapseMenu();
+      }
+
+      // Click handler for invader
+      const toggleMenu = () => {
+        const isCollapsed = header.classList.contains('header-collapsed');
+        if (isCollapsed) {
+          expandMenu();
+        } else {
+          collapseMenu();
+        }
+      };
+
+      invader.addEventListener('click', toggleMenu);
+
+      // Also allow clicking the brand name to toggle
+      const brand = document.querySelector('.arcade-brand');
+      if (brand) {
+        brand.addEventListener('click', toggleMenu);
+      }
+
+      // Keyboard: Enter/Space on invader
+      invader.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleMenu();
+        }
+      });
+
+      // Keyboard shortcut: Press 'M' to toggle menu
+      document.addEventListener('keydown', (e) => {
+        // Only if not typing in an input
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+        if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          toggleMenu();
+        }
+      });
+
+      // Add hover sound effect (optional - visual feedback via CSS)
+      invader.addEventListener('mouseenter', () => {
+        invader.style.transform = 'scale(1.1)';
+      });
+      invader.addEventListener('mouseleave', () => {
+        invader.style.transform = 'scale(1)';
+      });
+
+      console.log('👾 ARCADE_MENU_INITIALIZED');
+      console.log('   Press M or click the invader to toggle navigation');
+    }
+
+    // Initialize on page load
+    if (document.readyState === 'complete') {
+      initArcadeMenuBar();
+    } else {
+      window.addEventListener('load', initArcadeMenuBar);
+    }
+    // Also init on Astro page transitions
+    document.addEventListener('astro:page-load', initArcadeMenuBar);
 
     // Show welcome banner for returning users
     function showWelcomeBanner() {
@@ -1382,8 +1856,28 @@ const currentYear = new Date().getFullYear();
        * Prompt user to connect a real wallet
        */
       promptConnectWallet() {
-        alert('Wallet connection coming soon! For now, your progress is saved locally.');
-        // TODO: Implement Phantom wallet connection
+        // Check if user already has a created wallet
+        const hasExistingWallet = window.hasWallet && window.hasWallet();
+        if (hasExistingWallet) {
+          // Show unlock modal
+          if (window.showWalletUnlock) {
+            window.showWalletUnlock();
+          }
+          return;
+        }
+
+        // Open security education modal to start wallet creation flow
+        const securityModal = document.getElementById('securityEducationModal');
+        if (securityModal) {
+          securityModal.style.display = 'flex';
+          securityModal.style.opacity = '1';
+          securityModal.style.visibility = 'visible';
+          if (typeof window.showSecurityEducation === 'function') {
+            window.showSecurityEducation();
+          }
+        } else {
+          alert('Wallet setup loading... Please refresh the page and try again.');
+        }
       }
 
       async connect(walletAddress = null) {
@@ -1894,9 +2388,14 @@ const currentYear = new Date().getFullYear();
             // Check if already has wallet using the proper wallet detection
             const hasExistingWallet = window.hasWallet && window.hasWallet();
             if (hasExistingWallet) {
-              console.log('ℹ️ Wallet already exists, connecting...');
-              // TODO: Implement unlock with PIN
-              alert('Wallet unlock coming soon! For now, your existing wallet is active.');
+              console.log('ℹ️ Wallet already exists, showing unlock modal...');
+              // Show unlock modal for existing wallet
+              if (window.showWalletUnlock) {
+                window.showWalletUnlock();
+              } else {
+                console.error('Unlock modal not loaded');
+                alert('Wallet unlock loading... Please refresh and try again.');
+              }
               return;
             }
 

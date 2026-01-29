@@ -1,0 +1,611 @@
+---
+/**
+ * WalletUnlockModal.astro
+ * PIN entry modal for unlocking existing wallet
+ */
+---
+
+<div id="walletUnlockModal" class="unlock-modal" style="display: none;">
+  <div class="unlock-overlay" onclick="closeUnlockModal()"></div>
+
+  <div class="unlock-container card-retro-neon">
+    <!-- Header -->
+    <div class="unlock-header">
+      <div class="unlock-icon">🔐</div>
+      <h2 class="unlock-title neon-text">UNLOCK WALLET</h2>
+      <p class="unlock-subtitle mono">Enter your 6-digit PIN to continue</p>
+    </div>
+
+    <!-- Wallet Info -->
+    <div class="wallet-preview mono">
+      <div class="wallet-label">Wallet Address:</div>
+      <div class="wallet-address" id="unlockWalletAddress">---</div>
+    </div>
+
+    <!-- PIN Input -->
+    <div class="unlock-pin-container">
+      <div class="pin-dots" id="unlockPINDots">
+        <input type="tel" maxlength="1" class="pin-digit" id="unlock1" data-index="0" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+        <input type="tel" maxlength="1" class="pin-digit" id="unlock2" data-index="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+        <input type="tel" maxlength="1" class="pin-digit" id="unlock3" data-index="2" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+        <input type="tel" maxlength="1" class="pin-digit" id="unlock4" data-index="3" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+        <input type="tel" maxlength="1" class="pin-digit" id="unlock5" data-index="4" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+        <input type="tel" maxlength="1" class="pin-digit" id="unlock6" data-index="5" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+      </div>
+
+      <!-- Error Message -->
+      <div class="unlock-error" id="unlockError"></div>
+
+      <!-- Clear Button -->
+      <button class="btn-clear-pin mono" onclick="clearUnlockPIN()">
+        CLEAR
+      </button>
+    </div>
+
+    <!-- Attempts Counter -->
+    <div class="attempts-counter mono" id="attemptsCounter">
+      <!-- Shows remaining attempts after first wrong PIN -->
+    </div>
+
+    <!-- Actions -->
+    <div class="unlock-actions">
+      <button class="btn-retro" onclick="closeUnlockModal()">
+        CANCEL
+      </button>
+      <button class="btn-retro-neon" id="unlockBtn" onclick="attemptUnlock()" disabled>
+        UNLOCK
+      </button>
+    </div>
+
+    <!-- Recovery Option -->
+    <div class="recovery-option">
+      <p class="mono">Forgot your PIN?</p>
+      <button class="btn-text-link" onclick="startRecoveryFlow()">
+        Restore with Recovery Phrase
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .unlock-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10005;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .unlock-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  .unlock-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    padding: 2.5rem;
+    background: var(--darker-bg, #050812);
+    border: 3px solid var(--neon-green, #00ff41);
+    z-index: 1;
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .unlock-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .unlock-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .unlock-title {
+    font-size: 1.75rem;
+    font-weight: 900;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 3px;
+    margin-bottom: 0.5rem;
+    color: var(--neon-green, #00ff41);
+    text-shadow: 0 0 10px var(--neon-green, #00ff41);
+  }
+
+  .unlock-subtitle {
+    font-size: 0.9rem;
+    color: var(--neon-blue, #00d4ff);
+  }
+
+  .wallet-preview {
+    background: #000;
+    border: 2px solid var(--neon-green, #00ff41);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .wallet-label {
+    font-size: 0.75rem;
+    color: var(--neon-blue, #00d4ff);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .wallet-address {
+    font-size: 0.85rem;
+    color: var(--neon-green, #00ff41);
+    word-break: break-all;
+  }
+
+  .unlock-pin-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pin-dots {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .pin-digit {
+    width: 50px;
+    height: 65px;
+    background: #000;
+    border: 3px solid #fff;
+    color: transparent;
+    caret-color: transparent;
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .pin-digit:focus {
+    outline: none;
+    border-color: var(--neon-blue, #00d4ff);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+  }
+
+  .pin-digit.filled {
+    border-color: var(--neon-green, #00ff41);
+    background: rgba(0, 255, 65, 0.1);
+  }
+
+  .pin-digit.filled::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: var(--neon-green, #00ff41);
+    border-radius: 50%;
+  }
+
+  .pin-digit.error {
+    border-color: #ff4141;
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .unlock-error {
+    min-height: 1.5rem;
+    color: #ff4141;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .btn-clear-pin {
+    padding: 0.5rem 1rem;
+    background: none;
+    color: #888;
+    border: 2px solid #444;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-clear-pin:hover {
+    color: #fff;
+    border-color: #fff;
+  }
+
+  .attempts-counter {
+    text-align: center;
+    min-height: 1.5rem;
+    color: #ffa500;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .unlock-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .unlock-actions button {
+    flex: 1;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-retro {
+    background: none;
+    border: 3px solid #fff;
+    color: #fff;
+  }
+
+  .btn-retro:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-retro-neon {
+    background: var(--neon-green, #00ff41);
+    border: 3px solid var(--neon-green, #00ff41);
+    color: #000;
+  }
+
+  .btn-retro-neon:hover:not(:disabled) {
+    box-shadow: 0 0 20px var(--neon-green, #00ff41);
+  }
+
+  .btn-retro-neon:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .recovery-option {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #333;
+  }
+
+  .recovery-option p {
+    color: #888;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .btn-text-link {
+    background: none;
+    border: none;
+    color: var(--neon-blue, #00d4ff);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: all 0.3s ease;
+  }
+
+  .btn-text-link:hover {
+    color: var(--neon-green, #00ff41);
+    text-shadow: 0 0 10px var(--neon-green, #00ff41);
+  }
+
+  @media (max-width: 480px) {
+    .unlock-container {
+      padding: 1.5rem;
+    }
+
+    .pin-digit {
+      width: 42px;
+      height: 55px;
+    }
+
+    .pin-dots {
+      gap: 0.5rem;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Unlock state
+  let unlockState = {
+    pin: '',
+    attempts: 0,
+    maxAttempts: 5,
+    lockoutUntil: null
+  };
+
+  /**
+   * Show the unlock modal
+   */
+  window.showWalletUnlock = function() {
+    console.log('🔐 Opening wallet unlock modal');
+
+    const modal = document.getElementById('walletUnlockModal');
+    const walletAddress = window.getWalletPublicKey?.() || localStorage.getItem('wallet_publicKey');
+
+    if (!walletAddress) {
+      console.error('No wallet found to unlock');
+      alert('No wallet found. Please create or import a wallet first.');
+      return;
+    }
+
+    // Check for lockout
+    const lockout = localStorage.getItem('wallet_lockout');
+    if (lockout) {
+      const lockoutTime = parseInt(lockout);
+      if (Date.now() < lockoutTime) {
+        const remaining = Math.ceil((lockoutTime - Date.now()) / 60000);
+        alert(`Too many failed attempts. Please try again in ${remaining} minute(s).`);
+        return;
+      } else {
+        localStorage.removeItem('wallet_lockout');
+        unlockState.attempts = 0;
+      }
+    }
+
+    // Display wallet address (truncated)
+    const displayAddress = walletAddress.length > 20
+      ? `${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}`
+      : walletAddress;
+    document.getElementById('unlockWalletAddress').textContent = displayAddress;
+
+    // Reset state
+    unlockState.pin = '';
+    clearUnlockPIN();
+
+    // Show modal
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Focus first input
+    setTimeout(() => document.getElementById('unlock1')?.focus(), 100);
+  };
+
+  /**
+   * Close the unlock modal
+   */
+  window.closeUnlockModal = function() {
+    document.getElementById('walletUnlockModal').style.display = 'none';
+    document.body.style.overflow = '';
+    clearUnlockPIN();
+  };
+
+  /**
+   * Clear PIN inputs
+   */
+  window.clearUnlockPIN = function() {
+    const inputs = document.querySelectorAll('#unlockPINDots .pin-digit');
+    inputs.forEach(input => {
+      input.value = '';
+      input.classList.remove('filled', 'error');
+    });
+    unlockState.pin = '';
+    document.getElementById('unlockError').textContent = '';
+    document.getElementById('unlockBtn').disabled = true;
+    inputs[0]?.focus();
+  };
+
+  /**
+   * Attempt to unlock the wallet
+   */
+  window.attemptUnlock = async function() {
+    const unlockBtn = document.getElementById('unlockBtn');
+    const errorEl = document.getElementById('unlockError');
+
+    if (unlockState.pin.length !== 6) {
+      errorEl.textContent = 'Please enter your 6-digit PIN';
+      return;
+    }
+
+    // Disable button during attempt
+    unlockBtn.disabled = true;
+    unlockBtn.textContent = 'UNLOCKING...';
+
+    try {
+      // Attempt to decrypt wallet
+      const mnemonic = await window.unlockWallet(unlockState.pin);
+
+      if (mnemonic) {
+        console.log('Wallet unlocked successfully');
+
+        // Reset attempts on success
+        unlockState.attempts = 0;
+        localStorage.removeItem('wallet_lockout');
+
+        // Update wallet manager
+        if (window.walletManager) {
+          const publicKey = window.getWalletPublicKey?.();
+          if (publicKey) {
+            window.walletManager.connectedWallet = publicKey;
+            window.walletManager.isAnonymous = false;
+            window.walletManager.walletType = 'Purple Point Wallet';
+            window.walletManager.updateUI();
+
+            // Load progress
+            await window.progressManager?.loadProgress(publicKey);
+          }
+        }
+
+        // Close modal
+        closeUnlockModal();
+
+        // Show success toast
+        if (window.uiManager) {
+          window.uiManager.showXPToast({
+            xp: { earned: 0, total: 0 },
+            level: { leveledUp: false }
+          });
+        }
+
+        // Notify success
+        alert('Wallet unlocked successfully!');
+      }
+    } catch (error) {
+      console.error('Unlock failed:', error);
+
+      // Increment attempts
+      unlockState.attempts++;
+
+      // Show error
+      const remaining = unlockState.maxAttempts - unlockState.attempts;
+
+      if (remaining <= 0) {
+        // Lockout for 15 minutes
+        const lockoutTime = Date.now() + (15 * 60 * 1000);
+        localStorage.setItem('wallet_lockout', lockoutTime.toString());
+
+        errorEl.textContent = 'Too many failed attempts. Locked for 15 minutes.';
+        document.getElementById('attemptsCounter').textContent = '';
+
+        setTimeout(() => closeUnlockModal(), 3000);
+      } else {
+        errorEl.textContent = error.message || 'Incorrect PIN';
+        document.getElementById('attemptsCounter').textContent =
+          `${remaining} attempt${remaining !== 1 ? 's' : ''} remaining`;
+
+        // Shake inputs
+        const inputs = document.querySelectorAll('#unlockPINDots .pin-digit');
+        inputs.forEach(input => input.classList.add('error'));
+        setTimeout(() => {
+          inputs.forEach(input => input.classList.remove('error'));
+        }, 500);
+      }
+
+      // Clear PIN
+      clearUnlockPIN();
+    }
+
+    // Reset button
+    unlockBtn.textContent = 'UNLOCK';
+  };
+
+  /**
+   * Start recovery flow (import wallet with recovery phrase)
+   */
+  window.startRecoveryFlow = function() {
+    closeUnlockModal();
+
+    // Use existing import flow
+    if (window.startImportWalletFlow) {
+      window.startImportWalletFlow();
+    } else {
+      alert('Recovery feature loading... Please refresh and try again.');
+    }
+  };
+
+  // Setup PIN input handlers on DOM ready
+  document.addEventListener('DOMContentLoaded', () => {
+    const inputs = document.querySelectorAll('#unlockPINDots .pin-digit');
+
+    inputs.forEach((input, index) => {
+      // Handle input
+      input.addEventListener('input', (e) => {
+        const value = e.target.value;
+
+        // Only allow digits
+        if (!/^\d$/.test(value)) {
+          e.target.value = '';
+          return;
+        }
+
+        // Mark as filled
+        e.target.classList.add('filled');
+        e.target.classList.remove('error');
+
+        // Auto-focus next input
+        if (index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+
+        // Update PIN state
+        unlockState.pin = Array.from(inputs).map(i => i.value).join('');
+
+        // Enable unlock button when 6 digits entered
+        document.getElementById('unlockBtn').disabled = unlockState.pin.length !== 6;
+        document.getElementById('unlockError').textContent = '';
+      });
+
+      // Handle backspace
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace') {
+          if (!e.target.value && index > 0) {
+            inputs[index - 1].focus();
+            inputs[index - 1].value = '';
+            inputs[index - 1].classList.remove('filled');
+          } else if (e.target.value) {
+            e.target.value = '';
+            e.target.classList.remove('filled');
+          }
+          unlockState.pin = Array.from(inputs).map(i => i.value).join('');
+          document.getElementById('unlockBtn').disabled = unlockState.pin.length !== 6;
+        }
+
+        // Handle Enter key
+        if (e.key === 'Enter' && unlockState.pin.length === 6) {
+          attemptUnlock();
+        }
+      });
+
+      // Handle paste
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const paste = e.clipboardData.getData('text');
+        const digits = paste.replace(/\D/g, '').slice(0, 6);
+
+        digits.split('').forEach((digit, i) => {
+          if (inputs[i]) {
+            inputs[i].value = digit;
+            inputs[i].classList.add('filled');
+          }
+        });
+
+        unlockState.pin = digits;
+        document.getElementById('unlockBtn').disabled = digits.length !== 6;
+
+        if (digits.length === 6) {
+          inputs[5].focus();
+        }
+      });
+    });
+
+    console.log('Wallet unlock modal initialized');
+  });
+</script>

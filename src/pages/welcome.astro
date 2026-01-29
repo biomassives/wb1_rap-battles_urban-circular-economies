@@ -503,9 +503,30 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </style>
 
 <script>
-  // Connect wallet functionality (placeholder)
+  // Connect wallet functionality
   window.connectWallet = async function() {
-    alert('Wallet connection coming soon! This will connect to Phantom, Solflare, or other Solana wallets.');
-    // TODO: Implement actual wallet connection
+    // Check if user already has a created wallet
+    const hasExistingWallet = window.hasWallet && window.hasWallet();
+    if (hasExistingWallet) {
+      // Show unlock modal
+      if (window.showWalletUnlock) {
+        window.showWalletUnlock();
+      } else {
+        alert('Wallet unlock loading... Please refresh and try again.');
+      }
+      return;
+    }
+
+    // Open security education modal to start wallet creation flow
+    const securityModal = document.getElementById('securityEducationModal');
+    if (securityModal) {
+      securityModal.style.display = 'flex';
+      if (typeof window.showSecurityEducation === 'function') {
+        window.showSecurityEducation();
+      }
+    } else {
+      // Navigate to home to use the full wallet flow
+      window.location.href = '/?connect=wallet';
+    }
   };
 </script>

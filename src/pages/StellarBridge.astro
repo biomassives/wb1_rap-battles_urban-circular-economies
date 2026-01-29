@@ -23,18 +23,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <div id="canvas-container" class="fixed inset-0 z-0 bg-black"></div>
 
-<script is:inline type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "controls": "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js"
-    }
-  }
-</script>
-
 <script is:inline type="module">
-  import * as THREE from 'three';
-  import { OrbitControls } from 'controls';
+  import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+  import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
 
   // 1. DATA & STATE
   const BRIGHT_STARS = [

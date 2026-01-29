@@ -1,0 +1,201 @@
+---
+/**
+ * DocLayout.astro
+ * Layout for documentation markdown pages
+ */
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const { frontmatter } = Astro.props;
+const pageTitle = frontmatter?.title || title || 'Documentation';
+const pageDescription = frontmatter?.description || description || 'WorldBridgerOne Documentation';
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <div class="doc-container">
+    <article class="doc-content">
+      <slot />
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .doc-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .doc-content {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(112, 214, 255, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Documentation Typography */
+  .doc-content :global(h1) {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(180deg, #70d6ff, #ff9770);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .doc-content :global(h2) {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 2rem 0 1rem;
+    color: #70d6ff;
+    border-bottom: 1px solid rgba(112, 214, 255, 0.3);
+    padding-bottom: 0.5rem;
+  }
+
+  .doc-content :global(h3) {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+    color: #ff9770;
+  }
+
+  .doc-content :global(h4) {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .doc-content :global(p) {
+    margin: 1rem 0;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .doc-content :global(ul),
+  .doc-content :global(ol) {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .doc-content :global(li) {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+  }
+
+  .doc-content :global(code) {
+    background: rgba(57, 255, 20, 0.1);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #39ff14;
+  }
+
+  .doc-content :global(pre) {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .doc-content :global(pre code) {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .doc-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  .doc-content :global(th) {
+    background: rgba(112, 214, 255, 0.2);
+    border: 1px solid rgba(112, 214, 255, 0.3);
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: #70d6ff;
+  }
+
+  .doc-content :global(td) {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .doc-content :global(tr:hover td) {
+    background: rgba(112, 214, 255, 0.05);
+  }
+
+  .doc-content :global(a) {
+    color: #70d6ff;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .doc-content :global(a:hover) {
+    border-bottom-color: #70d6ff;
+  }
+
+  .doc-content :global(blockquote) {
+    border-left: 4px solid #ff9770;
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 151, 112, 0.1);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .doc-content :global(hr) {
+    border: none;
+    border-top: 1px solid rgba(112, 214, 255, 0.2);
+    margin: 2rem 0;
+  }
+
+  .doc-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .doc-container {
+      padding: 1rem;
+    }
+
+    .doc-content {
+      padding: 1.5rem 1rem;
+    }
+
+    .doc-content :global(h1) {
+      font-size: 1.5rem;
+    }
+
+    .doc-content :global(h2) {
+      font-size: 1.25rem;
+    }
+
+    .doc-content :global(pre) {
+      font-size: 0.8rem;
+    }
+  }
+</style>
