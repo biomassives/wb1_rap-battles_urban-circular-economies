@@ -194,11 +194,73 @@ async function startNewWalletFlow() {
 }
 
 /**
+ * Check for and resume saved wallet creation progress
+ * @returns {boolean} True if progress was resumed
+ */
+window.checkWalletCreationProgress = function() {
+  const savedProgress = localStorage.getItem('walletCreationProgress');
+  if (!savedProgress) return false;
+
+  try {
+    const progress = JSON.parse(savedProgress);
+
+    // Check if progress is less than 1 hour old
+    const oneHour = 60 * 60 * 1000;
+    if (Date.now() - progress.timestamp > oneHour) {
+      localStorage.removeItem('walletCreationProgress');
+      console.log('🗑️ Old wallet creation progress expired, cleared');
+      return false;
+    }
+
+    const resumeChoice = confirm(
+      `Resume wallet creation?\n\nYou were at: ${progress.step.replace(/_/g, ' ').toUpperCase()}\n\nClick OK to resume, Cancel to start fresh.`
+    );
+
+    if (resumeChoice && progress.words && progress.words.length > 0) {
+      // Restore wallet state
+      window._recoveryWords = progress.words;
+
+      // Resume at the saved step
+      if (progress.step === 'recovery_phrase') {
+        if (window.showRecoveryPhraseModal) {
+          window.showRecoveryPhraseModal(progress.words);
+        }
+        return true;
+      } else if (progress.step === 'verification') {
+        if (window.showRecoveryPhraseVerification) {
+          window.showRecoveryPhraseVerification(progress.words);
+        }
+        return true;
+      } else if (progress.step === 'pin_setup') {
+        if (window.showPINSetup) {
+          window.showPINSetup();
+        }
+        return true;
+      }
+    }
+
+    // User chose to start fresh
+    localStorage.removeItem('walletCreationProgress');
+    return false;
+  } catch (error) {
+    console.error('Error checking wallet progress:', error);
+    localStorage.removeItem('walletCreationProgress');
+    return false;
+  }
+};
+
+/**
  * Generate and display new wallet
  * Called after security education is complete
  */
 window.generateNewWallet = async function() {
   try {
+    // Check for saved progress first
+    if (window.checkWalletCreationProgress()) {
+      console.log('📚 Resuming saved wallet creation progress');
+      return;
+    }
+
     console.log('═══════════════════════════════════════');
     console.log('🔐 WALLET GENERATION STARTED');
     console.log('📚 Step 2/5: Generating Wallet');

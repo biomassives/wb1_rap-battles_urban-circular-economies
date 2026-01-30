@@ -15,6 +15,11 @@
   <div class="verification-overlay"></div>
 
   <div class="verification-container card-retro-neon">
+    <!-- Close Button -->
+    <button class="modal-close-btn" onclick="closeVerificationModal()" title="Close (progress will be saved)">
+      ✕
+    </button>
+
     <!-- Header -->
     <div class="verification-header">
       <div class="verification-icon animated-bounce">✓</div>
@@ -179,6 +184,33 @@
     background: var(--color-near-black);
     z-index: 1;
     animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Close Button */
+  .modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 2px solid var(--color-mid-gray);
+    color: var(--color-light-gray);
+    font-size: 1.25rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close-btn:hover {
+    border-color: var(--color-neon-cyan);
+    color: var(--color-neon-cyan);
+    box-shadow: 0 0 15px var(--color-neon-cyan-glow);
+    transform: scale(1.1);
   }
 
   /* Header */
@@ -564,6 +596,22 @@
     if (window.showRecoveryPhraseModal && window._recoveryWords) {
       window.showRecoveryPhraseModal(window._recoveryWords);
     }
+  };
+
+  window.closeVerificationModal = function() {
+    // Save wallet creation progress
+    if (window._recoveryWords && window._recoveryWords.length > 0) {
+      localStorage.setItem('walletCreationProgress', JSON.stringify({
+        step: 'verification',
+        words: window._recoveryWords,
+        correctCount: verificationState.correctCount,
+        timestamp: Date.now()
+      }));
+      console.log('💾 Verification progress saved');
+    }
+
+    document.getElementById('verificationModal').style.display = 'none';
+    document.body.style.overflow = '';
   };
 
   window.startOverRecoveryPhrase = function() {

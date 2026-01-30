@@ -17,6 +17,11 @@
   <div class="pin-overlay"></div>
 
   <div class="pin-container card-retro-neon">
+    <!-- Close Button -->
+    <button class="modal-close-btn" onclick="closePINSetupModal()" title="Close (progress will be saved)">
+      ✕
+    </button>
+
     <!-- Header -->
     <div class="pin-header">
       <div class="pin-icon animated-pulse">🔐</div>
@@ -204,6 +209,33 @@
     background: var(--color-near-black);
     z-index: 1;
     animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Close Button */
+  .modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 2px solid var(--color-mid-gray);
+    color: var(--color-light-gray);
+    font-size: 1.25rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close-btn:hover {
+    border-color: var(--color-neon-cyan);
+    color: var(--color-neon-cyan);
+    box-shadow: 0 0 15px var(--color-neon-cyan-glow);
+    transform: scale(1.1);
   }
 
   /* Header */
@@ -965,6 +997,22 @@
     }
   };
 
+  window.closePINSetupModal = function() {
+    // Save wallet creation progress
+    if (window._recoveryWords && window._recoveryWords.length > 0) {
+      localStorage.setItem('walletCreationProgress', JSON.stringify({
+        step: 'pin_setup',
+        words: window._recoveryWords,
+        pinStep: pinSetupState.currentStep,
+        timestamp: Date.now()
+      }));
+      console.log('💾 PIN setup progress saved');
+    }
+
+    document.getElementById('pinSetupModal').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+
   window.handlePINNext = function() {
     if (pinSetupState.currentStep === 1) {
       showPINStep(2);
@@ -1014,6 +1062,10 @@
     console.log('Recovery phrase: SAVED (encrypted)');
     console.log('PIN: SAVED (hashed)');
     console.log('═══════════════════════════════════════');
+
+    // Clear wallet creation progress - wallet is complete
+    localStorage.removeItem('walletCreationProgress');
+    localStorage.removeItem('educationProgress');
 
     // Show success message
     alert('🎉 Wallet Created Successfully!\n\nYour secure wallet is ready to use.\n+25 XP awarded!');

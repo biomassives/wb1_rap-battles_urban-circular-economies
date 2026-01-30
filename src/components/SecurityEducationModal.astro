@@ -16,6 +16,11 @@
   <div class="education-overlay"></div>
 
   <div class="education-container card-retro-neon">
+    <!-- Close Button -->
+    <button class="modal-close-btn" onclick="closeEducationModal()" title="Close (progress will be saved)">
+      ✕
+    </button>
+
     <!-- Choice Screen (shown first) -->
     <div class="education-choice" id="educationChoice">
       <div class="education-header">
@@ -461,6 +466,33 @@
     padding: 3rem;
     background: var(--color-near-black);
     z-index: 1;
+  }
+
+  /* Close Button */
+  .modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 2px solid var(--color-mid-gray);
+    color: var(--color-light-gray);
+    font-size: 1.25rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close-btn:hover {
+    border-color: var(--color-neon-cyan);
+    color: var(--color-neon-cyan);
+    box-shadow: 0 0 15px var(--color-neon-cyan-glow);
+    transform: scale(1.1);
   }
 
   /* Header */
@@ -971,6 +1003,27 @@
   window.showSecurityEducation = function() {
     const modal = document.getElementById('securityEducationModal');
 
+    // Check for saved progress
+    const savedProgress = localStorage.getItem('educationProgress');
+    if (savedProgress) {
+      const saved = JSON.parse(savedProgress);
+      if (saved.currentLesson > 1 || saved.quizScore > 0) {
+        const resumeChoice = confirm(
+          `Resume where you left off?\n\nLesson ${saved.currentLesson}/5, Quiz Score: ${saved.quizScore}/3\n\nClick OK to resume, Cancel to start fresh.`
+        );
+        if (resumeChoice) {
+          educationState = saved;
+          document.getElementById('educationChoice').style.display = 'none';
+          document.getElementById('quickStartScreen').style.display = 'none';
+          document.getElementById('educationContent').style.display = 'block';
+          updateEducationUI();
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+          return;
+        }
+      }
+    }
+
     // Reset state
     educationState = {
       currentLesson: 1,
@@ -986,6 +1039,17 @@
     // Show modal
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+  };
+
+  window.closeEducationModal = function() {
+    // Save progress before closing
+    if (educationState.currentLesson > 1 || educationState.quizScore > 0) {
+      localStorage.setItem('educationProgress', JSON.stringify(educationState));
+      console.log('📚 Education progress saved:', educationState);
+    }
+
+    document.getElementById('securityEducationModal').style.display = 'none';
+    document.body.style.overflow = '';
   };
 
   window.startFullEducation = function() {
@@ -1173,8 +1237,9 @@
     document.getElementById('securityEducationModal').style.display = 'none';
     document.body.style.overflow = '';
 
-    // Mark as completed
+    // Mark as completed and clear saved progress
     localStorage.setItem('securityEducationCompleted', 'true');
+    localStorage.removeItem('educationProgress');
 
     // Award XP
     if (window.progressManager) {
