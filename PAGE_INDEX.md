@@ -96,11 +96,17 @@
 
 ## 🌍 Social Impact
 
-### 13. **kakuma.astro** - Kakuma Camp Projects
-**Route**: `/kakuma`
-**Purpose**: Support Kakuma refugee camp initiatives
-**Features**: Projects, donations, volunteer, impact stats
-**Status**: Needs review
+### 13. **nairobi-youth.astro** - Urban & Coastal Youth
+**Route**: `/nairobi-youth`
+**Purpose**: Support urban and coastal youth programs across Kenya
+**Features**: 5 real programs, 6 focus areas, volunteer signup, mentor registration, impact stats
+**Programs**:
+- POREFPC (Lamu) - Mureithi Jarife
+- Street Poets (Nairobi) - Fana Ke
+- Cosmetology School (Nairobi) - Francis 'Rank' Mutuku
+- OT Kulcha Reggae
+- K-6 School Support (Njiru)
+**Status**: ✅ Complete
 
 ### 14. **learning.astro** - Environmental Education
 **Route**: `/learning`
@@ -210,7 +216,7 @@ Based on the launch readiness inventory and recent work:
 4. **[id].astro** - Add NFT transaction modals (buy, offer, list)
 5. **achievements.astro** - Add achievement detail modal
 6. **index.astro** - Review and improve landing page
-7. **kakuma.astro** - Review project grid and volunteer system
+7. **nairobi-youth.astro** - ✅ Complete with actual programs
 8. **leaderboard.astro** - Review and test filtering
 9. **collector-card.astro** - Review card creation system
 10. **intersection.astro** - Review visualization system

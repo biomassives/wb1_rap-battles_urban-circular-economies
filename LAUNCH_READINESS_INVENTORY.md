@@ -19,10 +19,10 @@
 3. **music.astro**: Track upload backend - IPFS/S3 + database integration needed
 4. **learning.astro**: Courses API - `/api/environmental/get-courses` missing
 5. **learning.astro**: Projects API - `/api/environmental/get-projects` missing
-6. **kakuma.astro**: Multiple endpoints missing:
-   - `/api/kakuma/global-stats`
+6. **nairobi-youth.astro**: Multiple endpoints missing:
+   - `/api/nairobi-youth/global-stats`
    - `/api/projects/list`
-   - `/api/kakuma/user-impact`
+   - `/api/nairobi-youth/user-impact`
 7. **leaderboard.astro**: Leaderboard API - `/api/gamification/leaderboard` missing
 8. **leaderboard.astro**: User rank API - `/api/gamification/user-rank` missing
 9. **achievements.astro**: Achievements API - `/api/gamification/achievements` missing
@@ -48,7 +48,7 @@
 3. **music.astro**: Create battle form modal not connected
 4. **learning.astro**: Course enrollment API may not exist
 5. **learning.astro**: Observation submission marked TODO
-6. **kakuma.astro**: Volunteer form submission untested
+6. **nairobi-youth.astro**: Volunteer form submission untested
 
 ### Missing File Upload Implementations
 7. **music.astro**: Audio file selection/preview not implemented
@@ -60,7 +60,7 @@
 11. **music.astro**: Battle grid shows template in comments, no data loading
 12. **music.astro**: Collaboration grid empty/placeholder
 13. **music.astro**: Library tracks not loading
-14. **kakuma.astro**: Projects grid empty or hardcoded
+14. **nairobi-youth.astro**: Projects grid empty or hardcoded
 15. **interact.astro**: All activity cards show hardcoded examples
 16. **profile.astro**: NFTs grid shows "No NFTs Yet"
 
@@ -69,7 +69,7 @@
 18. **airdrops.astro**: Individual claim buttons don't persist
 19. **progress.astro**: Request mentor session is alert placeholder
 20. **music.astro**: Add collaborator only logs to console
-21. **kakuma.astro**: View project details uses alert() not modal
+21. **nairobi-youth.astro**: View project details uses alert() not modal
 22. **[id].astro**: Buy NFT only logs to console
 23. **[id].astro**: Submit offer only logs to console
 24. **[id].astro**: List for sale only logs to console
@@ -78,7 +78,7 @@
 ### Progress/Stats Missing
 26. **progress.astro**: Activity feed shows "No recent activity" if API fails
 27. **progress.astro**: Stats hardcoded to zero (Total Plays, Collaborations)
-28. **kakuma.astro**: NFT floor price uses mock/random data
+28. **nairobi-youth.astro**: NFT floor price uses mock/random data
 29. **profile.astro**: Save preferences only logs to console
 30. **profile.astro**: Mentor history timeline empty
 31. **leaderboard.astro**: Category-specific rows return empty strings
@@ -103,8 +103,8 @@
 10. **[id].astro**: Wallet balance shows hardcoded value
 
 ### Display/Rendering
-11. **kakuma.astro**: Success stories grid empty
-12. **kakuma.astro**: Mentor signup not implemented
+11. **nairobi-youth.astro**: Success stories grid empty
+12. **nairobi-youth.astro**: Mentor signup not implemented
 13. **progress.astro**: Skill tree visualization completely missing
 14. **leaderboard.astro**: Podium may show empty if no data
 15. **interact.astro**: Role switching only visual, doesn't load role data
@@ -127,8 +127,8 @@
 ## LOW PRIORITY (10 items) - NICE-TO-HAVE
 
 1. **music.astro**: Lyrics import from file not implemented
-2. **kakuma.astro**: Load more stories button no function
-3. **kakuma.astro**: Share Kakuma not implemented
+2. **nairobi-youth.astro**: Load more stories button no function
+3. **nairobi-youth.astro**: Share Kakuma not implemented
 4. **learning.astro**: Submit observation modal opens but limited
 5. **[id].astro**: Download image not implemented
 6. **[id].astro**: Share NFT not implemented
@@ -206,7 +206,7 @@ Before launch, verify each page:
 - [ ] **progress.astro**: All stats load, achievements display
 - [ ] **music.astro**: File uploads work, tracks save
 - [ ] **learning.astro**: Courses load, enrollment works
-- [ ] **kakuma.astro**: Projects load, donations work
+- [ ] **nairobi-youth.astro**: Projects load, donations work
 - [ ] **leaderboard.astro**: Rankings display correctly
 - [ ] **achievements.astro**: Achievement grid loads
 - [ ] **interact.astro**: Dynamic data loads per role

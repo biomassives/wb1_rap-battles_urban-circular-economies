@@ -7,7 +7,7 @@ title: "README"
 # Purple Point - Rap Battle NFT Platform
 
 **WorldBridger One Ecosystem**
-A retro-arcade themed rap battle platform where artists create beats, battle with rhymes, earn NFTs, and support communities like Kakuma refugee camp.
+A retro-arcade themed rap battle platform where artists create beats, battle with rhymes, earn NFTs, and support communities like Urban & Coastal Youth refugee camp.
 
 ## Vision
 
@@ -161,21 +161,21 @@ Purple Point combines hip-hop culture, Web3 technology, and environmental engine
 ---
 
 ### 🏕️ **Impact Supporter Workflow**
-**Goal:** Learn about and support Kakuma refugee camp
+**Goal:** Learn about and support Urban & Coastal Youth refugee camp
 
-1. **Visit Kakuma Page** → [Kakuma Impact](/kakuma)
+1. **Visit Urban & Coastal Youth Page** → [Urban & Coastal Youth Impact](/kakuma)
    - Read stories from the camp
    - Understand how platform supports community
 
 2. **Battle for a Cause**
    - Participate in special "Impact Battles"
-   - Portion of NFT sales goes to Kakuma support
+   - Portion of NFT sales goes to Urban & Coastal Youth support
 
 3. **Track Contributions**
    - View total funds raised
    - See impact metrics and stories
 
-**Status:** ✅ Kakuma Page Working | 🔜 Impact Battles Planned
+**Status:** ✅ Urban & Coastal Youth Page Working | 🔜 Impact Battles Planned
 
 ---
 
@@ -252,7 +252,7 @@ Purple Point combines hip-hop culture, Web3 technology, and environmental engine
 - `/battle` - Battle List (browse/create battles)
 - `/battle/[id]` - Individual Battle Page
 - `/profile` - User Profile (stats, NFTs, settings)
-- `/kakuma` - Kakuma Impact Page
+- `/kakuma` - Urban & Coastal Youth Impact Page
 
 ### Tools & Features
 - `/sampler` - Enhanced Sampler Interface
@@ -312,7 +312,7 @@ Purple Point combines hip-hop culture, Web3 technology, and environmental engine
 - [x] Profile page with stats
 - [x] Training quiz system
 - [x] XP award system
-- [x] Kakuma impact page
+- [x] Urban & Coastal Youth impact page
 - [x] NFT collection display (55 animals)
 - [x] Workflows dashboard
 
@@ -330,7 +330,7 @@ Purple Point combines hip-hop culture, Web3 technology, and environmental engine
 - [ ] NFT card minting (Metaplex)
 - [ ] POAP certificate NFTs
 - [ ] File storage (IPFS/Arweave)
-- [ ] Impact battles for Kakuma
+- [ ] Impact battles for Urban & Coastal Youth
 - [ ] Animal mentor progression system
 - [ ] Analytics & tracking
 - [ ] Marketplace for NFT trading
@@ -514,7 +514,7 @@ GPL-3.0 License - see LICENSE file
 ## Acknowledgments
 
 - Built for **WorldBridger One** ecosystem
-- Supporting **Kakuma refugee camp** through music
+- Supporting **Urban & Coastal Youth refugee camp** through music
 - Part of **SparkHope.space** mycological innovation platform
 - Inspired by classic arcade games (Space Invaders, Pac-Man)
 - Honoring hip-hop culture and freestyle rap battles

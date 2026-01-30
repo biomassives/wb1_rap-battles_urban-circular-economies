@@ -8,7 +8,7 @@ title: "Astro_Files_README"
 ## Complete Frontend Implementation with Placeholder Forms
 
 **Created for**: Mupy / WorldBridger One Ecosystem  
-**Purpose**: Gamified platform for music, environmental education & Kakuma support  
+**Purpose**: Gamified platform for music, environmental education & Urban & Coastal Youth support  
 **Technology**: Astro.js with vanilla JavaScript class structure
 
 ---
@@ -26,7 +26,7 @@ astro-files/
 │       ├── progress.astro             # User progress dashboard
 │       ├── music.astro                # Music studio with forms
 │       ├── learning.astro             # Environmental learning hub
-│       └── kakuma.astro               # Kakuma impact page
+│       └── nairobi-youth.astro               # Urban & Coastal Youth impact page
 └── public/
     └── styles/
         ├── global.css                 # Emulated Tailwind + custom styles
@@ -40,7 +40,7 @@ astro-files/
 ### **BaseLayout.astro** - Central Template
 
 **Provides**:
-- Header with navigation (Collection, Progress, Music, Learning, Kakuma, Leaderboard)
+- Header with navigation (Collection, Progress, Music, Learning, Urban & Coastal Youth, Leaderboard)
 - Wallet connection UI
 - XP/Level display in header
 - Notifications panel
@@ -78,7 +78,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 - Animated XP progress bar
 - Animal mentor section with daily wisdom
 - Achievements showcase (filterable by category)
-- Stats dashboard (Musical, Environmental, Community, Kakuma)
+- Stats dashboard (Musical, Environmental, Community, Urban & Coastal Youth)
 - Skill trees visualization (4 paths)
 - Recent activity feed
 
@@ -200,7 +200,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 ---
 
-### **kakuma.astro** - Kakuma Impact Dashboard
+### **nairobi-youth.astro** - Urban & Coastal Youth Impact Dashboard
 
 **Features with Forms**:
 
@@ -235,7 +235,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 - Success story submission
 
 **JavaScript Classes**:
-- `KakumaImpactManager` - Impact tracking and project management
+- `Urban & Coastal YouthImpactManager` - Impact tracking and project management
 - Donation form handlers
 
 ---
@@ -318,7 +318,7 @@ src/
     ├── progress.astro
     ├── music.astro
     ├── learning.astro
-    └── kakuma.astro
+    └── nairobi-youth.astro
 
 public/
 └── styles/
@@ -401,11 +401,11 @@ Each form has TODO comments showing what needs to be implemented:
 - [ ] Show observation on map
 - [ ] Data quality verification
 
-### Donation Form (kakuma.astro)
+### Donation Form (nairobi-youth.astro)
 - [ ] Payment processor integration (Stripe/Solana Pay)
 - [ ] Impact calculation logic
 - [ ] Receipt generation
-- [ ] Call `/api/kakuma/donate` endpoint
+- [ ] Call `/api/nairobi-youth/donate` endpoint
 - [ ] Recurring donation scheduling
 - [ ] Thank you email/notification
 
@@ -446,20 +446,20 @@ Body: { walletAddress, projectId, type, measurement, ... }
 GET /api/environmental/get-projects?status=active
 ```
 
-### Kakuma Impact
+### Urban & Coastal Youth Impact
 ```javascript
 // Get projects
-GET /api/kakuma/get-projects?category=all&status=active
+GET /api/nairobi-youth/get-projects?category=all&status=active
 
 // Make donation
-POST /api/kakuma/donate
+POST /api/nairobi-youth/donate
 Body: { walletAddress, projectId, amount, currency, ... }
 
 // Get user impact
-GET /api/kakuma/user-impact?walletAddress=xxx
+GET /api/nairobi-youth/user-impact?walletAddress=xxx
 
 // Get global stats
-GET /api/kakuma/global-stats
+GET /api/nairobi-youth/global-stats
 ```
 
 ---
@@ -598,7 +598,7 @@ Quick reference for consistent styling:
 - Primary: `#667eea`
 - Success: `#4ade80`
 - Warning: `#fbbf24`
-- Kakuma: `#f59e0b`
+- Urban & Coastal Youth: `#f59e0b`
 
 **Spacing**:
 - xs: 0.25rem (4px)
@@ -636,7 +636,7 @@ netlify deploy --prod
 ---
 
 **Created by Mupy for WorldBridger One**  
-**Supporting Kakuma Refugee Camp & POREFPC Initiative**  
+**Supporting Urban & Coastal Youth Refugee Camp & POREFPC Initiative**  
 **License: GPL-3.0**
 
 🌾 Let's build this movement together! ✨

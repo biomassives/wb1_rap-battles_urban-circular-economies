@@ -25,7 +25,7 @@ title: "NAVIGATION_REDESIGN"
 
 ### Before (8 items):
 ```
-[Collection] [NFT Gallery] [Progress] [Music Studio] [Remix Lab] [Learning Hub] [Kakuma Impact] [Leaderboard]
+[Collection] [NFT Gallery] [Progress] [Music Studio] [Remix Lab] [Learning Hub] [Urban & Coastal Youth Impact] [Leaderboard]
 ```
 
 ### After (3 dropdowns):
@@ -45,7 +45,7 @@ title: "NAVIGATION_REDESIGN"
 
 ### 📚 LEARN Dropdown
 - 🌍 Learning Hub (`/learning`)
-- 🏕️ Kakuma Impact (`/kakuma`)
+- 🏕️ Urban & Coastal Youth Impact (`/nairobi-youth`)
 
 ### 🎮 COMMUNITY Dropdown
 - 🌾 Collection (`/`)

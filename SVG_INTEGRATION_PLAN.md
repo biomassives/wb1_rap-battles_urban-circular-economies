@@ -27,7 +27,7 @@
 
 **SVG Uses**:
 - NFT card wireframe as placeholder
-- Category icons (music, art, environmental, kakuma)
+- Category icons (music, art, environmental, nairobi-youth)
 - Rarity badges (common, rare, epic, legendary)
 - Empty state illustrations
 
@@ -71,7 +71,7 @@
 <nav>
   <a href="/music"><img src="/images/icons/music.svg" />Music</a>
   <a href="/learning"><img src="/images/icons/leaf.svg" />Learning</a>
-  <a href="/kakuma"><img src="/images/icons/heart.svg" />Kakuma</a>
+  <a href="/nairobi-youth"><img src="/images/icons/heart.svg" />Kakuma</a>
 </nav>
 ```
 
@@ -81,7 +81,7 @@
 **Files to Update**:
 - `index.astro` - Landing page hero
 - `music.astro` - Music studio hero
-- `kakuma.astro` - Kakuma hero
+- `nairobi-youth.astro` - Kakuma hero
 - `learning.astro` - Education hero
 
 **SVG Uses**:

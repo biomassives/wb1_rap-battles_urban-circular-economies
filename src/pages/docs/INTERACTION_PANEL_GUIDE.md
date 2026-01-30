@@ -107,7 +107,7 @@ Visit: `http://localhost:4321/interact`
 
 #### Open Challenges
 Browse battles waiting for opponents:
-- **Category**: Wordplay, Conscious, Flow, Storyteller, Kakuma, Freestyle
+- **Category**: Wordplay, Conscious, Flow, Storyteller, Urban & Coastal Youth, Freestyle
 - **Rounds**: Typically 3 rounds
 - **Stakes**: SOL amount wagered
 - **Action**: Accept challenge to enter battle
@@ -131,7 +131,7 @@ Participate in battle outcomes:
 - 🎭 **Wordplay Wizard** - Puns, metaphors, clever lyrics
 - 🌊 **Flow Master** - Rhythm and delivery focused
 - 📖 **Storyteller** - Narrative-driven battles
-- 🏕️ **Kakuma Chronicles** - Refugee experiences
+- 🏕️ **Urban & Coastal Youth Chronicles** - Refugee experiences
 - 🎲 **Freestyle** - Any topic
 
 ### 2. Reggae Collaborations Section
@@ -212,7 +212,7 @@ Join growing initiatives:
 - **Methods**: Permaculture, organic, hydroponic, etc.
 
 **Example Gardens**:
-- Kakuma Victory Garden (45 plots, 120 participants)
+- Urban & Coastal Youth Victory Garden (45 plots, 120 participants)
 - Urban Rooftop Farm (12 plots, 30 participants)
 - School Garden Network (various locations)
 
@@ -252,10 +252,10 @@ Unique projects combining multiple focus areas:
 - Open-source hardware designs
 - **Combines**: Technology + Food Security + Open Source
 
-#### 🎤🏕️ Kakuma Voices
+#### 🎤🏕️ Urban & Coastal Youth Voices
 - Rap battles themed around refugee experiences
 - Environmental challenges and resilience
-- **Combines**: Battles + Kakuma + Storytelling
+- **Combines**: Battles + Urban & Coastal Youth + Storytelling
 
 ## How to Use
 
@@ -442,7 +442,7 @@ POST /api/harvest/exchange
 The interaction panel links to:
 - `/music` - Full music studio and battles
 - `/learning` - Courses and projects
-- `/kakuma` - Kakuma-specific impact
+- `/nairobi-youth` - Urban & Coastal Youth-specific impact
 - `/collaborations` - Detailed collab management
 - `/gardens` - Full garden management
 

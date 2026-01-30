@@ -432,7 +432,7 @@
   "projects": [
     {
       "projectId": "proj_123",
-      "name": "Kakuma Forest Initiative",
+      "name": "Youth Forest Initiative",
       "category": "reforestation",
       "status": "active",
       "participants": 43,
@@ -500,57 +500,53 @@
 
 ---
 
-## 7. Kakuma Impact
+## 7. Urban & Coastal Youth Impact
 
-### ❌ GET `/api/kakuma/projects`
-**Status**: Missing
-**Purpose**: Get Kakuma-specific projects
+### ✅ GET `/api/nairobi-youth/programs`
+**Status**: Implemented
+**Purpose**: Get youth programs (Nairobi + Lamu)
+**Query Params**:
+- `status` (active, completed, all)
+- `category` (tech, arts, enterprise, health, education, environment)
+
 **Response**:
 ```json
 {
   "success": true,
-  "projects": [
+  "programs": [
     {
-      "projectId": "...",
-      "name": "...",
-      "category": "education",
-      "fundingGoal": 5000,
-      "fundingCurrent": 3200,
-      "beneficiaries": 45
+      "id": "street-poets-nairobi",
+      "title": "Street Poets Youth Empowerment",
+      "category": "arts",
+      "location": "Nairobi, Kenya",
+      "leader": "Fana Ke"
     }
+  ],
+  "total": 8
+}
+```
+
+### ✅ GET `/api/nairobi-youth/global-stats`
+**Status**: Implemented
+**Purpose**: Get overall impact statistics
+**Response**:
+```json
+{
+  "success": true,
+  "stats": {
+    "totalYouth": 2450,
+    "totalValue": 125000,
+    "activePrograms": 12
+  },
+  "communities": [
+    { "name": "Kibera", "youth_reached": 680 }
   ]
 }
 ```
 
-### ❌ POST `/api/kakuma/donate`
-**Status**: Missing
-**Purpose**: Make donation to Kakuma project
-**Body**:
-```json
-{
-  "walletAddress": "...",
-  "projectId": "...",
-  "amount": 50,
-  "currency": "USD",
-  "recurring": false,
-  "message": "...",
-  "anonymous": false
-}
-```
-
-**Response**:
-```json
-{
-  "success": true,
-  "donationId": "don_123",
-  "receiptUrl": "...",
-  "xpAwarded": 500
-}
-```
-
-### ❌ GET `/api/kakuma/user-impact`
-**Status**: Missing
-**Purpose**: Get user's Kakuma impact statistics
+### ✅ GET `/api/nairobi-youth/user-impact`
+**Status**: Implemented
+**Purpose**: Get user's youth program impact statistics
 **Query Params**:
 - `walletAddress` (required)
 
@@ -558,12 +554,12 @@
 ```json
 {
   "success": true,
-  "impact": {
-    "totalDonated": 150,
-    "projectsSupported": 3,
-    "youthImpacted": 12,
-    "donations": []
-  }
+  "walletAddress": "...",
+  "youthImpacted": 15,
+  "totalActions": 25,
+  "valueGenerated": 500,
+  "programsSupported": 3,
+  "badges": []
 }
 ```
 
@@ -656,12 +652,12 @@
 14. ❌ `POST /api/music/battle/:id/submit`
 15. ❌ `POST /api/music/battle/:id/vote`
 
-### Phase 4: Environmental & Kakuma (Week 4)
+### Phase 4: Environmental & Youth Impact (Week 4)
 16. ❌ `GET /api/environmental/projects`
 17. ❌ `POST /api/environmental/submit-observation`
-18. ❌ `GET /api/kakuma/projects`
-19. ❌ `POST /api/kakuma/donate`
-20. ❌ `GET /api/kakuma/user-impact`
+18. ✅ `GET /api/nairobi-youth/programs`
+19. ✅ `GET /api/nairobi-youth/global-stats`
+20. ✅ `GET /api/nairobi-youth/user-impact`
 
 ### Phase 5: Achievements & Leaderboards (Week 5)
 21. ❌ `GET /api/achievements/all`

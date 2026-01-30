@@ -8,13 +8,13 @@
 
 ## Vision
 
-Enable **instant crypto-to-mobile-money payouts** so African users (especially Kakuma refugees) can convert NFT sales, music royalties, and learning rewards directly to **M-Pesa** or **Airtel Money** - money they can actually use.
+Enable **instant crypto-to-mobile-money payouts** so African users (especially Nairobi/Lamu refugees) can convert NFT sales, music royalties, and learning rewards directly to **M-Pesa** or **Airtel Money** - money they can actually use.
 
 ---
 
 ## Why This Matters
 
-### Current Reality in Kakuma & East Africa
+### Current Reality in Nairobi/Lamu & East Africa
 
 **📱 Mobile Money Penetration:**
 - **Kenya:** 96% adults use M-Pesa (33M+ users)
@@ -92,13 +92,13 @@ NFT sold for 5,000 KES in M-Pesa = Can buy food TODAY
 
 ### Comparison Table
 
-| Provider | Countries | Users | Kenya Presence | Kakuma Access | API Difficulty |
+| Provider | Countries | Users | Kenya Presence | Nairobi/Lamu Access | API Difficulty |
 |----------|-----------|-------|----------------|---------------|----------------|
 | **M-Pesa** | 7 | 50M+ | ⭐⭐⭐ Dominant | ✅ Excellent | Easy |
 | **Airtel Money** | 14 | 30M+ | ⭐ Secondary | ✅ Good | Medium |
 | MTN MoMo | 21 | 60M+ | ❌ None | ❌ No | Medium |
 
-**Recommendation for Kakuma:** Focus on **M-Pesa** (primary) + **Airtel Money** (secondary)
+**Recommendation for Nairobi/Lamu:** Focus on **M-Pesa** (primary) + **Airtel Money** (secondary)
 
 ---
 
@@ -885,7 +885,7 @@ Test Phone: 254700000000 (sandbox)
 
 ### Week 2: Pilot (10 Users)
 
-- Select 10 Kakuma users
+- Select 10 Nairobi/Lamu users
 - Give $5 worth of crypto each
 - Test full payout flow
 - Collect feedback

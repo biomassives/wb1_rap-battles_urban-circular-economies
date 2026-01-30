@@ -22,7 +22,7 @@ This migration adds comprehensive support for all WorldBridge One platform featu
 6. **Mentorship System** - Mentor/mentee matching and sessions
 7. **Achievements** - Unlock system with 8+ starter achievements
 8. **Events** - Platform events and attendance tracking
-9. **Impact Metrics** - Kakuma youth impact tracking
+9. **Impact Metrics** - Urban & Coastal Youth youth impact tracking
 10. **Notifications** - User notification system
 
 ### 🗂️ New Tables Created (30+)
@@ -252,8 +252,8 @@ VALUES (
 INSERT INTO collaborations (creator_id, track_name, description, style, needed_roles)
 SELECT
   id,
-  'Kakuma Voices Riddim',
-  'A roots reggae track celebrating Kakuma resilience',
+  'Urban & Coastal Youth Voices Riddim',
+  'A roots reggae track celebrating Urban & Coastal Youth resilience',
   'roots',
   '["bass", "keys", "percussion"]'::jsonb
 FROM users

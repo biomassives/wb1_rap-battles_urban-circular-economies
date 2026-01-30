@@ -1,0 +1,1863 @@
+---
+/**
+ * nairobi-youth.astro
+ * Urban & Coastal Youth Impact Dashboard
+ *
+ * Focus Areas:
+ * - Tech & AI Literacy
+ * - Arts, Music & Culture
+ * - Social Enterprise & Earning
+ * - Health & Wellness
+ * - Education & Career Mentoring
+ * - Biological Land Regeneration & Environmental Education
+ *
+ * Current Programs:
+ * - POREFPC (Lamu) - Mureithi Jarife
+ * - Street Poets (Nairobi) - Fana Ke
+ * - Cosmetology School (Nairobi) - Francis 'Rank' Mutuku
+ * - OT Kulcha Reggae Production
+ * - K-6 School Support (Njiru)
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Urban & Coastal Youth"
+  description="Empowering youth across Kenya's urban and coastal communities through tech literacy, arts, social enterprise, and environmental education"
+  activeSection="nairobi-youth"
+>
+
+  <!-- ============================================ -->
+  <!-- NAIROBI YOUTH HERO -->
+  <!-- ============================================ -->
+  <section class="youth-hero">
+    <div class="container mx-auto">
+      <div class="hero-content-grid">
+
+        <!-- Left: Mission Statement -->
+        <div class="hero-mission">
+          <h1 class="hero-title">Urban & Coastal Youth</h1>
+          <p class="hero-description">
+            Empowering young people across Kenya's urban and coastal communities through
+            tech literacy, arts & music, social enterprise, environmental education, and
+            career mentoring. From Nairobi's urban centers to Lamu's coastal villages.
+          </p>
+
+          <div class="hero-location">
+            <span class="location-icon">📍</span>
+            <span class="location-text">Nairobi & Lamu, Kenya</span>
+          </div>
+
+          <div class="community-tags">
+            <span class="community-tag">Nairobi</span>
+            <span class="community-tag">Njiru</span>
+            <span class="community-tag">Lamu</span>
+            <span class="community-tag">Coastal Kenya</span>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn-primary large" onclick="scrollToPrograms()">
+              View Programs
+            </button>
+            <button class="btn-secondary large" onclick="showVolunteerModal()">
+              Volunteer & Earn
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Impact Stats -->
+        <div class="impact-stats-card">
+          <h3 class="stats-title">Our Collective Impact</h3>
+
+          <div class="impact-stat-row highlight">
+            <div class="impact-stat">
+              <div class="stat-number" id="total-youth-impacted">0</div>
+              <div class="stat-label">Youth Empowered</div>
+            </div>
+            <div class="impact-stat">
+              <div class="stat-number" id="total-value-generated">$0</div>
+              <div class="stat-label">Value Generated</div>
+            </div>
+          </div>
+
+          <div class="impact-stat-row">
+            <div class="impact-stat">
+              <div class="stat-number" id="active-programs">0</div>
+              <div class="stat-label">Active Programs</div>
+            </div>
+            <div class="impact-stat">
+              <div class="stat-number" id="total-mentors">0</div>
+              <div class="stat-label">Active Mentors</div>
+            </div>
+          </div>
+
+          <div class="impact-stat-row">
+            <div class="impact-stat">
+              <div class="stat-number" id="skills-taught">0</div>
+              <div class="stat-label">Skills Taught</div>
+            </div>
+            <div class="impact-stat">
+              <div class="stat-number" id="enterprises-started">0</div>
+              <div class="stat-label">Enterprises Started</div>
+            </div>
+          </div>
+
+          <div class="revenue-allocation">
+            <h4>Revenue Allocation to Youth:</h4>
+            <div class="allocation-item">
+              <span>Platform Revenue</span>
+              <strong>20%</strong>
+            </div>
+            <div class="allocation-item">
+              <span>NFT Sales</span>
+              <strong>30%</strong>
+            </div>
+            <div class="allocation-item">
+              <span>Battle Prizes</span>
+              <strong>50%</strong>
+            </div>
+            <div class="allocation-item">
+              <span>Data Collection Fees</span>
+              <strong>100%</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- FOCUS AREAS -->
+  <!-- ============================================ -->
+  <section class="focus-areas-section">
+    <div class="container mx-auto">
+
+      <h2 class="section-title">Our Focus Areas</h2>
+      <p class="section-subtitle">Comprehensive support for youth development</p>
+
+      <div class="focus-areas-grid">
+
+        <div class="focus-card">
+          <div class="focus-icon">🎓</div>
+          <h3 class="focus-title">Education</h3>
+          <p class="focus-description">
+            Quality education access, tutoring, exam preparation, and scholarship opportunities
+            for youth pursuing academic excellence.
+          </p>
+          <ul class="focus-features">
+            <li>After-school tutoring programs</li>
+            <li>Scholarship matching</li>
+            <li>Study resources & materials</li>
+          </ul>
+        </div>
+
+        <div class="focus-card">
+          <div class="focus-icon">💻</div>
+          <h3 class="focus-title">Tech Literacy</h3>
+          <p class="focus-description">
+            Digital skills training from basic computer literacy to advanced programming,
+            preparing youth for the digital economy.
+          </p>
+          <ul class="focus-features">
+            <li>Computer fundamentals</li>
+            <li>Web & mobile development</li>
+            <li>Digital marketing skills</li>
+          </ul>
+        </div>
+
+        <div class="focus-card">
+          <div class="focus-icon">🤖</div>
+          <h3 class="focus-title">AI Management</h3>
+          <p class="focus-description">
+            Understanding and leveraging AI tools for productivity, creativity, and
+            career advancement in the age of artificial intelligence.
+          </p>
+          <ul class="focus-features">
+            <li>AI tools training</li>
+            <li>Prompt engineering</li>
+            <li>AI ethics & safety</li>
+          </ul>
+        </div>
+
+        <div class="focus-card">
+          <div class="focus-icon">🤝</div>
+          <h3 class="focus-title">Mentorship</h3>
+          <p class="focus-description">
+            One-on-one and group mentorship connecting youth with experienced
+            professionals for guidance and career development.
+          </p>
+          <ul class="focus-features">
+            <li>Career path guidance</li>
+            <li>Professional networking</li>
+            <li>Life skills coaching</li>
+          </ul>
+        </div>
+
+        <div class="focus-card">
+          <div class="focus-icon">💼</div>
+          <h3 class="focus-title">Social Enterprise</h3>
+          <p class="focus-description">
+            Supporting youth-led businesses and social enterprises through training,
+            funding, and market access opportunities.
+          </p>
+          <ul class="focus-features">
+            <li>Business skills training</li>
+            <li>Micro-grant programs</li>
+            <li>Market linkages</li>
+          </ul>
+        </div>
+
+        <div class="focus-card">
+          <div class="focus-icon">🎨</div>
+          <h3 class="focus-title">Arts & Culture</h3>
+          <p class="focus-description">
+            Promoting creative expression through music, visual arts, dance, and
+            cultural programs that celebrate talent and heritage.
+          </p>
+          <ul class="focus-features">
+            <li>Music production training</li>
+            <li>Art exhibitions & sales</li>
+            <li>Performance opportunities</li>
+          </ul>
+        </div>
+
+        <div class="focus-card">
+          <div class="focus-icon">🏥</div>
+          <h3 class="focus-title">Health & Wellness</h3>
+          <p class="focus-description">
+            Mental health support, health education, and wellness programs
+            addressing the unique challenges faced by urban youth.
+          </p>
+          <ul class="focus-features">
+            <li>Mental health resources</li>
+            <li>Health education workshops</li>
+            <li>Sports & fitness programs</li>
+          </ul>
+        </div>
+
+        <div class="focus-card">
+          <div class="focus-icon">📈</div>
+          <h3 class="focus-title">Career Development</h3>
+          <p class="focus-description">
+            Job readiness training, internship placements, and employment
+            connections to help youth build sustainable careers.
+          </p>
+          <ul class="focus-features">
+            <li>Resume & interview prep</li>
+            <li>Internship matching</li>
+            <li>Job placement support</li>
+          </ul>
+        </div>
+
+        <div class="focus-card">
+          <div class="focus-icon">🌱</div>
+          <h3 class="focus-title">Land Regeneration & Environment</h3>
+          <p class="focus-description">
+            Biological methods of land regeneration, permaculture, beach cleanups,
+            recycling programs, and ecological literacy for sustainable communities.
+          </p>
+          <ul class="focus-features">
+            <li>Permaculture & soil restoration</li>
+            <li>Beach cleanups & plastic recycling</li>
+            <li>Urban farming & composting</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- YOUR IMPACT -->
+  <!-- ============================================ -->
+  <section class="your-impact-section">
+    <div class="container mx-auto">
+
+      <h2 class="section-title">Your Personal Impact</h2>
+
+      <div class="your-impact-grid">
+
+        <div class="your-impact-card">
+          <div class="card-icon">🌟</div>
+          <h3 class="card-title">Youth You've Supported</h3>
+          <div class="card-value" id="your-youth-impacted">0</div>
+          <p class="card-description">
+            Direct and indirect impact through your activities on the platform
+          </p>
+        </div>
+
+        <div class="your-impact-card">
+          <div class="card-icon">📊</div>
+          <h3 class="card-title">Impact Actions</h3>
+          <div class="card-value" id="your-impact-actions">0</div>
+          <p class="card-description">
+            Total actions that generated support for Nairobi youth
+          </p>
+        </div>
+
+        <div class="your-impact-card">
+          <div class="card-icon">💰</div>
+          <h3 class="card-title">Value Generated</h3>
+          <div class="card-value" id="your-value-generated">$0</div>
+          <p class="card-description">
+            Economic value created for youth through your participation
+          </p>
+        </div>
+
+        <div class="your-impact-card">
+          <div class="card-icon">🎯</div>
+          <h3 class="card-title">Programs Supported</h3>
+          <div class="card-value" id="your-programs-supported">0</div>
+          <p class="card-description">
+            Number of youth programs you've contributed to
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- ACTIVE PROGRAMS -->
+  <!-- ============================================ -->
+  <section id="programs-section" class="programs-section">
+    <div class="container mx-auto">
+
+      <div class="section-header">
+        <h2 class="section-title">Active Programs</h2>
+        <p class="section-subtitle">
+          Support ongoing initiatives that create direct impact
+        </p>
+      </div>
+
+      <!-- Program Filters -->
+      <div class="program-filters">
+        <button class="filter-chip active" data-filter="all">All Programs</button>
+        <button class="filter-chip" data-filter="education">🎓 Education</button>
+        <button class="filter-chip" data-filter="tech">💻 Tech & AI</button>
+        <button class="filter-chip" data-filter="mentorship">🤝 Mentorship</button>
+        <button class="filter-chip" data-filter="enterprise">💼 Enterprise</button>
+        <button class="filter-chip" data-filter="arts">🎨 Arts</button>
+        <button class="filter-chip" data-filter="health">🏥 Health</button>
+      </div>
+
+      <!-- Programs Grid -->
+      <div id="programs-grid" class="programs-grid">
+        <!-- Programs loaded dynamically -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SUCCESS STORIES -->
+  <!-- ============================================ -->
+  <section class="success-stories-section">
+    <div class="container mx-auto">
+
+      <h2 class="section-title">Success Stories</h2>
+      <p class="section-subtitle">
+        Meet the youth whose lives have been transformed
+      </p>
+
+      <div id="success-stories-grid" class="success-stories-grid">
+        <!-- Stories loaded dynamically -->
+      </div>
+
+      <div class="stories-cta">
+        <button class="btn-secondary large" onclick="loadMoreStories()">
+          Load More Stories
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- HOW TO GET INVOLVED -->
+  <!-- ============================================ -->
+  <section class="get-involved-section">
+    <div class="container mx-auto">
+
+      <h2 class="section-title">How You Can Help</h2>
+
+      <div class="involvement-grid">
+
+        <div class="involvement-card">
+          <div class="involvement-icon">🎵</div>
+          <h3 class="involvement-title">Create Music</h3>
+          <p class="involvement-description">
+            Upload tracks, battle, collaborate. 30% of your music revenue
+            supports Nairobi youth programs.
+          </p>
+          <a href="/music" class="involvement-link">Go to Studio →</a>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">🌱</div>
+          <h3 class="involvement-title">Share Knowledge</h3>
+          <p class="involvement-description">
+            Complete courses and share learnings. Teach digital skills
+            to youth in urban communities.
+          </p>
+          <a href="/learning" class="involvement-link">Browse Courses →</a>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">🤝</div>
+          <h3 class="involvement-title">Mentor Youth</h3>
+          <p class="involvement-description">
+            Connect directly with Nairobi youth. Share skills, provide
+            guidance, and build lasting connections.
+          </p>
+          <button class="involvement-link" onclick="showMentorSignup()">
+            Become Mentor →
+          </button>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">🎁</div>
+          <h3 class="involvement-title">Volunteer & Earn NFTs</h3>
+          <p class="involvement-description">
+            Contribute to specific programs and earn exclusive impact NFTs.
+            Check floor prices and trade your impact.
+          </p>
+          <button class="involvement-link" onclick="showVolunteerModal()">
+            Volunteer & Earn →
+          </button>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">💼</div>
+          <h3 class="involvement-title">Support Enterprise</h3>
+          <p class="involvement-description">
+            Fund youth-led businesses, provide mentorship, or connect
+            them with market opportunities.
+          </p>
+          <a href="#programs-section" class="involvement-link">View Enterprises →</a>
+        </div>
+
+        <div class="involvement-card">
+          <div class="involvement-icon">🌐</div>
+          <h3 class="involvement-title">Spread the Word</h3>
+          <p class="involvement-description">
+            Share programs, success stories, and opportunities. Help us
+            reach more supporters.
+          </p>
+          <button class="involvement-link" onclick="shareNairobiYouth()">
+            Share Now →
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- VOLUNTEER & EARN MODAL -->
+  <!-- ============================================ -->
+  <div id="volunteer-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h3>Volunteer & Earn Impact NFTs</h3>
+        <button class="btn-close" onclick="closeVolunteerModal()">×</button>
+      </div>
+
+      <form id="volunteer-form" class="volunteer-form" data-autosave="30000">
+
+        <!-- Program Selection -->
+        <div class="form-group">
+          <label class="form-label">Select Program *</label>
+          <select id="volunteer-program" class="form-select" required>
+            <option value="">Choose a program...</option>
+            <!-- Programs loaded dynamically -->
+          </select>
+        </div>
+
+        <!-- NFT Floor Price Display -->
+        <div id="nft-floor-price-display" class="nft-floor-price" style="display: none;">
+          <div class="floor-price-card">
+            <div class="floor-price-header">
+              <span class="floor-price-label">Program NFT Floor Price</span>
+              <span class="floor-price-value" id="floor-price-value">--</span>
+            </div>
+            <div class="floor-price-stats">
+              <div class="stat-item">
+                <span class="stat-label">24h Volume:</span>
+                <span class="stat-value" id="volume-24h">--</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Total Minted:</span>
+                <span class="stat-value" id="total-minted">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contribution Amount -->
+        <div class="form-group">
+          <label class="form-label">Contribution Amount *</label>
+
+          <div class="quick-amounts">
+            <button type="button" class="quick-amount" data-amount="10">$10</button>
+            <button type="button" class="quick-amount" data-amount="25">$25</button>
+            <button type="button" class="quick-amount" data-amount="50">$50</button>
+            <button type="button" class="quick-amount" data-amount="100">$100</button>
+            <button type="button" class="quick-amount" data-amount="custom">Custom</button>
+          </div>
+
+          <div class="amount-input-group">
+            <span class="currency-symbol">$</span>
+            <input
+              type="number"
+              id="volunteer-amount"
+              class="form-input"
+              placeholder="0.00"
+              min="1"
+              step="0.01"
+              required
+            />
+            <select id="volunteer-currency" class="form-select currency-select">
+              <option value="USD">USD</option>
+              <option value="SOL">SOL</option>
+              <option value="KES">KES</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Recurring Option -->
+        <div class="form-group">
+          <div class="form-checkbox">
+            <input type="checkbox" id="volunteer-recurring" />
+            <label for="volunteer-recurring">
+              Make this a recurring monthly contribution
+            </label>
+          </div>
+        </div>
+
+        <!-- NFT Rewards Preview -->
+        <div class="nft-rewards-preview">
+          <h4>🎁 You'll Earn:</h4>
+          <div id="nft-rewards-text" class="nft-rewards-text">
+            <!-- Generated based on amount -->
+          </div>
+        </div>
+
+        <!-- Optional Message -->
+        <div class="form-group">
+          <label for="volunteer-message" class="form-label">
+            Message (Optional)
+          </label>
+          <textarea
+            id="volunteer-message"
+            class="form-textarea"
+            rows="3"
+            placeholder="Add a message of encouragement for the youth..."
+          ></textarea>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="closeVolunteerModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary">
+            <span class="btn-icon">🎁</span>
+            Contribute & Earn NFT
+          </button>
+        </div>
+
+        <p class="form-note">
+          100% of your contribution goes to the program. You'll receive an exclusive
+          impact NFT that represents your contribution.
+        </p>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MENTOR SIGNUP MODAL -->
+  <!-- ============================================ -->
+  <div id="mentor-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h3>🎓 Become a Mentor</h3>
+        <button class="btn-close" onclick="closeMentorModal()">×</button>
+      </div>
+
+      <div class="mentor-intro">
+        <p>Help Nairobi urban youth develop skills in technology, business, arts, and life skills. Share your expertise and make a lasting impact!</p>
+      </div>
+
+      <form id="mentor-form" class="mentor-form" data-autosave="30000">
+
+        <!-- Personal Info -->
+        <div class="form-section">
+          <h4>Personal Information</h4>
+
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" name="mentorName" id="mentor-name" class="form-input" placeholder="Your full name" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input type="email" name="mentorEmail" id="mentor-email" class="form-input" placeholder="your.email@example.com" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input type="text" name="mentorLocation" id="mentor-location" class="form-input" placeholder="City, Country" />
+          </div>
+        </div>
+
+        <!-- Expertise -->
+        <div class="form-section">
+          <h4>Your Expertise</h4>
+
+          <div class="form-group">
+            <label class="form-label">Areas of Expertise *</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseTech" value="tech" />
+                <span>Technology & Coding</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseAI" value="ai" />
+                <span>AI & Data Science</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseMusic" value="music" />
+                <span>Music & Audio Production</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseArts" value="arts" />
+                <span>Visual Arts & Design</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseBusiness" value="business" />
+                <span>Business & Entrepreneurship</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseHealth" value="health" />
+                <span>Health & Wellness</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseCareer" value="career" />
+                <span>Career Development</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="expertiseEducation" value="education" />
+                <span>Education & Tutoring</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tell us about your background *</label>
+            <textarea name="mentorBio" id="mentor-bio" class="form-textarea" rows="4" placeholder="Share your experience, achievements, and why you want to mentor Nairobi youth..." required></textarea>
+          </div>
+        </div>
+
+        <!-- Availability -->
+        <div class="form-section">
+          <h4>Availability</h4>
+
+          <div class="form-group">
+            <label class="form-label">Time commitment</label>
+            <select name="mentorCommitment" id="mentor-commitment" class="form-select">
+              <option value="">Select time commitment</option>
+              <option value="1-2">1-2 hours/week</option>
+              <option value="3-5">3-5 hours/week</option>
+              <option value="6-10">6-10 hours/week</option>
+              <option value="10+">10+ hours/week</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Languages you speak</label>
+            <input type="text" name="mentorLanguages" id="mentor-languages" class="form-input" placeholder="English, Swahili, Sheng, etc." />
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="closeMentorModal()">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <span class="btn-icon">🎓</span>
+            Submit Application
+          </button>
+        </div>
+
+        <p class="form-note">
+          We'll review your application and match you with youth based on your expertise. Thank you for your interest in mentoring!
+        </p>
+
+      </form>
+
+    </div>
+  </div>
+
+</BaseLayout>
+
+<script is:inline src="/scripts/form-storage.js"></script>
+
+<script>
+  /**
+   * Nairobi Youth Impact Manager
+   */
+  class NairobiYouthManager {
+    constructor() {
+      this.programs = [];
+      this.userImpact = null;
+      this.globalStats = null;
+    }
+
+    async initialize() {
+      await this.loadGlobalStats();
+      await this.loadPrograms();
+
+      const walletAddress = window.walletManager?.connectedWallet;
+      if (walletAddress) {
+        await this.loadUserImpact(walletAddress);
+      }
+
+      this.renderAll();
+    }
+
+    async loadGlobalStats() {
+      try {
+        const response = await fetch('/api/nairobi-youth/global-stats');
+        const data = await response.json();
+
+        if (data.success) {
+          this.globalStats = data.stats;
+        }
+      } catch (error) {
+        console.log('Using demo stats');
+        // Demo stats
+        this.globalStats = {
+          totalYouth: 2450,
+          totalValue: 125000,
+          activePrograms: 12,
+          totalMentors: 85,
+          skillsTaught: 34,
+          enterprisesStarted: 47
+        };
+      }
+    }
+
+    async loadPrograms() {
+      try {
+        const response = await fetch('/api/nairobi-youth/programs?status=active');
+        const data = await response.json();
+
+        if (data.success) {
+          this.programs = data.programs;
+        }
+      } catch (error) {
+        console.log('Using program data');
+        // Actual programs
+        this.programs = [
+          {
+            id: 'porefpc-lamu',
+            title: 'POREFPC - Poverty Reduction Food Pure Culture',
+            category: 'enterprise',
+            description: 'Led by Mureithi Jarife. Coconut oil processing, cashew nut processing, beach cleanups, plastics shredding & reselling, aluminum ingot recycling, and community table banking.',
+            location: 'Lamu, Kenya',
+            target_beneficiaries: 150,
+            current_beneficiaries: 85,
+            funding_goal: 25000,
+            funding_raised: 12000,
+            status: 'active',
+            leader: 'Mureithi Jarife',
+            image_url: '/images/programs/porefpc-lamu.jpg'
+          },
+          {
+            id: 'street-poets-nairobi',
+            title: 'Street Poets - Youth Empowerment',
+            category: 'arts',
+            description: 'Led by Fana Ke. Empowering urban youth through rap, poetry, and spoken word. Building confidence, creative expression, and community voice.',
+            location: 'Nairobi',
+            target_beneficiaries: 100,
+            current_beneficiaries: 65,
+            funding_goal: 15000,
+            funding_raised: 8500,
+            status: 'active',
+            leader: 'Fana Ke',
+            image_url: '/images/programs/street-poets.jpg'
+          },
+          {
+            id: 'cosmetology-school-nairobi',
+            title: 'Cosmetology Vocational School',
+            category: 'enterprise',
+            description: 'Led by Francis "Rank" Mutuku. Professional cosmetology and beauty industry training providing vocational skills and career pathways for youth.',
+            location: 'Nairobi',
+            target_beneficiaries: 60,
+            current_beneficiaries: 42,
+            funding_goal: 18000,
+            funding_raised: 11000,
+            status: 'active',
+            leader: 'Francis "Rank" Mutuku',
+            image_url: '/images/programs/cosmetology-school.jpg'
+          },
+          {
+            id: 'ot-kulcha-reggae',
+            title: 'OT Kulcha - Pain in the Ghetto',
+            category: 'arts',
+            description: 'Reggae music production project. Creating meaningful music that speaks to community struggles while developing artist skills and music industry knowledge.',
+            location: 'Nairobi',
+            target_beneficiaries: 25,
+            current_beneficiaries: 25,
+            funding_goal: 10000,
+            funding_raised: 7500,
+            status: 'active',
+            leader: 'OT Kulcha',
+            image_url: '/images/programs/ot-kulcha.jpg'
+          },
+          {
+            id: 'njiru-school-support',
+            title: 'K-6 School Tech & Environmental Education',
+            category: 'education',
+            description: 'Partnership with OT Kulcha supporting a local K-6 school in Njiru with tech education, environmental education, and other requested educational support.',
+            location: 'Njiru, Nairobi',
+            target_beneficiaries: 200,
+            current_beneficiaries: 120,
+            funding_goal: 12000,
+            funding_raised: 6000,
+            status: 'active',
+            partner: 'OT Kulcha / Local School',
+            image_url: '/images/programs/njiru-school.jpg'
+          }
+        ];
+      }
+    }
+
+    async loadUserImpact(walletAddress) {
+      try {
+        const response = await fetch(`/api/nairobi-youth/user-impact?walletAddress=${walletAddress}`);
+        const data = await response.json();
+
+        if (data.success) {
+          this.userImpact = data;
+        }
+      } catch (error) {
+        console.log('User impact not available');
+      }
+    }
+
+    renderAll() {
+      this.renderGlobalStats();
+      this.renderUserImpact();
+      this.renderPrograms();
+    }
+
+    renderGlobalStats() {
+      if (!this.globalStats) return;
+
+      document.getElementById('total-youth-impacted').textContent =
+        this.globalStats.totalYouth?.toLocaleString() || 0;
+      document.getElementById('total-value-generated').textContent =
+        `$${(this.globalStats.totalValue || 0).toLocaleString()}`;
+      document.getElementById('active-programs').textContent =
+        this.globalStats.activePrograms || 0;
+      document.getElementById('total-mentors').textContent =
+        this.globalStats.totalMentors || 0;
+      document.getElementById('skills-taught').textContent =
+        this.globalStats.skillsTaught || 0;
+      document.getElementById('enterprises-started').textContent =
+        this.globalStats.enterprisesStarted || 0;
+    }
+
+    renderUserImpact() {
+      if (!this.userImpact) return;
+
+      document.getElementById('your-youth-impacted').textContent =
+        this.userImpact.youthImpacted || 0;
+      document.getElementById('your-impact-actions').textContent =
+        this.userImpact.totalActions || 0;
+      document.getElementById('your-value-generated').textContent =
+        `$${this.userImpact.valueGenerated || 0}`;
+      document.getElementById('your-programs-supported').textContent =
+        this.userImpact.programsSupported || 0;
+    }
+
+    renderPrograms(filterCategory = 'all') {
+      const container = document.getElementById('programs-grid');
+
+      if (!this.programs || this.programs.length === 0) {
+        container.innerHTML = '<p class="empty-state">No active programs found</p>';
+        return;
+      }
+
+      let filteredPrograms = this.programs;
+      if (filterCategory !== 'all') {
+        filteredPrograms = this.programs.filter(p => p.category === filterCategory);
+      }
+
+      if (filteredPrograms.length === 0) {
+        container.innerHTML = `<p class="empty-state">No ${filterCategory} programs found</p>`;
+        return;
+      }
+
+      const categoryIcons = {
+        education: '🎓',
+        tech: '💻',
+        mentorship: '🤝',
+        enterprise: '💼',
+        arts: '🎨',
+        health: '🏥'
+      };
+
+      container.innerHTML = filteredPrograms.map(program => {
+        const fundingPercent = Math.round((program.funding_raised / program.funding_goal) * 100);
+        const beneficiaryPercent = program.current_beneficiaries
+          ? Math.round((program.current_beneficiaries / program.target_beneficiaries) * 100)
+          : 0;
+        const categoryIcon = categoryIcons[program.category] || '📦';
+
+        return `
+          <div class="program-card" data-category="${program.category}">
+            <div class="program-image">
+              <img src="${program.image_url || '/images/placeholder-program.jpg'}" alt="${program.title}" />
+              <div class="program-category-tag">${categoryIcon} ${program.category}</div>
+            </div>
+
+            <div class="program-content">
+              <h3 class="program-title">${program.title}</h3>
+              <p class="program-description">${program.description}</p>
+
+              <div class="program-location">
+                <span class="location-icon">📍</span>
+                ${program.location}
+              </div>
+
+              <div class="program-impact">
+                <div class="impact-metric">
+                  <span class="metric-label">Target:</span>
+                  <span class="metric-value">${program.target_beneficiaries} youth</span>
+                </div>
+                <div class="impact-metric">
+                  <span class="metric-label">Reached:</span>
+                  <span class="metric-value">${program.current_beneficiaries} (${beneficiaryPercent}%)</span>
+                </div>
+              </div>
+
+              <div class="program-funding">
+                <div class="funding-progress">
+                  <div class="funding-bar">
+                    <div class="funding-fill" style="width: ${fundingPercent}%"></div>
+                  </div>
+                  <div class="funding-labels">
+                    <span class="funding-raised">$${program.funding_raised.toLocaleString()}</span>
+                    <span class="funding-goal">of $${program.funding_goal.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="program-actions">
+              <button class="btn-primary" onclick="supportProgram('${program.id}')">
+                Support Program
+              </button>
+              <button class="btn-secondary" onclick="viewProgramDetails('${program.id}')">
+                View Details
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      this.populateProgramSelector();
+    }
+
+    populateProgramSelector() {
+      const selector = document.getElementById('volunteer-program');
+      if (!selector || !this.programs) return;
+
+      const programOptions = this.programs.map(program =>
+        `<option value="${program.id}">${program.title}</option>`
+      ).join('');
+
+      selector.innerHTML = '<option value="">Choose a program...</option>' + programOptions;
+    }
+  }
+
+  window.nairobiYouthManager = new NairobiYouthManager();
+
+  // Initialize when ready
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.nairobiYouthManager.initialize();
+    }, 500);
+  });
+
+  // Modal functions
+  function showVolunteerModal() {
+    document.getElementById('volunteer-modal').style.display = 'flex';
+  }
+
+  function closeVolunteerModal() {
+    document.getElementById('volunteer-modal').style.display = 'none';
+  }
+
+  function showMentorSignup() {
+    document.getElementById('mentor-modal').style.display = 'flex';
+  }
+
+  function closeMentorModal() {
+    document.getElementById('mentor-modal').style.display = 'none';
+  }
+
+  function scrollToPrograms() {
+    document.getElementById('programs-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function shareNairobiYouth() {
+    const shareData = {
+      title: 'Nairobi Urban Youth - WorldBridger One',
+      text: 'Support youth across Nairobi urban communities through education, mentorship, and social enterprise!',
+      url: window.location.href
+    };
+
+    if (navigator.share) {
+      navigator.share(shareData);
+    } else {
+      navigator.clipboard.writeText(shareData.url);
+      alert('Link copied to clipboard!');
+    }
+  }
+
+  function supportProgram(programId) {
+    document.getElementById('volunteer-program').value = programId;
+    showVolunteerModal();
+  }
+
+  function viewProgramDetails(programId) {
+    const program = window.nairobiYouthManager.programs.find(p => p.id === programId);
+    if (!program) return;
+
+    alert(`${program.title}\n\n${program.description}\n\nLocation: ${program.location}\nFunding: $${program.funding_raised.toLocaleString()} / $${program.funding_goal.toLocaleString()}`);
+  }
+
+  // Filter buttons
+  document.querySelectorAll('.filter-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const category = btn.dataset.filter;
+      window.nairobiYouthManager.renderPrograms(category);
+    });
+  });
+
+  // Quick amount buttons
+  document.querySelectorAll('.quick-amount').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const amount = btn.dataset.amount;
+      if (amount !== 'custom') {
+        document.getElementById('volunteer-amount').value = amount;
+      }
+      document.querySelectorAll('.quick-amount').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Form submissions
+  document.getElementById('volunteer-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = {
+      programId: document.getElementById('volunteer-program').value,
+      amount: parseFloat(document.getElementById('volunteer-amount').value),
+      currency: document.getElementById('volunteer-currency').value,
+      recurring: document.getElementById('volunteer-recurring').checked,
+      message: document.getElementById('volunteer-message').value,
+      walletAddress: window.walletManager?.connectedWallet
+    };
+
+    if (!formData.programId || !formData.amount) {
+      alert('Please select a program and enter an amount');
+      return;
+    }
+
+    alert(`Thank you for your contribution of $${formData.amount}!\n\nYour support helps Nairobi youth access education, mentorship, and opportunities.\n\n🎁 Your impact NFT will be minted shortly.`);
+    closeVolunteerModal();
+  });
+
+  document.getElementById('mentor-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    alert('Thank you for applying to be a mentor!\n\nWe will review your application and match you with youth based on your expertise.');
+    closeMentorModal();
+  });
+
+  // Make functions global
+  window.showVolunteerModal = showVolunteerModal;
+  window.closeVolunteerModal = closeVolunteerModal;
+  window.showMentorSignup = showMentorSignup;
+  window.closeMentorModal = closeMentorModal;
+  window.supportProgram = supportProgram;
+  window.viewProgramDetails = viewProgramDetails;
+  window.shareNairobiYouth = shareNairobiYouth;
+</script>
+
+<style>
+  .youth-hero {
+    background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+    color: white;
+    padding: 4rem 0;
+  }
+
+  .hero-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+  }
+
+  .hero-description {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    opacity: 0.95;
+  }
+
+  .hero-location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+  }
+
+  .community-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .community-tag {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .impact-stats-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 1rem;
+  }
+
+  .stats-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .impact-stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .impact-stat {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 900;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+  }
+
+  .revenue-allocation {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .revenue-allocation h4 {
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .allocation-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    padding: 0.25rem 0;
+  }
+
+  /* Focus Areas Section */
+  .focus-areas-section {
+    padding: 4rem 0;
+    background: #f9fafb;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+  }
+
+  .section-subtitle {
+    text-align: center;
+    color: #6b7280;
+    font-size: 1.125rem;
+    margin-bottom: 3rem;
+  }
+
+  .focus-areas-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+
+  .focus-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .focus-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .focus-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .focus-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+  }
+
+  .focus-description {
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .focus-features {
+    list-style: none;
+    padding: 0;
+    font-size: 0.85rem;
+    color: #059669;
+  }
+
+  .focus-features li {
+    padding: 0.25rem 0;
+  }
+
+  .focus-features li::before {
+    content: "✓ ";
+  }
+
+  /* Impact Section */
+  .your-impact-section {
+    padding: 4rem 0;
+  }
+
+  .your-impact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .your-impact-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #059669;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-description {
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+
+  /* Programs Section */
+  .programs-section {
+    padding: 4rem 0;
+    background: #f9fafb;
+  }
+
+  .program-filters {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0 2rem;
+  }
+
+  .filter-chip {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .filter-chip:hover {
+    border-color: #059669;
+    background: #ecfdf5;
+  }
+
+  .filter-chip.active {
+    border-color: #059669;
+    background: #059669;
+    color: white;
+  }
+
+  .programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .program-card {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .program-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .program-image {
+    position: relative;
+    height: 180px;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  }
+
+  .program-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .program-category-tag {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: capitalize;
+  }
+
+  .program-content {
+    padding: 1.5rem;
+  }
+
+  .program-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+    color: #1f2937;
+  }
+
+  .program-description {
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 0.9rem;
+  }
+
+  .program-location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .program-impact {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .impact-metric {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .metric-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .metric-value {
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .program-funding {
+    margin-bottom: 1rem;
+  }
+
+  .funding-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .funding-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+    border-radius: 1rem;
+    transition: width 0.3s;
+  }
+
+  .funding-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+  }
+
+  .funding-raised {
+    font-weight: 600;
+    color: #059669;
+  }
+
+  .funding-goal {
+    color: #6b7280;
+  }
+
+  .program-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  /* Get Involved Section */
+  .get-involved-section {
+    padding: 4rem 0;
+  }
+
+  .involvement-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .involvement-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+
+  .involvement-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .involvement-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .involvement-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: #1f2937;
+  }
+
+  .involvement-description {
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .involvement-link {
+    color: #059669;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .involvement-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Success Stories */
+  .success-stories-section {
+    padding: 4rem 0;
+    background: #f9fafb;
+  }
+
+  .success-stories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .stories-cta {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+  }
+
+  .btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .btn-secondary:hover {
+    background: #d1d5db;
+  }
+
+  .btn-primary.large,
+  .btn-secondary.large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 1rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .modal-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #6b7280;
+    line-height: 1;
+  }
+
+  .volunteer-form,
+  .mentor-form {
+    padding: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .quick-amounts {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .quick-amount {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .quick-amount:hover,
+  .quick-amount.active {
+    border-color: #059669;
+    background: #ecfdf5;
+  }
+
+  .amount-input-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .currency-symbol {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #6b7280;
+  }
+
+  .currency-select {
+    width: auto;
+    min-width: 80px;
+  }
+
+  .form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nft-rewards-preview {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border: 2px solid #10b981;
+  }
+
+  .nft-rewards-preview h4 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #065f46;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .form-actions .btn-primary {
+    flex: 1;
+  }
+
+  .form-note {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+  }
+
+  .checkbox-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+
+  .checkbox-label:hover {
+    background: #f9fafb;
+  }
+
+  .form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .form-section h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+
+  .mentor-intro {
+    padding: 1rem 1.5rem;
+    background: #ecfdf5;
+    border-bottom: 1px solid #d1fae5;
+  }
+
+  .mentor-intro p {
+    color: #065f46;
+    margin: 0;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #6b7280;
+    font-size: 1.125rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .focus-areas-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .focus-areas-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .your-impact-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .programs-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .involvement-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .success-stories-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .program-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .checkbox-group {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

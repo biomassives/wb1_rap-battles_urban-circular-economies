@@ -438,7 +438,7 @@ title: "API_ENDPOINTS_NEEDED"
   "projects": [
     {
       "projectId": "proj_123",
-      "name": "Kakuma Forest Initiative",
+      "name": "Urban & Coastal Youth Forest Initiative",
       "category": "reforestation",
       "status": "active",
       "participants": 43,
@@ -506,11 +506,11 @@ title: "API_ENDPOINTS_NEEDED"
 
 ---
 
-## 7. Kakuma Impact
+## 7. Urban & Coastal Youth Impact
 
-### ❌ GET `/api/kakuma/projects`
+### ❌ GET `/api/nairobi-youth/projects`
 **Status**: Missing
-**Purpose**: Get Kakuma-specific projects
+**Purpose**: Get Urban & Coastal Youth-specific projects
 **Response**:
 ```json
 {
@@ -528,9 +528,9 @@ title: "API_ENDPOINTS_NEEDED"
 }
 ```
 
-### ❌ POST `/api/kakuma/donate`
+### ❌ POST `/api/nairobi-youth/donate`
 **Status**: Missing
-**Purpose**: Make donation to Kakuma project
+**Purpose**: Make donation to Urban & Coastal Youth project
 **Body**:
 ```json
 {
@@ -554,9 +554,9 @@ title: "API_ENDPOINTS_NEEDED"
 }
 ```
 
-### ❌ GET `/api/kakuma/user-impact`
+### ❌ GET `/api/nairobi-youth/user-impact`
 **Status**: Missing
-**Purpose**: Get user's Kakuma impact statistics
+**Purpose**: Get user's Urban & Coastal Youth impact statistics
 **Query Params**:
 - `walletAddress` (required)
 
@@ -662,12 +662,12 @@ title: "API_ENDPOINTS_NEEDED"
 14. ❌ `POST /api/music/battle/:id/submit`
 15. ❌ `POST /api/music/battle/:id/vote`
 
-### Phase 4: Environmental & Kakuma (Week 4)
+### Phase 4: Environmental & Urban & Coastal Youth (Week 4)
 16. ❌ `GET /api/environmental/projects`
 17. ❌ `POST /api/environmental/submit-observation`
-18. ❌ `GET /api/kakuma/projects`
-19. ❌ `POST /api/kakuma/donate`
-20. ❌ `GET /api/kakuma/user-impact`
+18. ❌ `GET /api/nairobi-youth/projects`
+19. ❌ `POST /api/nairobi-youth/donate`
+20. ❌ `GET /api/nairobi-youth/user-impact`
 
 ### Phase 5: Achievements & Leaderboards (Week 5)
 21. ❌ `GET /api/achievements/all`

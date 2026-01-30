@@ -36,11 +36,11 @@ title: "API_STATUS_REPORT"
 - ✅ `GET /api/environmental/user-progress` - User's environmental progress
 - ❌ `POST /api/environmental/submit-observation` - **MISSING**
 
-### 4. Kakuma Impact (3/4)
-- ✅ `GET /api/kakuma/get-projects` - Kakuma projects
-- ✅ `GET /api/kakuma/global-stats` - Global impact stats
-- ✅ `GET /api/kakuma/user-impact` - User's Kakuma impact
-- ✅ `POST /api/donations/create` - Create donation (works for Kakuma)
+### 4. Urban & Coastal Youth Impact (3/4)
+- ✅ `GET /api/nairobi-youth/get-projects` - Urban & Coastal Youth projects
+- ✅ `GET /api/nairobi-youth/global-stats` - Global impact stats
+- ✅ `GET /api/nairobi-youth/user-impact` - User's Urban & Coastal Youth impact
+- ✅ `POST /api/donations/create` - Create donation (works for Urban & Coastal Youth)
 
 ### 5. NFT Operations (4/6)
 - ✅ `GET /api/nft/owned` - Get owned NFTs
@@ -267,10 +267,10 @@ CREATE TABLE activity_log (
    - ❌ `POST /api/environmental/submit-observation` (missing)
    - ✅ `GET /api/environmental/user-progress`
 
-4. **Kakuma Impact**:
-   - ✅ `GET /api/kakuma/get-projects`
+4. **Urban & Coastal Youth Impact**:
+   - ✅ `GET /api/nairobi-youth/get-projects`
    - ✅ `POST /api/donations/create`
-   - ✅ `GET /api/kakuma/user-impact`
+   - ✅ `GET /api/nairobi-youth/user-impact`
 
 ---
 
@@ -283,7 +283,7 @@ Many features can be built with what exists:
 - Profile dashboard (fully functional)
 - XP system (fully functional)
 - NFT vault (fully functional)
-- Kakuma donations (fully functional)
+- Urban & Coastal Youth donations (fully functional)
 - Quiz system (fully functional)
 
 #### Option 2: Create Mock Data

@@ -42,7 +42,7 @@ Integrate **Exotopia** and **EcoCity** sustainability rewards with **multi-chain
     { "trait_type": "Impact Type", "value": "Carbon Offset" },
     { "trait_type": "CO2 Offset (kg)", "value": 50 },
     { "trait_type": "Date Earned", "value": "2026-01-04" },
-    { "trait_type": "Location", "value": "Kakuma, Kenya" }
+    { "trait_type": "Location", "value": "Nairobi/Lamu, Kenya" }
   ],
   "animation_url": "https://...",
   "external_url": "https://exotopia.world/impact/1234"
@@ -107,14 +107,14 @@ Integrate **Exotopia** and **EcoCity** sustainability rewards with **multi-chain
 ```json
 {
   "name": "Eco Warrior Anthem #42",
-  "description": "Hip-hop track about climate action from Kakuma MC",
+  "description": "Hip-hop track about climate action from Nairobi/Lamu MC",
   "image": "ipfs://album-art.png",
   "animation_url": "ipfs://track.mp3",
   "attributes": [
     { "trait_type": "Category", "value": "Music" },
     { "trait_type": "Genre", "value": "Hip-Hop/Rap" },
     { "trait_type": "Theme", "value": "Environmental" },
-    { "trait_type": "Artist Location", "value": "Kakuma Camp" },
+    { "trait_type": "Artist Location", "value": "Nairobi/Lamu Camp" },
     { "trait_type": "BPM", "value": 95 },
     { "trait_type": "Duration", "value": "3:45" }
   ]
@@ -123,7 +123,7 @@ Integrate **Exotopia** and **EcoCity** sustainability rewards with **multi-chain
 
 ---
 
-### 4. 🏕️ Kakuma Impact NFTs
+### 4. 🏕️ Nairobi/Lamu Impact NFTs
 
 **Mint Trigger:** Community contributions, volunteer work, social impact
 
@@ -143,7 +143,7 @@ Integrate **Exotopia** and **EcoCity** sustainability rewards with **multi-chain
 **Metadata:**
 ```json
 {
-  "name": "Kakuma Community Builder Badge",
+  "name": "Nairobi/Lamu Community Builder Badge",
   "description": "100+ volunteer hours building solar microgrid",
   "image": "ipfs://...",
   "attributes": [
@@ -524,7 +524,7 @@ window.exportSVG = function() {
 
 ```
 100% Revenue
-├─ 40% → Kakuma Community Projects
+├─ 40% → Nairobi/Lamu Community Projects
 ├─ 30% → Platform Development
 ├─ 20% → Reforestation (actual tree planting)
 └─ 10% → Operating Costs

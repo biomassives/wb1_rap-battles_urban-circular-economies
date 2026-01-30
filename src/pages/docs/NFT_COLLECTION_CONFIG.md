@@ -19,7 +19,7 @@ Collectible NFT cards representing animals from the WorldBridge One ecosystem. U
 - Epic: 6 breeds
 - Legendary: 2 breeds (extinct/rare heritage)
 
-**Habitat:** Farm, Kakuma Gardens
+**Habitat:** Farm, Urban & Coastal Youth Gardens
 **Special Traits:** Heirloom, Heritage, Egg Layer, Meat, Dual Purpose
 
 **Example Breeds:**

@@ -471,5 +471,5 @@ async function migrateFromRemote() {
 
 ---
 
-**Built with ❤️ for Kakuma Refugee Camp**
+**Built with ❤️ for Urban & Coastal Youth Refugee Camp**
 **Empowering youth through offline-first technology**

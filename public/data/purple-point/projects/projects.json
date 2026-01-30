@@ -1,13 +1,13 @@
 {
   "projects": [
     {
-      "id": "kakuma",
-      "name": "Kakuma",
-      "icon": "🏕️",
-      "description": "Environmental projects in Kakuma refugee camp",
-      "fullDescription": "Supporting environmental science education and sustainable development projects in the Kakuma refugee camp through hands-on learning and community engagement.",
+      "id": "nairobi-youth",
+      "name": "Nairobi Urban Youth",
+      "icon": "🌆",
+      "description": "Empowering youth across Nairobi's urban communities",
+      "fullDescription": "Supporting youth in Kibera, Mathare, Korogocho, Mukuru, and other Nairobi urban communities through education, mentorship, tech literacy, AI skills, social enterprise, arts promotion, health programs, and career development.",
       "color": "#10b981",
-      "tags": ["environmental", "education", "community"]
+      "tags": ["education", "mentorship", "tech", "enterprise", "arts", "health"]
     },
     {
       "id": "music",

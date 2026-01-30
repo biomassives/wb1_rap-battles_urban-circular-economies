@@ -84,7 +84,7 @@ Object Stores:
 3. **Environmental Observation** - `formAdapter.submitObservation()`
 4. **Course Enrollment** - `formAdapter.enrollCourse()`
 
-### ✅ Kakuma Impact
+### ✅ Urban & Coastal Youth Impact
 5. **Donation** - `formAdapter.submitDonation()`
 6. **Project Support** - (handled in form directly)
 
@@ -93,7 +93,7 @@ Object Stores:
 8. **Preferences** - `formAdapter.submitPreferences()`
 9. **Notifications** - `formAdapter.submitNotifications()`
 10. **Privacy** - `formAdapter.submitPrivacy()`
-11. **Kakuma Profile** - (extends submitProfile)
+11. **Urban & Coastal Youth Profile** - (extends submitProfile)
 12. **Connected Accounts** - (OAuth - future)
 
 ### ✅ NFT Interactions
@@ -419,5 +419,5 @@ No server, no database, no internet required. Everything works locally in the br
 
 ---
 
-**Built with ❤️ for Kakuma Refugee Camp**
+**Built with ❤️ for Urban & Coastal Youth Refugee Camp**
 **Empowering youth through accessible, offline-first technology**

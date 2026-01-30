@@ -92,7 +92,7 @@ const characterData = {
 #### 1. Headwear (Hat Slot)
 - **Crown** 👑 - NFT Item (Rare)
   - Unlocked by: Owning Crown NFT
-  - Effect: +10% XP in Kakuma projects
+  - Effect: +10% XP in Urban & Coastal Youth projects
 
 - **Cap** 🧢 - Common Item
   - Unlocked by: Default

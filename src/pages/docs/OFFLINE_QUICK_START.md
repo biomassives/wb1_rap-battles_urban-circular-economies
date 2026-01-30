@@ -379,5 +379,5 @@ Your app is now fully offline-first! Everything works without a server.
 **Questions?**
 Check `OFFLINE_ARCHITECTURE.md` for detailed technical documentation.
 
-**Created with ❤️ for Kakuma Refugee Camp**
+**Created with ❤️ for Urban & Coastal Youth Refugee Camp**
 **Empowering youth through accessible technology**

@@ -229,7 +229,7 @@ According to the page, users can request a mentor. This needs:
         <select name="category" required>
           <option value="music">Music Production</option>
           <option value="learning">Environmental Learning</option>
-          <option value="kakuma">Kakuma Projects</option>
+          <option value="nairobi-youth">Kakuma Projects</option>
           <option value="general">General Guidance</option>
         </select>
       </div>
@@ -803,7 +803,7 @@ window.modalManager.open('achievement-detail-modal', { achievementId: 'first-bea
  * - 🔧 PRIORITY: HIGH - implement mentor request flow
  * - 💡 RECOMMENDATION: Keep as modal (short form, clear action)
  * - 📝 TODO: Create mentor-request-modal with:
- *   - Category selection (music, learning, kakuma, general)
+ *   - Category selection (music, learning, nairobi-youth, general)
  *   - Goals textarea
  *   - Mentor style preferences (checkboxes)
  *   - Submit handler with API integration

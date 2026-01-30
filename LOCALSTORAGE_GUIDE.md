@@ -117,7 +117,7 @@ localStorage.setItem(`progress_${walletAddress}`, JSON.stringify(progress));
     "coursesCompleted": 0,
     "projectsParticipated": 0
   },
-  "kakumaImpact": {
+  "nairobi-youthImpact": {
     "youthImpacted": 0,
     "totalActions": 0,
     "valueGenerated": 0
@@ -156,7 +156,7 @@ maxLevel = 120
 The app automatically uses the database APIs:
 - `/api/gamification/user-progress` - Load user data
 - `/api/gamification/award-xp` - Award XP
-- `/api/kakuma/user-impact` - Kakuma impact data
+- `/api/nairobi-youth/user-impact` - Kakuma impact data
 
 Data is cached in localStorage for offline access.
 
@@ -192,7 +192,7 @@ npm run build
 Visit pages:
 - `/test-local` - Test localStorage features
 - `/progress` - See progress page with localStorage fallback
-- `/kakuma` - See Kakuma page with localStorage fallback
+- `/nairobi-youth` - See Kakuma page with localStorage fallback
 
 ### 3. Connect Test Wallet
 

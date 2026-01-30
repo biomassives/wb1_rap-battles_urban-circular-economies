@@ -37,12 +37,12 @@ Create an educational quiz system that confirms users understand platform featur
 
 #### 1. **Platform Basics** (3 questions)
 - What is Worldbridger One's mission?
-- How does the platform support Kakuma refugee camp?
+- How does the platform support Urban & Coastal Youth refugee camp?
 - What is the role of NFTs in the ecosystem?
 
 **Example Question**:
 ```
-Q: What percentage of marketplace sales supports Kakuma youth programs?
+Q: What percentage of marketplace sales supports Urban & Coastal Youth youth programs?
 A) 2%
 B) 5% ✓
 C) 10%
@@ -392,7 +392,7 @@ Get active training quiz details (questions without answers)
     "questions": [
       {
         "id": "q1-uuid",
-        "text": "What percentage of sales supports Kakuma?",
+        "text": "What percentage of sales supports Urban & Coastal Youth?",
         "type": "multiple_choice",
         "category": "platform",
         "points": 1,
@@ -463,7 +463,7 @@ Submit quiz answers
     {
       "questionId": "q1-uuid",
       "correct": true,
-      "explanation": "5% of all marketplace sales support Kakuma youth programs."
+      "explanation": "5% of all marketplace sales support Urban & Coastal Youth youth programs."
     }
   ],
   "certificate": {
@@ -735,7 +735,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <div class="material-card">
             <span class="material-icon">🏕️</span>
             <h3>Community Guidelines</h3>
-            <p>Learn our values, policies, and how we support Kakuma</p>
+            <p>Learn our values, policies, and how we support Urban & Coastal Youth</p>
             <a href="/docs/community" class="btn-secondary">Read More</a>
           </div>
         </div>

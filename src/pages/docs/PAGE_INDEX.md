@@ -102,9 +102,9 @@ title: "PAGE_INDEX"
 
 ## 🌍 Social Impact
 
-### 13. **kakuma.astro** - Kakuma Camp Projects
-**Route**: `/kakuma`
-**Purpose**: Support Kakuma refugee camp initiatives
+### 13. **nairobi-youth.astro** - Urban & Coastal Youth Camp Projects
+**Route**: `/nairobi-youth`
+**Purpose**: Support Urban & Coastal Youth refugee camp initiatives
 **Features**: Projects, donations, volunteer, impact stats
 **Status**: Needs review
 
@@ -216,7 +216,7 @@ Based on the launch readiness inventory and recent work:
 4. **[id].astro** - Add NFT transaction modals (buy, offer, list)
 5. **achievements.astro** - Add achievement detail modal
 6. **index.astro** - Review and improve landing page
-7. **kakuma.astro** - Review project grid and volunteer system
+7. **nairobi-youth.astro** - Review project grid and volunteer system
 8. **leaderboard.astro** - Review and test filtering
 9. **collector-card.astro** - Review card creation system
 10. **intersection.astro** - Review visualization system

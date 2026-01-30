@@ -21,16 +21,16 @@ title: "QUIZ_QUESTIONS_SEED"
 - C) To compete with major record labels
 - D) To sell expensive NFTs to collectors
 
-**Explanation**: Worldbridger One empowers youth (especially in underserved communities like Kakuma refugee camp) through music creation, educational opportunities, and blockchain technology that provides real economic value.
+**Explanation**: Worldbridger One empowers youth (especially in underserved communities like Urban & Coastal Youth refugee camp) through music creation, educational opportunities, and blockchain technology that provides real economic value.
 
 ---
 
-### Q2: Kakuma Support
+### Q2: Urban & Coastal Youth Support
 **Category**: platform
 **Difficulty**: easy
 **Points**: 1
 
-**Question**: What percentage of marketplace sales supports Kakuma youth programs?
+**Question**: What percentage of marketplace sales supports Urban & Coastal Youth youth programs?
 
 **Choices**:
 - A) 2%
@@ -38,7 +38,7 @@ title: "QUIZ_QUESTIONS_SEED"
 - C) 10%
 - D) 15%
 
-**Explanation**: 5% of all marketplace sales go directly to supporting youth empowerment programs in Kakuma refugee camp, including music education, environmental projects, and skill training.
+**Explanation**: 5% of all marketplace sales go directly to supporting youth empowerment programs in Urban & Coastal Youth refugee camp, including music education, environmental projects, and skill training.
 
 ---
 
@@ -231,7 +231,7 @@ title: "QUIZ_QUESTIONS_SEED"
 - C) Solana network gets 10%
 - D) No one gets royalties
 
-**Explanation**: Secondary sales include 5% royalty to Worldbridger (supporting operations and Kakuma) and 2% to the original battle winner who earned the card.
+**Explanation**: Secondary sales include 5% royalty to Worldbridger (supporting operations and Urban & Coastal Youth) and 2% to the original battle winner who earned the card.
 
 ---
 
@@ -267,7 +267,7 @@ title: "QUIZ_QUESTIONS_SEED"
 - C) Competition above all
 - D) Exclusivity for elite users
 
-**Explanation**: Worldbridger values: Respect for all users, Creative expression through music and art, Empowerment of underserved communities, and Social impact (supporting Kakuma and education).
+**Explanation**: Worldbridger values: Respect for all users, Creative expression through music and art, Empowerment of underserved communities, and Social impact (supporting Urban & Coastal Youth and education).
 
 ---
 
@@ -297,7 +297,7 @@ VALUES (
   'platform',
   'easy',
   1,
-  'Worldbridger One empowers youth (especially in underserved communities like Kakuma refugee camp) through music creation, educational opportunities, and blockchain technology that provides real economic value.',
+  'Worldbridger One empowers youth (especially in underserved communities like Urban & Coastal Youth refugee camp) through music creation, educational opportunities, and blockchain technology that provides real economic value.',
   1
 );
 

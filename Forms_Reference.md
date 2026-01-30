@@ -11,7 +11,7 @@
 
 1. [Music Studio Forms](#music-studio-forms)
 2. [Learning Hub Forms](#learning-hub-forms)
-3. [Kakuma Impact Forms](#kakuma-impact-forms)
+3. [Urban & Coastal Youth Impact Forms](#nairobi-youth-impact-forms)
 4. [Profile & Settings Forms](#profile--settings-forms)
 5. [NFT Interaction Forms](#nft-interaction-forms)
 6. [Quick Reference Table](#quick-reference-table)
@@ -131,11 +131,11 @@
 
 ---
 
-## 🏕️ Kakuma Impact Forms
+## 🏕️ Urban & Coastal Youth Impact Forms
 
 ### Form 5: Make Donation
-**Location**: `kakuma.astro` - Donation Modal  
-**Purpose**: Support Kakuma projects with donations
+**Location**: `nairobi-youth.astro` - Donation Modal  
+**Purpose**: Support Urban & Coastal Youth projects with donations
 
 **Fields**:
 - `projectId` (select, required) - Specific project or general fund
@@ -154,13 +154,13 @@
 <!-- TODO: Implement recurring donation scheduling -->
 ```
 
-**API Endpoint**: `POST /api/kakuma/donate`  
+**API Endpoint**: `POST /api/nairobi-youth/donate`  
 **XP Reward**: Variable based on amount
 
 ---
 
 ### Form 6: Project Support
-**Location**: `kakuma.astro` - Project Cards  
+**Location**: `nairobi-youth.astro` - Project Cards  
 **Purpose**: Quick support actions for projects
 
 **Fields**:
@@ -175,7 +175,7 @@
 <!-- TODO: Track project engagement -->
 ```
 
-**API Endpoint**: `POST /api/kakuma/support-project`  
+**API Endpoint**: `POST /api/nairobi-youth/support-project`  
 **XP Reward**: Varies by action
 
 ---
@@ -250,7 +250,7 @@
   - `push-mentor` (toggle) - Mentor messages
 - Marketing (2 toggles):
   - `marketing-newsletter` (toggle) - Newsletter
-  - `marketing-kakuma` (toggle) - Kakuma updates
+  - `marketing-nairobi-youth` (toggle) - Urban & Coastal Youth updates
 
 **TODO Comments**:
 ```html
@@ -285,29 +285,29 @@
 
 ---
 
-### Form 11: Kakuma Refugee Profile
-**Location**: `profile.astro` - Tab: Kakuma Profile  
-**Purpose**: Special profile for Kakuma residents
+### Form 11: Urban & Coastal Youth Refugee Profile
+**Location**: `profile.astro` - Tab: Urban & Coastal Youth Profile  
+**Purpose**: Special profile for Urban & Coastal Youth residents
 
 **Fields**:
-- `isKakumaYouth` (checkbox) - Resident confirmation
-- `kakumaSection` (select, conditional) - Camp section (Kakuma 1-4, Kalobeyei)
-- `kakumaBlock` (text, conditional) - Block/Zone
+- `isUrban & Coastal YouthYouth` (checkbox) - Resident confirmation
+- `nairobi-youthSection` (select, conditional) - Camp section (Urban & Coastal Youth 1-4, Kalobeyei)
+- `nairobi-youthBlock` (text, conditional) - Block/Zone
 - `ageGroup` (select, conditional) - Age group (13-17, 18-24, 25-30, 31+)
-- `kakumaInterests` (checkbox, multiple, conditional) - Learning interests
+- `nairobi-youthInterests` (checkbox, multiple, conditional) - Learning interests
 - `deviceAccess` (select, conditional) - How they access platform
 - `preferredContact` (select, conditional) - Contact method
 - `whatsappNumber` (tel, conditional) - WhatsApp number
 
 **TODO Comments**:
 ```html
-<!-- TODO: Integrate with Kakuma coordinator verification -->
+<!-- TODO: Integrate with Urban & Coastal Youth coordinator verification -->
 <!-- TODO: Add document upload for verification -->
 <!-- TODO: Create verification workflow -->
 <!-- TODO: Send WhatsApp verification code -->
 ```
 
-**API Endpoint**: `POST /api/profile/update-kakuma`  
+**API Endpoint**: `POST /api/profile/update-nairobi-youth`  
 **XP Reward**: +100 XP on verification
 
 ---
@@ -456,13 +456,13 @@
 | 2 | Rap Battle | music.astro | category, rounds, bars | opponent, stake, theme | +150 (win) | HIGH |
 | 3 | Submit Observation | learning.astro | project, type, measurement, unit, location, datetime, quality | weather, notes, photos | +75 | MEDIUM |
 | 4 | Course Enrollment | learning.astro | courseId | none | +25 | MEDIUM |
-| 5 | Donation | kakuma.astro | project, amount | message, recurring, anonymous | Variable | HIGH |
-| 6 | Project Support | kakuma.astro | projectId, action | none | Variable | LOW |
+| 5 | Donation | nairobi-youth.astro | project, amount | message, recurring, anonymous | Variable | HIGH |
+| 6 | Project Support | nairobi-youth.astro | projectId, action | none | Variable | LOW |
 | 7 | Basic Info | profile.astro | username | displayName, email, bio, location, language, timezone | +25 | HIGH |
 | 8 | Preferences | profile.astro | none | all fields | None | LOW |
 | 9 | Notifications | profile.astro | none | all toggles | None | LOW |
 | 10 | Privacy | profile.astro | none | all fields | None | LOW |
-| 11 | Kakuma Profile | profile.astro | section, age (if Kakuma) | interests, contact, whatsapp | +100 | MEDIUM |
+| 11 | Urban & Coastal Youth Profile | profile.astro | section, age (if Urban & Coastal Youth) | interests, contact, whatsapp | +100 | MEDIUM |
 | 12 | Connected Accounts | profile.astro | OAuth flows | none | +50 each | MEDIUM |
 | 13 | Claim NFT | nft/[id].astro | acceptTerms | none | Varies | HIGH |
 | 14 | Buy NFT | nft/[id].astro | acceptBuyTerms | none | None | MEDIUM |
@@ -488,7 +488,7 @@
 7. ✅ Preferences (Form 8)
 8. ✅ Notifications (Form 9)
 9. ✅ Privacy (Form 10)
-10. ✅ Kakuma Profile (Form 11)
+10. ✅ Urban & Coastal Youth Profile (Form 11)
 
 ### Phase 4: NFT Marketplace (Week 7-8)
 11. ✅ Buy NFT (Form 14)
@@ -643,7 +643,7 @@ document.querySelector('.modal-overlay').addEventListener('click', (e) => {
 
 **Judging Implementation**:
 - Peer voting: weighted by user level
-- Expert panel: Kakuma coordinators + platform admins
+- Expert panel: Urban & Coastal Youth coordinators + platform admins
 - AI mentor: OpenAI GPT-4 analysis (lyrics, flow, message)
 
 ---
@@ -657,7 +657,7 @@ document.querySelector('.modal-overlay').addEventListener('click', (e) => {
 
 **Impact Tracking**:
 - All observations feed into research database
-- Monthly reports to Kakuma coordinators
+- Monthly reports to Urban & Coastal Youth coordinators
 - Data used for grant applications
 - Contributors get paid for quality data
 
@@ -681,11 +681,11 @@ document.querySelector('.modal-overlay').addEventListener('click', (e) => {
 
 ---
 
-### Kakuma Profile (Form 11)
+### Urban & Coastal Youth Profile (Form 11)
 **Verification Process**:
 1. User submits profile
 2. Platform flags for verification
-3. Kakuma coordinator contacts via WhatsApp
+3. Urban & Coastal Youth coordinator contacts via WhatsApp
 4. In-person verification or video call
 5. Coordinator approves → benefits activate
 6. Special badge on profile
@@ -755,7 +755,7 @@ document.querySelector('.modal-overlay').addEventListener('click', (e) => {
 ---
 
 **Created by Mupy for WorldBridger One**  
-**Supporting Kakuma Refugee Camp & POREFPC Initiative**  
+**Supporting Urban & Coastal Youth Refugee Camp & POREFPC Initiative**  
 **GPL-3.0 License**
 
 🌾 Every form connects music, science, and humanitarian impact! ✨

@@ -8,7 +8,7 @@ title: "VOLUNTEER_EARN_NFT_SUMMARY"
 
 ## Overview
 
-Updated the Kakuma projects system from a traditional "donation" model to a "Volunteer & Earn" model where contributors receive exclusive project NFTs and can check NFT floor prices.
+Updated the Urban & Coastal Youth projects system from a traditional "donation" model to a "Volunteer & Earn" model where contributors receive exclusive project NFTs and can check NFT floor prices.
 
 ## What Changed
 
@@ -29,14 +29,14 @@ Updated the Kakuma projects system from a traditional "donation" model to a "Vol
 
 ### 2. Modal Complete Redesign
 
-**File:** `/src/pages/kakuma.astro`
+**File:** `/src/pages/nairobi-youth.astro`
 
 **Modal Name Changed:**
 - ❌ `donate-modal`
 - ✅ `volunteer-modal`
 
 **Modal Header:**
-- ❌ "Support Kakuma Projects"
+- ❌ "Support Urban & Coastal Youth Projects"
 - ✅ "Volunteer & Earn Project NFTs"
 
 **New Features Added:**
@@ -103,7 +103,7 @@ closeVolunteerModal()
 ```javascript
 // Show NFT floor price when project selected
 document.getElementById('volunteer-project').addEventListener('change', (e) => {
-  const nftData = window.kakumaImpactManager.getProjectNFTData(projectId);
+  const nftData = window.nairobi-youthImpactManager.getProjectNFTData(projectId);
   // Display floor price, volume, total minted
 });
 
@@ -127,7 +127,7 @@ function viewProjectDetails(projectId) {
 }
 ```
 
-### 5. KakumaImpactManager Updates
+### 5. Urban & Coastal YouthImpactManager Updates
 
 **New Method Added:**
 ```javascript
@@ -222,7 +222,7 @@ nft_total_minted INTEGER DEFAULT 0,        -- Total NFTs minted
 ```
 
 **Sample Data Updated:**
-All 5 Kakuma projects now include NFT data:
+All 5 Urban & Coastal Youth projects now include NFT data:
 
 | Project | Floor Price | 24h Volume | Minted |
 |---------|-------------|------------|--------|
@@ -357,7 +357,7 @@ Run the updated `add_projects_table.sql` which now includes:
 
 ## Files Modified
 
-1. `/src/pages/kakuma.astro` - Complete volunteer & earn system
+1. `/src/pages/nairobi-youth.astro` - Complete volunteer & earn system
 2. `/src/pages/api/donations/create.js` - NFT minting logic
 3. `add_projects_table.sql` - NFT columns and data
 

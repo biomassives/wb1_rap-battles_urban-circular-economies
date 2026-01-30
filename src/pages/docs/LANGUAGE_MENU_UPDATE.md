@@ -121,7 +121,7 @@ Based on UNHCR global displacement statistics (2024-2025), these are the most co
 - **Use Case:** Essential for Afghan refugee communication
 
 ### 2. **Somali** (Somalia)
-- **Camps:** Kenya (Dadaab, Kakuma), Ethiopia, Yemen
+- **Camps:** Kenya (Dadaab, Urban & Coastal Youth), Ethiopia, Yemen
 - **Refugees:** 1.1M+ Somalis displaced
 - **Use Case:** Critical for East African camps
 
@@ -250,7 +250,7 @@ document.querySelector('[data-lang="ps"]').click();
 - [ ] Create i18n JSON files for each language
 - [ ] Implement translation system using i18next or similar
 - [ ] Translate key UI elements (navigation, buttons, labels)
-- [ ] Add language-specific content for Kakuma page
+- [ ] Add language-specific content for Urban & Coastal Youth page
 
 ### Phase 2: RTL Layout Support (Week 2)
 - [ ] Add RTL CSS for Arabic, Pashto, Dari
@@ -278,7 +278,7 @@ document.querySelector('[data-lang="ps"]').click();
 - **Total languages:** 16
 - **Refugee population coverage:** ~15M+ displaced persons
 - **Geographic reach:** Africa, Middle East, South Asia, Southeast Asia
-- **Camp coverage:** Kakuma, Dadaab, Cox's Bazar, Zaatari, and many more
+- **Camp coverage:** Urban & Coastal Youth, Dadaab, Cox's Bazar, Zaatari, and many more
 
 ### Accessibility Benefits
 1. **Reduced Language Barrier:** Users can navigate in their native language
@@ -367,7 +367,7 @@ i18next.init({
 - **Unicode Scripts:** https://unicode.org/charts/
 
 ### Refugee Camp Information
-- **Kakuma Refugee Camp:** https://www.unhcr.org/ke/kakuma-refugee-camp
+- **Urban & Coastal Youth Refugee Camp:** https://www.unhcr.org/ke/kakuma-refugee-camp
 - **Dadaab Refugee Camp:** https://www.unhcr.org/ke/dadaab-refugee-camp
 - **Cox's Bazar (Rohingya):** https://www.unhcr.org/rohingya-emergency
 
@@ -380,4 +380,4 @@ i18next.init({
 
 **Status:** ✅ Production Ready
 **Next Review:** 2026-01-05
-**Stakeholders:** Product, UX, Community Outreach, Kakuma Team
+**Stakeholders:** Product, UX, Community Outreach, Urban & Coastal Youth Team

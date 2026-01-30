@@ -16,7 +16,7 @@ Complete database migration adding 30+ tables for:
 - ✅ Mentorship system
 - ✅ Achievements (8 starter achievements)
 - ✅ Events & attendance
-- ✅ Kakuma impact tracking
+- ✅ Urban & Coastal Youth impact tracking
 - ✅ Notifications
 
 **Size:** ~800 lines of SQL
@@ -300,7 +300,7 @@ SELECT * FROM airdrop_claims;
 - ✅ Get mentorship
 - ✅ Unlock achievements
 - ✅ Attend events
-- ✅ Track impact in Kakuma
+- ✅ Track impact in Urban & Coastal Youth
 
 ### For Platform
 - ✅ Complete user progression system

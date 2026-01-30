@@ -79,7 +79,7 @@ Battle PFP Cards Showcase
 │   ├── 5 Rarity Tiers (Common → Mythic)
 │   ├── Airdrop Rewards (tokens, whitelist, merch)
 │   ├── Trade & Collect (marketplace)
-│   └── Kakuma Impact (5% to youth programs)
+│   └── Urban & Coastal Youth Impact (5% to youth programs)
 └── Rarity Tier Showcase
     ├── Common (60%) 🥉
     ├── Rare (25%) 🥈
@@ -187,8 +187,8 @@ Text:
 ### 💰 **Trade & Collect**
 "Built-in marketplace to buy, sell, and swap cards - rare cards can sell for 50+ SOL"
 
-### 🏕️ **Kakuma Impact**
-"5% of all sales support youth empowerment programs in Kakuma refugee camp"
+### 🏕️ **Urban & Coastal Youth Impact**
+"5% of all sales support youth empowerment programs in Urban & Coastal Youth refugee camp"
 
 ---
 
@@ -230,7 +230,7 @@ From `BATTLE_PFP_SYSTEM_PLAN.md`:
 - ✅ Rapper persona customization highlighted
 - ✅ Airdrop rewards emphasized
 - ✅ Marketplace/trading mentioned
-- ✅ Kakuma impact stated (5% donation)
+- ✅ Urban & Coastal Youth impact stated (5% donation)
 
 ---
 
@@ -271,7 +271,7 @@ Battle PFP Showcase
 - **Accessibility**: Common card "Your First Card"
 - **Collection**: "50+ badges", "5 rarity tiers"
 - **FOMO**: "1% Mythic", "50+ SOL rare cards"
-- **Social Good**: "5% supports Kakuma youth"
+- **Social Good**: "5% supports Urban & Coastal Youth youth"
 
 ---
 
@@ -360,7 +360,7 @@ Battle PFP Showcase
 - [ ] Users can explain rarity system after viewing
 - [ ] Users know they earn cards from battles
 - [ ] Users understand bling badge concept
-- [ ] Users see Kakuma connection
+- [ ] Users see Urban & Coastal Youth connection
 
 ### Conversion
 - [ ] 40%+ of viewers click CTA
@@ -410,13 +410,13 @@ The homepage now **authentically represents** the rap battle commemorative PFP s
 - ✅ Rapper persona culture (avatars, gold chains, badges)
 - ✅ Aspirational design (holographic effects, premium feel)
 - ✅ Accessible entry point ("Your First Card")
-- ✅ Social impact messaging (Kakuma support)
+- ✅ Social impact messaging (Urban & Coastal Youth support)
 
 Users immediately understand:
 1. **What**: Collectible rapper PFP cards
 2. **How**: Win battles to earn cards
 3. **Why**: Bling badges, rare drops, airdrops, trading
-4. **Impact**: Support Kakuma youth programs
+4. **Impact**: Support Urban & Coastal Youth youth programs
 
 The design **bridges** hip-hop bling culture with Web3 collectibles, making NFTs feel **earned, personal, and meaningful** rather than speculative.
 
