@@ -1,0 +1,235 @@
+---
+/**
+ * sampler_.astro
+ * Refactored Sampler Player with NFT load/save, Quick Start, and persistent state
+ * Drop-in test file – ignores existing HTML/CSS
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<script type="module">
+// -----------------------------
+// State Model
+// -----------------------------
+const DEFAULT_PRESETS = {
+  basic: {
+    name: 'Basic Beat',
+    bpm: 120,
+    pattern: [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+    sample: 'kick'
+  },
+  ambient: {
+    name: 'Ambient Pulse',
+    bpm: 80,
+    pattern: [1,0,1,0, 0,1,0,1, 1,0,1,0, 0,1,0,1],
+    sample: 'pad'
+  }
+};
+
+let playerState = {
+  bpm: 120,
+  pattern: Array(16).fill(0),
+  sample: 'kick',
+  playing: false
+};
+
+let nftState = {
+  tokenId: null,
+  metadata: null,
+  dirty: false
+};
+
+let uiState = {
+  mode: 'simple' // simple | advanced
+};
+
+// -----------------------------
+// Persistence
+// -----------------------------
+const STORAGE_KEY = 'sampler:lastState';
+
+function loadLastState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved) {
+      playerState = { ...playerState, ...saved.playerState };
+      nftState = { ...nftState, ...saved.nftState };
+    }
+  } catch (e) {
+    console.warn('Failed to load last state', e);
+  }
+}
+
+function saveLastState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    playerState,
+    nftState
+  }));
+}
+
+// -----------------------------
+// NFT Logic (mock / replace with wallet)
+// -----------------------------
+async function loadFromNFT() {
+  // MOCK: replace with real chain call
+  const fakeNFT = {
+    name: 'NFT Sampler Pattern',
+    attributes: {
+      bpm: 100,
+      pattern: [1,1,0,0, 1,0,1,0, 0,1,0,1, 0,0,1,1],
+      sample: 'snare'
+    }
+  };
+
+  playerState = { ...playerState, ...fakeNFT.attributes };
+  nftState.metadata = fakeNFT;
+  nftState.dirty = false;
+  saveLastState();
+  render();
+}
+
+async function saveToNFT() {
+  const metadata = {
+    name: 'Sampler Pattern',
+    description: 'Created with sampler_.astro',
+    attributes: {
+      bpm: playerState.bpm,
+      pattern: playerState.pattern,
+      sample: playerState.sample,
+      lastEdited: Date.now()
+    }
+  };
+
+  // MOCK save
+  nftState.metadata = metadata;
+  nftState.dirty = false;
+  saveLastState();
+  alert('NFT metadata prepared (mock)');
+}
+
+// -----------------------------
+// Audio Engine (minimal stub)
+// -----------------------------
+let interval = null;
+
+function play() {
+  if (interval) return;
+  playerState.playing = true;
+  const stepMs = (60 / playerState.bpm) * 1000 / 4;
+  let step = 0;
+  interval = setInterval(() => {
+    if (playerState.pattern[step]) {
+      console.log('PLAY', playerState.sample, 'step', step);
+    }
+    step = (step + 1) % 16;
+  }, stepMs);
+  render();
+}
+
+function stop() {
+  clearInterval(interval);
+  interval = null;
+  playerState.playing = false;
+  render();
+}
+
+// -----------------------------
+// UI Actions
+// -----------------------------
+function applyPreset(key) {
+  const preset = DEFAULT_PRESETS[key];
+  if (!preset) return;
+  playerState.bpm = preset.bpm;
+  playerState.pattern = [...preset.pattern];
+  playerState.sample = preset.sample;
+  nftState.dirty = true;
+  saveLastState();
+  render();
+}
+
+function toggleStep(i) {
+  playerState.pattern[i] = playerState.pattern[i] ? 0 : 1;
+  nftState.dirty = true;
+  saveLastState();
+  render();
+}
+
+function toggleMode() {
+  uiState.mode = uiState.mode === 'simple' ? 'advanced' : 'simple';
+  render();
+}
+
+// -----------------------------
+// Render
+// -----------------------------
+function render() {
+  document.getElementById('bpm').value = playerState.bpm;
+  document.getElementById('playBtn').textContent = playerState.playing ? 'Stop' : 'Play';
+  document.getElementById('nftStatus').textContent = nftState.metadata
+    ? (nftState.dirty ? 'NFT loaded (modified)' : 'NFT loaded')
+    : 'No NFT loaded';
+
+  const grid = document.getElementById('pattern');
+  grid.innerHTML = '';
+  playerState.pattern.forEach((v, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = v ? '●' : '○';
+    btn.onclick = () => toggleStep(i);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('advanced').style.display = uiState.mode === 'advanced' ? 'block' : 'none';
+}
+
+// -----------------------------
+// Init
+// -----------------------------
+window.addEventListener('DOMContentLoaded', () => {
+  loadLastState();
+  render();
+});
+</script>
+
+<BaseLayout title="Sampler">
+  <main>
+    <h1>Sampler Player</h1>
+
+    <!-- Primary Controls -->
+    <section>
+      <button id="playBtn" onclick="window.playerState?.playing ? stop() : play()">Play</button>
+      <button onclick="stop()">Stop</button>
+      <button onclick="loadFromNFT()">Load NFT</button>
+      <button onclick="saveToNFT()">Save NFT</button>
+      <span id="nftStatus"></span>
+    </section>
+
+    <!-- Quick Start -->
+    <section>
+      <h2>Quick Start</h2>
+      <button onclick="applyPreset('basic')">Basic</button>
+      <button onclick="applyPreset('ambient')">Ambient</button>
+    </section>
+
+    <!-- Pattern -->
+    <section>
+      <h2>Pattern</h2>
+      <div id="pattern" style="display:grid;grid-template-columns:repeat(16,1fr);gap:4px"></div>
+    </section>
+
+    <!-- Advanced -->
+    <section>
+      <button onclick="toggleMode()">Toggle Advanced</button>
+      <div id="advanced" style="display:none">
+        <label>BPM <input id="bpm" type="number" onchange="playerState.bpm = +this.value; saveLastState()" /></label>
+        <label>Sample
+          <select onchange="playerState.sample = this.value; nftState.dirty=true; saveLastState()">
+            <option value="kick">Kick</option>
+            <option value="snare">Snare</option>
+            <option value="pad">Pad</option>
+          </select>
+        </label>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

@@ -26,16 +26,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <!-- Header -->
     <header class="builder-header pixel-border arcade-screen">
       <div class="header-badge">
-        <span class="neon-text blink">🎨 CHARACTER FORGE v2.0 🎨</span>
+        <span class="neon-text blink">⚡ CYBER FORGE v3.0 ⚡</span>
       </div>
       <h1 class="builder-title glitch">
         <span class="block">RAPPER CARD</span>
         <span class="block neon-text">BUILDER</span>
       </h1>
       <p class="builder-subtitle mono">
-        > CUSTOMIZE_CHARACTER()<br/>
-        > CALCULATE_RARITY()<br/>
-        > EXPORT_NFT()<br/>
+        > INIT_CYBER_AVATAR()<br/>
+        > LOAD_TRON_ASSETS()<br/>
+        > RENDER_SPACE_INVADER()<br/>
         <span class="text-cyan blink">█</span>
       </p>
     </header>
@@ -62,24 +62,37 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </div>
         </div>
 
-        <!-- Animal Spirit (EXPANDED) -->
+        <!-- Animal Spirit - 6 Core Animals -->
         <div class="control-section">
-          <h3 class="section-label mono">ANIMAL SPIRIT (22 Total):</h3>
+          <h3 class="section-label mono">ANIMAL SPIRIT (6 Core):</h3>
 
-          <details class="spirit-category" open>
-            <summary class="category-header mono">🐓 FARM (6)</summary>
+          <div class="spirit-grid spirit-grid-main">
+            <button class="spirit-btn active" data-animal="chicken" onclick="setAnimal('chicken')">
+              🐓<span>Chicken</span>
+            </button>
+            <button class="spirit-btn" data-animal="dog" onclick="setAnimal('dog')">
+              🐕<span>Dog</span>
+            </button>
+            <button class="spirit-btn" data-animal="goat" onclick="setAnimal('goat')">
+              🐐<span>Goat</span>
+            </button>
+            <button class="spirit-btn" data-animal="ermine" onclick="setAnimal('ermine')">
+              🦦<span>Ermine</span>
+            </button>
+            <button class="spirit-btn" data-animal="pigeon" onclick="setAnimal('pigeon')">
+              🕊️<span>Pigeon</span>
+            </button>
+            <button class="spirit-btn" data-animal="eagle" onclick="setAnimal('eagle')">
+              🦅<span>Eagle</span>
+            </button>
+          </div>
+
+          <!-- COMMENTED OUT: Additional animals for future expansion
+          <details class="spirit-category">
+            <summary class="category-header mono">🐓 FARM (7)</summary>
             <div class="spirit-grid">
-              <button class="spirit-btn active" data-animal="chicken" onclick="setAnimal('chicken')">
-                🐓<span>Chicken</span>
-              </button>
               <button class="spirit-btn" data-animal="cat" onclick="setAnimal('cat')">
                 🐱<span>Cat</span>
-              </button>
-              <button class="spirit-btn" data-animal="goat" onclick="setAnimal('goat')">
-                🐐<span>Goat</span>
-              </button>
-              <button class="spirit-btn" data-animal="dog" onclick="setAnimal('dog')">
-                🐕<span>Dog</span>
               </button>
               <button class="spirit-btn" data-animal="bunny" onclick="setAnimal('bunny')">
                 🐰<span>Bunny</span>
@@ -93,14 +106,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <details class="spirit-category">
             <summary class="category-header mono">🦅 SKY (5)</summary>
             <div class="spirit-grid">
-              <button class="spirit-btn" data-animal="pigeon" onclick="setAnimal('pigeon')">
-                🕊️<span>Pigeon</span>
-              </button>
               <button class="spirit-btn" data-animal="cooperhawk" onclick="setAnimal('cooperhawk')">
                 🦅<span>Hawk</span>
-              </button>
-              <button class="spirit-btn" data-animal="eagle" onclick="setAnimal('eagle')">
-                🦅<span>Eagle</span>
               </button>
               <button class="spirit-btn" data-animal="owl" onclick="setAnimal('owl')">
                 🦉<span>Owl</span>
@@ -161,6 +168,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
               </button>
             </div>
           </details>
+          END COMMENTED OUT -->
         </div>
 
         <!-- Hairstyle -->
@@ -391,14 +399,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     <!-- Tips -->
     <section class="tips-section card-retro-neon">
-      <h3 class="tips-title mono">💡 FEATURES v2.0:</h3>
+      <h3 class="tips-title mono">💡 FEATURES v3.0 - CYBER EDITION:</h3>
       <ul class="tips-list mono">
-        <li>→ <strong>Game Theory:</strong> Each character has unique stats and rarity tiers</li>
-        <li>→ <strong>22 Animal Spirits:</strong> 5 categories (Farm, Sky, Wild, Reptile, Insect)</li>
-        <li>→ <strong>Generative Calibrator:</strong> Real-time rarity calculation and combo bonuses</li>
-        <li>→ <strong>No Skin Tone Picker:</strong> Auto-generated for diversity and inclusivity</li>
-        <li>→ <strong>Power Levels:</strong> Combined stat score determines character strength</li>
-        <li>→ <strong>Export as NFT:</strong> High-quality SVG ready for minting</li>
+        <li>→ <strong>TRON/Space Invaders Aesthetic:</strong> Pixelated shapes, neon glows, circuit patterns</li>
+        <li>→ <strong>6 Cyber Animals:</strong> Each with unique angular features, sensor arrays, and data ports</li>
+        <li>→ <strong>Neon Color Palette:</strong> Cyan, Magenta, Green, Orange glows with scanline effects</li>
+        <li>→ <strong>Cyber Hairstyles:</strong> Data cables, antenna arrays, fiber optic braids</li>
+        <li>→ <strong>Game Theory Stats:</strong> Flow, Bars, Vibes, Drip, Aura - calculated in real-time</li>
+        <li>→ <strong>Export as NFT:</strong> High-quality SVG with retro-futuristic styling</li>
       </ul>
     </section>
 
@@ -412,7 +420,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </div>
 </div>
 
-<script>
+<script is:inline>
   // Current configuration
   let config = {
     gender: 'male',
@@ -436,6 +444,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     dog: { rarity: 1, category: 'farm', flow: 50, bars: 45, vibes: 80, drip: 40, aura: 50 },
     bunny: { rarity: 2, category: 'farm', flow: 65, bars: 40, vibes: 75, drip: 60, aura: 55 },
     horse: { rarity: 3, category: 'farm', flow: 70, bars: 65, vibes: 60, drip: 55, aura: 65 },
+    ermine: { rarity: 4, category: 'farm', flow: 75, bars: 70, vibes: 65, drip: 80, aura: 75 },
 
     // Sky (Uncommon-Rare)
     pigeon: { rarity: 2, category: 'sky', flow: 55, bars: 50, vibes: 70, drip: 45, aura: 60 },
@@ -485,6 +494,687 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     '#3d2817', '#5c3d2e', '#8d5524', '#c68642', '#e0ac69', '#f1c27d',
     '#4a3528', '#6b4423', '#a0673b', '#d29b6e', '#f3d5b5'
   ];
+
+  // ===========================================
+  // ANIMAL FEATURES - RETRO SCI-FI / TRON / SPACE INVADERS STYLE
+  // Pixelated, neon glows, circuit patterns, angular geometric designs
+  // ===========================================
+  const ANIMAL_FEATURES = {
+    chicken: {
+      // Pixelated neon comb - Space Invaders style blocks
+      headTop: `
+        <g class="chicken-comb-cyber" filter="url(#neonGlow)">
+          <!-- Pixel block comb -->
+          <rect x="-24" y="-140" width="8" height="12" fill="#FF0066"/>
+          <rect x="-16" y="-148" width="8" height="20" fill="#FF0066"/>
+          <rect x="-8" y="-155" width="8" height="27" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <rect x="0" y="-148" width="8" height="20" fill="#FF0066"/>
+          <rect x="8" y="-140" width="8" height="12" fill="#FF0066"/>
+          <!-- Glow accents -->
+          <rect x="-8" y="-155" width="8" height="4" fill="#FFF" opacity="0.8"/>
+          <!-- Circuit lines on comb -->
+          <line x1="-4" y1="-150" x2="-4" y2="-130" stroke="#FF66AA" stroke-width="1" opacity="0.6"/>
+        </g>
+      `,
+      // Detailed cyber chicken beak - realistic shape
+      nose: `
+        <g class="chicken-beak-cyber">
+          <!-- Upper beak - curved top, hooked tip -->
+          <path d="M0,-8 Q-18,0 -22,18 Q-18,22 0,28 Q18,22 22,18 Q18,0 0,-8"
+                fill="#111" stroke="#FFAA00" stroke-width="2"/>
+          <!-- Upper beak top surface -->
+          <path d="M0,-8 Q-12,-2 -18,10 L0,5 L18,10 Q12,-2 0,-8"
+                fill="#1a1000" stroke="#FFAA00" stroke-width="1"/>
+          <!-- Beak ridge highlight -->
+          <path d="M0,-6 L0,22" stroke="#FFDD00" stroke-width="2" filter="url(#neonGlow)"/>
+          <!-- Nostril holes -->
+          <ellipse cx="-8" cy="5" rx="3" ry="2" fill="#0a0500" stroke="#FFAA00" stroke-width="1"/>
+          <ellipse cx="8" cy="5" rx="3" ry="2" fill="#0a0500" stroke="#FFAA00" stroke-width="1"/>
+          <!-- Lower beak -->
+          <path d="M-16,20 Q0,35 16,20" fill="#111" stroke="#FFAA00" stroke-width="1.5"/>
+          <!-- Beak tip accent -->
+          <circle cx="0" cy="26" r="3" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <!-- Side panel details -->
+          <line x1="-15" y1="8" x2="-18" y2="16" stroke="#FFAA00" stroke-width="1" opacity="0.6"/>
+          <line x1="15" y1="8" x2="18" y2="16" stroke="#FFAA00" stroke-width="1" opacity="0.6"/>
+          <!-- Cyber accent lines -->
+          <path d="M-10,12 L-6,18" stroke="#FFDD00" stroke-width="1" opacity="0.5"/>
+          <path d="M10,12 L6,18" stroke="#FFDD00" stroke-width="1" opacity="0.5"/>
+        </g>
+      `,
+      // Colorful holographic wattle - vibrant like pigeon
+      chin: `
+        <g class="chicken-wattle-cyber">
+          <!-- Multi-color wattle segments -->
+          <polygon points="-18,42 -14,65 -6,70 -2,50" fill="#FF0066" opacity="0.8" filter="url(#neonGlow)"/>
+          <polygon points="-6,45 -2,72 6,72 10,45" fill="#FF00FF" opacity="0.7" filter="url(#neonGlow)"/>
+          <polygon points="6,50 10,70 18,65 14,42" fill="#FF3399" opacity="0.8" filter="url(#neonGlow)"/>
+          <!-- Iridescent overlay -->
+          <polygon points="-10,48 0,70 10,48" fill="#CC00FF" opacity="0.4"/>
+          <!-- Data veins -->
+          <path d="M-10,50 L-5,62 L0,55 L5,62 L10,50" stroke="#FF66FF" stroke-width="1" fill="none"/>
+          <!-- Glow nodes -->
+          <circle cx="-8" cy="58" r="2" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="0" cy="65" r="3" fill="#FF66FF" filter="url(#neonGlow)"/>
+          <circle cx="8" cy="58" r="2" fill="#FF00FF" filter="url(#neonGlow)"/>
+        </g>
+      `,
+      // Colorful neck plumage for chicken
+      neckFeathers: `
+        <g class="chicken-neck-cyber">
+          <!-- Holographic hackle feathers -->
+          <polygon points="-55,50 -45,85 -25,90 -15,60" fill="#FF6600" opacity="0.5"/>
+          <polygon points="-40,55 -30,88 -10,92 0,65" fill="#FF9900" opacity="0.4" filter="url(#neonGlow)"/>
+          <polygon points="55,50 45,85 25,90 15,60" fill="#FF6600" opacity="0.5"/>
+          <polygon points="40,55 30,88 10,92 0,65" fill="#FF9900" opacity="0.4" filter="url(#neonGlow)"/>
+          <!-- Center chest glow -->
+          <polygon points="-20,60 0,95 20,60" fill="#FFAA00" opacity="0.3" filter="url(#neonGlow)"/>
+          <!-- Feather edge accents -->
+          <circle cx="-35" cy="75" r="2" fill="#FF6600" filter="url(#neonGlow)"/>
+          <circle cx="35" cy="75" r="2" fill="#FF6600" filter="url(#neonGlow)"/>
+          <circle cx="0" cy="85" r="3" fill="#FFCC00" filter="url(#neonGlow)"/>
+        </g>
+      `,
+      // CUTE BIG ROUND EYES - chicken style with pixel accents
+      eyes: `
+        <g class="chicken-eyes-cyber">
+          <!-- LEFT EYE - big and round with pixel border -->
+          <circle cx="-26" cy="-26" r="18" fill="#111" stroke="#00FFFF" stroke-width="2"/>
+          <!-- Orange iris (chicken-like) -->
+          <circle cx="-26" cy="-24" r="13" fill="#1a0800"/>
+          <!-- Large pupil -->
+          <circle class="chicken-pupil-left" cx="-26" cy="-22" r="9" fill="#FF8800" filter="url(#neonGlow)"/>
+          <!-- Inner bright pupil -->
+          <circle cx="-26" cy="-22" r="5" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <!-- Cute highlights -->
+          <ellipse cx="-32" cy="-30" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="-21" cy="-18" r="2" fill="#FFF" opacity="0.6"/>
+          <!-- Pixel corner accents -->
+          <rect x="-42" y="-42" width="4" height="4" fill="#00FFFF" opacity="0.6"/>
+          <rect x="-12" y="-42" width="4" height="4" fill="#00FFFF" opacity="0.6"/>
+
+          <!-- RIGHT EYE - big and round with pixel border -->
+          <circle cx="26" cy="-26" r="18" fill="#111" stroke="#00FFFF" stroke-width="2"/>
+          <!-- Orange iris (chicken-like) -->
+          <circle cx="26" cy="-24" r="13" fill="#1a0800"/>
+          <!-- Large pupil -->
+          <circle class="chicken-pupil-right" cx="26" cy="-22" r="9" fill="#FF8800" filter="url(#neonGlow)"/>
+          <!-- Inner bright pupil -->
+          <circle cx="26" cy="-22" r="5" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <!-- Cute highlights -->
+          <ellipse cx="20" cy="-30" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="31" cy="-18" r="2" fill="#FFF" opacity="0.6"/>
+          <!-- Pixel corner accents -->
+          <rect x="38" y="-42" width="4" height="4" fill="#00FFFF" opacity="0.6"/>
+          <rect x="8" y="-42" width="4" height="4" fill="#00FFFF" opacity="0.6"/>
+        </g>
+      `,
+      // Circuit pattern overlay
+      faceOverlay: `
+        <g class="cyber-circuits" opacity="0.4">
+          <path d="M-50,-60 L-40,-60 L-40,-40 L-30,-40" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <path d="M50,-60 L40,-60 L40,-40 L30,-40" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <circle cx="-30" cy="-40" r="2" fill="#FF00FF"/>
+          <circle cx="30" cy="-40" r="2" fill="#FF00FF"/>
+        </g>
+      `,
+      faceShape: 'cyber-chicken',
+      hideHair: false,
+      isBird: true,
+      sunglassesOffset: { x: 0, y: 5 },
+      hatOffset: { x: 0, y: 25 },
+      earringsOffset: { x: 0, y: 15 }
+    },
+
+    dog: {
+      // Cyber floppy ears - INDIVIDUAL for proper flop animation
+      ears: `
+        <g class="dog-ears-container">
+          <!-- LEFT EAR - floppy, pivots from top connection -->
+          <g class="dog-ear-left" style="transform-origin: -55px -85px;">
+            <polygon points="-55,-85 -85,-50 -80,-5 -60,-15 -50,-65"
+                     fill="#111" stroke="#00FF00" stroke-width="2"/>
+            <!-- Inner ear circuit -->
+            <path d="M-70,-45 L-65,-35 L-70,-25" stroke="#00FF00" stroke-width="1" fill="none" filter="url(#neonGlow)"/>
+            <!-- Ear tip node -->
+            <circle cx="-80" cy="-5" r="4" fill="#00FF00" filter="url(#neonGlow)"/>
+          </g>
+          <!-- RIGHT EAR - floppy, pivots from top connection -->
+          <g class="dog-ear-right" style="transform-origin: 55px -85px;">
+            <polygon points="55,-85 85,-50 80,-5 60,-15 50,-65"
+                     fill="#111" stroke="#00FF00" stroke-width="2"/>
+            <!-- Inner ear circuit -->
+            <path d="M70,-45 L65,-35 L70,-25" stroke="#00FF00" stroke-width="1" fill="none" filter="url(#neonGlow)"/>
+            <!-- Ear tip node -->
+            <circle cx="80" cy="-5" r="4" fill="#00FF00" filter="url(#neonGlow)"/>
+          </g>
+        </g>
+      `,
+      // Cute rounded snout
+      snout: `
+        <g class="dog-snout-cyber">
+          <!-- Rounder snout shape -->
+          <ellipse cx="0" cy="30" rx="32" ry="25" fill="#111" stroke="#00FF00" stroke-width="1"/>
+          <!-- Sensor grid -->
+          <line x1="-18" y1="22" x2="18" y2="22" stroke="#00FF00" stroke-width="1" opacity="0.4"/>
+          <line x1="-14" y1="32" x2="14" y2="32" stroke="#00FF00" stroke-width="1" opacity="0.4"/>
+        </g>
+      `,
+      // Big cute nose
+      nose: `
+        <g class="dog-nose-cyber">
+          <!-- Larger rounder nose -->
+          <ellipse cx="0" cy="18" rx="14" ry="10" fill="#111" stroke="#00FF00" stroke-width="2"/>
+          <ellipse cx="0" cy="16" rx="10" ry="7" fill="#00FF00" filter="url(#neonGlow)"/>
+          <!-- Nose highlight -->
+          <ellipse cx="-3" cy="14" rx="4" ry="3" fill="#66FF66" opacity="0.6"/>
+          <!-- Nostrils -->
+          <ellipse cx="-5" cy="18" rx="2" ry="3" fill="#003300"/>
+          <ellipse cx="5" cy="18" rx="2" ry="3" fill="#003300"/>
+        </g>
+      `,
+      // BIG CUTE EYES with happy expression
+      eyes: `
+        <g class="dog-eyes-cyber">
+          <!-- LEFT EYE - big and round -->
+          <ellipse cx="-28" cy="-25" rx="20" ry="22" fill="#111" stroke="#00FF00" stroke-width="2"/>
+          <ellipse cx="-28" cy="-23" rx="14" ry="16" fill="#001a00"/>
+          <!-- Pupil -->
+          <ellipse class="dog-pupil-left" cx="-28" cy="-21" rx="9" ry="11" fill="#00FF00" filter="url(#neonGlow)"/>
+          <!-- Highlights -->
+          <ellipse cx="-34" cy="-30" rx="5" ry="6" fill="#FFF" opacity="0.9"/>
+          <circle cx="-23" cy="-16" r="2.5" fill="#FFF" opacity="0.6"/>
+
+          <!-- RIGHT EYE - big and round -->
+          <ellipse cx="28" cy="-25" rx="20" ry="22" fill="#111" stroke="#00FF00" stroke-width="2"/>
+          <ellipse cx="28" cy="-23" rx="14" ry="16" fill="#001a00"/>
+          <!-- Pupil -->
+          <ellipse class="dog-pupil-right" cx="28" cy="-21" rx="9" ry="11" fill="#00FF00" filter="url(#neonGlow)"/>
+          <!-- Highlights -->
+          <ellipse cx="22" cy="-30" rx="5" ry="6" fill="#FFF" opacity="0.9"/>
+          <circle cx="33" cy="-16" r="2.5" fill="#FFF" opacity="0.6"/>
+
+          <!-- Happy eyebrow arches -->
+          <path d="M-48,-42 Q-28,-52 -8,-42" stroke="#00FF00" stroke-width="2" fill="none" opacity="0.6"/>
+          <path d="M8,-42 Q28,-52 48,-42" stroke="#00FF00" stroke-width="2" fill="none" opacity="0.6"/>
+        </g>
+      `,
+      // Happy tongue mouth
+      chin: `
+        <g class="dog-mouth-cyber">
+          <!-- Happy smile -->
+          <path d="M-22,42 Q0,58 22,42" stroke="#00FF00" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Cute tongue -->
+          <g class="dog-tongue" style="transform-origin: 0px 50px;">
+            <ellipse cx="0" cy="58" rx="10" ry="14" fill="#FF6B9D"/>
+            <ellipse cx="0" cy="55" rx="6" ry="8" fill="#FF8DB5" opacity="0.6"/>
+            <!-- Tongue line -->
+            <line x1="0" y1="48" x2="0" y2="65" stroke="#E84A7A" stroke-width="1.5"/>
+          </g>
+        </g>
+      `,
+      // Colorful cyber collar/fur ruff
+      neckFeathers: `
+        <g class="dog-collar-cyber">
+          <!-- Holographic fur collar -->
+          <polygon points="-55,55 -45,85 -20,90 0,75" fill="#00FF66" opacity="0.4"/>
+          <polygon points="55,55 45,85 20,90 0,75" fill="#00FFAA" opacity="0.4"/>
+          <polygon points="-35,60 -20,88 0,92 20,88 35,60" fill="#66FF99" opacity="0.3" filter="url(#neonGlow)"/>
+          <!-- Collar band -->
+          <path d="M-50,58 Q0,72 50,58" stroke="#00FF00" stroke-width="3" fill="none" filter="url(#neonGlow)"/>
+          <!-- Glow nodes -->
+          <circle cx="-30" cy="70" r="3" fill="#00FF66" filter="url(#neonGlow)"/>
+          <circle cx="0" cy="78" r="4" fill="#66FFAA" filter="url(#neonGlow)"/>
+          <circle cx="30" cy="70" r="3" fill="#00FF66" filter="url(#neonGlow)"/>
+        </g>
+      `,
+      faceShape: 'cyber-dog',
+      hideHair: false,
+      earringsOffset: { x: 5, y: -10 }
+    },
+
+    pigeon: {
+      // Holographic data wing collar
+      neckFeathers: `
+        <g class="pigeon-neck-cyber">
+          <!-- Holographic collar segments -->
+          <polygon points="-50,55 -40,80 -20,85 0,70" fill="#9400D3" opacity="0.6"/>
+          <polygon points="50,55 40,80 20,85 0,70" fill="#00CED1" opacity="0.6"/>
+          <polygon points="-30,60 -15,85 0,90 15,85 30,60" fill="#FF00FF" opacity="0.4" filter="url(#neonGlow)"/>
+          <!-- Circuit traces -->
+          <path d="M-40,65 L-20,75 L0,70 L20,75 L40,65" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <path d="M-30,75 L0,85 L30,75" stroke="#00FFFF" stroke-width="1" fill="none"/>
+          <!-- Data nodes -->
+          <circle cx="-25" cy="70" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="0" cy="78" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="25" cy="70" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        </g>
+      `,
+      // Geometric beak with data port
+      nose: `
+        <g class="pigeon-beak-cyber">
+          <!-- Angular beak -->
+          <polygon points="0,-5 -15,10 -8,25 0,30 8,25 15,10" fill="#111" stroke="#00FFFF" stroke-width="2"/>
+          <!-- Beak ridge light -->
+          <line x1="0" y1="-3" x2="0" y2="25" stroke="#00FFFF" stroke-width="2" filter="url(#neonGlow)"/>
+          <!-- Data intake ports -->
+          <rect x="-10" y="8" width="4" height="4" fill="#00FFFF"/>
+          <rect x="6" y="8" width="4" height="4" fill="#00FFFF"/>
+        </g>
+      `,
+      // CUTE BIG PIGEON EYES - iridescent cyber style
+      eyes: `
+        <g class="pigeon-eyes-cyber">
+          <!-- LEFT EYE - big round with iridescent glow -->
+          <circle cx="-28" cy="-22" r="19" fill="#111" stroke="#FF00FF" stroke-width="2"/>
+          <!-- Multi-color iris (pigeon iridescent look) -->
+          <circle cx="-28" cy="-20" r="14" fill="#1a001a"/>
+          <!-- Gradient-like iris layers -->
+          <circle cx="-28" cy="-19" r="12" fill="#4B0082" opacity="0.6"/>
+          <circle cx="-28" cy="-18" r="10" fill="#9400D3" opacity="0.5"/>
+          <!-- Bright pupil -->
+          <circle class="pigeon-pupil-left" cx="-28" cy="-18" r="7" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="-28" cy="-18" r="4" fill="#FF66FF" filter="url(#neonGlow)"/>
+          <!-- Cute highlights -->
+          <ellipse cx="-34" cy="-26" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="-23" cy="-14" r="2" fill="#FFF" opacity="0.6"/>
+          <!-- Pixel accent corner -->
+          <rect x="-45" y="-38" width="3" height="3" fill="#00FFFF" opacity="0.5"/>
+
+          <!-- RIGHT EYE - big round with iridescent glow -->
+          <circle cx="28" cy="-22" r="19" fill="#111" stroke="#FF00FF" stroke-width="2"/>
+          <!-- Multi-color iris -->
+          <circle cx="28" cy="-20" r="14" fill="#1a001a"/>
+          <circle cx="28" cy="-19" r="12" fill="#4B0082" opacity="0.6"/>
+          <circle cx="28" cy="-18" r="10" fill="#9400D3" opacity="0.5"/>
+          <!-- Bright pupil -->
+          <circle class="pigeon-pupil-right" cx="28" cy="-18" r="7" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="28" cy="-18" r="4" fill="#FF66FF" filter="url(#neonGlow)"/>
+          <!-- Cute highlights -->
+          <ellipse cx="22" cy="-26" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="33" cy="-14" r="2" fill="#FFF" opacity="0.6"/>
+          <!-- Pixel accent corner -->
+          <rect x="42" y="-38" width="3" height="3" fill="#00FFFF" opacity="0.5"/>
+        </g>
+      `,
+      // Antenna crest
+      headTop: `
+        <g class="pigeon-antenna-cyber">
+          <!-- Central antenna -->
+          <rect x="-2" y="-120" width="4" height="25" fill="#111" stroke="#00FFFF" stroke-width="1"/>
+          <circle cx="0" cy="-125" r="5" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <!-- Side receivers -->
+          <rect x="-25" y="-105" width="3" height="15" fill="#FF00FF" transform="rotate(-15 -25 -105)"/>
+          <rect x="22" y="-105" width="3" height="15" fill="#FF00FF" transform="rotate(15 22 -105)"/>
+        </g>
+      `,
+      faceShape: 'cyber-pigeon',
+      hideHair: false,
+      isBird: true,
+      sunglassesOffset: { x: 0, y: 8 },
+      hatOffset: { x: 0, y: 15 },
+      earringsOffset: { x: 10, y: 0 }
+    },
+
+    ermine: {
+      // Sleek angular cyber ears - INDIVIDUAL for proper animation
+      ears: `
+        <g class="ermine-ears-container">
+          <!-- LEFT EAR - pivots from base at (-45,-100) -->
+          <g class="ermine-ear-left" style="transform-origin: -45px -100px;">
+            <polygon points="-45,-100 -60,-145 -30,-105" fill="#111" stroke="#FFAA00" stroke-width="2"/>
+            <!-- Inner ear circuit -->
+            <line x1="-50" y1="-130" x2="-42" y2="-110" stroke="#FFAA00" stroke-width="1" filter="url(#neonGlow)"/>
+            <!-- Glowing tip (signature ermine) -->
+            <polygon points="-57,-140 -60,-150 -53,-145" fill="#FFAA00" filter="url(#neonGlow)"/>
+          </g>
+          <!-- RIGHT EAR - pivots from base at (45,-100) -->
+          <g class="ermine-ear-right" style="transform-origin: 45px -100px;">
+            <polygon points="45,-100 60,-145 30,-105" fill="#111" stroke="#FFAA00" stroke-width="2"/>
+            <!-- Inner ear circuit -->
+            <line x1="50" y1="-130" x2="42" y2="-110" stroke="#FFAA00" stroke-width="1" filter="url(#neonGlow)"/>
+            <!-- Glowing tip -->
+            <polygon points="57,-140 60,-150 53,-145" fill="#FFAA00" filter="url(#neonGlow)"/>
+          </g>
+        </g>
+      `,
+      // Cute button nose
+      nose: `
+        <g class="ermine-nose-cyber">
+          <!-- Rounded snout shape -->
+          <ellipse cx="0" cy="25" rx="18" ry="14" fill="#111" stroke="#FFAA00" stroke-width="2"/>
+          <!-- Cute button nose - larger and rounder -->
+          <ellipse cx="0" cy="18" rx="8" ry="6" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <!-- Nose highlight for cuteness -->
+          <ellipse cx="-2" cy="16" rx="3" ry="2" fill="#FFD466" opacity="0.7"/>
+          <!-- Little smile line -->
+          <path d="M-8,30 Q0,36 8,30" stroke="#FFAA00" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </g>
+      `,
+      // Cyber whiskers - INDIVIDUAL whiskers that wiggle from face connection
+      whiskers: `
+        <g class="ermine-whiskers-container" stroke="#FFAA00" stroke-width="1.5">
+          <!-- LEFT WHISKERS - each pivots from face side -->
+          <g class="whisker-left-1" style="transform-origin: -18px 12px;">
+            <line x1="-18" y1="12" x2="-52" y2="2"/>
+            <circle cx="-52" cy="2" r="2" fill="#FFAA00" filter="url(#neonGlow)"/>
+          </g>
+          <g class="whisker-left-2" style="transform-origin: -18px 18px;">
+            <line x1="-18" y1="18" x2="-55" y2="18" filter="url(#neonGlow)"/>
+            <circle cx="-55" cy="18" r="2.5" fill="#FFAA00" filter="url(#neonGlow)"/>
+          </g>
+          <g class="whisker-left-3" style="transform-origin: -18px 24px;">
+            <line x1="-18" y1="24" x2="-52" y2="34"/>
+            <circle cx="-52" cy="34" r="2" fill="#FFAA00" filter="url(#neonGlow)"/>
+          </g>
+          <!-- RIGHT WHISKERS - each pivots from face side -->
+          <g class="whisker-right-1" style="transform-origin: 18px 12px;">
+            <line x1="18" y1="12" x2="52" y2="2"/>
+            <circle cx="52" cy="2" r="2" fill="#FFAA00" filter="url(#neonGlow)"/>
+          </g>
+          <g class="whisker-right-2" style="transform-origin: 18px 18px;">
+            <line x1="18" y1="18" x2="55" y2="18" filter="url(#neonGlow)"/>
+            <circle cx="55" cy="18" r="2.5" fill="#FFAA00" filter="url(#neonGlow)"/>
+          </g>
+          <g class="whisker-right-3" style="transform-origin: 18px 24px;">
+            <line x1="18" y1="24" x2="52" y2="34"/>
+            <circle cx="52" cy="34" r="2" fill="#FFAA00" filter="url(#neonGlow)"/>
+          </g>
+        </g>
+      `,
+      // BIG CUTE EYES with sparkles and better proportions
+      eyes: `
+        <g class="ermine-eyes-cyber">
+          <!-- LEFT EYE - larger, rounder, cuter -->
+          <ellipse cx="-28" cy="-22" rx="18" ry="20" fill="#111" stroke="#FFAA00" stroke-width="2"/>
+          <!-- Iris -->
+          <ellipse cx="-28" cy="-20" rx="12" ry="14" fill="#1a0a00"/>
+          <!-- Large pupil -->
+          <ellipse class="ermine-pupil-left" cx="-28" cy="-18" rx="8" ry="10" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <!-- Cute highlight sparkles -->
+          <ellipse cx="-33" cy="-26" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="-24" cy="-14" r="2" fill="#FFF" opacity="0.6"/>
+
+          <!-- RIGHT EYE - larger, rounder, cuter -->
+          <ellipse cx="28" cy="-22" rx="18" ry="20" fill="#111" stroke="#FFAA00" stroke-width="2"/>
+          <!-- Iris -->
+          <ellipse cx="28" cy="-20" rx="12" ry="14" fill="#1a0a00"/>
+          <!-- Large pupil -->
+          <ellipse class="ermine-pupil-right" cx="28" cy="-18" rx="8" ry="10" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <!-- Cute highlight sparkles -->
+          <ellipse cx="23" cy="-26" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="32" cy="-14" r="2" fill="#FFF" opacity="0.6"/>
+
+          <!-- Subtle eyelid lines for expression -->
+          <path d="M-46,-28 Q-28,-38 -10,-28" stroke="#FFAA00" stroke-width="1" fill="none" opacity="0.5"/>
+          <path d="M10,-28 Q28,-38 46,-28" stroke="#FFAA00" stroke-width="1" fill="none" opacity="0.5"/>
+        </g>
+      `,
+      // Stealth circuit pattern with cute cheek blush
+      faceOverlay: `
+        <g class="ermine-face-details">
+          <!-- Circuit traces -->
+          <g opacity="0.3">
+            <path d="M-50,-70 L-40,-60 L-40,-40 L-50,-30" stroke="#FFAA00" stroke-width="1" fill="none"/>
+            <path d="M50,-70 L40,-60 L40,-40 L50,-30" stroke="#FFAA00" stroke-width="1" fill="none"/>
+            <rect x="-42" y="-52" width="4" height="4" fill="#FFAA00"/>
+            <rect x="38" y="-52" width="4" height="4" fill="#FFAA00"/>
+          </g>
+          <!-- Cute cheek blush marks -->
+          <ellipse cx="-42" cy="5" rx="8" ry="5" fill="#FF6B6B" opacity="0.3"/>
+          <ellipse cx="42" cy="5" rx="8" ry="5" fill="#FF6B6B" opacity="0.3"/>
+          <!-- Small cheek sparkles -->
+          <circle cx="-45" cy="3" r="1.5" fill="#FFF" opacity="0.4"/>
+          <circle cx="45" cy="3" r="1.5" fill="#FFF" opacity="0.4"/>
+        </g>
+      `,
+      // Colorful ermine winter coat markings
+      neckFeathers: `
+        <g class="ermine-markings-cyber">
+          <!-- Iridescent chest patch -->
+          <polygon points="-40,50 -25,85 0,92 25,85 40,50" fill="#FFCC00" opacity="0.3" filter="url(#neonGlow)"/>
+          <polygon points="-30,55 -15,82 0,88 15,82 30,55" fill="#FFE066" opacity="0.4"/>
+          <!-- Side markings -->
+          <ellipse cx="-45" cy="65" rx="12" ry="18" fill="#FFAA00" opacity="0.25"/>
+          <ellipse cx="45" cy="65" rx="12" ry="18" fill="#FFAA00" opacity="0.25"/>
+          <!-- Glow spots -->
+          <circle cx="-25" cy="70" r="3" fill="#FFCC00" filter="url(#neonGlow)"/>
+          <circle cx="0" cy="80" r="4" fill="#FFE066" filter="url(#neonGlow)"/>
+          <circle cx="25" cy="70" r="3" fill="#FFCC00" filter="url(#neonGlow)"/>
+        </g>
+      `,
+      faceShape: 'cyber-ermine',
+      hideHair: false,
+      earringsOffset: { x: 0, y: -5 }
+    },
+
+    goat: {
+      // Cyber horns with circuit traces
+      ears: `
+        <g class="goat-horns-cyber">
+          <!-- Left horn - angular segments -->
+          <polygon points="-40,-100 -55,-130 -50,-170 -40,-165 -45,-135 -35,-105"
+                   fill="#111" stroke="#FF1493" stroke-width="2"/>
+          <!-- Right horn -->
+          <polygon points="40,-100 55,-130 50,-170 40,-165 45,-135 35,-105"
+                   fill="#111" stroke="#FF1493" stroke-width="2"/>
+          <!-- Horn circuit lights -->
+          <circle cx="-48" cy="-140" r="3" fill="#FF1493" filter="url(#neonGlow)"/>
+          <circle cx="-45" cy="-155" r="3" fill="#FF1493" filter="url(#neonGlow)"/>
+          <circle cx="48" cy="-140" r="3" fill="#FF1493" filter="url(#neonGlow)"/>
+          <circle cx="45" cy="-155" r="3" fill="#FF1493" filter="url(#neonGlow)"/>
+          <!-- Horn ridges -->
+          <line x1="-50" y1="-130" x2="-42" y2="-125" stroke="#FF1493" stroke-width="1"/>
+          <line x1="-48" y1="-145" x2="-40" y2="-140" stroke="#FF1493" stroke-width="1"/>
+          <line x1="50" y1="-130" x2="42" y2="-125" stroke="#FF1493" stroke-width="1"/>
+          <line x1="48" y1="-145" x2="40" y2="-140" stroke="#FF1493" stroke-width="1"/>
+          <!-- Side ear panels -->
+          <polygon points="-55,-70 -70,-60 -65,-45 -55,-50" fill="#111" stroke="#FF1493" stroke-width="1"/>
+          <polygon points="55,-70 70,-60 65,-45 55,-50" fill="#111" stroke="#FF1493" stroke-width="1"/>
+        </g>
+      `,
+      // Angular snout/muzzle
+      nose: `
+        <g class="goat-nose-cyber">
+          <!-- Muzzle block -->
+          <polygon points="-25,10 -30,35 -15,50 15,50 30,35 25,10"
+                   fill="#111" stroke="#FF1493" stroke-width="2"/>
+          <!-- Nostril vents -->
+          <rect x="-18" y="25" width="8" height="12" fill="#330022" stroke="#FF1493" stroke-width="1"/>
+          <rect x="10" y="25" width="8" height="12" fill="#330022" stroke="#FF1493" stroke-width="1"/>
+          <!-- Vent lines -->
+          <line x1="-16" y1="28" x2="-12" y2="28" stroke="#FF1493" stroke-width="1"/>
+          <line x1="-16" y1="32" x2="-12" y2="32" stroke="#FF1493" stroke-width="1"/>
+          <line x1="12" y1="28" x2="16" y2="28" stroke="#FF1493" stroke-width="1"/>
+          <line x1="12" y1="32" x2="16" y2="32" stroke="#FF1493" stroke-width="1"/>
+        </g>
+      `,
+      // CUTE GOAT EYES with signature rectangular pupils
+      eyes: `
+        <g class="goat-eyes-cyber">
+          <!-- LEFT EYE - round with rectangular pupil (goat signature!) -->
+          <ellipse cx="-30" cy="-25" rx="18" ry="20" fill="#111" stroke="#FF1493" stroke-width="2"/>
+          <!-- Golden iris (goat-like) -->
+          <ellipse cx="-30" cy="-23" rx="13" ry="15" fill="#1a0a05"/>
+          <ellipse cx="-30" cy="-22" rx="11" ry="13" fill="#8B4513" opacity="0.5"/>
+          <!-- Signature rectangular pupil! -->
+          <rect class="goat-pupil-left" x="-38" y="-26" width="16" height="6" rx="1" fill="#FF1493" filter="url(#neonGlow)"/>
+          <!-- Cute highlights -->
+          <ellipse cx="-36" cy="-32" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="-24" cy="-18" r="2" fill="#FFF" opacity="0.5"/>
+
+          <!-- RIGHT EYE - round with rectangular pupil -->
+          <ellipse cx="30" cy="-25" rx="18" ry="20" fill="#111" stroke="#FF1493" stroke-width="2"/>
+          <!-- Golden iris -->
+          <ellipse cx="30" cy="-23" rx="13" ry="15" fill="#1a0a05"/>
+          <ellipse cx="30" cy="-22" rx="11" ry="13" fill="#8B4513" opacity="0.5"/>
+          <!-- Signature rectangular pupil! -->
+          <rect class="goat-pupil-right" x="22" y="-26" width="16" height="6" rx="1" fill="#FF1493" filter="url(#neonGlow)"/>
+          <!-- Cute highlights -->
+          <ellipse cx="24" cy="-32" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="36" cy="-18" r="2" fill="#FFF" opacity="0.5"/>
+
+          <!-- Calm eyelid curves -->
+          <path d="M-48,-35 Q-30,-42 -12,-35" stroke="#FF1493" stroke-width="1.5" fill="none" opacity="0.5"/>
+          <path d="M12,-35 Q30,-42 48,-35" stroke="#FF1493" stroke-width="1.5" fill="none" opacity="0.5"/>
+        </g>
+      `,
+      // Colorful cyber goatee with holographic beard
+      chin: `
+        <g class="goat-beard-cyber">
+          <!-- Holographic beard layers -->
+          <polygon points="-18,52 -25,78 -10,95 0,98" fill="#FF1493" opacity="0.5" filter="url(#neonGlow)"/>
+          <polygon points="18,52 25,78 10,95 0,98" fill="#9932CC" opacity="0.5" filter="url(#neonGlow)"/>
+          <polygon points="-12,55 -18,82 0,100 18,82 12,55" fill="#FF69B4" opacity="0.4"/>
+          <!-- Central beard -->
+          <polygon points="-10,58 -15,80 0,95 15,80 10,58" fill="#111" stroke="#FF1493" stroke-width="2"/>
+          <!-- Data streams -->
+          <line x1="-8" y1="62" x2="-8" y2="85" stroke="#FF69B4" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <line x1="0" y1="62" x2="0" y2="92" stroke="#FF1493" stroke-width="2" filter="url(#neonGlow)"/>
+          <line x1="8" y1="62" x2="8" y2="85" stroke="#9932CC" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <!-- Glow nodes -->
+          <circle cx="-10" cy="75" r="2" fill="#FF69B4" filter="url(#neonGlow)"/>
+          <circle cx="0" cy="88" r="4" fill="#FF1493" filter="url(#neonGlow)"/>
+          <circle cx="10" cy="75" r="2" fill="#9932CC" filter="url(#neonGlow)"/>
+        </g>
+      `,
+      // Colorful chest ruff
+      neckFeathers: `
+        <g class="goat-ruff-cyber">
+          <!-- Holographic chest fur -->
+          <polygon points="-50,55 -40,85 -15,90 0,75" fill="#FF1493" opacity="0.3"/>
+          <polygon points="50,55 40,85 15,90 0,75" fill="#9932CC" opacity="0.3"/>
+          <polygon points="-30,60 -15,88 0,92 15,88 30,60" fill="#FF69B4" opacity="0.25" filter="url(#neonGlow)"/>
+          <!-- Accent nodes -->
+          <circle cx="-30" cy="72" r="3" fill="#FF1493" filter="url(#neonGlow)"/>
+          <circle cx="30" cy="72" r="3" fill="#9932CC" filter="url(#neonGlow)"/>
+        </g>
+      `,
+      faceShape: 'cyber-goat',
+      hideHair: false,
+      earringsOffset: { x: -5, y: -15 }
+    },
+
+    eagle: {
+      // Angular cyber feather crown
+      headTop: `
+        <g class="eagle-crown-cyber">
+          <!-- Geometric feather crest -->
+          <polygon points="-40,-105 -50,-130 -35,-120 -25,-140 -15,-115 0,-145 15,-115 25,-140 35,-120 50,-130 40,-105"
+                   fill="#111" stroke="#00FFFF" stroke-width="2"/>
+          <!-- Crown lights -->
+          <circle cx="0" cy="-140" r="4" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="-25" cy="-135" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="25" cy="-135" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <!-- Circuit traces -->
+          <line x1="0" y1="-140" x2="0" y2="-120" stroke="#00FFFF" stroke-width="1"/>
+          <line x1="-25" y1="-135" x2="-20" y2="-115" stroke="#00FFFF" stroke-width="1"/>
+          <line x1="25" y1="-135" x2="20" y2="-115" stroke="#00FFFF" stroke-width="1"/>
+        </g>
+      `,
+      // Hooked cyber beak
+      nose: `
+        <g class="eagle-beak-cyber">
+          <!-- Main beak - sharp angular -->
+          <polygon points="0,-10 -18,5 -15,25 0,45 15,25 18,5"
+                   fill="#111" stroke="#00FFFF" stroke-width="2"/>
+          <!-- Hook tip -->
+          <polygon points="0,45 -8,50 0,60 8,50" fill="#FFAA00" stroke="#00FFFF" stroke-width="1" filter="url(#neonGlow)"/>
+          <!-- Beak ridge -->
+          <line x1="0" y1="-5" x2="0" y2="40" stroke="#00FFFF" stroke-width="2" filter="url(#neonGlow)"/>
+          <!-- Side panels -->
+          <line x1="-12" y1="10" x2="-12" y2="20" stroke="#00FFFF" stroke-width="1"/>
+          <line x1="12" y1="10" x2="12" y2="20" stroke="#00FFFF" stroke-width="1"/>
+        </g>
+      `,
+      // FIERCE EAGLE EYES - intense but expressive
+      eyes: `
+        <g class="eagle-eyes-cyber">
+          <!-- LEFT EYE - fierce angular shape with big iris -->
+          <polygon points="-52,-38 -18,-44 -12,-22 -18,-5 -52,-12"
+                   fill="#111" stroke="#00FFFF" stroke-width="2"/>
+          <!-- Golden raptor iris -->
+          <ellipse cx="-32" cy="-24" rx="14" ry="16" fill="#1a1000"/>
+          <ellipse cx="-32" cy="-22" rx="12" ry="14" fill="#8B6914" opacity="0.6"/>
+          <!-- Intense pupil -->
+          <circle class="eagle-pupil-left" cx="-32" cy="-22" r="8" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <circle cx="-32" cy="-22" r="4" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <!-- Fierce highlights -->
+          <ellipse cx="-38" cy="-30" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="-27" cy="-16" r="2" fill="#FFF" opacity="0.5"/>
+
+          <!-- RIGHT EYE - fierce angular shape -->
+          <polygon points="52,-38 18,-44 12,-22 18,-5 52,-12"
+                   fill="#111" stroke="#00FFFF" stroke-width="2"/>
+          <!-- Golden raptor iris -->
+          <ellipse cx="32" cy="-24" rx="14" ry="16" fill="#1a1000"/>
+          <ellipse cx="32" cy="-22" rx="12" ry="14" fill="#8B6914" opacity="0.6"/>
+          <!-- Intense pupil -->
+          <circle class="eagle-pupil-right" cx="32" cy="-22" r="8" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <circle cx="32" cy="-22" r="4" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <!-- Fierce highlights -->
+          <ellipse cx="26" cy="-30" rx="4" ry="5" fill="#FFF" opacity="0.9"/>
+          <circle cx="37" cy="-16" r="2" fill="#FFF" opacity="0.5"/>
+
+          <!-- Intense brow ridges -->
+          <path d="M-50,-40 L-22,-46" stroke="#00FFFF" stroke-width="3" stroke-linecap="round"/>
+          <path d="M50,-40 L22,-46" stroke="#00FFFF" stroke-width="3" stroke-linecap="round"/>
+          <!-- Inner brow accent -->
+          <path d="M-22,-44 L-15,-38" stroke="#FFAA00" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+          <path d="M22,-44 L15,-38" stroke="#FFAA00" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        </g>
+      `,
+      // Colorful eagle chest plumage with holographic armor
+      neckFeathers: `
+        <g class="eagle-armor-cyber">
+          <!-- Holographic feather layers -->
+          <polygon points="-55,55 -42,88 -20,95 0,78" fill="#00FFFF" opacity="0.4" filter="url(#neonGlow)"/>
+          <polygon points="55,55 42,88 20,95 0,78" fill="#FFAA00" opacity="0.4" filter="url(#neonGlow)"/>
+          <polygon points="-45,58 -35,85 -15,92 0,75" fill="#00CED1" opacity="0.35"/>
+          <polygon points="45,58 35,85 15,92 0,75" fill="#FFD700" opacity="0.35"/>
+          <!-- Central chest piece -->
+          <polygon points="-28,65 -12,95 0,100 12,95 28,65 0,80" fill="#111" stroke="#FFAA00" stroke-width="2"/>
+          <!-- Inner glow -->
+          <polygon points="-20,70 -8,92 0,95 8,92 20,70 0,82" fill="#FFAA00" opacity="0.2" filter="url(#neonGlow)"/>
+          <!-- Armor accent lines -->
+          <line x1="-40" y1="65" x2="-25" y2="85" stroke="#00FFFF" stroke-width="1" opacity="0.6"/>
+          <line x1="40" y1="65" x2="25" y2="85" stroke="#FFAA00" stroke-width="1" opacity="0.6"/>
+          <!-- Glow nodes -->
+          <circle cx="-35" cy="72" r="4" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="35" cy="72" r="4" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <circle cx="0" cy="88" r="5" fill="#FFD700" filter="url(#neonGlow)"/>
+          <circle cx="-18" cy="82" r="2" fill="#00CED1" filter="url(#neonGlow)"/>
+          <circle cx="18" cy="82" r="2" fill="#FFD700" filter="url(#neonGlow)"/>
+        </g>
+      `,
+      faceShape: 'cyber-eagle',
+      hideHair: false,
+      isBird: true,
+      sunglassesOffset: { x: 0, y: 5 },
+      hatOffset: { x: 0, y: 20 },
+      earringsOffset: { x: 10, y: 5 }
+    }
+  };
+
+  // Default features for animals without custom definitions (cyber fallback)
+  const DEFAULT_FEATURES = {
+    ears: '',
+    nose: `
+      <polygon points="0,-5 -12,10 0,25 12,10" fill="#111" stroke="#00FFFF" stroke-width="2"/>
+      <line x1="0" y1="0" x2="0" y2="20" stroke="#00FFFF" stroke-width="1"/>
+    `,
+    eyes: `
+      <rect x="-38" y="-35" width="22" height="18" fill="#111" stroke="#00FFFF" stroke-width="2"/>
+      <rect x="16" y="-35" width="22" height="18" fill="#111" stroke="#00FFFF" stroke-width="2"/>
+      <rect x="-32" y="-29" width="6" height="6" fill="#00FFFF" filter="url(#neonGlow)"/>
+      <rect x="-24" y="-29" width="6" height="6" fill="#00FFFF"/>
+      <rect x="22" y="-29" width="6" height="6" fill="#00FFFF" filter="url(#neonGlow)"/>
+      <rect x="30" y="-29" width="6" height="6" fill="#00FFFF"/>
+    `,
+    faceShape: 'cyber-default',
+    hideHair: false,
+    earringsOffset: { x: 0, y: 0 }
+  };
 
   // Set gender (global)
   window.setGender = function(gender) {
@@ -781,19 +1471,35 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     document.getElementById('tip3').textContent = tips[2] || '→ Nice build!';
   }
 
-  // Generate SVG (simplified - uses same structure as before)
+  // Generate SVG with animal-specific features
   function generateSVG(cfg) {
-    const skinColor = cfg.skinTone;
-    const shadowColor = adjustBrightness(skinColor, -30);
-    const highlightColor = adjustBrightness(skinColor, 20);
+    const features = ANIMAL_FEATURES[cfg.animal] || DEFAULT_FEATURES;
+
+    // Use animal fur color if defined, otherwise use skin tone
+    const baseColor = features.furColor || cfg.skinTone;
+    const shadowColor = adjustBrightness(baseColor, -30);
+    const highlightColor = adjustBrightness(baseColor, 20);
+
+    // Get face shape based on animal
+    const faceShape = getAnimalFaceShape(features.faceShape, cfg.gender, baseColor, shadowColor);
+
+    // Generate unique ID for this SVG instance
+    const svgId = 'cyber-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 
     return `
-<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" class="cyber-avatar-svg" data-svg-id="${svgId}">
   <defs>
-    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:${highlightColor}" />
-      <stop offset="100%" style="stop-color:${skinColor}" />
-    </linearGradient>
+    <!-- Neon glow filter - key for Tron aesthetic -->
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-color="currentColor" flood-opacity="0.8"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Standard glow -->
     <filter id="glow">
       <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
       <feMerge>
@@ -801,109 +1507,1088 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <!-- Scanline pattern -->
+    <pattern id="scanlines" patternUnits="userSpaceOnUse" width="4" height="4">
+      <line x1="0" y1="0" x2="4" y2="0" stroke="#000" stroke-width="1" opacity="0.3"/>
+    </pattern>
+    <!-- Grid pattern for cyber background -->
+    <pattern id="cyberGrid" patternUnits="userSpaceOnUse" width="20" height="20">
+      <rect width="20" height="20" fill="none"/>
+      <line x1="0" y1="20" x2="20" y2="20" stroke="#00FFFF" stroke-width="0.5" opacity="0.1"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#00FFFF" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+    <!-- Legacy gradients -->
+    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:${highlightColor}" />
+      <stop offset="100%" style="stop-color:${baseColor}" />
+    </linearGradient>
+    <linearGradient id="furGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:${highlightColor}" />
+      <stop offset="50%" style="stop-color:${baseColor}" />
+      <stop offset="100%" style="stop-color:${shadowColor}" />
+    </linearGradient>
   </defs>
 
-  <!-- Background -->
-  <rect width="400" height="500" fill="#0a0a0a"/>
-  <rect width="400" height="500" fill="url(#skinGrad)" opacity="0.1"/>
+  <style>
+    /* ========== CYBER ANIMATIONS ========== */
 
-  <!-- Face (geodesic polygon) -->
-  <g transform="translate(200, 250)">
-    ${cfg.gender === 'male' ? `
-      <polygon points="0,-120 60,-100 80,-50 75,20 50,80 0,95 -50,80 -75,20 -80,-50 -60,-100"
-               fill="url(#skinGrad)" stroke="${shadowColor}" stroke-width="3"/>
-    ` : `
-      <polygon points="0,-120 55,-105 70,-55 70,15 45,75 0,90 -45,75 -70,15 -70,-55 -55,-105"
-               fill="url(#skinGrad)" stroke="${shadowColor}" stroke-width="3"/>
-    `}
+    /* ===== ERMINE WHISKER ANIMATIONS ===== */
+    /* Each whisker wiggles from its face connection point */
+    .whisker-left-1, .whisker-left-2, .whisker-left-3,
+    .whisker-right-1, .whisker-right-2, .whisker-right-3 {
+      animation: whiskerWiggle 1.8s ease-in-out infinite;
+    }
+    /* Stagger the whiskers for natural movement */
+    .whisker-left-1 { animation-delay: 0s; }
+    .whisker-left-2 { animation-delay: -0.3s; animation-duration: 2s; }
+    .whisker-left-3 { animation-delay: -0.6s; animation-duration: 1.6s; }
+    .whisker-right-1 { animation-delay: -0.15s; }
+    .whisker-right-2 { animation-delay: -0.45s; animation-duration: 2s; }
+    .whisker-right-3 { animation-delay: -0.75s; animation-duration: 1.6s; }
 
-    <!-- Eyes -->
-    <ellipse cx="-25" cy="-20" rx="8" ry="12" fill="white"/>
-    <ellipse cx="25" cy="-20" rx="8" ry="12" fill="white"/>
-    <circle cx="-25" cy="-20" r="5" fill="black"/>
-    <circle cx="25" cy="-20" r="5" fill="black"/>
+    @keyframes whiskerWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(4deg); }
+      40% { transform: rotate(-2deg); }
+      60% { transform: rotate(3deg); }
+      80% { transform: rotate(-3deg); }
+    }
 
-    <!-- Nose -->
-    <polygon points="-5,0 5,0 3,20 -3,20" fill="${shadowColor}" opacity="0.6"/>
+    /* ===== ERMINE EAR ANIMATIONS ===== */
+    /* Each ear pivots from its base connection to the head */
+    .ermine-ear-left {
+      animation: earTwitchLeft 3s ease-in-out infinite;
+    }
+    .ermine-ear-right {
+      animation: earTwitchRight 3s ease-in-out infinite;
+      animation-delay: -1.5s;
+    }
 
-    <!-- Mouth -->
-    <path d="M -20,40 Q 0,50 20,40" stroke="${shadowColor}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    @keyframes earTwitchLeft {
+      0%, 85%, 100% { transform: rotate(0deg); }
+      88% { transform: rotate(-6deg); }
+      91% { transform: rotate(3deg); }
+      94% { transform: rotate(-2deg); }
+      97% { transform: rotate(1deg); }
+    }
+    @keyframes earTwitchRight {
+      0%, 85%, 100% { transform: rotate(0deg); }
+      88% { transform: rotate(6deg); }
+      91% { transform: rotate(-3deg); }
+      94% { transform: rotate(2deg); }
+      97% { transform: rotate(-1deg); }
+    }
 
-    <!-- Hair (simplified) -->
-    ${getHairSVG(cfg.hairstyle, cfg.gender)}
+    /* ===== ERMINE EYE ANIMATIONS ===== */
+    /* Cute pupil dilation/pulse */
+    .ermine-pupil-left, .ermine-pupil-right {
+      animation: pupilPulse 4s ease-in-out infinite;
+    }
+    .ermine-pupil-right { animation-delay: -0.2s; }
 
-    <!-- Accessories -->
+    @keyframes pupilPulse {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.1); }
+      30% { transform: scale(1); }
+      /* Blink - quick shrink */
+      48% { transform: scale(1) scaleY(1); }
+      50% { transform: scale(0.8) scaleY(0.1); }
+      52% { transform: scale(1) scaleY(1); }
+      70% { transform: scale(1.05); }
+    }
+
+    /* Legacy whisker animation for other animals */
+    .cyber-whiskers line {
+      animation: whiskerSway 2s ease-in-out infinite;
+      transform-origin: center;
+    }
+    .cyber-whiskers line:nth-child(odd) { animation-delay: -0.5s; }
+    .cyber-whiskers line:nth-child(even) { animation-delay: -1s; }
+
+    @keyframes whiskerSway {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(3deg); }
+      75% { transform: rotate(-3deg); }
+    }
+
+    /* ===== DOG EAR ANIMATIONS ===== */
+    /* Floppy ears that wiggle from top connection */
+    .dog-ear-left {
+      animation: dogEarFlopLeft 2.5s ease-in-out infinite;
+    }
+    .dog-ear-right {
+      animation: dogEarFlopRight 2.5s ease-in-out infinite;
+      animation-delay: -0.8s;
+    }
+
+    @keyframes dogEarFlopLeft {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(-5deg); }
+      40% { transform: rotate(3deg); }
+      60% { transform: rotate(-3deg); }
+      80% { transform: rotate(2deg); }
+    }
+    @keyframes dogEarFlopRight {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(5deg); }
+      40% { transform: rotate(-3deg); }
+      60% { transform: rotate(3deg); }
+      80% { transform: rotate(-2deg); }
+    }
+
+    /* Dog pupil animation */
+    .dog-pupil-left, .dog-pupil-right {
+      animation: dogPupilBounce 3.5s ease-in-out infinite;
+    }
+    .dog-pupil-right { animation-delay: -0.1s; }
+
+    @keyframes dogPupilBounce {
+      0%, 100% { transform: scale(1) translateY(0); }
+      15% { transform: scale(1.1) translateY(-2px); }
+      30% { transform: scale(1) translateY(0); }
+      /* Happy excited blink */
+      48% { transform: scale(1) scaleY(1); }
+      50% { transform: scale(0.9) scaleY(0.15); }
+      52% { transform: scale(1.05) scaleY(1); }
+      65% { transform: scale(1.08) translateY(-1px); }
+    }
+
+    /* Dog tongue wag */
+    .dog-tongue {
+      animation: tongueWag 1.2s ease-in-out infinite;
+    }
+
+    @keyframes tongueWag {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      25% { transform: rotate(8deg) translateY(2px); }
+      50% { transform: rotate(0deg) translateY(3px); }
+      75% { transform: rotate(-8deg) translateY(2px); }
+    }
+
+    /* ===== DREADLOCKS ANIMATIONS ===== */
+    /* Side dreads gentle sway */
+    .dreads-side .dread-strand {
+      animation: dreadSwaySide 3.5s ease-in-out infinite;
+      transform-origin: top center;
+    }
+    .dreads-side .dread-strand:nth-child(1) { animation-delay: 0s; }
+    .dreads-side .dread-strand:nth-child(3) { animation-delay: -0.6s; }
+    .dreads-side .dread-strand:nth-child(5) { animation-delay: -1.2s; }
+    .dreads-side .dread-strand:nth-child(7) { animation-delay: -0.3s; }
+    .dreads-side .dread-strand:nth-child(9) { animation-delay: -0.9s; }
+    .dreads-side .dread-strand:nth-child(11) { animation-delay: -1.5s; }
+
+    .dreads-back path:first-child { animation: dreadSwayBack 4s ease-in-out infinite; }
+    .dreads-back path:nth-child(3) { animation: dreadSwayBack 4s ease-in-out infinite; animation-delay: -2s; }
+
+    @keyframes dreadSwaySide {
+      0%, 100% { transform: rotate(0deg); }
+      30% { transform: rotate(2deg); }
+      70% { transform: rotate(-2deg); }
+    }
+
+    @keyframes dreadSwayBack {
+      0%, 100% { transform: translateX(0); }
+      35% { transform: translateX(4px); }
+      65% { transform: translateX(-4px); }
+    }
+
+    /* Dread light pulse */
+    .dread-lights circle {
+      animation: dreadPulse 2s ease-in-out infinite;
+    }
+    .dread-lights circle:nth-child(odd) { animation-delay: -0.5s; }
+    .dread-lights circle:nth-child(even) { animation-delay: -1.2s; }
+
+    @keyframes dreadPulse {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* ===== CHICKEN ANIMATIONS ===== */
+    /* Comb bobbing animation */
+    .chicken-comb-cyber {
+      animation: combBob 2s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+
+    @keyframes combBob {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-3px) rotate(2deg); }
+      50% { transform: translateY(0) rotate(0deg); }
+      75% { transform: translateY(-2px) rotate(-2deg); }
+    }
+
+    /* Chicken wattle wobble */
+    .chicken-wattle-cyber {
+      animation: wattleWobble 1.5s ease-in-out infinite;
+      transform-origin: center top;
+    }
+
+    @keyframes wattleWobble {
+      0%, 100% { transform: rotate(0deg); }
+      30% { transform: rotate(5deg); }
+      70% { transform: rotate(-5deg); }
+    }
+
+    /* Chicken pupil animation - curious pecking look */
+    .chicken-pupil-left, .chicken-pupil-right {
+      animation: chickenLook 3s ease-in-out infinite;
+    }
+    .chicken-pupil-right { animation-delay: -0.15s; }
+
+    @keyframes chickenLook {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      15% { transform: translate(2px, -1px) scale(1.05); }
+      30% { transform: translate(-2px, 1px) scale(1); }
+      /* Quick blink */
+      48% { transform: scale(1) scaleY(1); }
+      50% { transform: scale(0.8) scaleY(0.1); }
+      52% { transform: scale(1) scaleY(1); }
+      65% { transform: translate(1px, 2px) scale(1.02); }
+      80% { transform: translate(-1px, 0) scale(1); }
+    }
+
+    /* ===== PIGEON ANIMATIONS ===== */
+    /* Pigeon head bob - like a real pigeon! */
+    .pigeon-neck-cyber {
+      animation: pigeonBob 1.8s ease-in-out infinite;
+      transform-origin: center top;
+    }
+
+    @keyframes pigeonBob {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      15% { transform: translateX(3px) translateY(-2px); }
+      30% { transform: translateX(0) translateY(0); }
+      45% { transform: translateX(-2px) translateY(-1px); }
+      60% { transform: translateX(0) translateY(0); }
+    }
+
+    /* Pigeon pupil animation - curious cooing look */
+    .pigeon-pupil-left, .pigeon-pupil-right {
+      animation: pigeonLook 4s ease-in-out infinite;
+    }
+    .pigeon-pupil-right { animation-delay: -0.2s; }
+
+    @keyframes pigeonLook {
+      0%, 100% { transform: scale(1); }
+      20% { transform: scale(1.08) translate(1px, 0); }
+      40% { transform: scale(1) translate(0, 0); }
+      /* Gentle blink */
+      58% { transform: scaleY(1); }
+      60% { transform: scaleY(0.15); }
+      62% { transform: scaleY(1); }
+      80% { transform: scale(1.05) translate(-1px, 1px); }
+    }
+
+    /* ===== GOAT ANIMATIONS ===== */
+    /* Goat horns subtle sway */
+    .goat-horns-cyber {
+      animation: goatHornSway 5s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+
+    @keyframes goatHornSway {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(1deg); }
+      75% { transform: rotate(-1deg); }
+    }
+
+    /* Goat beard sway */
+    .goat-beard-cyber {
+      animation: beardSway 2.5s ease-in-out infinite;
+      transform-origin: center top;
+    }
+
+    @keyframes beardSway {
+      0%, 100% { transform: rotate(0deg); }
+      30% { transform: rotate(4deg); }
+      70% { transform: rotate(-4deg); }
+    }
+
+    /* Goat rectangular pupil animation - calm and wise */
+    .goat-pupil-left, .goat-pupil-right {
+      animation: goatPupil 5s ease-in-out infinite;
+    }
+    .goat-pupil-right { animation-delay: -0.3s; }
+
+    @keyframes goatPupil {
+      0%, 100% { transform: scaleX(1) scaleY(1); }
+      20% { transform: scaleX(1.1) scaleY(0.9); }
+      40% { transform: scaleX(1) scaleY(1); }
+      /* Slow blink */
+      68% { transform: scaleY(1); }
+      70% { transform: scaleY(0.2); }
+      72% { transform: scaleY(1); }
+      85% { transform: scaleX(0.9) scaleY(1.1); }
+    }
+
+    /* ===== EAGLE ANIMATIONS ===== */
+    /* Eagle crown - subtle tip only */
+    .eagle-crown-cyber {
+      animation: crownTip 6s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+
+    @keyframes crownTip {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(0.8deg); }
+    }
+
+    /* Eagle intense pupil - focused and fierce */
+    .eagle-pupil-left, .eagle-pupil-right {
+      animation: eagleFocus 3s ease-in-out infinite;
+    }
+    .eagle-pupil-right { animation-delay: -0.1s; }
+
+    @keyframes eagleFocus {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(0.9); }
+      30% { transform: scale(1.1); }
+      45% { transform: scale(1); }
+      /* Sharp blink */
+      58% { transform: scaleY(1); }
+      59% { transform: scaleY(0.1); }
+      61% { transform: scaleY(1); }
+      75% { transform: scale(1.05); }
+    }
+
+    /* Eye blink animation */
+    .cyber-eyes rect[fill="#00FFFF"],
+    .cyber-eyes circle[fill="#00FFFF"],
+    .cyber-eyes rect[fill="#FF00FF"],
+    .cyber-eyes circle[fill="#FF00FF"],
+    .cyber-eyes rect[fill="#FF1493"],
+    .cyber-eyes rect[fill="#FFAA00"] {
+      animation: eyePulse 3s ease-in-out infinite;
+    }
+
+    @keyframes eyePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+      52% { opacity: 0.1; }
+      54% { opacity: 1; }
+    }
+
+    /* Neon glow pulse */
+    [filter="url(#neonGlow)"] {
+      animation: neonPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes neonPulse {
+      0%, 100% { filter: url(#neonGlow) brightness(1); }
+      50% { filter: url(#neonGlow) brightness(1.3); }
+    }
+
+    /* Data stream animation */
+    .data-particle {
+      animation: dataFloat 3s linear infinite;
+    }
+
+    @keyframes dataFloat {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-400px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Circuit pulse animation */
+    .circuit-pulse {
+      animation: circuitFlow 1.5s linear infinite;
+      stroke-dasharray: 5 10;
+    }
+
+    @keyframes circuitFlow {
+      0% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -30; }
+    }
+
+    /* Floating particle animation */
+    .float-particle {
+      animation: floatAround 8s ease-in-out infinite;
+    }
+
+    @keyframes floatAround {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(10px, -15px); }
+      50% { transform: translate(-5px, -25px); }
+      75% { transform: translate(-15px, -10px); }
+    }
+
+    /* Scanline scroll */
+    .scanline-anim {
+      animation: scanlineScroll 4s linear infinite;
+    }
+
+    @keyframes scanlineScroll {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(8px); }
+    }
+
+    /* Shake response class (applied via JS) */
+    .shake-active .float-particle {
+      animation: shakeFloat 0.5s ease-out;
+    }
+
+    @keyframes shakeFloat {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(var(--shake-x, 20px), var(--shake-y, -30px)); }
+      100% { transform: translate(0, 0); }
+    }
+  </style>
+
+  <!-- CYBER BACKGROUND -->
+  <rect width="400" height="500" fill="#050508"/>
+  <!-- Grid overlay -->
+  <rect width="400" height="500" fill="url(#cyberGrid)"/>
+
+  <!-- ANIMATED PARTICLE LAYER (Snow Globe Effect) -->
+  <g class="particle-container">
+    <!-- Floating data particles -->
+    <circle class="float-particle" cx="50" cy="100" r="2" fill="#00FFFF" opacity="0.6" style="animation-delay: 0s;"/>
+    <circle class="float-particle" cx="120" cy="200" r="1.5" fill="#FF00FF" opacity="0.5" style="animation-delay: -1s;"/>
+    <circle class="float-particle" cx="300" cy="150" r="2" fill="#00FFFF" opacity="0.4" style="animation-delay: -2s;"/>
+    <circle class="float-particle" cx="350" cy="300" r="1" fill="#FF00FF" opacity="0.6" style="animation-delay: -3s;"/>
+    <circle class="float-particle" cx="80" cy="400" r="2.5" fill="#00FF00" opacity="0.3" style="animation-delay: -4s;"/>
+    <circle class="float-particle" cx="250" cy="50" r="1.5" fill="#FFAA00" opacity="0.5" style="animation-delay: -5s;"/>
+    <circle class="float-particle" cx="180" cy="350" r="2" fill="#00FFFF" opacity="0.4" style="animation-delay: -6s;"/>
+    <circle class="float-particle" cx="320" cy="420" r="1" fill="#FF00FF" opacity="0.6" style="animation-delay: -7s;"/>
+
+    <!-- Data stream lines -->
+    <line class="circuit-pulse" x1="20" y1="500" x2="20" y2="0" stroke="#00FFFF" stroke-width="0.5" opacity="0.3"/>
+    <line class="circuit-pulse" x1="100" y1="500" x2="100" y2="0" stroke="#FF00FF" stroke-width="0.5" opacity="0.2" style="animation-delay: -0.5s;"/>
+    <line class="circuit-pulse" x1="200" y1="500" x2="200" y2="0" stroke="#00FFFF" stroke-width="0.5" opacity="0.15" style="animation-delay: -1s;"/>
+    <line class="circuit-pulse" x1="300" y1="500" x2="300" y2="0" stroke="#FF00FF" stroke-width="0.5" opacity="0.2" style="animation-delay: -0.3s;"/>
+    <line class="circuit-pulse" x1="380" y1="500" x2="380" y2="0" stroke="#00FFFF" stroke-width="0.5" opacity="0.3" style="animation-delay: -0.7s;"/>
+
+    <!-- Glitch rectangles -->
+    <rect class="float-particle" x="30" y="80" width="15" height="3" fill="#00FFFF" opacity="0.4" style="animation-delay: -2.5s;"/>
+    <rect class="float-particle" x="340" y="180" width="20" height="2" fill="#FF00FF" opacity="0.3" style="animation-delay: -4.5s;"/>
+    <rect class="float-particle" x="150" y="420" width="12" height="2" fill="#00FF00" opacity="0.4" style="animation-delay: -1.5s;"/>
+  </g>
+
+  <!-- Vignette edges -->
+  <rect width="400" height="500" fill="url(#skinGrad)" opacity="0.05"/>
+  <!-- Corner accents with pulse -->
+  <polygon class="float-particle" points="0,0 30,0 0,30" fill="#00FFFF" opacity="0.15" style="animation-delay: 0s;"/>
+  <polygon class="float-particle" points="400,0 370,0 400,30" fill="#FF00FF" opacity="0.15" style="animation-delay: -2s;"/>
+  <polygon class="float-particle" points="0,500 30,500 0,470" fill="#FF00FF" opacity="0.15" style="animation-delay: -4s;"/>
+  <polygon class="float-particle" points="400,500 370,500 400,470" fill="#00FFFF" opacity="0.15" style="animation-delay: -6s;"/>
+  <!-- Scanline overlay -->
+  <g class="scanline-anim">
+    <rect width="400" height="508" fill="url(#scanlines)" opacity="0.4"/>
+  </g>
+
+  <!-- Main character group -->
+  <g transform="translate(200, 250)" style="color: ${baseColor}">
+
+    <!-- LAYER 1: Ears (behind head) -->
+    ${features.ears || ''}
+
+    <!-- LAYER 2: Neck feathers for birds -->
+    ${features.neckFeathers || ''}
+
+    <!-- LAYER 3: Face shape -->
+    ${faceShape}
+
+    <!-- LAYER 4: Snout/muzzle (if applicable) -->
+    ${features.snout || ''}
+
+    <!-- LAYER 5: Face overlay/texture -->
+    ${features.faceOverlay || ''}
+
+    <!-- LAYER 6: Head top features (combs, feather tufts) -->
+    ${features.headTop || ''}
+
+    <!-- LAYER 7: Eyes (animal-specific or default) -->
+    ${features.eyes || DEFAULT_FEATURES.eyes.replace('currentShadow', shadowColor)}
+
+    <!-- LAYER 8: Nose/beak -->
+    ${features.nose || DEFAULT_FEATURES.nose.replace('currentShadow', shadowColor)}
+
+    <!-- LAYER 9: Whiskers -->
+    ${features.whiskers || ''}
+
+    <!-- LAYER 10: Chin features (wattle, mouth, tongue) -->
+    ${features.chin || `<path d="M -20,40 Q 0,50 20,40" stroke="${shadowColor}" stroke-width="3" fill="none" stroke-linecap="round"/>`}
+
+    <!-- LAYER 11: Hair / Bird Plumage -->
+    ${!features.hideHair ? getHairSVG(cfg.hairstyle, cfg.gender, features.isBird) : ''}
+
+    <!-- LAYER 12: Accessories -->
     ${cfg.accessories.sunglasses ? `
-      <rect x="-40" y="-30" width="30" height="15" fill="black" opacity="0.8" rx="3"/>
-      <rect x="10" y="-30" width="30" height="15" fill="black" opacity="0.8" rx="3"/>
-      <line x1="-10" y1="-22" x2="10" y2="-22" stroke="black" stroke-width="2"/>
+      ${(() => {
+        const sgOffset = features.sunglassesOffset || { x: 0, y: 0 };
+        return `
+      <g class="sunglasses" transform="translate(${sgOffset.x}, ${sgOffset.y})">
+        <!-- Cyber sunglasses frame -->
+        <rect x="-44" y="-34" width="34" height="20" fill="#111" stroke="#00FFFF" stroke-width="1" rx="3"/>
+        <rect x="10" y="-34" width="34" height="20" fill="#111" stroke="#00FFFF" stroke-width="1" rx="3"/>
+        <!-- Lens glow -->
+        <rect x="-42" y="-32" width="30" height="16" fill="#001a1a" rx="2"/>
+        <rect x="12" y="-32" width="30" height="16" fill="#001a1a" rx="2"/>
+        <!-- Lens reflection -->
+        <line x1="-38" y1="-28" x2="-18" y2="-28" stroke="#00FFFF" stroke-width="1" opacity="0.4"/>
+        <line x1="16" y1="-28" x2="36" y2="-28" stroke="#00FFFF" stroke-width="1" opacity="0.4"/>
+        <!-- Bridge -->
+        <line x1="-10" y1="-24" x2="10" y2="-24" stroke="#00FFFF" stroke-width="2"/>
+        <!-- Arms -->
+        <line x1="-44" y1="-24" x2="-58" y2="-32" stroke="#00FFFF" stroke-width="2"/>
+        <line x1="44" y1="-24" x2="58" y2="-32" stroke="#00FFFF" stroke-width="2"/>
+      </g>`;
+      })()}
     ` : ''}
 
     ${cfg.accessories.chain ? `
-      <g transform="translate(0, 95)">
-        <circle cx="-15" cy="10" r="4" fill="gold"/>
-        <circle cx="0" cy="15" r="5" fill="gold"/>
-        <circle cx="15" cy="10" r="4" fill="gold"/>
-        <path d="M -15,10 L 0,15 L 15,10" stroke="gold" stroke-width="2" fill="none"/>
+      <g class="gold-chain" transform="translate(0, 95)">
+        <defs>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFD700"/>
+            <stop offset="50%" style="stop-color:#FFA500"/>
+            <stop offset="100%" style="stop-color:#B8860B"/>
+          </linearGradient>
+        </defs>
+        <!-- Chain links -->
+        <ellipse cx="-30" cy="5" rx="6" ry="4" fill="url(#goldGrad)" stroke="#B8860B" stroke-width="1"/>
+        <ellipse cx="-15" cy="10" rx="6" ry="4" fill="url(#goldGrad)" stroke="#B8860B" stroke-width="1"/>
+        <ellipse cx="0" cy="12" rx="6" ry="4" fill="url(#goldGrad)" stroke="#B8860B" stroke-width="1"/>
+        <ellipse cx="15" cy="10" rx="6" ry="4" fill="url(#goldGrad)" stroke="#B8860B" stroke-width="1"/>
+        <ellipse cx="30" cy="5" rx="6" ry="4" fill="url(#goldGrad)" stroke="#B8860B" stroke-width="1"/>
+        <!-- Pendant -->
+        <circle cx="0" cy="25" r="12" fill="url(#goldGrad)" stroke="#B8860B" stroke-width="2"/>
+        <text x="0" y="30" font-size="14" fill="#B8860B" text-anchor="middle" font-weight="bold">$</text>
       </g>
     ` : ''}
 
     ${cfg.accessories.earrings ? `
-      <circle cx="-70" cy="0" r="5" fill="#00ffff" filter="url(#glow)"/>
-      <circle cx="70" cy="0" r="5" fill="#00ffff" filter="url(#glow)"/>
+      <g class="earrings">
+        ${(() => {
+          const offset = features.earringsOffset || { x: 0, y: 0 };
+          return `
+            <circle cx="${-70 + offset.x}" cy="${0 + offset.y}" r="6" fill="#00ffff" filter="url(#glow)"/>
+            <circle cx="${-70 + offset.x}" cy="${8 + offset.y}" r="4" fill="#00ffff" opacity="0.7"/>
+            <circle cx="${70 - offset.x}" cy="${0 + offset.y}" r="6" fill="#00ffff" filter="url(#glow)"/>
+            <circle cx="${70 - offset.x}" cy="${8 + offset.y}" r="4" fill="#00ffff" opacity="0.7"/>
+          `;
+        })()}
+      </g>
     ` : ''}
 
     ${cfg.accessories.hat ? `
-      <g transform="translate(0, -120)">
-        <ellipse cx="0" cy="0" rx="65" ry="15" fill="#333"/>
-        <rect x="-40" y="-40" width="80" height="40" fill="#444" rx="5"/>
-      </g>
+      ${(() => {
+        const hatOff = features.hatOffset || { x: 0, y: 0 };
+        return `
+      <g class="hat" transform="translate(${hatOff.x}, ${-120 + hatOff.y})">
+        <!-- Cyber snapback cap -->
+        <ellipse cx="0" cy="5" rx="72" ry="18" fill="#111" stroke="#00FFFF" stroke-width="1"/>
+        <rect x="-48" y="-48" width="96" height="53" fill="#111" stroke="#00FFFF" stroke-width="2" rx="8"/>
+        <!-- Brim accent line -->
+        <rect x="-48" y="-48" width="96" height="15" fill="#0a0a0a" stroke="#00FFFF" stroke-width="1" rx="8"/>
+        <!-- Cap panel lines -->
+        <line x1="-25" y1="-45" x2="-25" y2="0" stroke="#00FFFF" stroke-width="1" opacity="0.3"/>
+        <line x1="0" y1="-48" x2="0" y2="0" stroke="#00FFFF" stroke-width="1" opacity="0.3"/>
+        <line x1="25" y1="-45" x2="25" y2="0" stroke="#00FFFF" stroke-width="1" opacity="0.3"/>
+        <!-- Neon logo -->
+        <circle cx="0" cy="-22" r="12" fill="#111" stroke="#FF00FF" stroke-width="2"/>
+        <circle cx="0" cy="-22" r="6" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <!-- Button top -->
+        <circle cx="0" cy="-48" r="4" fill="#00FFFF" filter="url(#neonGlow)"/>
+      </g>`;
+      })()}
     ` : ''}
   </g>
 
-  <!-- Animal Spirit Indicator -->
-  <text x="200" y="480" font-family="monospace" font-size="24" fill="#00ff00" text-anchor="middle" filter="url(#glow)">
-    ${getAnimalEmoji(cfg.animal)} ${cfg.animal.toUpperCase()}
-  </text>
+  <!-- Animal Spirit Badge - Cyber Style -->
+  <g transform="translate(200, 465)">
+    <!-- Angular badge shape -->
+    <polygon points="-70,-12 -60,-18 60,-18 70,-12 70,12 60,18 -60,18 -70,12"
+             fill="#0a0a0a" stroke="#00FFFF" stroke-width="2"/>
+    <!-- Inner glow line -->
+    <polygon points="-65,-10 -56,-15 56,-15 65,-10 65,10 56,15 -56,15 -65,10"
+             fill="none" stroke="#00FFFF" stroke-width="1" opacity="0.4"/>
+    <!-- Corner accents -->
+    <rect x="-68" y="-3" width="6" height="6" fill="#00FFFF" filter="url(#neonGlow)"/>
+    <rect x="62" y="-3" width="6" height="6" fill="#FF00FF" filter="url(#neonGlow)"/>
+    <!-- Text -->
+    <text x="0" y="5" font-family="monospace" font-size="14" fill="#00FFFF" text-anchor="middle" font-weight="bold" filter="url(#glow)">
+      ${getAnimalEmoji(cfg.animal)} ${cfg.animal.toUpperCase()}
+    </text>
+    <!-- Data stream below -->
+    <line x1="-40" y1="22" x2="40" y2="22" stroke="#00FFFF" stroke-width="1" opacity="0.3" stroke-dasharray="4,4"/>
+  </g>
 </svg>
     `.trim();
   }
 
-  // Get hair SVG
-  function getHairSVG(style, gender) {
+  // Get animal-specific face shape - CYBER/TRON STYLE
+  function getAnimalFaceShape(shapeType, gender, fillColor, strokeColor) {
+    const shapes = {
+      // Default cyber humanoid
+      'cyber-default': `
+        <g class="cyber-face-default">
+          <!-- Angular head shell -->
+          <polygon points="0,-100 55,-85 70,-45 65,15 45,65 0,80 -45,65 -65,15 -70,-45 -55,-85"
+                   fill="#111" stroke="#00FFFF" stroke-width="2"/>
+          <!-- Inner face plate -->
+          <polygon points="0,-85 45,-72 55,-40 50,10 35,50 0,60 -35,50 -50,10 -55,-40 -45,-72"
+                   fill="#0a0a0a" stroke="#00FFFF" stroke-width="1" opacity="0.8"/>
+          <!-- Circuit traces -->
+          <line x1="-50" y1="-60" x2="-35" y2="-60" stroke="#00FFFF" stroke-width="1" opacity="0.5"/>
+          <line x1="50" y1="-60" x2="35" y2="-60" stroke="#00FFFF" stroke-width="1" opacity="0.5"/>
+        </g>
+      `,
+
+      // Cyber round (fallback)
+      'cyber-round': `
+        <g class="cyber-face-round">
+          <!-- Hexagonal head -->
+          <polygon points="0,-95 50,-75 65,-25 50,35 0,55 -50,35 -65,-25 -50,-75"
+                   fill="#111" stroke="#FF00FF" stroke-width="2"/>
+          <!-- Inner panel -->
+          <polygon points="0,-80 40,-62 52,-20 40,28 0,45 -40,28 -52,-20 -40,-62"
+                   fill="#0a0a0a" stroke="#FF00FF" stroke-width="1" opacity="0.6"/>
+          <!-- Scanlines -->
+          <line x1="-45" y1="-50" x2="45" y2="-50" stroke="#FF00FF" stroke-width="1" opacity="0.2"/>
+          <line x1="-50" y1="-25" x2="50" y2="-25" stroke="#FF00FF" stroke-width="1" opacity="0.2"/>
+          <line x1="-50" y1="0" x2="50" y2="0" stroke="#FF00FF" stroke-width="1" opacity="0.2"/>
+          <line x1="-45" y1="25" x2="45" y2="25" stroke="#FF00FF" stroke-width="1" opacity="0.2"/>
+        </g>
+      `,
+
+      // Cyber chicken - WIDE, ROUND, BULBOUS head with puffy cheeks
+      'cyber-chicken': `
+        <g class="cyber-face-chicken">
+          <!-- Wide bulbous head shape - rounder and wider than pigeon -->
+          <ellipse cx="0" cy="-20" rx="70" ry="75" fill="#111" stroke="#FF6600" stroke-width="2"/>
+          <!-- Puffy cheek panels - distinctive chicken feature -->
+          <ellipse cx="-45" cy="-5" rx="22" ry="28" fill="#0a0500" stroke="#FF6600" stroke-width="1" opacity="0.7"/>
+          <ellipse cx="45" cy="-5" rx="22" ry="28" fill="#0a0500" stroke="#FF6600" stroke-width="1" opacity="0.7"/>
+          <!-- Inner face plate - rounder -->
+          <ellipse cx="0" cy="-25" rx="50" ry="55" fill="#0a0a0a" stroke="#FF6600" stroke-width="1" opacity="0.5"/>
+          <!-- Forehead panel -->
+          <path d="M-40,-75 Q0,-90 40,-75 Q50,-60 40,-50 L-40,-50 Q-50,-60 -40,-75"
+                fill="#111" stroke="#FFAA00" stroke-width="1" opacity="0.6"/>
+          <!-- Circuit pattern - chicken themed -->
+          <circle cx="-30" cy="-60" r="3" fill="#FF6600" filter="url(#neonGlow)"/>
+          <circle cx="30" cy="-60" r="3" fill="#FF6600" filter="url(#neonGlow)"/>
+          <line x1="-30" y1="-60" x2="-45" y2="-40" stroke="#FF6600" stroke-width="1" opacity="0.4"/>
+          <line x1="30" y1="-60" x2="45" y2="-40" stroke="#FF6600" stroke-width="1" opacity="0.4"/>
+          <!-- Cheek highlights -->
+          <circle cx="-50" cy="5" r="2" fill="#FFAA00" filter="url(#neonGlow)"/>
+          <circle cx="50" cy="5" r="2" fill="#FFAA00" filter="url(#neonGlow)"/>
+        </g>
+      `,
+
+      // Cyber pigeon - COMPACT, SLEEK, STREAMLINED head
+      'cyber-pigeon': `
+        <g class="cyber-face-pigeon">
+          <!-- Smaller, more compact oval head - sleeker than chicken -->
+          <ellipse cx="0" cy="-25" rx="52" ry="60" fill="#111" stroke="#9966FF" stroke-width="2"/>
+          <!-- Streamlined inner panel -->
+          <ellipse cx="0" cy="-28" rx="42" ry="50" fill="#0a0a0a" stroke="#9966FF" stroke-width="1" opacity="0.6"/>
+          <!-- Smooth forehead curve - no puffy cheeks -->
+          <path d="M-35,-70 Q0,-85 35,-70" stroke="#CC99FF" stroke-width="2" fill="none" opacity="0.5"/>
+          <!-- Sleek side panels -->
+          <path d="M-48,-40 Q-52,-20 -48,10" stroke="#9966FF" stroke-width="1" fill="none" opacity="0.5"/>
+          <path d="M48,-40 Q52,-20 48,10" stroke="#9966FF" stroke-width="1" fill="none" opacity="0.5"/>
+          <!-- Iridescent sheen effect lines -->
+          <line x1="-35" y1="-55" x2="-25" y2="-45" stroke="#00FFFF" stroke-width="1" opacity="0.3"/>
+          <line x1="-30" y1="-50" x2="-20" y2="-40" stroke="#FF00FF" stroke-width="1" opacity="0.3"/>
+          <line x1="35" y1="-55" x2="25" y2="-45" stroke="#FF00FF" stroke-width="1" opacity="0.3"/>
+          <line x1="30" y1="-50" x2="20" y2="-40" stroke="#00FFFF" stroke-width="1" opacity="0.3"/>
+          <!-- Data nodes - smaller, subtler -->
+          <circle cx="-38" cy="-50" r="2" fill="#9966FF" filter="url(#neonGlow)"/>
+          <circle cx="38" cy="-50" r="2" fill="#9966FF" filter="url(#neonGlow)"/>
+          <!-- Neck taper hint -->
+          <path d="M-30,25 Q0,35 30,25" stroke="#9966FF" stroke-width="1" fill="none" opacity="0.4"/>
+        </g>
+      `,
+
+      // Cyber dog
+      'cyber-dog': `
+        <g class="cyber-face-dog">
+          <!-- Main head shell -->
+          <polygon points="0,-90 50,-80 65,-40 60,20 40,55 0,65 -40,55 -60,20 -65,-40 -50,-80"
+                   fill="#111" stroke="#00FF00" stroke-width="2"/>
+          <!-- Forehead plate -->
+          <polygon points="0,-85 40,-75 50,-55 45,-35 0,-30 -45,-35 -50,-55 -40,-75"
+                   fill="#0a0a0a" stroke="#00FF00" stroke-width="1"/>
+          <!-- Muzzle extension -->
+          <polygon points="-35,20 -25,55 0,65 25,55 35,20"
+                   fill="#111" stroke="#00FF00" stroke-width="1" opacity="0.8"/>
+          <!-- Grid overlay -->
+          <line x1="-40" y1="-60" x2="40" y2="-60" stroke="#00FF00" stroke-width="1" opacity="0.3"/>
+          <line x1="-45" y1="-40" x2="45" y2="-40" stroke="#00FF00" stroke-width="1" opacity="0.3"/>
+        </g>
+      `,
+
+      // Cyber ermine - sleek predator
+      'cyber-ermine': `
+        <g class="cyber-face-ermine">
+          <!-- Elongated sleek head -->
+          <polygon points="0,-95 40,-85 55,-50 50,10 35,50 0,70 -35,50 -50,10 -55,-50 -40,-85"
+                   fill="#111" stroke="#FFAA00" stroke-width="2"/>
+          <!-- Inner stealth panel -->
+          <polygon points="0,-85 32,-76 45,-45 40,8 28,42 0,58 -28,42 -40,8 -45,-45 -32,-76"
+                   fill="#0a0a0a" stroke="#FFAA00" stroke-width="1" opacity="0.7"/>
+          <!-- Stealth lines -->
+          <line x1="-30" y1="-70" x2="-20" y2="-55" stroke="#FFAA00" stroke-width="1" opacity="0.4"/>
+          <line x1="30" y1="-70" x2="20" y2="-55" stroke="#FFAA00" stroke-width="1" opacity="0.4"/>
+          <line x1="-35" y1="-30" x2="-25" y2="-15" stroke="#FFAA00" stroke-width="1" opacity="0.4"/>
+          <line x1="35" y1="-30" x2="25" y2="-15" stroke="#FFAA00" stroke-width="1" opacity="0.4"/>
+        </g>
+      `,
+
+      // Cyber goat
+      'cyber-goat': `
+        <g class="cyber-face-goat">
+          <!-- Angular head -->
+          <polygon points="0,-95 50,-80 65,-40 60,15 40,55 0,70 -40,55 -60,15 -65,-40 -50,-80"
+                   fill="#111" stroke="#FF1493" stroke-width="2"/>
+          <!-- Forehead section -->
+          <polygon points="0,-90 40,-78 50,-50 0,-45 -50,-50 -40,-78"
+                   fill="#1a0a15" stroke="#FF1493" stroke-width="1"/>
+          <!-- Cheek plates -->
+          <polygon points="-50,-35 -55,5 -40,30 -25,20 -30,-20" fill="#0a0a0a" stroke="#FF1493" stroke-width="1" opacity="0.6"/>
+          <polygon points="50,-35 55,5 40,30 25,20 30,-20" fill="#0a0a0a" stroke="#FF1493" stroke-width="1" opacity="0.6"/>
+          <!-- Data lines -->
+          <line x1="-40" y1="-65" x2="40" y2="-65" stroke="#FF1493" stroke-width="1" opacity="0.3"/>
+        </g>
+      `,
+
+      // Cyber eagle - fierce angular
+      'cyber-eagle': `
+        <g class="cyber-face-eagle">
+          <!-- Sharp angular head -->
+          <polygon points="0,-90 45,-80 60,-45 55,5 35,45 0,55 -35,45 -55,5 -60,-45 -45,-80"
+                   fill="#111" stroke="#00FFFF" stroke-width="2"/>
+          <!-- White face plate -->
+          <polygon points="0,-75 35,-68 45,-40 40,0 25,30 0,38 -25,30 -40,0 -45,-40 -35,-68"
+                   fill="#1a1a2e" stroke="#00FFFF" stroke-width="1"/>
+          <!-- Brow ridge accents -->
+          <polygon points="-45,-75 -25,-70 -15,-60 -25,-55 -50,-65" fill="#0a0a0a" stroke="#FFAA00" stroke-width="1"/>
+          <polygon points="45,-75 25,-70 15,-60 25,-55 50,-65" fill="#0a0a0a" stroke="#FFAA00" stroke-width="1"/>
+          <!-- Grid lines -->
+          <line x1="-35" y1="-55" x2="35" y2="-55" stroke="#00FFFF" stroke-width="1" opacity="0.2"/>
+          <line x1="-40" y1="-30" x2="40" y2="-30" stroke="#00FFFF" stroke-width="1" opacity="0.2"/>
+        </g>
+      `
+    };
+
+    return shapes[shapeType] || shapes['cyber-default'];
+  }
+
+  // Get hair SVG - CYBER STYLE (with bird plumage variants)
+  function getHairSVG(style, gender, isBird = false) {
+    // Bird-specific plumage styles (feathers, crests, etc.)
+    const birdPlumageStyles = {
+      'dreads': `<g class="bird-plumage-dreads">
+        <!-- EXTENSIVE feather dreads visible along sides of head -->
+        <!-- Back layer - far behind -->
+        <g class="feather-dreads-back">
+          <path d="M-50,-85 Q-68,-45 -78,15 Q-82,65 -80,115" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M-50,-85 Q-68,-45 -78,15 Q-82,65 -80,115" stroke="#00FFFF" stroke-width="1.5" fill="none"/>
+          <path d="M50,-85 Q68,-45 78,15 Q82,65 80,115" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M50,-85 Q68,-45 78,15 Q82,65 80,115" stroke="#FF00FF" stroke-width="1.5" fill="none"/>
+        </g>
+        <!-- Side layer - MORE VISIBLE along head sides -->
+        <g class="feather-dreads-side">
+          <!-- Left side - multiple visible dreads -->
+          <path d="M-55,-75 Q-65,-35 -70,20 Q-72,65 -70,105" stroke="#111" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M-55,-75 Q-65,-35 -70,20 Q-72,65 -70,105" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <path d="M-58,-68 Q-68,-25 -73,28 Q-75,70 -73,108" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M-58,-68 Q-68,-25 -73,28 Q-75,70 -73,108" stroke="#00FFFF" stroke-width="1" fill="none"/>
+          <path d="M-52,-80 Q-62,-42 -67,12 Q-69,58 -67,100" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M-52,-80 Q-62,-42 -67,12 Q-69,58 -67,100" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <!-- Right side - multiple visible dreads -->
+          <path d="M55,-75 Q65,-35 70,20 Q72,65 70,105" stroke="#111" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M55,-75 Q65,-35 70,20 Q72,65 70,105" stroke="#00FFFF" stroke-width="1" fill="none"/>
+          <path d="M58,-68 Q68,-25 73,28 Q75,70 73,108" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M58,-68 Q68,-25 73,28 Q75,70 73,108" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <path d="M52,-80 Q62,-42 67,12 Q69,58 67,100" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M52,-80 Q62,-42 67,12 Q69,58 67,100" stroke="#00FFFF" stroke-width="1" fill="none"/>
+        </g>
+        <!-- Short top dreads pointing outward -->
+        <g class="feather-dreads-top">
+          <path d="M-48,-90 Q-55,-85 -58,-75" stroke="#111" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M-48,-90 Q-55,-85 -58,-75" stroke="#00FFFF" stroke-width="1" fill="none"/>
+          <path d="M48,-90 Q55,-85 58,-75" stroke="#111" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M48,-90 Q55,-85 58,-75" stroke="#FF00FF" stroke-width="1" fill="none"/>
+        </g>
+        <!-- Data flow lights along visible dreads -->
+        <g class="dread-lights">
+          <circle cx="-68" cy="-40" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="-72" cy="20" r="2" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="-70" cy="60" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="68" cy="-40" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="72" cy="20" r="2" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="70" cy="60" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        </g>
+        <!-- Feather tips - multiple -->
+        <circle cx="-80" cy="115" r="4" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="-70" cy="105" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="-73" cy="108" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="-67" cy="100" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="80" cy="115" r="4" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="70" cy="105" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="73" cy="108" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="67" cy="100" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+      </g>`,
+      'fade': `<g class="bird-plumage-fade">
+        <!-- Sleek feather cap -->
+        <ellipse cx="0" cy="-100" rx="55" ry="25" fill="#111" stroke="#00FFFF" stroke-width="2"/>
+        <ellipse cx="0" cy="-100" rx="40" ry="18" fill="none" stroke="#00FFFF" stroke-width="1" opacity="0.5"/>
+        <!-- Feather lines -->
+        <line x1="-40" y1="-100" x2="-50" y2="-85" stroke="#00FFFF" stroke-width="1" opacity="0.6"/>
+        <line x1="-20" y1="-105" x2="-25" y2="-85" stroke="#00FFFF" stroke-width="1" opacity="0.6"/>
+        <line x1="0" y1="-108" x2="0" y2="-85" stroke="#FF00FF" stroke-width="2" filter="url(#neonGlow)"/>
+        <line x1="20" y1="-105" x2="25" y2="-85" stroke="#00FFFF" stroke-width="1" opacity="0.6"/>
+        <line x1="40" y1="-100" x2="50" y2="-85" stroke="#00FFFF" stroke-width="1" opacity="0.6"/>
+      </g>`,
+      'afro': `<g class="bird-plumage-afro">
+        <!-- Puffed feather sphere -->
+        <circle cx="0" cy="-100" r="50" fill="#111" stroke="#FF00FF" stroke-width="2"/>
+        <!-- Feather texture lines radiating out -->
+        <line x1="0" y1="-100" x2="0" y2="-145" stroke="#FF00FF" stroke-width="2" filter="url(#neonGlow)"/>
+        <line x1="0" y1="-100" x2="-35" y2="-135" stroke="#FF00FF" stroke-width="1"/>
+        <line x1="0" y1="-100" x2="35" y2="-135" stroke="#FF00FF" stroke-width="1"/>
+        <line x1="0" y1="-100" x2="-45" y2="-110" stroke="#00FFFF" stroke-width="1"/>
+        <line x1="0" y1="-100" x2="45" y2="-110" stroke="#00FFFF" stroke-width="1"/>
+        <line x1="0" y1="-100" x2="-40" y2="-70" stroke="#FF00FF" stroke-width="1"/>
+        <line x1="0" y1="-100" x2="40" y2="-70" stroke="#FF00FF" stroke-width="1"/>
+        <!-- Glow tips -->
+        <circle cx="0" cy="-145" r="4" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="-35" cy="-135" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="35" cy="-135" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+      </g>`,
+      'braids': `<g class="bird-plumage-braids">
+        <!-- Long feather braids behind -->
+        <path d="M-50,-95 Q-60,-50 -65,10 Q-68,60 -65,100" stroke="#111" stroke-width="5" fill="none"/>
+        <path d="M-50,-95 Q-60,-50 -65,10 Q-68,60 -65,100" stroke="#00FFFF" stroke-width="1" fill="none"/>
+        <path d="M-55,-92 Q-65,-45 -70,15 Q-73,65 -70,105" stroke="#111" stroke-width="4" fill="none"/>
+        <path d="M-55,-92 Q-65,-45 -70,15 Q-73,65 -70,105" stroke="#FF00FF" stroke-width="1" fill="none"/>
+        <path d="M50,-95 Q60,-50 65,10 Q68,60 65,100" stroke="#111" stroke-width="5" fill="none"/>
+        <path d="M50,-95 Q60,-50 65,10 Q68,60 65,100" stroke="#FF00FF" stroke-width="1" fill="none"/>
+        <path d="M55,-92 Q65,-45 70,15 Q73,65 70,105" stroke="#111" stroke-width="4" fill="none"/>
+        <path d="M55,-92 Q65,-45 70,15 Q73,65 70,105" stroke="#00FFFF" stroke-width="1" fill="none"/>
+        <!-- Braid ties -->
+        <rect x="-68" y="40" width="6" height="4" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <rect x="-73" y="60" width="6" height="4" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <rect x="62" y="40" width="6" height="4" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <rect x="67" y="60" width="6" height="4" fill="#00FFFF" filter="url(#neonGlow)"/>
+      </g>`,
+      'bun': `<g class="bird-plumage-bun">
+        <!-- Feather top knot -->
+        <ellipse cx="0" cy="-130" rx="22" ry="28" fill="#111" stroke="#FFAA00" stroke-width="2"/>
+        <!-- Feather swirl pattern -->
+        <path d="M0,-155 Q-15,-140 0,-130 Q15,-120 0,-110" stroke="#FFAA00" stroke-width="2" fill="none" filter="url(#neonGlow)"/>
+        <circle cx="0" cy="-155" r="5" fill="#FFAA00" filter="url(#neonGlow)"/>
+        <circle cx="-15" cy="-140" r="3" fill="#FFAA00" filter="url(#neonGlow)"/>
+        <circle cx="15" cy="-120" r="3" fill="#FFAA00" filter="url(#neonGlow)"/>
+      </g>`,
+      'waves': `<g class="bird-plumage-waves">
+        <!-- Layered wave feathers -->
+        <path d="M-50,-95 Q-30,-110 0,-105 Q30,-100 50,-110" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <path d="M-50,-95 Q-30,-110 0,-105 Q30,-100 50,-110" stroke="#00FF00" stroke-width="2" fill="none" filter="url(#neonGlow)"/>
+        <path d="M-45,-85 Q-20,-98 0,-93 Q20,-88 45,-95" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M-45,-85 Q-20,-98 0,-93 Q20,-88 45,-95" stroke="#00FF00" stroke-width="1" fill="none"/>
+        <path d="M-40,-75 Q-15,-85 0,-82 Q15,-78 40,-82" stroke="#111" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- Wave tips -->
+        <circle cx="-50" cy="-95" r="3" fill="#00FF00" filter="url(#neonGlow)"/>
+        <circle cx="50" cy="-110" r="3" fill="#00FF00" filter="url(#neonGlow)"/>
+        <circle cx="0" cy="-105" r="4" fill="#00FF00" filter="url(#neonGlow)"/>
+      </g>`,
+      'mohawk': `<g class="bird-plumage-mohawk">
+        <!-- Tall feather crest -->
+        <polygon points="0,-170 -15,-130 -12,-90 12,-90 15,-130" fill="#111" stroke="#FF0066" stroke-width="2"/>
+        <!-- Central spine glow -->
+        <line x1="0" y1="-165" x2="0" y2="-95" stroke="#FF0066" stroke-width="3" filter="url(#neonGlow)"/>
+        <!-- Side feather spikes -->
+        <polygon points="-12,-130 -28,-125 -22,-110 -12,-115" fill="#111" stroke="#FF0066" stroke-width="1"/>
+        <polygon points="12,-130 28,-125 22,-110 12,-115" fill="#111" stroke="#FF0066" stroke-width="1"/>
+        <polygon points="-12,-145 -25,-142 -20,-130 -12,-133" fill="#111" stroke="#FF0066" stroke-width="1"/>
+        <polygon points="12,-145 25,-142 20,-130 12,-133" fill="#111" stroke="#FF0066" stroke-width="1"/>
+        <!-- Top beacon -->
+        <circle cx="0" cy="-170" r="6" fill="#FF0066" filter="url(#neonGlow)"/>
+        <circle cx="-25" cy="-142" r="3" fill="#FF0066" filter="url(#neonGlow)"/>
+        <circle cx="25" cy="-142" r="3" fill="#FF0066" filter="url(#neonGlow)"/>
+      </g>`,
+      'cornrows': `<g class="bird-plumage-cornrows">
+        <!-- Striped feather pattern -->
+        <path d="M-40,-100 Q-50,-60 -55,0 Q-58,50 -55,90" stroke="#111" stroke-width="4" fill="none"/>
+        <path d="M-40,-100 Q-50,-60 -55,0 Q-58,50 -55,90" stroke="#00FFFF" stroke-width="1" fill="none"/>
+        <path d="M-25,-105 Q-35,-65 -40,5 Q-43,55 -40,95" stroke="#111" stroke-width="4" fill="none"/>
+        <path d="M-25,-105 Q-35,-65 -40,5 Q-43,55 -40,95" stroke="#FF00FF" stroke-width="1" fill="none"/>
+        <path d="M25,-105 Q35,-65 40,5 Q43,55 40,95" stroke="#111" stroke-width="4" fill="none"/>
+        <path d="M25,-105 Q35,-65 40,5 Q43,55 40,95" stroke="#00FFFF" stroke-width="1" fill="none"/>
+        <path d="M40,-100 Q50,-60 55,0 Q58,50 55,90" stroke="#111" stroke-width="4" fill="none"/>
+        <path d="M40,-100 Q50,-60 55,0 Q58,50 55,90" stroke="#FF00FF" stroke-width="1" fill="none"/>
+        <!-- Connection lines -->
+        <line x1="-55" y1="0" x2="55" y2="0" stroke="#00FFFF" stroke-width="1" opacity="0.3"/>
+        <line x1="-55" y1="50" x2="55" y2="50" stroke="#FF00FF" stroke-width="1" opacity="0.3"/>
+        <!-- Tips -->
+        <circle cx="-55" cy="90" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="-40" cy="95" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="40" cy="95" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="55" cy="90" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+      </g>`
+    };
+
+    // Return bird plumage if it's a bird
+    if (isBird) {
+      return birdPlumageStyles[style] || birdPlumageStyles['fade'];
+    }
+
+    // Standard hair styles for mammals
     const hairStyles = {
-      'dreads': `<g fill="#1a1a1a">
-        <rect x="-50" y="-130" width="12" height="60" rx="6"/>
-        <rect x="-30" y="-135" width="12" height="65" rx="6"/>
-        <rect x="-10" y="-135" width="12" height="65" rx="6"/>
-        <rect x="10" y="-135" width="12" height="65" rx="6"/>
-        <rect x="30" y="-130" width="12" height="60" rx="6"/>
+      // Cyber dreads - ALL behind the head, face completely clear
+      'dreads': `<g class="cyber-dreads">
+        <!-- All dreads start from back/sides of head, flow down behind -->
+        <g class="dreads-back">
+          <!-- Far back dreads -->
+          <path d="M-55,-90 Q-75,-50 -85,10 Q-90,60 -88,110" stroke="#111" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <path d="M-55,-90 Q-75,-50 -85,10 Q-90,60 -88,110" stroke="#00FFFF" stroke-width="1" fill="none"/>
+          <path d="M55,-90 Q75,-50 85,10 Q90,60 88,110" stroke="#111" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <path d="M55,-90 Q75,-50 85,10 Q90,60 88,110" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <!-- Mid-back dreads -->
+          <path class="dread-strand" d="M-60,-95 Q-78,-45 -82,15 Q-85,55 -82,95" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M-60,-95 Q-78,-45 -82,15 Q-85,55 -82,95" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <path class="dread-strand" d="M60,-95 Q78,-45 82,15 Q85,55 82,95" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M60,-95 Q78,-45 82,15 Q85,55 82,95" stroke="#00FFFF" stroke-width="1" fill="none"/>
+        </g>
+        <!-- Side dreads - start at ear level, go straight down -->
+        <g class="dreads-side">
+          <!-- Left side - behind ear area -->
+          <path class="dread-strand" d="M-65,-80 Q-72,-40 -78,20 Q-80,60 -78,100" stroke="#111" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M-65,-80 Q-72,-40 -78,20 Q-80,60 -78,100" stroke="#00FFFF" stroke-width="1" fill="none"/>
+          <path class="dread-strand" d="M-68,-70 Q-75,-30 -80,25 Q-82,65 -80,105" stroke="#111" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M-68,-70 Q-75,-30 -80,25 Q-82,65 -80,105" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <path class="dread-strand" d="M-62,-85 Q-70,-45 -75,15 Q-77,55 -75,95" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M-62,-85 Q-70,-45 -75,15 Q-77,55 -75,95" stroke="#00FFFF" stroke-width="1" fill="none"/>
+          <!-- Right side - behind ear area -->
+          <path class="dread-strand" d="M65,-80 Q72,-40 78,20 Q80,60 78,100" stroke="#111" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M65,-80 Q72,-40 78,20 Q80,60 78,100" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <path class="dread-strand" d="M68,-70 Q75,-30 80,25 Q82,65 80,105" stroke="#111" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M68,-70 Q75,-30 80,25 Q82,65 80,105" stroke="#00FFFF" stroke-width="1" fill="none"/>
+          <path class="dread-strand" d="M62,-85 Q70,-45 75,15 Q77,55 75,95" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M62,-85 Q70,-45 75,15 Q77,55 75,95" stroke="#FF00FF" stroke-width="1" fill="none"/>
+        </g>
+        <!-- Top of head - short dreads pointing backward/outward only -->
+        <g class="dreads-top">
+          <path d="M-50,-100 Q-58,-95 -62,-85" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M-50,-100 Q-58,-95 -62,-85" stroke="#00FFFF" stroke-width="1" fill="none"/>
+          <path d="M50,-100 Q58,-95 62,-85" stroke="#111" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M50,-100 Q58,-95 62,-85" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <path d="M-55,-95 Q-60,-92 -65,-82" stroke="#111" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M-55,-95 Q-60,-92 -65,-82" stroke="#FF00FF" stroke-width="1" fill="none"/>
+          <path d="M55,-95 Q60,-92 65,-82" stroke="#111" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M55,-95 Q60,-92 65,-82" stroke="#00FFFF" stroke-width="1" fill="none"/>
+        </g>
+        <!-- Data flow lights along dreads -->
+        <g class="dread-lights">
+          <circle cx="-82" cy="-20" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="-85" cy="40" r="2" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="-78" cy="70" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="-80" cy="-50" r="2" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="82" cy="-20" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="85" cy="40" r="2" fill="#FF00FF" filter="url(#neonGlow)"/>
+          <circle cx="78" cy="70" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+          <circle cx="80" cy="-50" r="2" fill="#00FFFF" filter="url(#neonGlow)"/>
+        </g>
+        <!-- Dread tips -->
+        <circle cx="-88" cy="110" r="4" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="-82" cy="95" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="-78" cy="100" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="-80" cy="105" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="-75" cy="95" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="88" cy="110" r="4" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="82" cy="95" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="78" cy="100" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="80" cy="105" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="75" cy="95" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
       </g>`,
-      'fade': `<ellipse cx="0" cy="-100" rx="70" ry="40" fill="#1a1a1a"/>`,
-      'afro': `<circle cx="0" cy="-80" r="70" fill="#1a1a1a"/>`,
-      'braids': `<g fill="#1a1a1a">
-        <path d="M -60,-120 L -55,-80" stroke="#1a1a1a" stroke-width="8"/>
-        <path d="M -40,-125 L -35,-85" stroke="#1a1a1a" stroke-width="8"/>
-        <path d="M -20,-125 L -15,-85" stroke="#1a1a1a" stroke-width="8"/>
-        <path d="M 0,-125 L 0,-85" stroke="#1a1a1a" stroke-width="8"/>
-        <path d="M 20,-125 L 15,-85" stroke="#1a1a1a" stroke-width="8"/>
-        <path d="M 40,-125 L 35,-85" stroke="#1a1a1a" stroke-width="8"/>
-        <path d="M 60,-120 L 55,-80" stroke="#1a1a1a" stroke-width="8"/>
+      // Cyber fade - helmet visor
+      'fade': `<g class="cyber-fade">
+        <polygon points="0,-130 55,-115 65,-85 55,-70 -55,-70 -65,-85 -55,-115"
+                 fill="#111" stroke="#00FFFF" stroke-width="2"/>
+        <line x1="-50" y1="-100" x2="50" y2="-100" stroke="#00FFFF" stroke-width="1" opacity="0.5"/>
+        <line x1="-45" y1="-85" x2="45" y2="-85" stroke="#00FFFF" stroke-width="1" opacity="0.5"/>
       </g>`,
-      'bun': `<g>
-        <ellipse cx="0" cy="-100" rx="70" ry="35" fill="#1a1a1a"/>
-        <circle cx="0" cy="-140" r="30" fill="#1a1a1a"/>
+      // Cyber afro - data sphere
+      'afro': `<g class="cyber-afro">
+        <circle cx="0" cy="-85" r="60" fill="#111" stroke="#FF00FF" stroke-width="2"/>
+        <!-- Grid pattern -->
+        <circle cx="0" cy="-85" r="45" fill="none" stroke="#FF00FF" stroke-width="1" opacity="0.3"/>
+        <circle cx="0" cy="-85" r="30" fill="none" stroke="#FF00FF" stroke-width="1" opacity="0.3"/>
+        <line x1="-55" y1="-85" x2="55" y2="-85" stroke="#FF00FF" stroke-width="1" opacity="0.3"/>
+        <line x1="0" y1="-140" x2="0" y2="-30" stroke="#FF00FF" stroke-width="1" opacity="0.3"/>
+        <!-- Glow nodes -->
+        <circle cx="0" cy="-130" r="4" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="-40" cy="-100" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="40" cy="-100" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
       </g>`,
-      'waves': `<ellipse cx="0" cy="-95" rx="75" ry="45" fill="#1a1a1a"/>`,
-      'mohawk': `<g fill="#1a1a1a">
-        <rect x="-8" y="-150" width="16" height="80" rx="8"/>
-        <polygon points="0,-150 15,-140 0,-130 -15,-140" fill="#ff0000" opacity="0.3"/>
+      // Cyber braids - fiber optic cables
+      'braids': `<g class="cyber-braids">
+        <line x1="-55" y1="-120" x2="-50" y2="-75" stroke="#00FFFF" stroke-width="4"/>
+        <line x1="-38" y1="-125" x2="-33" y2="-78" stroke="#FF00FF" stroke-width="4"/>
+        <line x1="-20" y1="-128" x2="-15" y2="-80" stroke="#00FFFF" stroke-width="4"/>
+        <line x1="0" y1="-130" x2="0" y2="-82" stroke="#FF00FF" stroke-width="4"/>
+        <line x1="20" y1="-128" x2="15" y2="-80" stroke="#00FFFF" stroke-width="4"/>
+        <line x1="38" y1="-125" x2="33" y2="-78" stroke="#FF00FF" stroke-width="4"/>
+        <line x1="55" y1="-120" x2="50" y2="-75" stroke="#00FFFF" stroke-width="4"/>
+        <!-- End connectors -->
+        <rect x="-53" y="-123" width="6" height="6" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <rect x="-3" y="-133" width="6" height="6" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <rect x="50" y="-123" width="6" height="6" fill="#00FFFF" filter="url(#neonGlow)"/>
       </g>`,
-      'cornrows': `<g fill="#1a1a1a">
-        ${Array.from({length: 6}, (_, i) => {
-          const x = -40 + (i * 16);
-          return `<path d="M ${x},-120 Q ${x},-80 ${x},-40" stroke="#1a1a1a" stroke-width="6" fill="none"/>`;
-        }).join('')}
+      // Cyber bun - antenna array
+      'bun': `<g class="cyber-bun">
+        <polygon points="0,-95 55,-80 60,-65 -60,-65 -55,-80" fill="#111" stroke="#FFAA00" stroke-width="2"/>
+        <!-- Antenna dome -->
+        <circle cx="0" cy="-125" r="25" fill="#111" stroke="#FFAA00" stroke-width="2"/>
+        <circle cx="0" cy="-125" r="15" fill="none" stroke="#FFAA00" stroke-width="1" opacity="0.5"/>
+        <!-- Signal lights -->
+        <circle cx="0" cy="-145" r="4" fill="#FFAA00" filter="url(#neonGlow)"/>
+        <circle cx="-15" cy="-135" r="3" fill="#FFAA00" filter="url(#neonGlow)"/>
+        <circle cx="15" cy="-135" r="3" fill="#FFAA00" filter="url(#neonGlow)"/>
+      </g>`,
+      // Cyber waves - signal pattern
+      'waves': `<g class="cyber-waves">
+        <polygon points="0,-125 60,-105 70,-80 55,-70 -55,-70 -70,-80 -60,-105"
+                 fill="#111" stroke="#00FF00" stroke-width="2"/>
+        <!-- Wave patterns -->
+        <path d="M-50,-95 Q-35,-105 -20,-95 Q-5,-85 10,-95 Q25,-105 40,-95 Q55,-85 60,-90"
+              stroke="#00FF00" stroke-width="2" fill="none" filter="url(#neonGlow)"/>
+        <path d="M-45,-85 Q-30,-90 -15,-85 Q0,-80 15,-85 Q30,-90 45,-85"
+              stroke="#00FF00" stroke-width="1" fill="none" opacity="0.5"/>
+      </g>`,
+      // Cyber mohawk - blade antenna
+      'mohawk': `<g class="cyber-mohawk">
+        <polygon points="0,-160 -12,-130 -10,-75 10,-75 12,-130"
+                 fill="#111" stroke="#FF0066" stroke-width="2"/>
+        <!-- Energy core -->
+        <line x1="0" y1="-155" x2="0" y2="-85" stroke="#FF0066" stroke-width="3" filter="url(#neonGlow)"/>
+        <!-- Side vents -->
+        <polygon points="-12,-130 -25,-120 -20,-100 -10,-105" fill="#111" stroke="#FF0066" stroke-width="1"/>
+        <polygon points="12,-130 25,-120 20,-100 10,-105" fill="#111" stroke="#FF0066" stroke-width="1"/>
+        <!-- Top beacon -->
+        <circle cx="0" cy="-160" r="5" fill="#FF0066" filter="url(#neonGlow)"/>
+      </g>`,
+      // Cyber cornrows - data tracks
+      'cornrows': `<g class="cyber-cornrows">
+        <line x1="-40" y1="-120" x2="-40" y2="-50" stroke="#00FFFF" stroke-width="3"/>
+        <line x1="-24" y1="-125" x2="-24" y2="-50" stroke="#FF00FF" stroke-width="3"/>
+        <line x1="-8" y1="-128" x2="-8" y2="-50" stroke="#00FFFF" stroke-width="3"/>
+        <line x1="8" y1="-128" x2="8" y2="-50" stroke="#FF00FF" stroke-width="3"/>
+        <line x1="24" y1="-125" x2="24" y2="-50" stroke="#00FFFF" stroke-width="3"/>
+        <line x1="40" y1="-120" x2="40" y2="-50" stroke="#FF00FF" stroke-width="3"/>
+        <!-- Cross connections -->
+        <line x1="-40" y1="-100" x2="40" y2="-100" stroke="#00FFFF" stroke-width="1" opacity="0.5"/>
+        <line x1="-40" y1="-80" x2="40" y2="-80" stroke="#FF00FF" stroke-width="1" opacity="0.5"/>
+        <!-- Data nodes -->
+        <circle cx="-40" cy="-120" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
+        <circle cx="0" cy="-128" r="3" fill="#FF00FF" filter="url(#neonGlow)"/>
+        <circle cx="40" cy="-120" r="3" fill="#00FFFF" filter="url(#neonGlow)"/>
       </g>`
     };
     return hairStyles[style] || hairStyles['dreads'];
@@ -912,7 +2597,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   // Get animal emoji
   function getAnimalEmoji(animal) {
     const emojis = {
-      'chicken': '🐓', 'cat': '🐱', 'goat': '🐐', 'dog': '🐕', 'bunny': '🐰', 'horse': '🐴',
+      'chicken': '🐓', 'cat': '🐱', 'goat': '🐐', 'dog': '🐕', 'bunny': '🐰', 'horse': '🐴', 'ermine': '🦦',
       'pigeon': '🕊️', 'cooperhawk': '🦅', 'eagle': '🦅', 'owl': '🦉', 'crow': '🐦‍⬛',
       'lion': '🦁', 'coywolf': '🐺', 'bear': '🐻', 'panther': '🐆', 'fox': '🦊',
       'snake': '🐍', 'lizard': '🦎', 'turtle': '🐢',
@@ -933,11 +2618,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   // Randomize (global)
   window.randomize = function() {
-    const animals = Object.keys(ANIMAL_RARITY);
+    // Only use the 6 core animals with full SVG features
+    const coreAnimals = ['chicken', 'dog', 'goat', 'ermine', 'pigeon', 'eagle'];
     const hairstyles = ['dreads', 'fade', 'afro', 'braids', 'bun', 'waves', 'mohawk', 'cornrows'];
 
     window.setGender(Math.random() > 0.5 ? 'male' : 'female');
-    window.setAnimal(animals[Math.floor(Math.random() * animals.length)]);
+    window.setAnimal(coreAnimals[Math.floor(Math.random() * coreAnimals.length)]);
     document.getElementById('hairstyle').value = hairstyles[Math.floor(Math.random() * hairstyles.length)];
 
     // Auto-generate skin tone
@@ -1008,6 +2694,240 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     updatePreview();
   };
 
+  // ==========================================
+  // INTERACTIVE PHYSICS & DEVICE MOTION SYSTEM
+  // Snow globe effect with accelerometer support
+  // ==========================================
+
+  // Physics state
+  const physicsState = {
+    particles: [],
+    velocity: { x: 0, y: 0 },
+    lastShake: 0,
+    shakeThreshold: 15,
+    isShaking: false
+  };
+
+  // Initialize particle physics on the SVG
+  function initParticlePhysics() {
+    const svgPreview = document.getElementById('svgPreview');
+    if (!svgPreview) return;
+
+    const svg = svgPreview.querySelector('svg');
+    if (!svg) return;
+
+    // Get all floating particles
+    const particles = svg.querySelectorAll('.float-particle');
+    physicsState.particles = Array.from(particles).map(p => ({
+      element: p,
+      x: parseFloat(p.getAttribute('cx') || p.getAttribute('x') || 0),
+      y: parseFloat(p.getAttribute('cy') || p.getAttribute('y') || 0),
+      vx: 0,
+      vy: 0,
+      originalX: parseFloat(p.getAttribute('cx') || p.getAttribute('x') || 0),
+      originalY: parseFloat(p.getAttribute('cy') || p.getAttribute('y') || 0)
+    }));
+  }
+
+  // Update particle positions based on physics
+  function updateParticlePhysics(accelX, accelY) {
+    const friction = 0.95;
+    const gravity = 0.1;
+    const bounce = 0.7;
+
+    physicsState.particles.forEach(p => {
+      // Apply acceleration
+      p.vx += accelX * 0.5;
+      p.vy += accelY * 0.5 + gravity;
+
+      // Apply friction
+      p.vx *= friction;
+      p.vy *= friction;
+
+      // Update position
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Bounce off walls
+      if (p.x < 0) { p.x = 0; p.vx *= -bounce; }
+      if (p.x > 400) { p.x = 400; p.vx *= -bounce; }
+      if (p.y < 0) { p.y = 0; p.vy *= -bounce; }
+      if (p.y > 500) { p.y = 500; p.vy *= -bounce; }
+
+      // Apply to element
+      if (p.element.tagName === 'circle') {
+        p.element.setAttribute('cx', p.x);
+        p.element.setAttribute('cy', p.y);
+      } else {
+        p.element.setAttribute('x', p.x);
+        p.element.setAttribute('y', p.y);
+      }
+    });
+  }
+
+  // Reset particles to original positions (with animation)
+  function resetParticles() {
+    physicsState.particles.forEach(p => {
+      p.vx = (p.originalX - p.x) * 0.1;
+      p.vy = (p.originalY - p.y) * 0.1;
+    });
+  }
+
+  // Handle device motion (accelerometer)
+  function handleDeviceMotion(event) {
+    const accel = event.accelerationIncludingGravity;
+    if (!accel) return;
+
+    const x = accel.x || 0;
+    const y = accel.y || 0;
+    const z = accel.z || 0;
+
+    // Calculate total acceleration magnitude
+    const totalAccel = Math.sqrt(x * x + y * y + z * z);
+
+    // Detect shake
+    if (totalAccel > physicsState.shakeThreshold) {
+      const now = Date.now();
+      if (now - physicsState.lastShake > 100) {
+        physicsState.lastShake = now;
+        triggerShakeEffect(x, y);
+      }
+    }
+
+    // Update physics with device tilt
+    updateParticlePhysics(x * 0.3, y * 0.3);
+  }
+
+  // Trigger shake visual effect
+  function triggerShakeEffect(forceX, forceY) {
+    const svgPreview = document.getElementById('svgPreview');
+    if (!svgPreview) return;
+
+    const svg = svgPreview.querySelector('svg');
+    if (!svg) return;
+
+    // Add shake class
+    svg.classList.add('shake-active');
+    svg.style.setProperty('--shake-x', (forceX * 5) + 'px');
+    svg.style.setProperty('--shake-y', (forceY * 5) + 'px');
+
+    // Apply burst force to all particles
+    physicsState.particles.forEach(p => {
+      p.vx += (Math.random() - 0.5) * forceX * 2;
+      p.vy += (Math.random() - 0.5) * forceY * 2 - 10; // Upward burst
+    });
+
+    // Flash effect on eyes
+    const eyes = svg.querySelectorAll('[class*="eyes"] rect, [class*="eyes"] circle');
+    eyes.forEach(eye => {
+      eye.style.filter = 'brightness(2)';
+      setTimeout(() => { eye.style.filter = ''; }, 150);
+    });
+
+    // Remove shake class after animation
+    setTimeout(() => {
+      svg.classList.remove('shake-active');
+    }, 500);
+  }
+
+  // Mouse/touch interaction for desktop
+  let isDragging = false;
+  let lastMousePos = { x: 0, y: 0 };
+
+  function handleMouseMove(event) {
+    if (!isDragging) return;
+
+    const dx = event.clientX - lastMousePos.x;
+    const dy = event.clientY - lastMousePos.y;
+
+    updateParticlePhysics(dx * 0.5, dy * 0.5);
+
+    lastMousePos.x = event.clientX;
+    lastMousePos.y = event.clientY;
+  }
+
+  function handleMouseDown(event) {
+    isDragging = true;
+    lastMousePos.x = event.clientX;
+    lastMousePos.y = event.clientY;
+  }
+
+  function handleMouseUp() {
+    isDragging = false;
+  }
+
+  // Click/tap to create ripple effect
+  function handleSvgClick(event) {
+    const svgPreview = document.getElementById('svgPreview');
+    if (!svgPreview) return;
+
+    const rect = svgPreview.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 400;
+    const y = ((event.clientY - rect.top) / rect.height) * 500;
+
+    // Push particles away from click point
+    physicsState.particles.forEach(p => {
+      const dx = p.x - x;
+      const dy = p.y - y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 150) {
+        const force = (150 - dist) / 10;
+        p.vx += (dx / dist) * force;
+        p.vy += (dy / dist) * force;
+      }
+    });
+  }
+
+  // Request device motion permission (iOS 13+)
+  async function requestMotionPermission() {
+    if (typeof DeviceMotionEvent !== 'undefined' &&
+        typeof DeviceMotionEvent.requestPermission === 'function') {
+      try {
+        const permission = await DeviceMotionEvent.requestPermission();
+        if (permission === 'granted') {
+          window.addEventListener('devicemotion', handleDeviceMotion);
+          return true;
+        }
+      } catch (e) {
+        console.log('Motion permission denied:', e);
+      }
+      return false;
+    } else if ('DeviceMotionEvent' in window) {
+      // Non-iOS devices
+      window.addEventListener('devicemotion', handleDeviceMotion);
+      return true;
+    }
+    return false;
+  }
+
+  // Animation loop for smooth physics
+  function physicsLoop() {
+    // Gradually return particles to original positions when not being interacted with
+    if (!isDragging && Date.now() - physicsState.lastShake > 2000) {
+      physicsState.particles.forEach(p => {
+        p.vx += (p.originalX - p.x) * 0.01;
+        p.vy += (p.originalY - p.y) * 0.01;
+        p.vx *= 0.98;
+        p.vy *= 0.98;
+
+        // Update position
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Apply to element
+        if (p.element.tagName === 'circle') {
+          p.element.setAttribute('cx', p.x);
+          p.element.setAttribute('cy', p.y);
+        } else {
+          p.element.setAttribute('x', p.x);
+          p.element.setAttribute('y', p.y);
+        }
+      });
+    }
+
+    requestAnimationFrame(physicsLoop);
+  }
+
   // Initialize
   document.addEventListener('DOMContentLoaded', () => {
     // Set random skin tone on load for diversity
@@ -1015,7 +2935,44 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     updatePreview();
     loadPresets();
+
+    // Initialize physics after first render
+    setTimeout(() => {
+      initParticlePhysics();
+      physicsLoop();
+
+      // Setup event listeners
+      const svgPreview = document.getElementById('svgPreview');
+      if (svgPreview) {
+        svgPreview.addEventListener('mousedown', handleMouseDown);
+        svgPreview.addEventListener('click', handleSvgClick);
+        svgPreview.addEventListener('touchstart', (e) => {
+          handleMouseDown(e.touches[0]);
+          // Try to request motion permission on first touch (iOS)
+          requestMotionPermission();
+        });
+      }
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches[0]) {
+          handleMouseMove(e.touches[0]);
+        }
+      });
+      document.addEventListener('touchend', handleMouseUp);
+
+      // Try to enable device motion
+      requestMotionPermission();
+    }, 100);
   });
+
+  // Re-initialize particles when preview updates
+  const originalUpdatePreview = window.updatePreview;
+  window.updatePreview = function() {
+    originalUpdatePreview();
+    setTimeout(initParticlePhysics, 50);
+  };
 </script>
 
 <style>
@@ -1184,6 +3141,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     background: var(--color-neon-green);
     color: var(--color-black);
     box-shadow: 0 0 15px var(--color-neon-green-glow);
+  }
+
+  /* Main 6-animal grid */
+  .spirit-grid-main {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    padding: 0;
+  }
+
+  .spirit-grid-main .spirit-btn {
+    padding: 1rem 0.5rem;
+    font-size: 1.5rem;
+  }
+
+  .spirit-grid-main .spirit-btn span {
+    font-size: 0.7rem;
+    font-weight: 700;
   }
 
   /* Select */
@@ -1431,13 +3405,39 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   /* GENERATIVE CALIBRATOR */
   .calibrator-panel {
-    padding: 2rem;
+    padding: 0;
     max-height: 90vh;
     overflow-y: auto;
+    position: relative;
+    /* Bold diagonal stripes background */
+    background:
+      repeating-linear-gradient(
+        45deg,
+        #1a1a1a,
+        #1a1a1a 8px,
+        #2d2d2d 8px,
+        #2d2d2d 16px
+      );
+    border: 3px solid var(--color-neon-green);
+  }
+
+  /* Black background container for all content */
+  .calibrator-panel .panel-title {
+    background: #000;
+    padding: 1.25rem 1.5rem;
+    margin: 0;
+    border-bottom: 3px solid var(--color-neon-green);
   }
 
   .calibration-section {
-    margin-bottom: 2rem;
+    margin: 0;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom: 2px solid #333;
+  }
+
+  .calibration-section:last-child {
+    border-bottom: none;
   }
 
   .calibration-title {
@@ -1447,10 +3447,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: var(--color-neon-green);
     text-align: center;
     letter-spacing: 1px;
+    background: #000;
+    padding: 0.5rem;
+    border: 2px solid var(--color-neon-green);
   }
 
   .calibration-meters {
     margin-bottom: 1.5rem;
+    background: #000;
+    padding: 1rem;
+    border: 1px solid #333;
   }
 
   .meter-row {
@@ -1464,11 +3470,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .meter-label {
     font-size: 0.75rem;
     font-weight: 700;
+    color: #fff;
   }
 
   .meter-bar {
     height: 16px;
-    background: var(--color-dark-gray);
+    background: #111;
     border: 2px solid var(--color-white);
     position: relative;
     overflow: hidden;
@@ -1484,11 +3491,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     font-size: 0.75rem;
     font-weight: 700;
     text-align: right;
+    color: #fff;
   }
 
   /* Rarity Distribution */
   .rarity-distribution {
     margin-bottom: 1.5rem;
+    background: #000;
+    padding: 1rem;
+    border: 1px solid #333;
   }
 
   .distribution-title {
@@ -1496,6 +3507,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     font-weight: 700;
     margin-bottom: 0.75rem;
     text-align: center;
+    color: #fff;
   }
 
   .distribution-grid {
@@ -1509,27 +3521,33 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     align-items: center;
     padding: 0.5rem 0.75rem;
     border: 2px solid var(--color-white);
+    background: #111;
   }
 
   .rarity-name {
     font-size: 0.75rem;
     font-weight: 700;
+    color: #fff;
   }
 
   .rarity-chance {
     font-size: 0.75rem;
     font-weight: 900;
+    color: #fff;
   }
 
-  .rarity-item.rarity-common { border-color: #888; }
-  .rarity-item.rarity-uncommon { border-color: #4ade80; }
-  .rarity-item.rarity-rare { border-color: #3b82f6; }
-  .rarity-item.rarity-epic { border-color: #a855f7; }
-  .rarity-item.rarity-legendary { border-color: #fbbf24; }
+  .rarity-item.rarity-common { border-color: #888; background: linear-gradient(90deg, #111 0%, #222 100%); }
+  .rarity-item.rarity-uncommon { border-color: #4ade80; background: linear-gradient(90deg, #111 0%, #1a2e1a 100%); }
+  .rarity-item.rarity-rare { border-color: #3b82f6; background: linear-gradient(90deg, #111 0%, #1a1a2e 100%); }
+  .rarity-item.rarity-epic { border-color: #a855f7; background: linear-gradient(90deg, #111 0%, #2a1a2e 100%); }
+  .rarity-item.rarity-legendary { border-color: #fbbf24; background: linear-gradient(90deg, #111 0%, #2e2a1a 100%); }
 
   /* Generation Tips */
   .generation-tips {
     margin-bottom: 1.5rem;
+    background: #000;
+    padding: 1rem;
+    border: 1px solid #333;
   }
 
   .tips-heading {
@@ -1544,12 +3562,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     padding: 0;
     font-size: 0.75rem;
     line-height: 1.75;
+    color: #fff;
   }
 
   /* Presets */
   .presets-section {
-    padding-top: 1.5rem;
-    border-top: 2px solid var(--color-dark-gray);
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.95);
+    border-top: 3px solid var(--color-neon-green);
   }
 
   .presets-heading {
@@ -1557,6 +3577,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     font-weight: 700;
     margin-bottom: 0.75rem;
     text-align: center;
+    color: #fff;
+    background: #000;
+    padding: 0.5rem;
+    border: 1px solid #333;
   }
 
   .presets-grid {
@@ -1564,11 +3588,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
     margin-bottom: 1rem;
+    background: #000;
+    padding: 0.75rem;
+    border: 1px solid #333;
   }
 
   .preset-card {
     aspect-ratio: 1;
-    background: var(--color-black);
+    background: #111;
     border: 2px solid var(--color-white);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1582,6 +3609,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .preset-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 0 15px var(--color-neon-green-glow);
+    background: #1a1a1a;
   }
 
   .preset-preview {

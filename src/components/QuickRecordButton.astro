@@ -1,0 +1,1821 @@
+---
+/**
+ * QuickRecordButton.astro
+ * Floating "Record Now" button that opens the RecordingWizard
+ *
+ * Features:
+ * - Pulsing microphone icon
+ * - Opens full recording wizard modal
+ * - Shows live waveform preview when clicked
+ */
+---
+
+<!-- Floating Quick Record Button -->
+<button class="quick-record-btn" id="quick-record-btn" type="button" aria-label="Start Recording">
+  <div class="quick-record-pulse"></div>
+  <div class="quick-record-content">
+    <div class="mic-icon">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+      </svg>
+      <div class="sound-waves">
+        <span class="wave wave-1"></span>
+        <span class="wave wave-2"></span>
+        <span class="wave wave-3"></span>
+      </div>
+    </div>
+    <span class="quick-record-text">RECORD NOW</span>
+  </div>
+</button>
+
+<!-- Recording Wizard Modal -->
+<div class="recording-wizard-overlay" id="recording-wizard-overlay">
+  <div class="recording-wizard-modal">
+
+    <!-- Modal Header -->
+    <div class="wizard-header">
+      <div class="wizard-title">
+        <span class="wizard-icon">🎤</span>
+        <h2>Battle Recording Studio</h2>
+      </div>
+      <button class="wizard-close" id="wizard-close" type="button" aria-label="Close">
+        <span>✕</span>
+      </button>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="wizard-progress">
+      <div class="progress-step active" data-step="1">
+        <div class="step-circle">1</div>
+        <span class="step-label">Record</span>
+      </div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-step="2">
+        <div class="step-circle">2</div>
+        <span class="step-label">Add Beat</span>
+      </div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-step="3">
+        <div class="step-circle">3</div>
+        <span class="step-label">Preview</span>
+      </div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-step="4">
+        <div class="step-circle">4</div>
+        <span class="step-label">Submit</span>
+      </div>
+    </div>
+
+    <!-- Wizard Content -->
+    <div class="wizard-content">
+
+      <!-- Step 1: Record -->
+      <div class="wizard-step active" id="wizard-step-1">
+        <div class="step-header">
+          <h3>Step 1: Record Your Vocals</h3>
+          <p class="step-hint">Hit the button and start rapping! Max 2 minutes.</p>
+        </div>
+
+        <!-- Recording Status -->
+        <div class="recording-status-bar">
+          <div class="status-indicator" id="wizard-rec-status">
+            <span class="status-light"></span>
+            <span class="status-text">READY</span>
+          </div>
+          <div class="timer mono neon-text" id="wizard-rec-timer">00:00</div>
+        </div>
+
+        <!-- Large Waveform Display -->
+        <div class="waveform-display">
+          <canvas id="wizard-waveform" width="700" height="180"></canvas>
+          <div class="waveform-message" id="wizard-waveform-msg">
+            <span class="mic-prompt">🎤</span>
+            <span>Click the button below to start recording</span>
+          </div>
+        </div>
+
+        <!-- Audio Level Meter -->
+        <div class="level-meter-bar">
+          <div class="level-label">INPUT:</div>
+          <div class="level-track">
+            <div class="level-fill" id="wizard-level-bar"></div>
+          </div>
+          <div class="level-hint">Keep it green!</div>
+        </div>
+
+        <!-- Big Record Button -->
+        <div class="record-button-container">
+          <button class="big-record-btn" id="wizard-record-btn" type="button">
+            <span class="record-icon">⬤</span>
+            <span class="record-text">START RECORDING</span>
+          </button>
+          <button class="big-stop-btn" id="wizard-stop-btn" type="button" style="display: none;">
+            <span class="stop-icon">⬛</span>
+            <span class="stop-text">STOP</span>
+          </button>
+        </div>
+
+        <!-- Playback after recording -->
+        <div class="playback-section" id="wizard-playback" style="display: none;">
+          <audio id="wizard-audio" controls></audio>
+          <div class="playback-actions">
+            <button class="btn-retro" id="wizard-rerecord-btn">
+              <span>🔄</span> Re-record
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Add Beat -->
+      <div class="wizard-step" id="wizard-step-2">
+        <div class="step-header">
+          <h3>Step 2: Add a Backing Beat (Optional)</h3>
+          <p class="step-hint">Layer your vocals over a beat, or skip to submit acapella.</p>
+        </div>
+
+        <div class="beat-options">
+          <!-- Quick Beat Selection -->
+          <div class="beat-option-card active" data-beat="none">
+            <div class="option-icon">🎤</div>
+            <div class="option-label">No Beat (Acapella)</div>
+            <div class="option-desc">Submit your raw vocals</div>
+          </div>
+
+          <div class="beat-option-card" data-beat="preset">
+            <div class="option-icon">🎵</div>
+            <div class="option-label">Quick Beats</div>
+            <div class="option-desc">Choose from preset beats</div>
+          </div>
+
+          <div class="beat-option-card" data-beat="sampler">
+            <div class="option-icon">🎛️</div>
+            <div class="option-label">Open Sampler</div>
+            <div class="option-desc">Create your own beat</div>
+          </div>
+
+          <div class="beat-option-card" data-beat="upload">
+            <div class="option-icon">📁</div>
+            <div class="option-label">Upload Beat</div>
+            <div class="option-desc">Use your own audio file</div>
+          </div>
+        </div>
+
+        <!-- Preset Beats Section -->
+        <div class="beat-section" id="preset-beats-section" style="display: none;">
+          <h4>Select a Beat</h4>
+          <div class="preset-beats-grid">
+            <button class="preset-beat-btn" data-genre="trap">
+              <span class="beat-icon">🔥</span>
+              <span class="beat-name">Trap 808</span>
+              <span class="beat-bpm">140 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="boombap">
+              <span class="beat-icon">💎</span>
+              <span class="beat-name">Boom Bap</span>
+              <span class="beat-bpm">90 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="drill">
+              <span class="beat-icon">⚡</span>
+              <span class="beat-name">UK Drill</span>
+              <span class="beat-bpm">140 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="reggae">
+              <span class="beat-icon">🌴</span>
+              <span class="beat-name">Reggae</span>
+              <span class="beat-bpm">75 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="afrobeat">
+              <span class="beat-icon">🌍</span>
+              <span class="beat-name">Afrobeat</span>
+              <span class="beat-bpm">100 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="lofi">
+              <span class="beat-icon">🌙</span>
+              <span class="beat-name">Lo-Fi</span>
+              <span class="beat-bpm">85 BPM</span>
+            </button>
+          </div>
+          <div class="beat-preview" id="beat-preview" style="display: none;">
+            <audio id="beat-audio" controls loop></audio>
+          </div>
+        </div>
+
+        <!-- Upload Beat Section -->
+        <div class="beat-section" id="upload-beat-section" style="display: none;">
+          <div class="upload-zone" id="beat-upload-zone">
+            <input type="file" id="beat-file-input" accept="audio/*" style="display: none;" />
+            <div class="upload-prompt">
+              <span class="upload-icon">📤</span>
+              <p>Drop audio file or click to browse</p>
+              <p class="mono text-cyan">MP3, WAV, M4A • Max 10MB</p>
+              <button class="btn-retro-neon" type="button" onclick="document.getElementById('beat-file-input').click()">
+                SELECT FILE
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Preview & Mix -->
+      <div class="wizard-step" id="wizard-step-3">
+        <div class="step-header">
+          <h3>Step 3: Preview Your Track</h3>
+          <p class="step-hint">Listen to your combined audio before submitting.</p>
+        </div>
+
+        <div class="preview-container">
+          <!-- Combined Audio Player -->
+          <div class="combined-player">
+            <div class="player-waveform">
+              <canvas id="preview-waveform" width="700" height="100"></canvas>
+            </div>
+            <div class="player-controls">
+              <button class="play-btn" id="preview-play-btn" type="button">
+                <span class="play-icon">▶</span>
+              </button>
+              <div class="progress-track">
+                <div class="progress-fill" id="preview-progress"></div>
+              </div>
+              <div class="time-display" id="preview-time">0:00 / 0:00</div>
+            </div>
+          </div>
+
+          <!-- Volume Mixers -->
+          <div class="mixer-section">
+            <div class="mixer-channel">
+              <label>🎤 Vocals</label>
+              <input type="range" id="vocal-volume" min="0" max="100" value="100" />
+              <span class="volume-value">100%</span>
+            </div>
+            <div class="mixer-channel" id="beat-mixer" style="display: none;">
+              <label>🎵 Beat</label>
+              <input type="range" id="beat-volume" min="0" max="100" value="70" />
+              <span class="volume-value">70%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-actions">
+          <button class="btn-retro" id="back-to-record-btn">
+            <span>🔄</span> Re-record Vocals
+          </button>
+          <button class="btn-retro" id="change-beat-btn">
+            <span>🎵</span> Change Beat
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Submit to Battle -->
+      <div class="wizard-step" id="wizard-step-4">
+        <div class="step-header">
+          <h3>Step 4: Submit to Battle</h3>
+          <p class="step-hint">Choose a battle to enter or start a new one.</p>
+        </div>
+
+        <div class="submit-options">
+          <!-- Battle Selection -->
+          <div class="battle-select">
+            <label>Select Battle:</label>
+            <select id="battle-select">
+              <option value="new">🆕 Start New Battle</option>
+              <option value="" disabled>── Active Battles ──</option>
+            </select>
+          </div>
+
+          <!-- New Battle Options -->
+          <div class="new-battle-options" id="new-battle-options">
+            <div class="form-group">
+              <label>Battle Type:</label>
+              <div class="battle-type-btns">
+                <button class="type-btn active" data-type="open">Open Challenge</button>
+                <button class="type-btn" data-type="1v1">1v1 Private</button>
+                <button class="type-btn" data-type="practice">Practice Mode</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Category:</label>
+              <select id="battle-category">
+                <option value="freestyle">Freestyle</option>
+                <option value="conscious">Conscious/Lyrical</option>
+                <option value="comedy">Comedy/Humor</option>
+                <option value="storytelling">Storytelling</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Rapper Name -->
+          <div class="form-group">
+            <label>Your Stage Name:</label>
+            <input type="text" id="rapper-name" placeholder="Enter your rapper name" maxlength="30" />
+          </div>
+
+          <!-- Terms -->
+          <div class="terms-check">
+            <label>
+              <input type="checkbox" id="terms-agree" />
+              <span>I agree to the <a href="/terms" target="_blank">battle rules</a> and confirm this is my original content</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Final Submit -->
+        <div class="final-submit">
+          <div class="submit-preview">
+            <div class="preview-icon">🎤</div>
+            <div class="preview-info">
+              <span class="preview-duration" id="final-duration">0:00</span>
+              <span class="preview-format">WebM Audio</span>
+            </div>
+          </div>
+          <button class="submit-battle-btn" id="submit-battle-btn" type="button" disabled>
+            <span class="submit-icon">🚀</span>
+            <span class="submit-text">SUBMIT TO BATTLE</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Wizard Navigation -->
+    <div class="wizard-nav">
+      <button class="nav-btn nav-prev" id="wizard-prev" type="button" style="visibility: hidden;">
+        <span>◀</span> Back
+      </button>
+      <div class="nav-dots">
+        <span class="nav-dot active" data-step="1"></span>
+        <span class="nav-dot" data-step="2"></span>
+        <span class="nav-dot" data-step="3"></span>
+        <span class="nav-dot" data-step="4"></span>
+      </div>
+      <button class="nav-btn nav-next" id="wizard-next" type="button">
+        Next <span>▶</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* Quick Record Button - Floating */
+  .quick-record-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+    border: 3px solid #fff;
+    border-radius: 60px;
+    padding: 15px 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5), 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .quick-record-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 50px rgba(0, 255, 0, 0.8), 0 12px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .quick-record-pulse {
+    position: absolute;
+    inset: -8px;
+    border: 3px solid #00ff00;
+    border-radius: 70px;
+    animation: pulse-ring 2s ease-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.3); opacity: 0; }
+  }
+
+  .quick-record-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mic-icon {
+    position: relative;
+    color: #000;
+  }
+
+  .mic-icon svg {
+    display: block;
+  }
+
+  .sound-waves {
+    position: absolute;
+    right: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 3px;
+  }
+
+  .wave {
+    width: 3px;
+    background: #000;
+    border-radius: 2px;
+    animation: sound-wave 0.5s ease-in-out infinite;
+  }
+
+  .wave-1 { height: 8px; animation-delay: 0s; }
+  .wave-2 { height: 16px; animation-delay: 0.1s; }
+  .wave-3 { height: 12px; animation-delay: 0.2s; }
+
+  @keyframes sound-wave {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.5); }
+  }
+
+  .quick-record-text {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 14px;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Modal Overlay */
+  .recording-wizard-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .recording-wizard-overlay.active {
+    display: flex;
+  }
+
+  /* Modal */
+  .recording-wizard-modal {
+    background: #0a0a0a;
+    border: 3px solid #00ff00;
+    border-radius: 0;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 60px rgba(0, 255, 0, 0.3), inset 0 0 30px rgba(0, 255, 0, 0.1);
+  }
+
+  /* Header */
+  .wizard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 2px solid #333;
+    background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  }
+
+  .wizard-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .wizard-title h2 {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 20px;
+    color: #00ff00;
+    text-transform: uppercase;
+  }
+
+  .wizard-icon {
+    font-size: 28px;
+  }
+
+  .wizard-close {
+    background: transparent;
+    border: 2px solid #666;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .wizard-close:hover {
+    border-color: #ff0000;
+    color: #ff0000;
+    background: rgba(255, 0, 0, 0.1);
+  }
+
+  /* Progress Steps */
+  .wizard-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 20px;
+    background: #111;
+    border-bottom: 1px solid #333;
+  }
+
+  .progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .step-circle {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #444;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: #666;
+    background: #1a1a1a;
+    transition: all 0.3s;
+  }
+
+  .progress-step.active .step-circle,
+  .progress-step.completed .step-circle {
+    border-color: #00ff00;
+    color: #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+  }
+
+  .progress-step.completed .step-circle {
+    background: #00ff00;
+    color: #000;
+  }
+
+  .step-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+  }
+
+  .progress-step.active .step-label,
+  .progress-step.completed .step-label {
+    color: #00ff00;
+  }
+
+  .progress-line {
+    width: 60px;
+    height: 2px;
+    background: #333;
+    margin: 0 10px;
+    margin-bottom: 20px;
+  }
+
+  /* Wizard Content */
+  .wizard-content {
+    padding: 30px;
+    min-height: 400px;
+  }
+
+  .wizard-step {
+    display: none;
+  }
+
+  .wizard-step.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-header {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  .step-header h3 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 18px;
+  }
+
+  .step-hint {
+    color: #888;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* Recording Status */
+  .recording-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    margin-bottom: 20px;
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-light {
+    width: 12px;
+    height: 12px;
+    background: #444;
+    border-radius: 50%;
+    transition: all 0.3s;
+  }
+
+  .status-light.recording {
+    background: #ff0000;
+    box-shadow: 0 0 10px #ff0000;
+    animation: blink 1s infinite;
+  }
+
+  .status-light.complete {
+    background: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .status-text {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #888;
+    text-transform: uppercase;
+  }
+
+  .timer {
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+
+  /* Waveform Display */
+  .waveform-display {
+    position: relative;
+    background: #000;
+    border: 2px solid #333;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  #wizard-waveform {
+    display: block;
+    width: 100%;
+    height: 180px;
+  }
+
+  .waveform-message {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #888;
+    font-family: 'Courier New', monospace;
+  }
+
+  .waveform-message.hidden {
+    display: none;
+  }
+
+  .mic-prompt {
+    font-size: 48px;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Level Meter */
+  .level-meter-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    margin-bottom: 25px;
+  }
+
+  .level-label {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #888;
+    min-width: 60px;
+  }
+
+  .level-track {
+    flex: 1;
+    height: 10px;
+    background: #333;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .level-fill {
+    height: 100%;
+    width: 0%;
+    background: #ffff00;
+    transition: width 0.1s, background 0.2s;
+    border-radius: 5px;
+  }
+
+  .level-hint {
+    font-size: 11px;
+    color: #666;
+  }
+
+  /* Big Record Button */
+  .record-button-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+  }
+
+  .big-record-btn,
+  .big-stop-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 50px;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 3px solid;
+    transition: all 0.3s;
+  }
+
+  .big-record-btn {
+    background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+    border-color: #00ff00;
+    color: #000;
+  }
+
+  .big-record-btn:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+    transform: scale(1.05);
+  }
+
+  .big-stop-btn {
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+    border-color: #ff0000;
+    color: #fff;
+    animation: pulse-stop 1s infinite;
+  }
+
+  @keyframes pulse-stop {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.8); }
+  }
+
+  .record-icon,
+  .stop-icon {
+    font-size: 24px;
+  }
+
+  /* Playback Section */
+  .playback-section {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .playback-section audio {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .playback-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  /* Beat Options */
+  .beat-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+
+  .beat-option-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 20px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .beat-option-card:hover {
+    border-color: #666;
+  }
+
+  .beat-option-card.active {
+    border-color: #00ff00;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+  }
+
+  .option-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+
+  .option-label {
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+  }
+
+  .option-desc {
+    font-size: 12px;
+    color: #888;
+  }
+
+  /* Preset Beats Grid */
+  .beat-section {
+    background: #111;
+    border: 1px solid #333;
+    padding: 20px;
+  }
+
+  .beat-section h4 {
+    margin: 0 0 15px;
+    color: #00ff00;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+
+  .preset-beats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .preset-beat-btn {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 15px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .preset-beat-btn:hover,
+  .preset-beat-btn.active {
+    border-color: #00ff00;
+    background: #0a0a0a;
+  }
+
+  .beat-icon {
+    font-size: 24px;
+  }
+
+  .beat-name {
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .beat-bpm {
+    color: #888;
+    font-size: 11px;
+  }
+
+  /* Upload Zone */
+  .upload-zone {
+    background: #111;
+    border: 2px dashed #333;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .upload-zone:hover {
+    border-color: #00ff00;
+  }
+
+  .upload-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  /* Preview Container */
+  .preview-container {
+    background: #111;
+    border: 1px solid #333;
+    padding: 25px;
+    margin-bottom: 20px;
+  }
+
+  .combined-player {
+    margin-bottom: 25px;
+  }
+
+  .player-waveform {
+    background: #000;
+    border: 1px solid #333;
+    margin-bottom: 15px;
+  }
+
+  .player-waveform canvas {
+    display: block;
+    width: 100%;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .play-btn {
+    width: 50px;
+    height: 50px;
+    background: #00ff00;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.2s;
+  }
+
+  .play-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #00ff00;
+    transition: width 0.1s;
+  }
+
+  .time-display {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #888;
+    min-width: 100px;
+  }
+
+  /* Mixer */
+  .mixer-section {
+    display: flex;
+    gap: 30px;
+    padding: 15px 0;
+    border-top: 1px solid #333;
+  }
+
+  .mixer-channel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .mixer-channel label {
+    min-width: 80px;
+    font-size: 14px;
+    color: #fff;
+  }
+
+  .mixer-channel input[type="range"] {
+    flex: 1;
+    height: 8px;
+    -webkit-appearance: none;
+    background: #333;
+    border-radius: 4px;
+  }
+
+  .mixer-channel input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #00ff00;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .volume-value {
+    min-width: 40px;
+    font-size: 12px;
+    color: #888;
+    text-align: right;
+  }
+
+  .preview-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  /* Submit Options */
+  .submit-options {
+    background: #111;
+    border: 1px solid #333;
+    padding: 25px;
+    margin-bottom: 25px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #888;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  .form-group select,
+  .form-group input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+  }
+
+  .form-group select:focus,
+  .form-group input[type="text"]:focus {
+    border-color: #00ff00;
+    outline: none;
+  }
+
+  .battle-type-btns {
+    display: flex;
+    gap: 10px;
+  }
+
+  .type-btn {
+    flex: 1;
+    padding: 12px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    color: #888;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+
+  .type-btn:hover {
+    border-color: #666;
+  }
+
+  .type-btn.active {
+    border-color: #00ff00;
+    color: #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+  }
+
+  .terms-check {
+    padding-top: 10px;
+    border-top: 1px solid #333;
+  }
+
+  .terms-check label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #888;
+  }
+
+  .terms-check input[type="checkbox"] {
+    margin-top: 3px;
+  }
+
+  .terms-check a {
+    color: #00ff00;
+  }
+
+  /* Final Submit */
+  .final-submit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px;
+    background: #111;
+    border: 2px solid #333;
+  }
+
+  .submit-preview {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .preview-icon {
+    font-size: 36px;
+  }
+
+  .preview-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-duration {
+    font-size: 24px;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+  }
+
+  .preview-format {
+    font-size: 12px;
+    color: #888;
+  }
+
+  .submit-battle-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 35px;
+    background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+    border: 3px solid #00ff00;
+    color: #000;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .submit-battle-btn:disabled {
+    background: #333;
+    border-color: #333;
+    color: #666;
+    cursor: not-allowed;
+  }
+
+  .submit-battle-btn:not(:disabled):hover {
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+    transform: scale(1.02);
+  }
+
+  .submit-icon {
+    font-size: 20px;
+  }
+
+  /* Wizard Navigation */
+  .wizard-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-top: 2px solid #333;
+    background: #111;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 25px;
+    background: transparent;
+    border: 2px solid #333;
+    color: #888;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover {
+    border-color: #00ff00;
+    color: #00ff00;
+  }
+
+  .nav-next {
+    background: #00ff00;
+    border-color: #00ff00;
+    color: #000;
+  }
+
+  .nav-next:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+  }
+
+  .nav-dots {
+    display: flex;
+    gap: 10px;
+  }
+
+  .nav-dot {
+    width: 10px;
+    height: 10px;
+    background: #333;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-dot.active {
+    background: #00ff00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .quick-record-btn {
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+    }
+
+    .quick-record-text {
+      display: none;
+    }
+
+    .recording-wizard-modal {
+      max-height: 95vh;
+    }
+
+    .wizard-progress {
+      padding: 15px 10px;
+    }
+
+    .progress-line {
+      width: 20px;
+    }
+
+    .step-label {
+      font-size: 9px;
+    }
+
+    .wizard-content {
+      padding: 20px;
+    }
+
+    .beat-options {
+      grid-template-columns: 1fr;
+    }
+
+    .preset-beats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .final-submit {
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+
+  /* Retro button styles */
+  .btn-retro {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #fff;
+    border: 3px solid #000;
+    color: #000;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+    transition: all 0.1s;
+  }
+
+  .btn-retro:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+  }
+
+  .btn-retro-neon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #00ff00;
+    border: 3px solid #00ff00;
+    color: #000;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+    transition: all 0.2s;
+  }
+
+  .btn-retro-neon:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+  }
+
+  .neon-text {
+    color: #00ff00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+</style>
+
+<script>
+  // Recording Wizard State
+  const wizardState = {
+    currentStep: 1,
+    maxSteps: 4,
+    vocalBlob: null,
+    vocalUrl: null,
+    beatBlob: null,
+    beatUrl: null,
+    beatType: 'none',
+    mediaRecorder: null,
+    audioContext: null,
+    analyser: null,
+    recordingStartTime: 0,
+    timerInterval: null,
+    animationId: null,
+    isRecording: false
+  };
+
+  // DOM Elements
+  const quickRecordBtn = document.getElementById('quick-record-btn');
+  const wizardOverlay = document.getElementById('recording-wizard-overlay');
+  const wizardClose = document.getElementById('wizard-close');
+  const wizardPrev = document.getElementById('wizard-prev');
+  const wizardNext = document.getElementById('wizard-next');
+  const wizardRecordBtn = document.getElementById('wizard-record-btn');
+  const wizardStopBtn = document.getElementById('wizard-stop-btn');
+
+  // Open wizard
+  quickRecordBtn?.addEventListener('click', () => {
+    wizardOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  });
+
+  // Close wizard
+  wizardClose?.addEventListener('click', closeWizard);
+  wizardOverlay?.addEventListener('click', (e) => {
+    if (e.target === wizardOverlay) closeWizard();
+  });
+
+  function closeWizard() {
+    wizardOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+    stopRecordingIfActive();
+  }
+
+  // Navigation
+  wizardPrev?.addEventListener('click', () => navigateStep(-1));
+  wizardNext?.addEventListener('click', () => navigateStep(1));
+
+  // Nav dots
+  document.querySelectorAll('.nav-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      const step = parseInt(dot.dataset.step);
+      if (step < wizardState.currentStep || canProceedToStep(step)) {
+        goToStep(step);
+      }
+    });
+  });
+
+  function navigateStep(direction) {
+    const newStep = wizardState.currentStep + direction;
+    if (newStep >= 1 && newStep <= wizardState.maxSteps) {
+      if (direction > 0 && !canProceedFromCurrentStep()) {
+        return;
+      }
+      goToStep(newStep);
+    }
+  }
+
+  function canProceedFromCurrentStep() {
+    switch (wizardState.currentStep) {
+      case 1:
+        return wizardState.vocalBlob !== null;
+      case 2:
+        return true; // Beat is optional
+      case 3:
+        return true; // Preview step
+      case 4:
+        return document.getElementById('terms-agree')?.checked;
+      default:
+        return true;
+    }
+  }
+
+  function canProceedToStep(step) {
+    for (let i = wizardState.currentStep; i < step; i++) {
+      wizardState.currentStep = i;
+      if (!canProceedFromCurrentStep()) {
+        wizardState.currentStep = 1;
+        return false;
+      }
+    }
+    wizardState.currentStep = 1;
+    return true;
+  }
+
+  function goToStep(step) {
+    // Update state
+    wizardState.currentStep = step;
+
+    // Update step visibility
+    document.querySelectorAll('.wizard-step').forEach((el, i) => {
+      el.classList.toggle('active', i + 1 === step);
+    });
+
+    // Update progress
+    document.querySelectorAll('.progress-step').forEach((el, i) => {
+      const stepNum = i + 1;
+      el.classList.toggle('active', stepNum === step);
+      el.classList.toggle('completed', stepNum < step);
+    });
+
+    // Update nav dots
+    document.querySelectorAll('.nav-dot').forEach((el, i) => {
+      el.classList.toggle('active', i + 1 === step);
+    });
+
+    // Update nav buttons
+    wizardPrev.style.visibility = step === 1 ? 'hidden' : 'visible';
+
+    if (step === wizardState.maxSteps) {
+      wizardNext.style.display = 'none';
+    } else {
+      wizardNext.style.display = 'flex';
+      wizardNext.innerHTML = step === 3 ? 'Submit <span>▶</span>' : 'Next <span>▶</span>';
+    }
+
+    // Step-specific setup
+    if (step === 3) {
+      setupPreviewStep();
+    }
+    if (step === 4) {
+      setupSubmitStep();
+    }
+  }
+
+  // Recording functionality
+  wizardRecordBtn?.addEventListener('click', startRecording);
+  wizardStopBtn?.addEventListener('click', stopRecording);
+
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+
+      // Setup audio context
+      wizardState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      wizardState.analyser = wizardState.audioContext.createAnalyser();
+      wizardState.analyser.fftSize = 2048;
+
+      const microphone = wizardState.audioContext.createMediaStreamSource(stream);
+      microphone.connect(wizardState.analyser);
+
+      // Setup MediaRecorder
+      const chunks = [];
+      wizardState.mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+
+      wizardState.mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+
+      wizardState.mediaRecorder.onstop = () => {
+        wizardState.vocalBlob = new Blob(chunks, { type: 'audio/webm' });
+        wizardState.vocalUrl = URL.createObjectURL(wizardState.vocalBlob);
+        onRecordingComplete();
+      };
+
+      wizardState.mediaRecorder.start(100);
+      wizardState.recordingStartTime = Date.now();
+      wizardState.isRecording = true;
+
+      // Update UI
+      updateRecordingUI(true);
+      startVisualization();
+      startTimer();
+
+    } catch (error) {
+      console.error('Microphone error:', error);
+      alert('Cannot access microphone. Please grant permission.');
+    }
+  }
+
+  function stopRecording() {
+    if (wizardState.mediaRecorder && wizardState.mediaRecorder.state !== 'inactive') {
+      wizardState.mediaRecorder.stop();
+      wizardState.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      wizardState.isRecording = false;
+
+      clearInterval(wizardState.timerInterval);
+      cancelAnimationFrame(wizardState.animationId);
+
+      if (wizardState.audioContext) {
+        wizardState.audioContext.close();
+      }
+    }
+  }
+
+  function stopRecordingIfActive() {
+    if (wizardState.isRecording) {
+      stopRecording();
+    }
+  }
+
+  function updateRecordingUI(isRecording) {
+    const statusLight = document.querySelector('#wizard-rec-status .status-light');
+    const statusText = document.querySelector('#wizard-rec-status .status-text');
+    const waveformMsg = document.getElementById('wizard-waveform-msg');
+
+    if (isRecording) {
+      statusLight.classList.add('recording');
+      statusText.textContent = 'RECORDING';
+      waveformMsg.classList.add('hidden');
+      wizardRecordBtn.style.display = 'none';
+      wizardStopBtn.style.display = 'flex';
+    } else {
+      statusLight.classList.remove('recording');
+      wizardStopBtn.style.display = 'none';
+    }
+  }
+
+  function onRecordingComplete() {
+    const statusLight = document.querySelector('#wizard-rec-status .status-light');
+    const statusText = document.querySelector('#wizard-rec-status .status-text');
+    const playbackSection = document.getElementById('wizard-playback');
+    const audioElement = document.getElementById('wizard-audio');
+
+    statusLight.classList.add('complete');
+    statusText.textContent = 'COMPLETE';
+
+    // Show playback
+    playbackSection.style.display = 'block';
+    audioElement.src = wizardState.vocalUrl;
+
+    // Enable next
+    wizardNext.disabled = false;
+  }
+
+  function startTimer() {
+    const timerEl = document.getElementById('wizard-rec-timer');
+    const maxDuration = 120; // 2 minutes
+
+    wizardState.timerInterval = setInterval(() => {
+      const elapsed = Date.now() - wizardState.recordingStartTime;
+      const seconds = Math.floor(elapsed / 1000);
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+
+      timerEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      if (seconds >= maxDuration) {
+        stopRecording();
+      }
+    }, 100);
+  }
+
+  function startVisualization() {
+    const canvas = document.getElementById('wizard-waveform');
+    const ctx = canvas.getContext('2d');
+    const analyser = wizardState.analyser;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    const levelBar = document.getElementById('wizard-level-bar');
+
+    function draw() {
+      if (!wizardState.isRecording) return;
+      wizardState.animationId = requestAnimationFrame(draw);
+
+      analyser.getByteTimeDomainData(dataArray);
+
+      // Clear
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw waveform
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#00ff00';
+      ctx.shadowColor = '#00ff00';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+
+      const sliceWidth = canvas.width / bufferLength;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = v * canvas.height / 2;
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+
+        x += sliceWidth;
+      }
+
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+
+      // Level meter
+      analyser.getByteFrequencyData(dataArray);
+      const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+      const percentage = (average / 255) * 100;
+      levelBar.style.width = percentage + '%';
+      levelBar.style.background = percentage > 80 ? '#ff0000' : percentage > 50 ? '#00ff00' : '#ffff00';
+    }
+
+    draw();
+  }
+
+  // Beat selection
+  document.querySelectorAll('.beat-option-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.beat-option-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      wizardState.beatType = card.dataset.beat;
+
+      // Show/hide sections
+      document.getElementById('preset-beats-section').style.display =
+        card.dataset.beat === 'preset' ? 'block' : 'none';
+      document.getElementById('upload-beat-section').style.display =
+        card.dataset.beat === 'upload' ? 'block' : 'none';
+
+      if (card.dataset.beat === 'sampler') {
+        window.open('/sampler', '_blank');
+      }
+    });
+  });
+
+  // Re-record button
+  document.getElementById('wizard-rerecord-btn')?.addEventListener('click', () => {
+    wizardState.vocalBlob = null;
+    wizardState.vocalUrl = null;
+    document.getElementById('wizard-playback').style.display = 'none';
+    document.getElementById('wizard-waveform-msg').classList.remove('hidden');
+    wizardRecordBtn.style.display = 'flex';
+    document.querySelector('#wizard-rec-status .status-light').classList.remove('complete');
+    document.querySelector('#wizard-rec-status .status-text').textContent = 'READY';
+    document.getElementById('wizard-rec-timer').textContent = '00:00';
+  });
+
+  function setupPreviewStep() {
+    // Setup audio preview with vocals + beat
+    const beatMixer = document.getElementById('beat-mixer');
+    beatMixer.style.display = wizardState.beatType !== 'none' ? 'flex' : 'none';
+  }
+
+  function setupSubmitStep() {
+    // Calculate duration
+    if (wizardState.vocalUrl) {
+      const audio = new Audio(wizardState.vocalUrl);
+      audio.addEventListener('loadedmetadata', () => {
+        const mins = Math.floor(audio.duration / 60);
+        const secs = Math.floor(audio.duration % 60);
+        document.getElementById('final-duration').textContent =
+          `${mins}:${String(secs).padStart(2, '0')}`;
+      });
+    }
+  }
+
+  // Terms checkbox
+  document.getElementById('terms-agree')?.addEventListener('change', (e) => {
+    document.getElementById('submit-battle-btn').disabled = !e.target.checked;
+  });
+
+  // Submit button
+  document.getElementById('submit-battle-btn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('submit-battle-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="submit-icon">⏳</span><span class="submit-text">UPLOADING...</span>';
+
+    try {
+      // Step 1: Upload audio file
+      const formData = new FormData();
+      formData.append('audio', wizardState.vocalBlob, 'recording.webm');
+      formData.append('battleId', document.getElementById('battle-select').value || 'new');
+      formData.append('rapperName', document.getElementById('rapper-name').value || 'Anonymous');
+      formData.append('category', document.getElementById('battle-category')?.value || 'freestyle');
+
+      const uploadResponse = await fetch('/api/audio/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const uploadResult = await uploadResponse.json();
+
+      if (!uploadResponse.ok || !uploadResult.success) {
+        throw new Error(uploadResult.error || 'Upload failed');
+      }
+
+      btn.innerHTML = '<span class="submit-icon">⏳</span><span class="submit-text">SUBMITTING...</span>';
+
+      // Step 2: Submit to battle (if not a new battle that was already created)
+      const battleId = uploadResult.battle.id;
+      const audioUrl = uploadResult.audio.url;
+
+      // Get wallet address from localStorage or use anonymous
+      const walletAddress = localStorage.getItem('connectedWallet') || 'anonymous_' + Date.now();
+
+      // Only submit entry if joining existing battle
+      if (!uploadResult.battle.isNew) {
+        const submitResponse = await fetch('/api/battles/submit-entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            battleId: battleId,
+            userWallet: walletAddress,
+            round: 1,
+            audioUrl: audioUrl,
+            roundType: 'opener'
+          })
+        });
+
+        const submitResult = await submitResponse.json();
+
+        if (!submitResponse.ok && !submitResult.success) {
+          console.warn('Battle entry submission warning:', submitResult.error);
+          // Continue anyway since audio was uploaded
+        }
+      }
+
+      // Success!
+      btn.innerHTML = '<span class="submit-icon">✓</span><span class="submit-text">SUBMITTED!</span>';
+      btn.style.background = '#00ff00';
+
+      // Store battle info for redirect
+      localStorage.setItem('lastBattleId', battleId);
+      localStorage.setItem('lastAudioUrl', audioUrl);
+
+      setTimeout(() => {
+        closeWizard();
+        window.location.href = `/rap-battle?battle=${battleId}`;
+      }, 1500);
+
+    } catch (error) {
+      console.error('Submit error:', error);
+      btn.innerHTML = '<span class="submit-icon">✗</span><span class="submit-text">ERROR - TRY AGAIN</span>';
+      btn.style.background = '#ff0000';
+      btn.disabled = false;
+
+      setTimeout(() => {
+        btn.innerHTML = '<span class="submit-icon">🚀</span><span class="submit-text">SUBMIT TO BATTLE</span>';
+        btn.style.background = '';
+      }, 2000);
+    }
+  });
+</script>

@@ -1,0 +1,23 @@
+---
+/**
+ * beat-studio.astro
+ * Mobile-first beat selection, modification, and recording page
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MobileBeatStudio from '../components/MobileBeatStudio.astro';
+---
+
+<BaseLayout title="Beat Studio | Purple Point" activeSection="music">
+  <MobileBeatStudio standalone={true} />
+</BaseLayout>
+
+<style is:global>
+  /* Override layout padding for full-screen mobile experience */
+  main {
+    padding: 0 !important;
+  }
+
+  .mobile-beat-studio {
+    min-height: calc(100vh - 60px);
+  }
+</style>

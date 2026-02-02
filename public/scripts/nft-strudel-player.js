@@ -18,6 +18,33 @@ class NFTStrudelPlayer {
     this.isPlaying = false;
     this.strudelReady = false;
     this.remixedPattern = null;
+    this.dbReady = false;
+    this.dbInitPromise = null;
+  }
+
+  /**
+   * Wait for localDB to be available
+   */
+  async waitForDB() {
+    if (this.dbReady && window.localDB?.db) return true;
+
+    if (this.dbInitPromise) return this.dbInitPromise;
+
+    this.dbInitPromise = new Promise(async (resolve) => {
+      let attempts = 0;
+      while (!window.localDB?.db && attempts < 100) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+      }
+
+      this.dbReady = !!window.localDB?.db;
+      if (!this.dbReady) {
+        console.warn('⚠️ LocalDB not available after waiting');
+      }
+      resolve(this.dbReady);
+    });
+
+    return this.dbInitPromise;
   }
 
   /**
@@ -45,7 +72,9 @@ class NFTStrudelPlayer {
    * Load NFT from IndexedDB
    */
   async loadNFT(nftId) {
-    if (!window.localDB) {
+    // Wait for DB to be available
+    const dbReady = await this.waitForDB();
+    if (!dbReady) {
       console.error('LocalDB not available');
       return null;
     }
@@ -58,7 +87,11 @@ class NFTStrudelPlayer {
       }
 
       this.currentNFT = nft;
-      console.log(`🎵 Loaded NFT: ${nft.name}`);
+
+      // Log metadata format for debugging
+      const hasWBMeta = !!nft.metadata?.worldbridger_metadata;
+      console.log(`🎵 Loaded NFT: ${nft.name} (${hasWBMeta ? 'WorldBridger format' : 'Legacy format'})`);
+
       return nft;
     } catch (error) {
       console.error('Error loading NFT:', error);
@@ -68,17 +101,48 @@ class NFTStrudelPlayer {
 
   /**
    * Play NFT music
+   * Supports both legacy metadata and new worldbridger_metadata format
    */
   async playNFT(nftId) {
     const nft = await this.loadNFT(nftId);
     if (!nft) return false;
 
-    // Check if NFT has Strudel pattern
+    // Check for WorldBridger metadata format (new)
+    const wbMeta = nft.metadata?.worldbridger_metadata;
+    if (wbMeta) {
+      // Check for Strudel pattern in worldbridger format
+      if (wbMeta.beat?.strudel_pattern) {
+        console.log('🎵 Playing WorldBridger NFT with Strudel pattern');
+        return this.playStrudelPattern(wbMeta.beat.strudel_pattern);
+      }
+
+      // Check for audio in IPFS storage
+      if (wbMeta.storage?.audio_ipfs) {
+        console.log('🎵 Playing WorldBridger NFT from IPFS');
+        const ipfsUrl = this.resolveIPFSUrl(wbMeta.storage.audio_ipfs);
+        return this.playAudioURL(ipfsUrl);
+      }
+
+      // Check for beat in IPFS storage
+      if (wbMeta.storage?.beat_ipfs) {
+        console.log('🎵 Playing WorldBridger beat from IPFS');
+        const ipfsUrl = this.resolveIPFSUrl(wbMeta.storage.beat_ipfs);
+        return this.playAudioURL(ipfsUrl);
+      }
+
+      // Check bucket reference
+      if (wbMeta.storage?.bucket_ref) {
+        console.log('🎵 Playing WorldBridger NFT from bucket');
+        return this.playAudioURL(wbMeta.storage.bucket_ref);
+      }
+    }
+
+    // Legacy format: Check if NFT has Strudel pattern
     if (nft.metadata?.strudelPattern) {
       return this.playStrudelPattern(nft.metadata.strudelPattern);
     }
 
-    // Check if NFT has music URL
+    // Legacy format: Check if NFT has music URL
     if (nft.metadata?.animation_url || nft.metadata?.audio_url) {
       const url = nft.metadata.animation_url || nft.metadata.audio_url;
       return this.playAudioURL(url);
@@ -94,6 +158,32 @@ class NFTStrudelPlayer {
 
     console.warn('NFT has no playable music');
     return false;
+  }
+
+  /**
+   * Resolve IPFS URL to gateway URL
+   */
+  resolveIPFSUrl(ipfsRef) {
+    if (!ipfsRef) return null;
+
+    // Already a full URL
+    if (ipfsRef.startsWith('http://') || ipfsRef.startsWith('https://')) {
+      return ipfsRef;
+    }
+
+    // IPFS hash or ipfs:// URL
+    const hash = ipfsRef.replace('ipfs://', '').replace('/ipfs/', '');
+
+    // Use multiple gateways for reliability
+    const gateways = [
+      `https://ipfs.io/ipfs/${hash}`,
+      `https://gateway.pinata.cloud/ipfs/${hash}`,
+      `https://cloudflare-ipfs.com/ipfs/${hash}`,
+      `https://dweb.link/ipfs/${hash}`
+    ];
+
+    // Return first gateway (could implement fallback logic)
+    return gateways[0];
   }
 
   /**
@@ -282,10 +372,50 @@ class NFTStrudelPlayer {
 
   /**
    * Generate Strudel pattern from NFT metadata
+   * Supports both legacy and worldbridger_metadata formats
    */
   generatePatternFromNFT(nft) {
-    // Extract attributes that can be converted to music
-    const attributes = nft.metadata?.attributes || [];
+    if (!nft?.metadata) return null;
+
+    const meta = nft.metadata;
+
+    // Check WorldBridger metadata first (new format)
+    const wbMeta = meta.worldbridger_metadata;
+    if (wbMeta) {
+      // If the NFT already has a Strudel pattern, return it
+      if (wbMeta.beat?.strudel_pattern) {
+        return wbMeta.beat.strudel_pattern;
+      }
+
+      // Generate pattern from beat info
+      if (wbMeta.beat) {
+        const bpm = wbMeta.customizations?.bpm || wbMeta.beat.original_bpm || 120;
+        const beatName = wbMeta.beat.name || 'custom';
+
+        // Use beat ID to generate genre-appropriate pattern
+        const beatId = wbMeta.beat.id || '';
+        let basePattern;
+
+        if (beatId.includes('trap') || beatId.includes('808')) {
+          basePattern = `stack(s("bd*2 ~ bd ~"), s("~ sd ~ sd"), s("hh*8")).cpm(${bpm / 4})`;
+        } else if (beatId.includes('boom') || beatId.includes('bap')) {
+          basePattern = `stack(s("bd ~ bd sd"), s("hh*4")).cpm(${bpm / 4})`;
+        } else if (beatId.includes('drill')) {
+          basePattern = `stack(s("bd ~ ~ bd ~ ~ bd ~"), s("~ ~ sd ~ ~ sd ~ ~"), s("hh*16")).cpm(${bpm / 4})`;
+        } else if (beatId.includes('reggae') || beatId.includes('dancehall')) {
+          basePattern = `stack(s("bd ~ bd ~"), s("~ sd ~ sd"), s("~ hh ~ hh")).cpm(${bpm / 4})`;
+        } else if (beatId.includes('afro')) {
+          basePattern = `stack(s("bd bd ~ bd"), s("~ ~ sd ~"), s("hh hh hh hh")).cpm(${bpm / 4})`;
+        } else {
+          basePattern = `stack(s("bd sd bd sd"), s("hh*8")).cpm(${bpm / 4})`;
+        }
+
+        return basePattern;
+      }
+    }
+
+    // Legacy format: Extract attributes
+    const attributes = meta.attributes || [];
 
     // Try to find music-related attributes
     const bpm = this.findAttribute(attributes, ['bpm', 'tempo', 'beats_per_minute']);
@@ -305,17 +435,36 @@ class NFTStrudelPlayer {
 
     // Fallback: Generate basic pattern
     const baseBPM = bpm || 120;
-    return `s("bd sd, hh*8").cpm(${baseBPM}).room(0.2)`;
+    return `s("bd sd, hh*8").cpm(${baseBPM / 4}).room(0.2)`;
   }
 
   /**
    * Extract BPM from NFT metadata
+   * Supports both legacy and worldbridger_metadata formats
    */
   extractBPMFromNFT() {
-    if (!this.currentNFT?.metadata?.attributes) return 120;
+    if (!this.currentNFT?.metadata) return 120;
+
+    const meta = this.currentNFT.metadata;
+
+    // Check WorldBridger metadata first
+    const wbMeta = meta.worldbridger_metadata;
+    if (wbMeta) {
+      // Customized BPM takes priority
+      if (wbMeta.customizations?.bpm) {
+        return parseInt(wbMeta.customizations.bpm) || 120;
+      }
+      // Original beat BPM
+      if (wbMeta.beat?.original_bpm) {
+        return parseInt(wbMeta.beat.original_bpm) || 120;
+      }
+    }
+
+    // Legacy format: check attributes
+    if (!meta.attributes) return 120;
 
     const bpm = this.findAttribute(
-      this.currentNFT.metadata.attributes,
+      meta.attributes,
       ['bpm', 'tempo', 'beats_per_minute']
     );
 
@@ -339,44 +488,112 @@ class NFTStrudelPlayer {
    * Get NFT from IndexedDB
    */
   async getNFT(nftId) {
-    const transaction = window.localDB.db.transaction(['nfts'], 'readonly');
-    const store = transaction.objectStore('nfts');
+    // Wait for DB to be ready
+    const dbReady = await this.waitForDB();
+    if (!dbReady || !window.localDB?.db) {
+      console.warn('⚠️ Cannot get NFT: LocalDB not available');
+      return null;
+    }
 
-    return new Promise((resolve) => {
-      const request = store.get(nftId);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => resolve(null);
+    try {
+      const transaction = window.localDB.db.transaction(['nfts'], 'readonly');
+      const store = transaction.objectStore('nfts');
+
+      return new Promise((resolve) => {
+        const request = store.get(nftId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => resolve(null);
+      });
+    } catch (error) {
+      console.error('Error getting NFT:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Check if an NFT has playable music content
+   * Supports both legacy and worldbridger_metadata formats
+   */
+  isPlayableNFT(nft) {
+    if (!nft?.metadata) return false;
+
+    const meta = nft.metadata;
+
+    // Check WorldBridger metadata format (new)
+    const wbMeta = meta.worldbridger_metadata;
+    if (wbMeta) {
+      // Has Strudel pattern
+      if (wbMeta.beat?.strudel_pattern) return true;
+
+      // Has audio storage references
+      if (wbMeta.storage?.audio_ipfs) return true;
+      if (wbMeta.storage?.beat_ipfs) return true;
+      if (wbMeta.storage?.bucket_ref) return true;
+
+      // Is a battle recording type
+      if (wbMeta.type === 'battle_recording') return true;
+    }
+
+    // Legacy format checks
+    if (meta.animation_url) return true;
+    if (meta.audio_url) return true;
+    if (meta.strudelPattern) return true;
+
+    // Check attributes for music-related traits
+    const attributes = meta.attributes || [];
+    const hasMusicTrait = attributes.some(attr => {
+      const traitType = (attr.trait_type || '').toLowerCase();
+      return traitType === 'music' ||
+             traitType === 'sound' ||
+             traitType === 'audio' ||
+             traitType === 'beat' ||
+             traitType === 'strudel';
     });
+    if (hasMusicTrait) return true;
+
+    return false;
   }
 
   /**
    * Get all music NFTs for user
+   * Supports both legacy and worldbridger_metadata formats
    */
   async getUserMusicNFTs() {
     const wallet = window.walletManager?.connectedWallet;
-    if (!wallet) return [];
+    if (!wallet) {
+      console.warn('⚠️ Cannot get music NFTs: No wallet connected');
+      return [];
+    }
 
-    const transaction = window.localDB.db.transaction(['nfts'], 'readonly');
-    const store = transaction.objectStore('nfts');
-    const index = store.index('ownerWallet');
+    // Wait for DB to be ready
+    const dbReady = await this.waitForDB();
+    if (!dbReady || !window.localDB?.db) {
+      console.warn('⚠️ Cannot get music NFTs: LocalDB not available');
+      return [];
+    }
 
-    return new Promise((resolve) => {
-      const request = index.getAll(wallet);
-      request.onsuccess = () => {
-        // Filter for music NFTs only
-        const musicNFTs = request.result.filter(nft =>
-          nft.metadata?.animation_url ||
-          nft.metadata?.audio_url ||
-          nft.metadata?.strudelPattern ||
-          (nft.metadata?.attributes || []).some(attr =>
-            attr.trait_type?.toLowerCase() === 'music' ||
-            attr.trait_type?.toLowerCase() === 'sound'
-          )
-        );
-        resolve(musicNFTs);
-      };
-      request.onerror = () => resolve([]);
-    });
+    try {
+      const transaction = window.localDB.db.transaction(['nfts'], 'readonly');
+      const store = transaction.objectStore('nfts');
+      const index = store.index('ownerWallet');
+
+      return new Promise((resolve) => {
+        const request = index.getAll(wallet);
+        request.onsuccess = () => {
+          // Filter for music NFTs only using the new checker
+          const musicNFTs = (request.result || []).filter(nft => this.isPlayableNFT(nft));
+          console.log(`🎵 Found ${musicNFTs.length} playable music NFTs out of ${request.result?.length || 0} total`);
+          resolve(musicNFTs);
+        };
+        request.onerror = (error) => {
+          console.error('Error fetching user NFTs:', error);
+          resolve([]);
+        };
+      });
+    } catch (error) {
+      console.error('Error in getUserMusicNFTs:', error);
+      return [];
+    }
   }
 
   /**
@@ -583,13 +800,25 @@ class NFTStrudelPlayer {
     `;
 
     if (nfts.length === 0) {
-      html += '<p class="no-nfts">No music NFTs found</p>';
+      html += '<p class="no-nfts">No music NFTs found. Create battle recordings to see them here!</p>';
     } else {
       nfts.forEach(nft => {
+        // Use standardized data for display
+        const musicData = this.getStandardizedMusicData(nft);
+        const sourceIcon = musicData?.strudelPattern ? '✨' :
+                          musicData?.audioUrl ? '🎧' : '🎵';
+        const formatBadge = musicData?.isWorldBridger ? 'WB' : '';
+
         html += `
           <div class="nft-card" data-nft-id="${nft.id}">
-            <img src="${nft.metadata?.image || '/images/default-nft.png'}" alt="${nft.name}" />
-            <h3>${nft.name}</h3>
+            <img src="${musicData?.image || '/images/default-nft.png'}" alt="${nft.name}" />
+            <div class="nft-card-info">
+              <h3>${sourceIcon} ${nft.name}</h3>
+              <div class="nft-card-meta">
+                <span class="nft-bpm">${musicData?.bpm || '?'} BPM</span>
+                ${formatBadge ? `<span class="nft-format-badge">${formatBadge}</span>` : ''}
+              </div>
+            </div>
             <button class="play-nft-btn" data-nft-id="${nft.id}">▶ Play</button>
           </div>
         `;
@@ -610,6 +839,145 @@ class NFTStrudelPlayer {
         await this.playNFT(nftId);
       });
     });
+  }
+
+  /**
+   * Get standardized music data from any NFT format
+   * Returns a unified format for the sampler to use
+   */
+  getStandardizedMusicData(nft) {
+    if (!nft?.metadata) return null;
+
+    const meta = nft.metadata;
+    const wbMeta = meta.worldbridger_metadata;
+
+    // Build standardized result
+    const result = {
+      id: nft.id,
+      name: nft.name,
+      image: meta.image || '/images/default-nft.png',
+      type: 'unknown',
+      source: null,
+      strudelPattern: null,
+      audioUrl: null,
+      bpm: 120,
+      genre: 'unknown',
+      duration: null,
+      isWorldBridger: false
+    };
+
+    // WorldBridger format
+    if (wbMeta) {
+      result.isWorldBridger = true;
+      result.type = wbMeta.type || 'battle_recording';
+      result.bpm = wbMeta.customizations?.bpm || wbMeta.beat?.original_bpm || 120;
+
+      // Strudel pattern
+      if (wbMeta.beat?.strudel_pattern) {
+        result.strudelPattern = wbMeta.beat.strudel_pattern;
+        result.source = 'strudel';
+      }
+
+      // Beat info
+      if (wbMeta.beat?.name) {
+        result.genre = wbMeta.beat.name;
+      }
+
+      // Storage references
+      if (wbMeta.storage) {
+        if (wbMeta.storage.audio_ipfs) {
+          result.audioUrl = this.resolveIPFSUrl(wbMeta.storage.audio_ipfs);
+          result.source = result.source || 'ipfs';
+        }
+        if (wbMeta.storage.beat_ipfs && !result.audioUrl) {
+          result.audioUrl = this.resolveIPFSUrl(wbMeta.storage.beat_ipfs);
+          result.source = result.source || 'ipfs';
+        }
+        if (wbMeta.storage.bucket_ref && !result.audioUrl) {
+          result.audioUrl = wbMeta.storage.bucket_ref;
+          result.source = result.source || 'bucket';
+        }
+      }
+
+      // Recording info
+      if (wbMeta.recording) {
+        result.duration = wbMeta.recording.duration_seconds;
+      }
+
+      // Vector data available
+      if (wbMeta.vector_data) {
+        result.hasVectorData = true;
+        result.waveformPoints = wbMeta.vector_data.waveform_points;
+        result.beatMarkers = wbMeta.vector_data.beat_markers;
+      }
+    } else {
+      // Legacy format
+      if (meta.strudelPattern) {
+        result.strudelPattern = meta.strudelPattern;
+        result.source = 'strudel';
+      }
+
+      if (meta.animation_url) {
+        result.audioUrl = meta.animation_url;
+        result.source = 'url';
+      } else if (meta.audio_url) {
+        result.audioUrl = meta.audio_url;
+        result.source = 'url';
+      }
+
+      // Try to get BPM from attributes
+      const attributes = meta.attributes || [];
+      const bpmAttr = attributes.find(a =>
+        ['bpm', 'tempo', 'beats_per_minute'].includes((a.trait_type || '').toLowerCase())
+      );
+      if (bpmAttr) {
+        result.bpm = parseInt(bpmAttr.value) || 120;
+      }
+
+      const genreAttr = attributes.find(a =>
+        ['genre', 'style', 'category'].includes((a.trait_type || '').toLowerCase())
+      );
+      if (genreAttr) {
+        result.genre = genreAttr.value;
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Load metadata from a WorldBridger NFT or sampler sequence
+   * This is used by the recording pages
+   */
+  loadFromMetadata(metadata) {
+    if (!metadata) return false;
+
+    // Handle worldbridger_metadata format
+    if (metadata.worldbridger_metadata) {
+      const wbMeta = metadata.worldbridger_metadata;
+      if (wbMeta.beat?.strudel_pattern) {
+        this.currentPattern = wbMeta.beat.strudel_pattern;
+        console.log('✅ Loaded Strudel pattern from WorldBridger metadata');
+        return true;
+      }
+    }
+
+    // Handle direct Strudel pattern
+    if (metadata.strudelPattern) {
+      this.currentPattern = metadata.strudelPattern;
+      console.log('✅ Loaded Strudel pattern from metadata');
+      return true;
+    }
+
+    // Handle sequence data (from sampler)
+    if (metadata.combinedStrudelPattern) {
+      this.currentPattern = metadata.combinedStrudelPattern;
+      console.log('✅ Loaded combined Strudel pattern from sampler sequence');
+      return true;
+    }
+
+    console.warn('⚠️ No playable pattern found in metadata');
+    return false;
   }
 }
 

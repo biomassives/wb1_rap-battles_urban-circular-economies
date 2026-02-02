@@ -1,0 +1,1887 @@
+---
+/**
+ * MobileBeatStudio.astro
+ * Mobile-first beat selection, modification, and recording workflow
+ *
+ * Features:
+ * - Pre-made beats for various styles (Trap, Boom Bap, Drill, Reggae, etc.)
+ * - Simple beat modification (BPM, patterns, samples)
+ * - Record vocals over beats with sync
+ * - NFT metadata generation for vector/bitmap/IPFS references
+ */
+
+interface Props {
+  standalone?: boolean;
+}
+
+const { standalone = false } = Astro.props;
+---
+
+<div class="mobile-beat-studio" id="mobile-beat-studio">
+
+  <!-- Header with mode toggle -->
+  <div class="studio-header">
+    <h2 class="studio-title">
+      <span class="title-icon">🎵</span>
+      Beat Studio
+    </h2>
+    <div class="mode-pills">
+      <button class="mode-pill active" data-mode="beats">Beats</button>
+      <button class="mode-pill" data-mode="record">Record</button>
+      <button class="mode-pill" data-mode="mix">Mix</button>
+    </div>
+  </div>
+
+  <!-- Beat Selection Section -->
+  <section class="studio-section" id="beats-section">
+
+    <!-- Genre Selector -->
+    <div class="genre-selector">
+      <button class="genre-btn active" data-genre="all">All</button>
+      <button class="genre-btn" data-genre="trap">Trap</button>
+      <button class="genre-btn" data-genre="boombap">Boom Bap</button>
+      <button class="genre-btn" data-genre="drill">Drill</button>
+      <button class="genre-btn" data-genre="reggae">Reggae</button>
+      <button class="genre-btn" data-genre="afro">Afro</button>
+      <button class="genre-btn" data-genre="lofi">Lo-Fi</button>
+    </div>
+
+    <!-- Beat Cards Grid -->
+    <div class="beats-grid" id="beats-grid">
+      <!-- Populated by JavaScript -->
+    </div>
+
+    <!-- Currently Selected Beat -->
+    <div class="selected-beat-bar" id="selected-beat-bar" style="display: none;">
+      <div class="selected-info">
+        <span class="selected-icon">🎵</span>
+        <span class="selected-name" id="selected-beat-name">-</span>
+        <span class="selected-bpm" id="selected-beat-bpm">- BPM</span>
+      </div>
+      <div class="selected-actions">
+        <button class="action-btn play-btn" id="play-beat-btn">
+          <span class="play-icon">▶</span>
+        </button>
+        <button class="action-btn customize-btn" id="customize-beat-btn">
+          <span>🎛️</span> Customize
+        </button>
+        <button class="action-btn record-btn" id="record-over-btn">
+          <span>🎤</span> Record
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Beat Customization Section -->
+  <section class="studio-section" id="customize-section" style="display: none;">
+
+    <div class="section-header">
+      <button class="back-btn" id="back-to-beats">
+        <span>◀</span> Back
+      </button>
+      <h3>Customize Beat</h3>
+    </div>
+
+    <!-- BPM Control -->
+    <div class="control-group">
+      <label>BPM (Tempo)</label>
+      <div class="bpm-control">
+        <button class="bpm-btn" id="bpm-down">−</button>
+        <input type="number" id="bpm-input" value="90" min="60" max="180" />
+        <button class="bpm-btn" id="bpm-up">+</button>
+      </div>
+      <div class="bpm-presets">
+        <button class="preset-btn" data-bpm="70">Slow</button>
+        <button class="preset-btn" data-bpm="90">Normal</button>
+        <button class="preset-btn" data-bpm="120">Fast</button>
+        <button class="preset-btn" data-bpm="140">Hype</button>
+      </div>
+    </div>
+
+    <!-- Pattern Toggles -->
+    <div class="control-group">
+      <label>Drum Pattern</label>
+      <div class="pattern-toggles">
+        <button class="pattern-toggle active" data-pattern="kick" title="Kick">🥁</button>
+        <button class="pattern-toggle active" data-pattern="snare" title="Snare">🪘</button>
+        <button class="pattern-toggle active" data-pattern="hihat" title="Hi-Hat">🎩</button>
+        <button class="pattern-toggle" data-pattern="clap" title="Clap">👏</button>
+        <button class="pattern-toggle" data-pattern="808" title="808 Bass">🔊</button>
+        <button class="pattern-toggle" data-pattern="perc" title="Percussion">🎶</button>
+      </div>
+    </div>
+
+    <!-- Sample Library -->
+    <div class="control-group">
+      <label>Add Samples</label>
+      <div class="sample-library">
+        <div class="sample-category">
+          <span class="cat-label">FX</span>
+          <div class="sample-btns">
+            <button class="sample-btn" data-sample="riser">Riser</button>
+            <button class="sample-btn" data-sample="drop">Drop</button>
+            <button class="sample-btn" data-sample="scratch">Scratch</button>
+            <button class="sample-btn" data-sample="airhorn">Air Horn</button>
+          </div>
+        </div>
+        <div class="sample-category">
+          <span class="cat-label">Vocals</span>
+          <div class="sample-btns">
+            <button class="sample-btn" data-sample="yeah">Yeah!</button>
+            <button class="sample-btn" data-sample="uh">Uh!</button>
+            <button class="sample-btn" data-sample="lets-go">Let's Go!</button>
+            <button class="sample-btn" data-sample="ayy">Ayy!</button>
+          </div>
+        </div>
+        <div class="sample-category">
+          <span class="cat-label">Melody</span>
+          <div class="sample-btns">
+            <button class="sample-btn" data-sample="piano">Piano</button>
+            <button class="sample-btn" data-sample="synth">Synth</button>
+            <button class="sample-btn" data-sample="guitar">Guitar</button>
+            <button class="sample-btn" data-sample="bass">Bass</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Added Samples List -->
+    <div class="control-group" id="added-samples-group" style="display: none;">
+      <label>Added Samples</label>
+      <div class="added-samples" id="added-samples-list">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- Preview & Apply -->
+    <div class="customize-actions">
+      <button class="btn-secondary" id="reset-customization">Reset</button>
+      <button class="btn-primary" id="apply-customization">
+        <span>▶</span> Preview Changes
+      </button>
+    </div>
+  </section>
+
+  <!-- Recording Section -->
+  <section class="studio-section" id="record-section" style="display: none;">
+
+    <div class="section-header">
+      <button class="back-btn" id="back-from-record">
+        <span>◀</span> Back
+      </button>
+      <h3>Record Over Beat</h3>
+    </div>
+
+    <!-- Beat + Recording Sync Display -->
+    <div class="sync-display">
+      <div class="beat-track">
+        <span class="track-label">🎵 Beat</span>
+        <div class="track-waveform" id="beat-waveform">
+          <canvas id="beat-canvas" width="300" height="50"></canvas>
+        </div>
+        <input type="range" id="beat-volume" min="0" max="100" value="70" class="volume-slider" />
+      </div>
+      <div class="vocal-track">
+        <span class="track-label">🎤 Vocals</span>
+        <div class="track-waveform" id="vocal-waveform">
+          <canvas id="vocal-canvas" width="300" height="50"></canvas>
+        </div>
+        <input type="range" id="vocal-volume" min="0" max="100" value="100" class="volume-slider" />
+      </div>
+    </div>
+
+    <!-- Recording Timer -->
+    <div class="recording-timer">
+      <div class="timer-display" id="record-timer">00:00</div>
+      <div class="timer-max">/ 02:00 max</div>
+    </div>
+
+    <!-- Level Meter -->
+    <div class="input-level">
+      <span class="level-label">Input:</span>
+      <div class="level-track">
+        <div class="level-fill" id="input-level-fill"></div>
+      </div>
+    </div>
+
+    <!-- Big Record Controls -->
+    <div class="record-controls">
+      <button class="big-btn record-btn" id="start-recording">
+        <span class="btn-icon">⬤</span>
+        <span class="btn-text">TAP TO RECORD</span>
+      </button>
+      <button class="big-btn stop-btn" id="stop-recording" style="display: none;">
+        <span class="btn-icon">⬛</span>
+        <span class="btn-text">STOP</span>
+      </button>
+    </div>
+
+    <!-- Playback Controls -->
+    <div class="playback-controls" id="playback-controls" style="display: none;">
+      <audio id="recorded-audio" controls></audio>
+      <div class="playback-actions">
+        <button class="action-btn" id="re-record">
+          <span>🔄</span> Re-record
+        </button>
+        <button class="action-btn primary" id="go-to-mix">
+          <span>✓</span> Continue to Mix
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mix & Export Section -->
+  <section class="studio-section" id="mix-section" style="display: none;">
+
+    <div class="section-header">
+      <button class="back-btn" id="back-from-mix">
+        <span>◀</span> Back
+      </button>
+      <h3>Mix & Export</h3>
+    </div>
+
+    <!-- Combined Preview -->
+    <div class="mix-preview">
+      <canvas id="mix-waveform" width="350" height="80"></canvas>
+      <div class="mix-controls">
+        <button class="play-btn" id="mix-play-btn">
+          <span>▶</span>
+        </button>
+        <div class="progress-bar">
+          <div class="progress-fill" id="mix-progress"></div>
+        </div>
+        <span class="time-display" id="mix-time">0:00</span>
+      </div>
+    </div>
+
+    <!-- Mix Sliders -->
+    <div class="mix-sliders">
+      <div class="mix-channel">
+        <label>🎵 Beat</label>
+        <input type="range" id="mix-beat-vol" min="0" max="100" value="70" />
+        <span class="vol-value">70%</span>
+      </div>
+      <div class="mix-channel">
+        <label>🎤 Vocals</label>
+        <input type="range" id="mix-vocal-vol" min="0" max="100" value="100" />
+        <span class="vol-value">100%</span>
+      </div>
+    </div>
+
+    <!-- NFT Metadata Preview -->
+    <div class="metadata-preview">
+      <div class="meta-header">
+        <span>📋 Track Metadata</span>
+        <button class="toggle-meta" id="toggle-metadata">Show</button>
+      </div>
+      <pre class="meta-json" id="metadata-json" style="display: none;"></pre>
+    </div>
+
+    <!-- Export Actions -->
+    <div class="export-actions">
+      <button class="btn-secondary" id="save-draft">
+        <span>💾</span> Save Draft
+      </button>
+      <button class="btn-primary" id="submit-to-battle">
+        <span>🚀</span> Submit to Battle
+      </button>
+    </div>
+
+    <!-- NFT Mint Option -->
+    <div class="nft-mint-option">
+      <label class="mint-checkbox">
+        <input type="checkbox" id="mint-as-nft" />
+        <span>Mint as NFT (includes beat modifications + recording)</span>
+      </label>
+    </div>
+  </section>
+
+</div>
+
+<style>
+  .mobile-beat-studio {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .studio-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+    padding: 15px;
+    border-bottom: 2px solid #333;
+  }
+
+  .studio-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 15px;
+    font-size: 20px;
+    color: #00ff00;
+  }
+
+  .title-icon {
+    font-size: 24px;
+  }
+
+  .mode-pills {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+
+  .mode-pill {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 25px;
+    color: #888;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mode-pill.active {
+    background: #00ff00;
+    border-color: #00ff00;
+    color: #000;
+  }
+
+  /* Section styling */
+  .studio-section {
+    padding: 20px 15px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .section-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #fff;
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 15px;
+    background: transparent;
+    border: 2px solid #333;
+    border-radius: 20px;
+    color: #888;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .back-btn:hover {
+    border-color: #00ff00;
+    color: #00ff00;
+  }
+
+  /* Genre Selector */
+  .genre-selector {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .genre-btn {
+    flex-shrink: 0;
+    padding: 12px 18px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    color: #888;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .genre-btn.active {
+    background: #00ff00;
+    border-color: #00ff00;
+    color: #000;
+  }
+
+  .genre-btn:hover:not(.active) {
+    border-color: #00ff00;
+    color: #00ff00;
+  }
+
+  /* Beats Grid */
+  .beats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 80px; /* Space for fixed bar */
+  }
+
+  .beat-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .beat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--beat-color, #00ff00);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .beat-card:hover,
+  .beat-card.active {
+    border-color: var(--beat-color, #00ff00);
+  }
+
+  .beat-card.active::before {
+    opacity: 1;
+  }
+
+  .beat-card.active {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+  }
+
+  .beat-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .beat-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .beat-meta {
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .beat-play-preview {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 255, 0, 0.2);
+    border: none;
+    border-radius: 50%;
+    color: #00ff00;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .beat-card:hover .beat-play-preview {
+    opacity: 1;
+  }
+
+  /* Selected Beat Bar */
+  .selected-beat-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+    border-top: 2px solid #00ff00;
+    padding: 15px;
+    z-index: 1000;
+  }
+
+  .selected-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .selected-icon {
+    font-size: 20px;
+  }
+
+  .selected-name {
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .selected-bpm {
+    font-size: 12px;
+    color: #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .selected-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    border-color: #00ff00;
+    color: #00ff00;
+  }
+
+  .action-btn.play-btn {
+    flex: 0 0 50px;
+  }
+
+  .action-btn.record-btn {
+    background: #00ff00;
+    border-color: #00ff00;
+    color: #000;
+  }
+
+  .play-icon {
+    font-size: 18px;
+  }
+
+  /* Control Groups */
+  .control-group {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .control-group label {
+    display: block;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* BPM Control */
+  .bpm-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .bpm-btn {
+    width: 50px;
+    height: 50px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .bpm-btn:hover {
+    border-color: #00ff00;
+    color: #00ff00;
+  }
+
+  #bpm-input {
+    width: 80px;
+    padding: 15px;
+    background: #0a0a0a;
+    border: 2px solid #00ff00;
+    border-radius: 8px;
+    color: #00ff00;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+  }
+
+  .bpm-presets {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .preset-btn {
+    padding: 8px 16px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 20px;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .preset-btn:hover,
+  .preset-btn.active {
+    border-color: #00ff00;
+    color: #00ff00;
+  }
+
+  /* Pattern Toggles */
+  .pattern-toggles {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pattern-toggle {
+    width: 55px;
+    height: 55px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 12px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .pattern-toggle.active {
+    background: rgba(0, 255, 0, 0.1);
+    border-color: #00ff00;
+  }
+
+  .pattern-toggle.active::after {
+    content: '✓';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 10px;
+    color: #00ff00;
+  }
+
+  /* Sample Library */
+  .sample-library {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .sample-category {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cat-label {
+    min-width: 50px;
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+  }
+
+  .sample-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .sample-btn {
+    padding: 8px 14px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 20px;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sample-btn:hover {
+    border-color: #00ffff;
+    color: #00ffff;
+  }
+
+  .sample-btn.added {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: #00ffff;
+    color: #00ffff;
+  }
+
+  /* Added Samples */
+  .added-samples {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .added-sample-tag {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid #00ffff;
+    border-radius: 20px;
+    color: #00ffff;
+    font-size: 12px;
+  }
+
+  .remove-sample {
+    background: none;
+    border: none;
+    color: #00ffff;
+    cursor: pointer;
+    padding: 0;
+    font-size: 14px;
+  }
+
+  /* Customize Actions */
+  .customize-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .btn-secondary,
+  .btn-primary {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    color: #888;
+  }
+
+  .btn-secondary:hover {
+    border-color: #666;
+    color: #fff;
+  }
+
+  .btn-primary {
+    background: #00ff00;
+    border: 2px solid #00ff00;
+    color: #000;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+  }
+
+  /* Recording Section */
+  .sync-display {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .beat-track,
+  .vocal-track {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .vocal-track {
+    margin-bottom: 0;
+  }
+
+  .track-label {
+    min-width: 60px;
+    font-size: 12px;
+    color: #888;
+  }
+
+  .track-waveform {
+    flex: 1;
+    background: #0a0a0a;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .track-waveform canvas {
+    display: block;
+    width: 100%;
+    height: 50px;
+  }
+
+  .volume-slider {
+    width: 60px;
+    height: 6px;
+    -webkit-appearance: none;
+    background: #333;
+    border-radius: 3px;
+  }
+
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #00ff00;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  /* Recording Timer */
+  .recording-timer {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .timer-display {
+    font-size: 48px;
+    font-family: 'Courier New', monospace;
+    color: #00ff00;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+
+  .timer-max {
+    font-size: 14px;
+    color: #666;
+  }
+
+  /* Input Level */
+  .input-level {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+
+  .level-label {
+    font-size: 12px;
+    color: #888;
+    min-width: 50px;
+  }
+
+  .level-track {
+    flex: 1;
+    height: 10px;
+    background: #333;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .level-fill {
+    height: 100%;
+    width: 0%;
+    background: #ffff00;
+    border-radius: 5px;
+    transition: width 0.1s;
+  }
+
+  /* Big Record Controls */
+  .record-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .big-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 30px 60px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .big-btn.record-btn {
+    background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+    border: 3px solid #00ff00;
+    color: #000;
+  }
+
+  .big-btn.record-btn:hover {
+    box-shadow: 0 0 40px rgba(0, 255, 0, 0.5);
+    transform: scale(1.02);
+  }
+
+  .big-btn.stop-btn {
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+    border: 3px solid #ff0000;
+    color: #fff;
+    animation: pulse-recording 1s infinite;
+  }
+
+  @keyframes pulse-recording {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(255, 0, 0, 0.8); }
+  }
+
+  .btn-icon {
+    font-size: 32px;
+  }
+
+  .btn-text {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  /* Playback Controls */
+  .playback-controls {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .playback-controls audio {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .playback-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .action-btn.primary {
+    background: #00ff00;
+    border-color: #00ff00;
+    color: #000;
+  }
+
+  /* Mix Section */
+  .mix-preview {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .mix-preview canvas {
+    width: 100%;
+    height: 80px;
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  .mix-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .mix-controls .play-btn {
+    width: 45px;
+    height: 45px;
+    background: #00ff00;
+    border: none;
+    border-radius: 50%;
+    color: #000;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .progress-bar .progress-fill {
+    height: 100%;
+    background: #00ff00;
+    width: 0%;
+  }
+
+  .time-display {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #888;
+    min-width: 45px;
+  }
+
+  /* Mix Sliders */
+  .mix-sliders {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .mix-channel {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 15px;
+  }
+
+  .mix-channel label {
+    min-width: 80px;
+    font-size: 14px;
+  }
+
+  .mix-channel input[type="range"] {
+    flex: 1;
+    height: 8px;
+    -webkit-appearance: none;
+    background: #333;
+    border-radius: 4px;
+  }
+
+  .mix-channel input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #00ff00;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .vol-value {
+    min-width: 40px;
+    font-size: 13px;
+    color: #888;
+    text-align: right;
+  }
+
+  /* Metadata Preview */
+  .metadata-preview {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .meta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #333;
+  }
+
+  .meta-header span {
+    font-size: 13px;
+    color: #888;
+  }
+
+  .toggle-meta {
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid #333;
+    border-radius: 15px;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .meta-json {
+    padding: 15px;
+    margin: 0;
+    background: #0a0a0a;
+    color: #00ff00;
+    font-size: 11px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* Export Actions */
+  .export-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+  }
+
+  /* NFT Mint Option */
+  .nft-mint-option {
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%);
+    border: 1px solid #8a2be2;
+    border-radius: 10px;
+    padding: 15px;
+  }
+
+  .mint-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #ccc;
+  }
+
+  .mint-checkbox input {
+    margin-top: 3px;
+    accent-color: #8a2be2;
+  }
+
+  /* Utility */
+  .neon-text {
+    color: #00ff00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+</style>
+
+<script>
+  // Preset beats data with Strudel patterns and metadata
+  const PRESET_BEATS = [
+    {
+      id: 'trap-808',
+      name: 'Trap 808',
+      genre: 'trap',
+      bpm: 140,
+      icon: '🔥',
+      color: '#ff4444',
+      pattern: {
+        kick: 'x...x...x...x...',
+        snare: '....x.......x...',
+        hihat: 'x.x.x.x.x.x.x.x.',
+        bass808: 'x.......x.......',
+      },
+      strudel: 'stack(s("bd*4"), s("~ sd ~ sd"), s("hh*8"))',
+      samples: ['808bass', 'trap_snare']
+    },
+    {
+      id: 'boom-bap',
+      name: 'Boom Bap',
+      genre: 'boombap',
+      bpm: 90,
+      icon: '💎',
+      color: '#4488ff',
+      pattern: {
+        kick: 'x.....x.x.......',
+        snare: '....x.......x...',
+        hihat: 'x.x.x.x.x.x.x.x.',
+      },
+      strudel: 'stack(s("bd ~ ~ ~ bd bd ~ ~"), s("~ ~ sd ~ ~ ~ sd ~"), s("hh*8"))',
+      samples: ['vinyl_crackle', 'jazz_sample']
+    },
+    {
+      id: 'uk-drill',
+      name: 'UK Drill',
+      genre: 'drill',
+      bpm: 140,
+      icon: '⚡',
+      color: '#ffaa00',
+      pattern: {
+        kick: 'x.....x.........',
+        snare: '..x.....x.x.....',
+        hihat: 'xxx.xxx.xxx.xxx.',
+        slide808: 'x...............',
+      },
+      strudel: 'stack(s("bd ~ ~ ~ ~ ~ bd ~"), s("~ ~ sd ~ ~ sd ~ sd"), s("hh*12"))',
+      samples: ['drill_slide', 'uk_fx']
+    },
+    {
+      id: 'reggae-one-drop',
+      name: 'Reggae One Drop',
+      genre: 'reggae',
+      bpm: 75,
+      icon: '🌴',
+      color: '#00cc44',
+      pattern: {
+        kick: '........x.......',
+        snare: '..x.........x...',
+        hihat: 'x.x.x.x.x.x.x.x.',
+        rimshot: '....x.......x...',
+      },
+      strudel: 'stack(s("~ ~ ~ ~ bd ~ ~ ~"), s("~ ~ sd ~ ~ ~ ~ ~"), s("hh*8"))',
+      samples: ['reggae_organ', 'dub_delay']
+    },
+    {
+      id: 'afrobeat',
+      name: 'Afrobeat',
+      genre: 'afro',
+      bpm: 100,
+      icon: '🌍',
+      color: '#ff8800',
+      pattern: {
+        kick: 'x...x...x...x...',
+        snare: '....x.......x...',
+        shaker: 'x.x.x.x.x.x.x.x.',
+        conga: '.x.x..x..x.x..x.',
+      },
+      strudel: 'stack(s("bd*4"), s("~ sd ~ sd"), s("shaker*8"), s("conga*6"))',
+      samples: ['afro_perc', 'talking_drum']
+    },
+    {
+      id: 'lofi-chill',
+      name: 'Lo-Fi Chill',
+      genre: 'lofi',
+      bpm: 85,
+      icon: '🌙',
+      color: '#8844ff',
+      pattern: {
+        kick: 'x.......x.......',
+        snare: '....x.......x...',
+        hihat: 'x...x...x...x...',
+      },
+      strudel: 'stack(s("bd ~ ~ ~ bd ~ ~ ~"), s("~ ~ sd ~ ~ ~ sd ~"), s("hh*4"))',
+      samples: ['vinyl_noise', 'jazz_piano']
+    },
+    {
+      id: 'dancehall',
+      name: 'Dancehall',
+      genre: 'reggae',
+      bpm: 95,
+      icon: '🎺',
+      color: '#ff44aa',
+      pattern: {
+        kick: 'x...x...x...x...',
+        snare: '....x.......x...',
+        hihat: 'x.xxx.xxx.xxx.xx',
+      },
+      strudel: 'stack(s("bd*4"), s("~ sd ~ sd"), s("hh*10"))',
+      samples: ['dancehall_horn', 'riddim_bass']
+    },
+    {
+      id: 'grime',
+      name: 'Grime',
+      genre: 'drill',
+      bpm: 140,
+      icon: '🎭',
+      color: '#44aaff',
+      pattern: {
+        kick: 'x.......x.x.....',
+        snare: '....x.......x...',
+        hihat: 'x.x.x.x.x.x.x.x.',
+        bass: 'x...........x...',
+      },
+      strudel: 'stack(s("bd ~ ~ ~ bd bd ~ ~"), s("~ ~ sd ~ ~ ~ sd ~"), s("hh*8"))',
+      samples: ['grime_stab', 'eski_beat']
+    },
+  ];
+
+  // Studio state
+  const studioState = {
+    selectedBeat: null,
+    customizations: {
+      bpm: 90,
+      patterns: ['kick', 'snare', 'hihat'],
+      samples: []
+    },
+    vocalBlob: null,
+    vocalUrl: null,
+    isPlaying: false,
+    isRecording: false,
+    audioContext: null,
+    mediaRecorder: null,
+    analyser: null,
+    timerInterval: null,
+    recordingStartTime: 0
+  };
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    renderBeats('all');
+    setupEventListeners();
+  });
+
+  // Render beats grid
+  function renderBeats(genre) {
+    const grid = document.getElementById('beats-grid');
+    const filteredBeats = genre === 'all'
+      ? PRESET_BEATS
+      : PRESET_BEATS.filter(b => b.genre === genre);
+
+    grid.innerHTML = filteredBeats.map(beat => `
+      <div class="beat-card ${studioState.selectedBeat?.id === beat.id ? 'active' : ''}"
+           data-beat-id="${beat.id}"
+           style="--beat-color: ${beat.color}">
+        <button class="beat-play-preview" data-beat-id="${beat.id}">▶</button>
+        <div class="beat-icon">${beat.icon}</div>
+        <div class="beat-name">${beat.name}</div>
+        <div class="beat-meta">
+          <span>${beat.bpm} BPM</span>
+          <span>${beat.genre}</span>
+        </div>
+      </div>
+    `).join('');
+
+    // Add click handlers
+    grid.querySelectorAll('.beat-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.classList.contains('beat-play-preview')) return;
+        selectBeat(card.dataset.beatId);
+      });
+    });
+
+    grid.querySelectorAll('.beat-play-preview').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        previewBeat(btn.dataset.beatId);
+      });
+    });
+  }
+
+  // Select beat
+  function selectBeat(beatId) {
+    const beat = PRESET_BEATS.find(b => b.id === beatId);
+    if (!beat) return;
+
+    studioState.selectedBeat = beat;
+    studioState.customizations.bpm = beat.bpm;
+    studioState.customizations.patterns = Object.keys(beat.pattern);
+    studioState.customizations.samples = [...(beat.samples || [])];
+
+    // Update UI
+    document.querySelectorAll('.beat-card').forEach(card => {
+      card.classList.toggle('active', card.dataset.beatId === beatId);
+    });
+
+    // Show selected bar
+    const bar = document.getElementById('selected-beat-bar');
+    bar.style.display = 'block';
+    document.getElementById('selected-beat-name').textContent = beat.name;
+    document.getElementById('selected-beat-bpm').textContent = `${beat.bpm} BPM`;
+  }
+
+  // Preview beat (play/stop)
+  function previewBeat(beatId) {
+    const beat = PRESET_BEATS.find(b => b.id === beatId);
+    if (!beat) return;
+
+    // TODO: Implement Strudel playback or Web Audio beat generation
+    console.log('Preview beat:', beat.strudel);
+
+    // For now, just toggle visual feedback
+    const btn = document.querySelector(`.beat-play-preview[data-beat-id="${beatId}"]`);
+    if (studioState.isPlaying) {
+      btn.textContent = '▶';
+      studioState.isPlaying = false;
+    } else {
+      btn.textContent = '⏹';
+      studioState.isPlaying = true;
+    }
+  }
+
+  // Setup event listeners
+  function setupEventListeners() {
+    // Genre filter
+    document.querySelectorAll('.genre-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderBeats(btn.dataset.genre);
+      });
+    });
+
+    // Mode pills
+    document.querySelectorAll('.mode-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        showSection(pill.dataset.mode);
+      });
+    });
+
+    // Customize button
+    document.getElementById('customize-beat-btn')?.addEventListener('click', () => {
+      showSection('customize');
+    });
+
+    // Record over button
+    document.getElementById('record-over-btn')?.addEventListener('click', () => {
+      showSection('record');
+    });
+
+    // Back buttons
+    document.getElementById('back-to-beats')?.addEventListener('click', () => {
+      showSection('beats');
+    });
+    document.getElementById('back-from-record')?.addEventListener('click', () => {
+      showSection('beats');
+    });
+    document.getElementById('back-from-mix')?.addEventListener('click', () => {
+      showSection('record');
+    });
+
+    // BPM controls
+    document.getElementById('bpm-down')?.addEventListener('click', () => {
+      const input = document.getElementById('bpm-input');
+      input.value = Math.max(60, parseInt(input.value) - 5);
+      studioState.customizations.bpm = parseInt(input.value);
+    });
+
+    document.getElementById('bpm-up')?.addEventListener('click', () => {
+      const input = document.getElementById('bpm-input');
+      input.value = Math.min(180, parseInt(input.value) + 5);
+      studioState.customizations.bpm = parseInt(input.value);
+    });
+
+    document.querySelectorAll('.preset-btn[data-bpm]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const bpm = parseInt(btn.dataset.bpm);
+        document.getElementById('bpm-input').value = bpm;
+        studioState.customizations.bpm = bpm;
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Pattern toggles
+    document.querySelectorAll('.pattern-toggle').forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('active');
+        const pattern = toggle.dataset.pattern;
+        if (toggle.classList.contains('active')) {
+          if (!studioState.customizations.patterns.includes(pattern)) {
+            studioState.customizations.patterns.push(pattern);
+          }
+        } else {
+          studioState.customizations.patterns = studioState.customizations.patterns.filter(p => p !== pattern);
+        }
+      });
+    });
+
+    // Sample buttons
+    document.querySelectorAll('.sample-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sample = btn.dataset.sample;
+        if (btn.classList.contains('added')) {
+          btn.classList.remove('added');
+          studioState.customizations.samples = studioState.customizations.samples.filter(s => s !== sample);
+        } else {
+          btn.classList.add('added');
+          studioState.customizations.samples.push(sample);
+        }
+        updateAddedSamplesList();
+      });
+    });
+
+    // Recording controls
+    document.getElementById('start-recording')?.addEventListener('click', startRecording);
+    document.getElementById('stop-recording')?.addEventListener('click', stopRecording);
+    document.getElementById('re-record')?.addEventListener('click', resetRecording);
+    document.getElementById('go-to-mix')?.addEventListener('click', () => showSection('mix'));
+
+    // Play beat button
+    document.getElementById('play-beat-btn')?.addEventListener('click', () => {
+      if (studioState.selectedBeat) {
+        previewBeat(studioState.selectedBeat.id);
+      }
+    });
+
+    // Toggle metadata
+    document.getElementById('toggle-metadata')?.addEventListener('click', () => {
+      const json = document.getElementById('metadata-json');
+      const btn = document.getElementById('toggle-metadata');
+      if (json.style.display === 'none') {
+        json.style.display = 'block';
+        btn.textContent = 'Hide';
+        updateMetadataPreview();
+      } else {
+        json.style.display = 'none';
+        btn.textContent = 'Show';
+      }
+    });
+
+    // Volume sliders
+    document.querySelectorAll('.mix-channel input[type="range"]').forEach(slider => {
+      slider.addEventListener('input', () => {
+        const val = slider.value;
+        slider.nextElementSibling.textContent = val + '%';
+      });
+    });
+
+    // Submit to battle
+    document.getElementById('submit-to-battle')?.addEventListener('click', submitToBattle);
+  }
+
+  // Show section
+  function showSection(section) {
+    const sections = {
+      beats: 'beats-section',
+      customize: 'customize-section',
+      record: 'record-section',
+      mix: 'mix-section'
+    };
+
+    Object.entries(sections).forEach(([key, id]) => {
+      document.getElementById(id).style.display = key === section ? 'block' : 'none';
+    });
+
+    // Update mode pills
+    document.querySelectorAll('.mode-pill').forEach(pill => {
+      const mode = pill.dataset.mode;
+      if (section === 'customize') {
+        pill.classList.toggle('active', mode === 'beats');
+      } else {
+        pill.classList.toggle('active', mode === section);
+      }
+    });
+
+    // Show/hide selected beat bar
+    document.getElementById('selected-beat-bar').style.display =
+      section === 'beats' && studioState.selectedBeat ? 'block' : 'none';
+
+    // Initialize customization UI when entering customize section
+    if (section === 'customize' && studioState.selectedBeat) {
+      initializeCustomizationUI();
+    }
+
+    // Initialize mix section
+    if (section === 'mix') {
+      updateMetadataPreview();
+    }
+  }
+
+  // Initialize customization UI with current beat values
+  function initializeCustomizationUI() {
+    const beat = studioState.selectedBeat;
+    if (!beat) return;
+
+    document.getElementById('bpm-input').value = studioState.customizations.bpm;
+
+    // Set pattern toggles
+    document.querySelectorAll('.pattern-toggle').forEach(toggle => {
+      toggle.classList.toggle('active',
+        studioState.customizations.patterns.includes(toggle.dataset.pattern)
+      );
+    });
+
+    // Set sample buttons
+    document.querySelectorAll('.sample-btn').forEach(btn => {
+      btn.classList.toggle('added',
+        studioState.customizations.samples.includes(btn.dataset.sample)
+      );
+    });
+
+    updateAddedSamplesList();
+  }
+
+  // Update added samples list
+  function updateAddedSamplesList() {
+    const container = document.getElementById('added-samples-list');
+    const group = document.getElementById('added-samples-group');
+
+    if (studioState.customizations.samples.length === 0) {
+      group.style.display = 'none';
+      return;
+    }
+
+    group.style.display = 'block';
+    container.innerHTML = studioState.customizations.samples.map(sample => `
+      <span class="added-sample-tag">
+        ${sample}
+        <button class="remove-sample" data-sample="${sample}">×</button>
+      </span>
+    `).join('');
+
+    container.querySelectorAll('.remove-sample').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sample = btn.dataset.sample;
+        studioState.customizations.samples = studioState.customizations.samples.filter(s => s !== sample);
+        document.querySelector(`.sample-btn[data-sample="${sample}"]`)?.classList.remove('added');
+        updateAddedSamplesList();
+      });
+    });
+  }
+
+  // Start recording
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+
+      studioState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      studioState.analyser = studioState.audioContext.createAnalyser();
+      studioState.analyser.fftSize = 2048;
+
+      const mic = studioState.audioContext.createMediaStreamSource(stream);
+      mic.connect(studioState.analyser);
+
+      const chunks = [];
+      studioState.mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+
+      studioState.mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+
+      studioState.mediaRecorder.onstop = () => {
+        studioState.vocalBlob = new Blob(chunks, { type: 'audio/webm' });
+        studioState.vocalUrl = URL.createObjectURL(studioState.vocalBlob);
+        onRecordingComplete();
+      };
+
+      studioState.mediaRecorder.start(100);
+      studioState.isRecording = true;
+      studioState.recordingStartTime = Date.now();
+
+      // Update UI
+      document.getElementById('start-recording').style.display = 'none';
+      document.getElementById('stop-recording').style.display = 'flex';
+
+      // Start timer
+      startTimer();
+
+      // Start visualizations
+      visualizeInput();
+
+    } catch (error) {
+      console.error('Microphone error:', error);
+      alert('Cannot access microphone. Please grant permission.');
+    }
+  }
+
+  // Stop recording
+  function stopRecording() {
+    if (studioState.mediaRecorder && studioState.mediaRecorder.state !== 'inactive') {
+      studioState.mediaRecorder.stop();
+      studioState.mediaRecorder.stream.getTracks().forEach(t => t.stop());
+      studioState.isRecording = false;
+
+      clearInterval(studioState.timerInterval);
+
+      if (studioState.audioContext) {
+        studioState.audioContext.close();
+      }
+    }
+  }
+
+  // On recording complete
+  function onRecordingComplete() {
+    document.getElementById('stop-recording').style.display = 'none';
+    document.getElementById('playback-controls').style.display = 'block';
+    document.getElementById('recorded-audio').src = studioState.vocalUrl;
+  }
+
+  // Reset recording
+  function resetRecording() {
+    studioState.vocalBlob = null;
+    studioState.vocalUrl = null;
+    document.getElementById('start-recording').style.display = 'flex';
+    document.getElementById('playback-controls').style.display = 'none';
+    document.getElementById('record-timer').textContent = '00:00';
+  }
+
+  // Start timer
+  function startTimer() {
+    const timerEl = document.getElementById('record-timer');
+    const maxDuration = 120; // 2 minutes
+
+    studioState.timerInterval = setInterval(() => {
+      const elapsed = (Date.now() - studioState.recordingStartTime) / 1000;
+      const mins = Math.floor(elapsed / 60);
+      const secs = Math.floor(elapsed % 60);
+      timerEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      if (elapsed >= maxDuration) {
+        stopRecording();
+      }
+    }, 100);
+  }
+
+  // Visualize input level
+  function visualizeInput() {
+    const levelFill = document.getElementById('input-level-fill');
+    const analyser = studioState.analyser;
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    function update() {
+      if (!studioState.isRecording) return;
+
+      analyser.getByteFrequencyData(dataArray);
+      const avg = dataArray.reduce((a, b) => a + b) / dataArray.length;
+      const pct = (avg / 255) * 100;
+
+      levelFill.style.width = pct + '%';
+      levelFill.style.background = pct > 80 ? '#ff0000' : pct > 50 ? '#00ff00' : '#ffff00';
+
+      requestAnimationFrame(update);
+    }
+
+    update();
+  }
+
+  // Update metadata preview
+  function updateMetadataPreview() {
+    const metadata = generateNFTMetadata();
+    document.getElementById('metadata-json').textContent = JSON.stringify(metadata, null, 2);
+  }
+
+  // Generate NFT metadata
+  function generateNFTMetadata() {
+    const beat = studioState.selectedBeat;
+    const cust = studioState.customizations;
+
+    return {
+      name: `Battle Track - ${beat?.name || 'Custom'}`,
+      description: `Rap battle recording over ${beat?.name || 'custom'} beat`,
+      image: 'ipfs://placeholder-for-cover-art',
+      animation_url: 'ipfs://placeholder-for-audio',
+      external_url: 'https://purplepoint.worldbridgerone.com',
+      attributes: [
+        { trait_type: 'Beat', value: beat?.name || 'Custom' },
+        { trait_type: 'Genre', value: beat?.genre || 'mixed' },
+        { trait_type: 'BPM', value: cust.bpm },
+        { trait_type: 'Has Vocals', value: !!studioState.vocalBlob }
+      ],
+      properties: {
+        category: 'audio',
+        creators: [],
+        files: [
+          {
+            uri: 'ipfs://placeholder-audio-file',
+            type: 'audio/webm'
+          }
+        ]
+      },
+      worldbridger_metadata: {
+        version: '1.0',
+        type: 'battle_recording',
+        beat: {
+          id: beat?.id,
+          name: beat?.name,
+          original_bpm: beat?.bpm,
+          strudel_pattern: beat?.strudel
+        },
+        customizations: {
+          bpm: cust.bpm,
+          bpm_change: beat ? cust.bpm - beat.bpm : 0,
+          active_patterns: cust.patterns,
+          added_samples: cust.samples
+        },
+        recording: {
+          duration_seconds: studioState.vocalBlob
+            ? Math.floor((Date.now() - studioState.recordingStartTime) / 1000)
+            : 0,
+          format: 'audio/webm;codecs=opus',
+          has_beat_layer: true
+        },
+        storage: {
+          audio_ipfs: 'ipfs://to-be-set',
+          beat_ipfs: 'ipfs://to-be-set',
+          cover_ipfs: 'ipfs://to-be-set',
+          bucket_ref: 'worldbridger-audio-bucket'
+        },
+        vector_data: {
+          waveform_points: [],
+          frequency_spectrum: [],
+          beat_markers: []
+        }
+      }
+    };
+  }
+
+  // Submit to battle
+  async function submitToBattle() {
+    const btn = document.getElementById('submit-to-battle');
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span> Uploading...';
+
+    try {
+      // Generate metadata
+      const metadata = generateNFTMetadata();
+
+      // Create form data
+      const formData = new FormData();
+      formData.append('audio', studioState.vocalBlob, 'recording.webm');
+      formData.append('metadata', JSON.stringify(metadata));
+      formData.append('beatId', studioState.selectedBeat?.id || 'custom');
+      formData.append('bpm', studioState.customizations.bpm);
+
+      // Upload
+      const response = await fetch('/api/audio/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        btn.innerHTML = '<span>✓</span> Submitted!';
+        btn.style.background = '#00ff00';
+        btn.style.color = '#000';
+
+        // Store for redirect
+        localStorage.setItem('lastBattleMetadata', JSON.stringify(metadata));
+
+        setTimeout(() => {
+          window.location.href = '/rap-battle';
+        }, 1500);
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+
+    } catch (error) {
+      console.error('Submit error:', error);
+      btn.innerHTML = '<span>✗</span> Error - Try Again';
+      btn.style.background = '#ff0000';
+      btn.disabled = false;
+
+      setTimeout(() => {
+        btn.innerHTML = '<span>🚀</span> Submit to Battle';
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 2000);
+    }
+  }
+</script>
