@@ -1,0 +1,814 @@
+---
+/**
+ * projects/[slug].astro
+ * PUBLIC PROJECT PAGE
+ *
+ * Displays user-created project pages for artists, scientists, and creators.
+ * URLs like: /projects/pain-in-the-ghetto, /projects/porefec
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Get slug from URL params
+const { slug } = Astro.params;
+
+// For SSR, we'll fetch data client-side to handle auth
+// For SSG fallback, return placeholder paths
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'placeholder' } }
+  ];
+}
+
+// Category icons and colors
+const categoryStyles = {
+  music: { icon: '🎵', color: '#8B5CF6', label: 'Music' },
+  science: { icon: '🔬', color: '#3B82F6', label: 'Science' },
+  art: { icon: '🎨', color: '#EC4899', label: 'Art' },
+  technology: { icon: '💻', color: '#10B981', label: 'Technology' },
+  environment: { icon: '🌍', color: '#22C55E', label: 'Environment' },
+  education: { icon: '📚', color: '#F59E0B', label: 'Education' },
+  general: { icon: '📁', color: '#6B7280', label: 'Project' }
+};
+---
+
+<BaseLayout
+  title="Project - WorldBridger One"
+  description="View project details"
+  activeSection="projects"
+>
+
+  <!-- Loading State -->
+  <div id="loading-state" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading project...</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="error-state" class="error-container" style="display: none;">
+    <div class="error-content">
+      <div class="error-icon">🔍</div>
+      <h1>Project Not Found</h1>
+      <p id="error-message">The project you're looking for doesn't exist or is not available.</p>
+      <a href="/projects" class="btn-primary">Browse Projects</a>
+    </div>
+  </div>
+
+  <!-- Project Content -->
+  <article id="project-content" class="project-page" style="display: none;">
+
+    <!-- Hero Section -->
+    <header class="project-hero">
+      <div class="hero-background" id="hero-bg"></div>
+      <div class="container mx-auto">
+        <div class="hero-content">
+          <!-- Category Badge -->
+          <div class="category-badge" id="category-badge">
+            <span class="category-icon" id="category-icon">📁</span>
+            <span class="category-label" id="category-label">Project</span>
+          </div>
+
+          <!-- Title -->
+          <h1 class="project-title" id="project-title">Loading...</h1>
+          <p class="project-subtitle" id="project-subtitle"></p>
+
+          <!-- Creator Info -->
+          <div class="creator-info">
+            <div class="creator-avatar" id="creator-avatar">
+              <span id="creator-initials">?</span>
+            </div>
+            <div class="creator-details">
+              <span class="creator-label">Created by</span>
+              <a href="#" class="creator-name" id="creator-name">Loading...</a>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="project-stats">
+            <div class="stat">
+              <span class="stat-icon">👁️</span>
+              <span class="stat-value" id="view-count">0</span>
+              <span class="stat-label">views</span>
+            </div>
+            <div class="stat">
+              <span class="stat-icon">❤️</span>
+              <span class="stat-value" id="like-count">0</span>
+              <span class="stat-label">likes</span>
+            </div>
+            <div class="stat">
+              <span class="stat-icon">📅</span>
+              <span class="stat-value" id="publish-date">-</span>
+              <span class="stat-label">published</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="project-actions">
+            <button class="btn-like" id="like-btn" onclick="toggleLike()">
+              <span class="heart-icon" id="heart-icon">🤍</span>
+              <span id="like-btn-text">Like</span>
+            </button>
+            <button class="btn-share" onclick="shareProject()">
+              <span>🔗</span> Share
+            </button>
+            <button class="btn-edit" id="edit-btn" onclick="editProject()" style="display: none;">
+              <span>✏️</span> Edit
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="project-main">
+      <div class="container mx-auto">
+        <div class="project-layout">
+
+          <!-- Content Column -->
+          <div class="content-column">
+            <!-- Description -->
+            <section class="project-description" id="project-description">
+              <p>Loading description...</p>
+            </section>
+
+            <!-- Full Content (Markdown) -->
+            <section class="project-content prose" id="project-content-body">
+              <!-- Content will be rendered here -->
+            </section>
+
+            <!-- Media Gallery -->
+            <section class="project-media" id="media-section" style="display: none;">
+              <h2 class="section-title">Media</h2>
+              <div class="media-grid" id="media-grid">
+                <!-- Media items will be added here -->
+              </div>
+            </section>
+
+            <!-- Tags -->
+            <section class="project-tags" id="tags-section" style="display: none;">
+              <h2 class="section-title">Tags</h2>
+              <div class="tags-list" id="tags-list">
+                <!-- Tags will be added here -->
+              </div>
+            </section>
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="sidebar-column">
+            <!-- External Links -->
+            <div class="sidebar-card" id="links-card" style="display: none;">
+              <h3 class="card-title">Links</h3>
+              <div class="links-list" id="links-list">
+                <!-- Links will be added here -->
+              </div>
+            </div>
+
+            <!-- Collaborators -->
+            <div class="sidebar-card" id="collaborators-card" style="display: none;">
+              <h3 class="card-title">Collaborators</h3>
+              <div class="collaborators-list" id="collaborators-list">
+                <!-- Collaborators will be added here -->
+              </div>
+            </div>
+
+            <!-- Related Projects -->
+            <div class="sidebar-card" id="related-card" style="display: none;">
+              <h3 class="card-title">More from this creator</h3>
+              <div class="related-list" id="related-list">
+                <!-- Related projects will be added here -->
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+  </article>
+
+</BaseLayout>
+
+<script define:vars={{ slug, categoryStyles }}>
+  // Project page manager
+  class ProjectPageManager {
+    constructor() {
+      this.slug = slug;
+      this.project = null;
+      this.categoryStyles = categoryStyles;
+    }
+
+    async initialize() {
+      try {
+        await this.loadProject();
+      } catch (error) {
+        console.error('Failed to load project:', error);
+        this.showError('Failed to load project. Please try again later.');
+      }
+    }
+
+    async loadProject() {
+      const walletAddress = window.walletManager?.connectedWallet || '';
+
+      const response = await fetch(`/api/projects/${this.slug}?walletAddress=${walletAddress}`);
+      const data = await response.json();
+
+      if (!data.success) {
+        this.showError(data.error || 'Project not found');
+        return;
+      }
+
+      this.project = data.project;
+      this.renderProject();
+    }
+
+    renderProject() {
+      const p = this.project;
+
+      // Hide loading, show content
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('project-content').style.display = 'block';
+
+      // Category styling
+      const catStyle = this.categoryStyles[p.category] || this.categoryStyles.general;
+      const badge = document.getElementById('category-badge');
+      badge.style.backgroundColor = catStyle.color;
+      document.getElementById('category-icon').textContent = catStyle.icon;
+      document.getElementById('category-label').textContent = catStyle.label;
+
+      // Title and subtitle
+      document.getElementById('project-title').textContent = p.title;
+      document.getElementById('project-subtitle').textContent = p.subtitle || '';
+      document.title = `${p.title} - WorldBridger One`;
+
+      // Hero background
+      if (p.cover_image) {
+        document.getElementById('hero-bg').style.backgroundImage = `url(${p.cover_image})`;
+      }
+
+      // Creator info
+      const creatorName = p.owner_username || `${p.owner_wallet.substring(0, 4)}...${p.owner_wallet.substring(p.owner_wallet.length - 4)}`;
+      document.getElementById('creator-name').textContent = creatorName;
+      document.getElementById('creator-name').href = `/user/${p.owner_username || p.owner_wallet}`;
+      document.getElementById('creator-initials').textContent = creatorName.substring(0, 2).toUpperCase();
+
+      // Stats
+      document.getElementById('view-count').textContent = p.view_count.toLocaleString();
+      document.getElementById('like-count').textContent = p.like_count.toLocaleString();
+      if (p.published_at) {
+        const date = new Date(p.published_at);
+        document.getElementById('publish-date').textContent = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      }
+
+      // Like button state
+      if (p.hasLiked) {
+        document.getElementById('heart-icon').textContent = '❤️';
+        document.getElementById('like-btn').classList.add('liked');
+      }
+
+      // Edit button (for owner)
+      if (p.isOwner) {
+        document.getElementById('edit-btn').style.display = 'inline-flex';
+      }
+
+      // Description
+      document.getElementById('project-description').innerHTML = `<p>${p.description || ''}</p>`;
+
+      // Content (render markdown)
+      if (p.content) {
+        document.getElementById('project-content-body').innerHTML = this.renderMarkdown(p.content);
+      }
+
+      // Media gallery
+      const mediaUrls = typeof p.media_urls === 'string' ? JSON.parse(p.media_urls) : (p.media_urls || []);
+      if (mediaUrls.length > 0) {
+        document.getElementById('media-section').style.display = 'block';
+        const grid = document.getElementById('media-grid');
+        grid.innerHTML = mediaUrls.map(m => this.renderMediaItem(m)).join('');
+      }
+
+      // Tags
+      const tags = p.tags || [];
+      if (tags.length > 0) {
+        document.getElementById('tags-section').style.display = 'block';
+        document.getElementById('tags-list').innerHTML = tags.map(t =>
+          `<a href="/projects?tag=${t}" class="tag">#${t}</a>`
+        ).join('');
+      }
+
+      // External links
+      const links = typeof p.links === 'string' ? JSON.parse(p.links) : (p.links || []);
+      if (links.length > 0) {
+        document.getElementById('links-card').style.display = 'block';
+        document.getElementById('links-list').innerHTML = links.map(l =>
+          `<a href="${l.url}" target="_blank" rel="noopener" class="external-link">
+            <span class="link-icon">${this.getLinkIcon(l.icon)}</span>
+            <span class="link-title">${l.title}</span>
+            <span class="link-arrow">→</span>
+          </a>`
+        ).join('');
+      }
+
+      // Collaborators
+      const collaborators = typeof p.collaborators === 'string' ? JSON.parse(p.collaborators) : (p.collaborators || []);
+      if (collaborators.length > 0) {
+        document.getElementById('collaborators-card').style.display = 'block';
+        document.getElementById('collaborators-list').innerHTML = collaborators.map(c =>
+          `<div class="collaborator">
+            <div class="collab-avatar">${(c.name || c).substring(0, 2).toUpperCase()}</div>
+            <span class="collab-name">${c.name || c}</span>
+          </div>`
+        ).join('');
+      }
+    }
+
+    renderMarkdown(content) {
+      // Simple markdown rendering
+      return content
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^\- (.*$)/gim, '<li>$1</li>')
+        .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(?!<[hblu])/gim, '<p>')
+        .replace(/\n/g, '<br>');
+    }
+
+    renderMediaItem(media) {
+      if (media.type === 'image') {
+        return `<div class="media-item">
+          <img src="${media.url}" alt="${media.caption || ''}" loading="lazy">
+          ${media.caption ? `<p class="media-caption">${media.caption}</p>` : ''}
+        </div>`;
+      } else if (media.type === 'video') {
+        return `<div class="media-item">
+          <video src="${media.url}" controls></video>
+          ${media.caption ? `<p class="media-caption">${media.caption}</p>` : ''}
+        </div>`;
+      } else if (media.type === 'audio') {
+        return `<div class="media-item audio-item">
+          <audio src="${media.url}" controls></audio>
+          ${media.caption ? `<p class="media-caption">${media.caption}</p>` : ''}
+        </div>`;
+      }
+      return '';
+    }
+
+    getLinkIcon(icon) {
+      const icons = {
+        spotify: '🎵',
+        soundcloud: '☁️',
+        youtube: '▶️',
+        instagram: '📷',
+        twitter: '🐦',
+        github: '💻',
+        document: '📄',
+        website: '🌐'
+      };
+      return icons[icon] || '🔗';
+    }
+
+    showError(message) {
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('error-state').style.display = 'flex';
+      document.getElementById('error-message').textContent = message;
+    }
+  }
+
+  // Global functions
+  async function toggleLike() {
+    const walletAddress = window.walletManager?.connectedWallet;
+    if (!walletAddress) {
+      alert('Please connect your wallet to like this project');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/projects/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress,
+          slug: slug
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById('heart-icon').textContent = data.liked ? '❤️' : '🤍';
+        document.getElementById('like-count').textContent = data.like_count.toLocaleString();
+        document.getElementById('like-btn').classList.toggle('liked', data.liked);
+      }
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+    }
+  }
+
+  function shareProject() {
+    if (navigator.share) {
+      navigator.share({
+        title: document.getElementById('project-title').textContent,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  }
+
+  function editProject() {
+    window.location.href = `/profile?edit-project=${slug}`;
+  }
+
+  // Initialize
+  const projectManager = new ProjectPageManager();
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => projectManager.initialize(), 100);
+  });
+</script>
+
+<style>
+  /* Loading State */
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+  }
+
+  .loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--color-gray-200);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    margin-top: 1rem;
+    color: var(--color-gray-600);
+  }
+
+  /* Error State */
+  .error-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+  }
+
+  .error-content {
+    text-align: center;
+  }
+
+  .error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .error-content h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .error-content p {
+    color: var(--color-gray-600);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Project Hero */
+  .project-hero {
+    position: relative;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 4rem 0;
+    overflow: hidden;
+  }
+
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+  }
+
+  .category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .project-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .creator-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .creator-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  .creator-label {
+    display: block;
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .creator-name {
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .creator-name:hover {
+    text-decoration: underline;
+  }
+
+  .project-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    opacity: 0.9;
+  }
+
+  .stat-value {
+    font-weight: 700;
+  }
+
+  .project-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .btn-like, .btn-share, .btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-like {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  .btn-like:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-like.liked {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+
+  .btn-share {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  .btn-edit {
+    background: var(--color-primary);
+    border: none;
+    color: white;
+  }
+
+  /* Main Content */
+  .project-main {
+    padding: 3rem 0;
+  }
+
+  .project-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 3rem;
+  }
+
+  .project-description {
+    font-size: 1.125rem;
+    color: var(--color-gray-700);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  .project-content {
+    line-height: 1.8;
+  }
+
+  .project-content h1 {
+    font-size: 1.75rem;
+    margin: 2rem 0 1rem;
+  }
+
+  .project-content h2 {
+    font-size: 1.5rem;
+    margin: 1.5rem 0 1rem;
+  }
+
+  .project-content h3 {
+    font-size: 1.25rem;
+    margin: 1.25rem 0 0.75rem;
+  }
+
+  .project-content blockquote {
+    border-left: 4px solid var(--color-primary);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--color-gray-600);
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+  }
+
+  /* Media Gallery */
+  .media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .media-item {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-gray-100);
+  }
+
+  .media-item img, .media-item video {
+    width: 100%;
+    display: block;
+  }
+
+  .media-item audio {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .media-caption {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    padding: 0.5rem 1rem;
+  }
+
+  /* Tags */
+  .tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    padding: 0.25rem 0.75rem;
+    background: var(--color-gray-100);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .tag:hover {
+    background: var(--color-gray-200);
+  }
+
+  /* Sidebar */
+  .sidebar-card {
+    background: var(--color-gray-50);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-title {
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .external-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    color: var(--color-gray-800);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .external-link:hover {
+    background: white;
+  }
+
+  .link-arrow {
+    margin-left: auto;
+    opacity: 0.5;
+  }
+
+  .collaborator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+  }
+
+  .collab-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* Responsive */
+  @media (max-width: 968px) {
+    .project-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar-column {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .project-title {
+      font-size: 1.75rem;
+    }
+
+    .project-stats {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .project-actions {
+      flex-wrap: wrap;
+    }
+  }
+</style>

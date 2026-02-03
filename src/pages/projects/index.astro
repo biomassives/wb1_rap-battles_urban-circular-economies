@@ -1,0 +1,615 @@
+---
+/**
+ * projects/index.astro
+ * PROJECTS DISCOVERY PAGE
+ *
+ * Browse and discover public project pages from artists, scientists, and creators.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Category definitions
+const categories = [
+  { id: 'all', label: 'All Projects', icon: '📁' },
+  { id: 'music', label: 'Music', icon: '🎵' },
+  { id: 'science', label: 'Science', icon: '🔬' },
+  { id: 'art', label: 'Art', icon: '🎨' },
+  { id: 'technology', label: 'Technology', icon: '💻' },
+  { id: 'environment', label: 'Environment', icon: '🌍' },
+  { id: 'education', label: 'Education', icon: '📚' }
+];
+---
+
+<BaseLayout
+  title="Projects - WorldBridger One"
+  description="Discover projects from artists, scientists, and creators in the WorldBridger One community"
+  activeSection="projects"
+>
+
+  <div class="projects-page">
+    <div class="container mx-auto">
+
+      <!-- Header -->
+      <header class="page-header">
+        <h1 class="page-title">Discover Projects</h1>
+        <p class="page-description">
+          Explore creative works from artists, scientific research, and innovative projects from our global community.
+        </p>
+      </header>
+
+      <!-- Filters -->
+      <div class="filters-bar">
+        <!-- Category Filter -->
+        <div class="category-filters">
+          {categories.map(cat => (
+            <button
+              class={`category-btn ${cat.id === 'all' ? 'active' : ''}`}
+              data-category={cat.id}
+            >
+              <span class="cat-icon">{cat.icon}</span>
+              <span class="cat-label">{cat.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <!-- Search -->
+        <div class="search-box">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search projects..."
+            class="search-input"
+          />
+          <button class="search-btn">🔍</button>
+        </div>
+      </div>
+
+      <!-- Featured Projects -->
+      <section class="featured-section" id="featured-section">
+        <h2 class="section-title">Featured</h2>
+        <div class="featured-grid" id="featured-grid">
+          <!-- Featured projects loaded via JS -->
+        </div>
+      </section>
+
+      <!-- All Projects -->
+      <section class="projects-section">
+        <div class="section-header">
+          <h2 class="section-title" id="projects-title">All Projects</h2>
+          <div class="sort-controls">
+            <select id="sort-select" class="sort-select">
+              <option value="recent">Most Recent</option>
+              <option value="popular">Most Popular</option>
+              <option value="views">Most Viewed</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="projects-grid" id="projects-grid">
+          <!-- Projects loaded via JS -->
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loading-state">
+          <div class="loading-spinner"></div>
+          <p>Loading projects...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="empty-state" style="display: none;">
+          <div class="empty-icon">🔍</div>
+          <h3>No projects found</h3>
+          <p>Try adjusting your filters or search terms.</p>
+        </div>
+
+        <!-- Load More -->
+        <div class="load-more-container" id="load-more-container" style="display: none;">
+          <button class="btn-secondary" id="load-more-btn">Load More</button>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="cta-section">
+        <div class="cta-content">
+          <h2>Share Your Work</h2>
+          <p>Are you an artist, scientist, or creator? Create your own project page and share it with the world.</p>
+          <a href="/profile#create-project" class="btn-primary">Create Project</a>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+</BaseLayout>
+
+<script>
+  // Projects page manager
+  class ProjectsPageManager {
+    constructor() {
+      this.projects = [];
+      this.currentCategory = 'all';
+      this.searchQuery = '';
+      this.sortBy = 'recent';
+      this.page = 1;
+      this.perPage = 12;
+      this.hasMore = false;
+    }
+
+    async initialize() {
+      this.setupEventListeners();
+      await this.loadProjects();
+    }
+
+    setupEventListeners() {
+      // Category buttons
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.currentCategory = btn.dataset.category;
+          this.updateCategoryButtons();
+          this.page = 1;
+          this.loadProjects();
+        });
+      });
+
+      // Search input
+      const searchInput = document.getElementById('search-input');
+      let searchTimeout;
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          this.searchQuery = e.target.value;
+          this.page = 1;
+          this.loadProjects();
+        }, 300);
+      });
+
+      // Sort select
+      document.getElementById('sort-select').addEventListener('change', (e) => {
+        this.sortBy = e.target.value;
+        this.page = 1;
+        this.loadProjects();
+      });
+
+      // Load more button
+      document.getElementById('load-more-btn').addEventListener('click', () => {
+        this.page++;
+        this.loadProjects(true);
+      });
+    }
+
+    updateCategoryButtons() {
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.category === this.currentCategory);
+      });
+
+      // Update title
+      const category = this.currentCategory === 'all' ? 'All' : this.currentCategory.charAt(0).toUpperCase() + this.currentCategory.slice(1);
+      document.getElementById('projects-title').textContent = `${category} Projects`;
+    }
+
+    async loadProjects(append = false) {
+      if (!append) {
+        document.getElementById('loading-state').style.display = 'flex';
+        document.getElementById('projects-grid').innerHTML = '';
+        document.getElementById('empty-state').style.display = 'none';
+      }
+
+      try {
+        // Build query params
+        const params = new URLSearchParams();
+        if (this.currentCategory !== 'all') params.set('category', this.currentCategory);
+        if (this.searchQuery) params.set('search', this.searchQuery);
+        params.set('sort', this.sortBy);
+        params.set('page', this.page);
+        params.set('limit', this.perPage);
+
+        const response = await fetch(`/api/projects/discover?${params}`);
+        const data = await response.json();
+
+        document.getElementById('loading-state').style.display = 'none';
+
+        if (data.success && data.projects.length > 0) {
+          this.projects = append ? [...this.projects, ...data.projects] : data.projects;
+          this.renderProjects(data.projects, append);
+          this.hasMore = data.hasMore || false;
+          document.getElementById('load-more-container').style.display = this.hasMore ? 'flex' : 'none';
+        } else if (!append) {
+          // Use fallback/sample data for demo
+          const sampleProjects = this.getSampleProjects();
+          this.renderProjects(sampleProjects, false);
+        }
+
+        if (this.projects.length === 0) {
+          document.getElementById('empty-state').style.display = 'flex';
+        }
+
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+        document.getElementById('loading-state').style.display = 'none';
+
+        // Fallback to sample projects
+        const sampleProjects = this.getSampleProjects();
+        this.renderProjects(sampleProjects, false);
+      }
+    }
+
+    renderProjects(projects, append) {
+      const grid = document.getElementById('projects-grid');
+      const html = projects.map(p => this.renderProjectCard(p)).join('');
+
+      if (append) {
+        grid.innerHTML += html;
+      } else {
+        grid.innerHTML = html;
+      }
+    }
+
+    renderProjectCard(project) {
+      const categoryIcons = {
+        music: '🎵',
+        science: '🔬',
+        art: '🎨',
+        technology: '💻',
+        environment: '🌍',
+        education: '📚',
+        general: '📁'
+      };
+
+      const icon = categoryIcons[project.category] || '📁';
+      const creatorName = project.owner_username ||
+        `${(project.owner_wallet || '').substring(0, 4)}...`;
+
+      return `
+        <a href="/projects/${project.slug}" class="project-card">
+          <div class="card-image" style="background-image: url('${project.cover_image || '/images/placeholder-project.jpg'}')">
+            <div class="card-category">${icon}</div>
+          </div>
+          <div class="card-content">
+            <h3 class="card-title">${project.title}</h3>
+            <p class="card-description">${project.description || ''}</p>
+            <div class="card-meta">
+              <span class="card-creator">by ${creatorName}</span>
+              <div class="card-stats">
+                <span>👁️ ${(project.view_count || 0).toLocaleString()}</span>
+                <span>❤️ ${(project.like_count || 0).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      `;
+    }
+
+    getSampleProjects() {
+      return [
+        {
+          slug: 'pain-in-the-ghetto',
+          title: 'Pain in the Ghetto',
+          description: 'A musical journey through urban struggles and hope',
+          category: 'music',
+          owner_username: 'GhettoPoet',
+          cover_image: '/images/projects/pain-in-the-ghetto-cover.jpg',
+          view_count: 1247,
+          like_count: 89
+        },
+        {
+          slug: 'fana-ke-rap-battle-glitters-and-golds',
+          title: 'Fana Ke Rap Battle: Glitters and Golds',
+          description: 'The legendary rap battle series from Kakuma',
+          category: 'music',
+          owner_username: 'FanaKeBattles',
+          cover_image: '/images/projects/fana-ke-cover.jpg',
+          view_count: 3421,
+          like_count: 256
+        },
+        {
+          slug: 'porefec',
+          title: 'POREFEC',
+          description: 'Portable Renewable Energy for Communities - Scientific research project',
+          category: 'science',
+          owner_username: 'SolarInnovator',
+          cover_image: '/images/projects/porefec-cover.jpg',
+          view_count: 892,
+          like_count: 67
+        }
+      ];
+    }
+  }
+
+  // Initialize
+  const projectsManager = new ProjectsPageManager();
+  document.addEventListener('DOMContentLoaded', () => {
+    projectsManager.initialize();
+  });
+</script>
+
+<style>
+  .projects-page {
+    padding: 2rem 0 4rem;
+  }
+
+  /* Header */
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-description {
+    font-size: 1.125rem;
+    color: var(--color-gray-600);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Filters */
+  .filters-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .category-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background: var(--color-gray-100);
+    border: 2px solid transparent;
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .category-btn:hover {
+    background: var(--color-gray-200);
+  }
+
+  .category-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  .search-box {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-gray-200);
+    border-right: none;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    font-size: 1rem;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .search-btn {
+    padding: 0.75rem 1.25rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    cursor: pointer;
+  }
+
+  /* Sections */
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .sort-select {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    background: white;
+  }
+
+  /* Projects Grid */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-image {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--color-gray-200);
+    position: relative;
+  }
+
+  .card-category {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    width: 36px;
+    height: 36px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-content {
+    padding: 1.25rem;
+  }
+
+  .card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .card-description {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.813rem;
+    color: var(--color-gray-500);
+  }
+
+  .card-stats {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  /* Featured Section */
+  .featured-section {
+    margin-bottom: 3rem;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* Loading & Empty States */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-gray-200);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .load-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    margin-top: 4rem;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%);
+    border-radius: var(--radius-xl);
+    padding: 3rem;
+    text-align: center;
+    color: white;
+  }
+
+  .cta-section h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .cta-section p {
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-section .btn-primary {
+    background: white;
+    color: var(--color-primary);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem;
+    }
+
+    .category-filters {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      padding-bottom: 0.5rem;
+    }
+
+    .category-btn {
+      flex-shrink: 0;
+    }
+
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
