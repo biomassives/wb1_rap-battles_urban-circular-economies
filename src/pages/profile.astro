@@ -1,2843 +1,1850 @@
 ---
 /**
- * profile-v2.astro
- * Space Invaders Themed Profile - Mission Control for WorldBridger One
+ * profile.astro
+ * Streamlined Profile - Command Center for WorldBridger One
  *
- * Features:
- * - Retro gaming aesthetic with pixel art vibes
- * - XP/Level system integrated throughout
- * - Eco Projects management hub
- * - Music/Creative content studio
- * - Safe sharing controls for WorldBridger One
+ * 5 Focused Tabs:
+ * 1. Dashboard - Overview, notifications, quick actions
+ * 2. My Work - Projects, contributions, data submissions
+ * 3. Rewards - NFTs, claimable rewards, staking
+ * 4. Wallet - Balances, payouts, gift cards
+ * 5. Settings - Profile, notifications, privacy
  */
 
 import BaseLayout from "../layouts/BaseLayout.astro";
-import OracleStatusBand from "../components/OracleStatusBand.astro";
-import "../styles/mission-control.css";
 ---
 
 <BaseLayout
-  title="Mission Control"
-  description="Your command center for eco projects, music creation, and WorldBridger One operations"
+  title="Profile - WorldBridger One"
+  description="Your command center for projects, rewards, and community impact"
   activeSection="profile"
 >
-  <script src="/scripts/form-storage.js" is:inline></script>
-<script src="/scripts/mission-bridge.js" is:inline></script>
-  <script src="/scripts/profile-ui.js" is:inline></script>
 
+<div class="profile-page">
+  <div class="container">
 
-  <div class="mission-control">
-    <div class="container mx-auto">
-
-      <!-- ============================================ -->
-      <!-- COMMANDER HEADER - Space Invaders Style -->
-      <!-- ============================================ -->
-      <div class="commander-header pixel-border">
-        <div class="status-bar pixel-text">
-          <span class="status-item">█ MISSION_CONTROL</span>
-          <span class="status-item">▲ LEVEL_<span id="header-level">1</span></span>
-          <span class="status-item blink">◆ ONLINE</span>
+    <!-- ========== HEADER ========== -->
+    <header class="profile-header">
+      <div class="user-info">
+        <div class="avatar" id="user-avatar">
+          <span class="avatar-placeholder">?</span>
         </div>
-
-        <div class="commander-profile">
-          <!-- Avatar with Space Invader Style -->
-          <div class="commander-avatar pixel-art">
-            <div class="pixel-character" id="player-avatar">
-              <div class="pixel-row">▓▓▓▓▓</div>
-              <div class="pixel-row">▓█▓█▓</div>
-              <div class="pixel-row">▓▓▓▓▓</div>
-              <div class="pixel-row">▓▓▓▓▓</div>
-            </div>
-            <button class="avatar-change-btn pixel-btn" onclick="changeAvatar()">
-              <span>⚙</span>
-            </button>
-          </div>
-
-          <div class="commander-info">
-            <div class="rank-display">
-              <span class="rank-label pixel-text">COMMANDER</span>
-              <h1 class="commander-name glow-text" id="commander-name">LOADING...</h1>
-            </div>
-
-            <div class="id-chip pixel-border">
-              <span class="id-label">ID:</span>
-              <span class="id-value monospace" id="wallet-id">----</span>
-            </div>
-
-            <!-- XP Progress Bar - Arcade Style -->
-            <div class="xp-display">
-              <div class="xp-label-row">
-                <span class="xp-label pixel-text">EXPERIENCE</span>
-                <span class="xp-value glow-text"><span id="current-xp">0</span> XP</span>
-              </div>
-              <div class="xp-bar-container pixel-border">
-                <div class="xp-bar-fill pixel-gradient" id="xp-bar" style="width: 0%">
-                  <div class="xp-bar-shine"></div>
-                </div>
-              </div>
-              <div class="xp-next pixel-text">NEXT_LEVEL: <span id="xp-to-next">100</span> XP</div>
-            </div>
-          </div>
-
-          <!-- Stats Display - Retro Style -->
-          <div class="quick-stats-grid">
-            <div class="stat-box pixel-border">
-              <div class="stat-icon">▲</div>
-              <div class="stat-value glow-text" id="stat-level">1</div>
-              <div class="stat-label pixel-text">LEVEL</div>
-            </div>
-            <div class="stat-box pixel-border">
-              <div class="stat-icon">♫</div>
-              <div class="stat-value glow-text" id="stat-tracks">0</div>
-              <div class="stat-label pixel-text">TRACKS</div>
-            </div>
-            <div class="stat-box pixel-border">
-              <div class="stat-icon">🌍</div>
-              <div class="stat-value glow-text" id="stat-projects">0</div>
-              <div class="stat-label pixel-text">ECO_OPS</div>
-            </div>
-            <div class="stat-box pixel-border">
-              <div class="stat-icon">⚔</div>
-              <div class="stat-value glow-text" id="stat-battles">0</div>
-              <div class="stat-label pixel-text">BATTLES</div>
-            </div>
+        <div class="user-details">
+          <h1 class="username" id="username">Loading...</h1>
+          <div class="wallet-id" id="wallet-id">----</div>
+          <div class="level-badge">
+            <span class="level-icon">▲</span>
+            <span class="level-text">Level <span id="user-level">1</span></span>
           </div>
         </div>
       </div>
 
-      <!-- E8 Oracle Status -->
-      <OracleStatusBand />
-
-<nav class="mission-tabs grid grid-cols-2 md:grid-cols-5 gap-3 border-b border-green-900/30 pb-6">
-  <button class="mission-tab pixel-btn active group relative overflow-hidden bg-green-900/20 p-4 border-2 border-green-500" data-tab="overview">
-    <div class="text-xs opacity-50 mb-1 group-hover:text-white">01</div>
-    <div class="text-sm font-bold tracking-widest">█_OVERVIEW</div>
-    <div class="active-indicator absolute bottom-0 left-0 w-full h-1 bg-green-500 shadow-[0_0_15px_#00ff00]"></div>
-  </button>
-
-  <button class="mission-tab pixel-btn group p-4 border-2 border-purple-900 hover:border-purple-400 transition-colors" data-tab="my-projects">
-    <div class="text-xs opacity-50 mb-1">02</div>
-    <div class="text-sm font-bold tracking-widest">📁_PROJECTS</div>
-  </button>
-
-  <button class="mission-tab pixel-btn group p-4 border-2 border-green-900 hover:border-green-400 transition-colors" data-tab="eco-projects">
-    <div class="text-xs opacity-50 mb-1">03</div>
-    <div class="text-sm font-bold tracking-widest">🌍_ECO_OPS</div>
-  </button>
-
-  <button class="mission-tab pixel-btn group p-4 border-2 border-green-900 hover:border-magenta-500 transition-colors" data-tab="music-studio">
-    <div class="text-xs opacity-50 mb-1">04</div>
-    <div class="text-sm font-bold tracking-widest">♫_STUDIO</div>
-  </button>
-
-  <button class="mission-tab pixel-btn group p-4 border-2 border-orange-900 hover:border-orange-500 transition-colors" data-tab="nft-collection">
-    <div class="text-xs opacity-50 mb-1">05</div>
-    <div class="text-sm font-bold tracking-widest">💎_VAULT</div>
-  </button>
-</nav>
-
-      <!-- ============================================ -->
-      <!-- TAB: OVERVIEW - Mission Stats -->
-      <!-- ============================================ -->
-<div id="tab-overview" class="tab-content block">
-  <div class="grid md:grid-cols-2 gap-6">
-    <form id="profile-settings-form" data-mission-form="true" class="pixel-border p-4 bg-black">
-      <h3 class="text-green-500 mb-4 tracking-tighter">ID_ENCRYPTED_SETTINGS</h3>
-      
-      <div class="space-y-4">
-        <div>
-          <label class="block text-[10px] uppercase text-gray-500">Codename</label>
-          <input name="username" type="text" class="w-full bg-green-900/10 border border-green-900 p-2 text-white focus:outline-none focus:border-green-400" placeholder="CADET_STEWARD">
+      <div class="xp-progress">
+        <div class="xp-info">
+          <span class="xp-current"><span id="current-xp">0</span> XP</span>
+          <span class="xp-next">Next: <span id="xp-to-next">100</span></span>
         </div>
-        
-        <div>
-          <label class="block text-[10px] uppercase text-gray-500">Bio_Data</label>
-          <textarea name="bio" class="w-full bg-green-900/10 border border-green-900 p-2 text-white h-20 focus:outline-none focus:border-green-400"></textarea>
+        <div class="xp-bar">
+          <div class="xp-fill" id="xp-bar" style="width: 0%"></div>
         </div>
-
-        <button type="button" 
-                onclick="ProfileUI.syncTabToServer('profile-settings-form')"
-                data-sync="profile-settings-form"
-                class="w-full bg-green-600 text-black font-bold py-2 hover:bg-green-400 transition-colors">
-          PROMPT_SYNC_TO_NILE_DB
-        </button>
       </div>
-    </form>
 
-    <div class="pixel-border p-4 bg-green-900/5">
-       <h3 class="text-white mb-2">SENSORS_ACTIVE</h3>
-       <p class="text-xs text-green-700">All local data is cached to localStorage via window.formStorage.</p>
+      <!-- Notification Bell -->
+      <button class="notification-bell" id="notification-bell" onclick="toggleNotificationPanel()">
+        <span class="bell-icon">🔔</span>
+        <span class="notification-count" id="notification-count" style="display: none;">0</span>
+      </button>
+    </header>
+
+    <!-- ========== NOTIFICATION PANEL (Slide-out) ========== -->
+    <div class="notification-panel" id="notification-panel">
+      <div class="panel-header">
+        <h3>Notifications</h3>
+        <div class="panel-actions">
+          <button class="text-btn" onclick="markAllRead()">Mark all read</button>
+          <button class="close-btn" onclick="toggleNotificationPanel()">×</button>
+        </div>
+      </div>
+
+      <div class="notification-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="xp">XP</button>
+        <button class="filter-btn" data-filter="nft">NFT</button>
+        <button class="filter-btn" data-filter="project">Projects</button>
+        <button class="filter-btn" data-filter="payout">Wallet</button>
+      </div>
+
+      <div class="notification-list" id="notification-list">
+        <div class="loading-notifications">Loading...</div>
+      </div>
+    </div>
+
+    <!-- ========== TAB NAVIGATION ========== -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="dashboard">
+        <span class="tab-icon">📊</span>
+        <span class="tab-label">Dashboard</span>
+      </button>
+      <button class="tab-btn" data-tab="work">
+        <span class="tab-icon">📁</span>
+        <span class="tab-label">My Work</span>
+      </button>
+      <button class="tab-btn" data-tab="rewards">
+        <span class="tab-icon">🎁</span>
+        <span class="tab-label">Rewards</span>
+        <span class="tab-badge" id="rewards-badge" style="display: none;">!</span>
+      </button>
+      <button class="tab-btn" data-tab="wallet">
+        <span class="tab-icon">💰</span>
+        <span class="tab-label">Wallet</span>
+      </button>
+      <button class="tab-btn" data-tab="settings">
+        <span class="tab-icon">⚙️</span>
+        <span class="tab-label">Settings</span>
+      </button>
+    </nav>
+
+    <!-- ========== TAB: DASHBOARD ========== -->
+    <section class="tab-content active" id="tab-dashboard">
+      <!-- Quick Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-value" id="stat-xp">0</div>
+          <div class="stat-label">Total XP</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📁</div>
+          <div class="stat-value" id="stat-projects">0</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💎</div>
+          <div class="stat-value" id="stat-nfts">0</div>
+          <div class="stat-label">NFTs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🗳️</div>
+          <div class="stat-value" id="stat-votes">0</div>
+          <div class="stat-label">Votes Cast</div>
+        </div>
+      </div>
+
+      <!-- Recent Notifications (Inline) -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>Recent Activity</h3>
+          <button class="text-btn" onclick="switchTab('settings')">Manage →</button>
+        </div>
+        <div class="activity-feed" id="recent-activity">
+          <div class="empty-state">No recent activity</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>Quick Actions</h3>
+        </div>
+        <div class="quick-actions">
+          <button class="action-btn" onclick="openModal('submit-data')">
+            <span>📊</span> Log Data
+          </button>
+          <button class="action-btn" onclick="openModal('new-project')">
+            <span>➕</span> New Project
+          </button>
+          <button class="action-btn" onclick="switchTab('rewards')">
+            <span>🎁</span> Claim Rewards
+          </button>
+          <button class="action-btn" onclick="switchTab('wallet')">
+            <span>💸</span> Cash Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Health/Data Streak -->
+      <div class="section-card streak-card">
+        <div class="card-header">
+          <h3>🔥 Data Streak</h3>
+        </div>
+        <div class="streak-display">
+          <div class="streak-count" id="streak-count">0</div>
+          <div class="streak-label">days</div>
+        </div>
+        <p class="streak-message" id="streak-message">Start logging to build your streak!</p>
+        <button class="primary-btn" onclick="openModal('submit-data')">Log Today's Data</button>
+      </div>
+    </section>
+
+    <!-- ========== TAB: MY WORK ========== -->
+    <section class="tab-content" id="tab-work">
+      <!-- Sub-tabs -->
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-subtab="projects">Projects</button>
+        <button class="sub-tab" data-subtab="contributions">Contributions</button>
+        <button class="sub-tab" data-subtab="data">Data Submissions</button>
+      </div>
+
+      <!-- Projects Sub-tab -->
+      <div class="sub-content active" id="subtab-projects">
+        <div class="section-header">
+          <h3>My Projects</h3>
+          <button class="primary-btn" onclick="openModal('new-project')">+ New Project</button>
+        </div>
+        <div class="projects-list" id="my-projects-list">
+          <div class="loading">Loading projects...</div>
+        </div>
+      </div>
+
+      <!-- Contributions Sub-tab -->
+      <div class="sub-content" id="subtab-contributions">
+        <div class="section-header">
+          <h3>My Contributions</h3>
+        </div>
+        <div class="contributions-summary" id="contributions-summary">
+          <div class="summary-stat">
+            <span class="value" id="total-contributed">$0</span>
+            <span class="label">Total Value</span>
+          </div>
+          <div class="summary-stat">
+            <span class="value" id="projects-supported">0</span>
+            <span class="label">Projects Supported</span>
+          </div>
+          <div class="summary-stat">
+            <span class="value" id="equity-earned">0%</span>
+            <span class="label">Equity Earned</span>
+          </div>
+        </div>
+        <div class="contributions-list" id="contributions-list">
+          <div class="loading">Loading contributions...</div>
+        </div>
+      </div>
+
+      <!-- Data Submissions Sub-tab -->
+      <div class="sub-content" id="subtab-data">
+        <div class="section-header">
+          <h3>Data Submissions</h3>
+          <button class="primary-btn" onclick="openModal('submit-data')">+ Submit Data</button>
+        </div>
+        <div class="data-types">
+          <button class="type-btn" onclick="openModal('submit-data', 'environmental')">🌍 Environmental</button>
+          <button class="type-btn" onclick="openModal('submit-data', 'health')">❤️ Health</button>
+          <button class="type-btn" onclick="openModal('submit-data', 'community')">👥 Community</button>
+        </div>
+        <div class="submissions-list" id="data-submissions-list">
+          <div class="loading">Loading submissions...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TAB: REWARDS ========== -->
+    <section class="tab-content" id="tab-rewards">
+      <!-- Claimable Rewards -->
+      <div class="section-card highlight-card">
+        <div class="card-header">
+          <h3>🎁 Claimable Rewards</h3>
+        </div>
+        <div class="claimable-rewards" id="claimable-rewards">
+          <div class="loading">Checking eligibility...</div>
+        </div>
+      </div>
+
+      <!-- NFT Collection -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>💎 My NFTs</h3>
+          <a href="/nft-gallery" class="text-btn">View Gallery →</a>
+        </div>
+        <div class="nft-grid" id="nft-grid">
+          <div class="loading">Loading NFTs...</div>
+        </div>
+      </div>
+
+      <!-- Active Stakes -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>🔒 Active Stakes</h3>
+        </div>
+        <div class="stakes-list" id="stakes-list">
+          <div class="empty-state">No active stakes</div>
+        </div>
+        <button class="secondary-btn" onclick="openModal('stake-nft')">Stake an NFT</button>
+      </div>
+
+      <!-- Marketplace Activity -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>🛒 My Listings</h3>
+          <a href="/marketplace" class="text-btn">Marketplace →</a>
+        </div>
+        <div class="listings-list" id="my-listings">
+          <div class="empty-state">No active listings</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TAB: WALLET ========== -->
+    <section class="tab-content" id="tab-wallet">
+      <!-- Balances -->
+      <div class="balances-grid">
+        <div class="balance-card primary">
+          <div class="balance-label">Available XP</div>
+          <div class="balance-value" id="xp-balance">0</div>
+          <div class="balance-usd">≈ $<span id="xp-usd-value">0.00</span></div>
+        </div>
+        <div class="balance-card">
+          <div class="balance-label">USD Balance</div>
+          <div class="balance-value">$<span id="usd-balance">0.00</span></div>
+        </div>
+        <div class="balance-card">
+          <div class="balance-label">SOL Balance</div>
+          <div class="balance-value"><span id="sol-balance">0.00</span> SOL</div>
+        </div>
+        <div class="balance-card">
+          <div class="balance-label">Pending Royalties</div>
+          <div class="balance-value">$<span id="royalties-balance">0.00</span></div>
+        </div>
+      </div>
+
+      <!-- Cash Out Options -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>💸 Cash Out</h3>
+        </div>
+        <div class="cashout-options">
+          <button class="cashout-btn" onclick="openModal('payout', 'mobile_money')">
+            <span class="icon">📱</span>
+            <span class="label">Mobile Money</span>
+            <span class="desc">M-Pesa, Airtel Money</span>
+          </button>
+          <button class="cashout-btn" onclick="openModal('payout', 'crypto')">
+            <span class="icon">🔗</span>
+            <span class="label">Crypto</span>
+            <span class="desc">SOL, USDC</span>
+          </button>
+          <button class="cashout-btn" onclick="openModal('payout', 'gift_card')">
+            <span class="icon">🎁</span>
+            <span class="label">Gift Cards</span>
+            <span class="desc">Airtime, Data, Shopping</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KYC Status -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>🔐 Verification Status</h3>
+        </div>
+        <div class="kyc-status" id="kyc-status">
+          <div class="kyc-level">
+            <span class="level-badge" id="kyc-level-badge">Level 0</span>
+            <span class="level-name" id="kyc-level-name">None</span>
+          </div>
+          <div class="kyc-limits">
+            <p>Daily Limit: <strong>$<span id="daily-limit">50</span></strong></p>
+            <p>Used Today: <strong>$<span id="daily-used">0</span></strong></p>
+          </div>
+          <button class="secondary-btn" onclick="openModal('kyc-upgrade')">Upgrade Limits</button>
+        </div>
+      </div>
+
+      <!-- Recent Payouts -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>📋 Recent Payouts</h3>
+        </div>
+        <div class="payouts-list" id="payouts-list">
+          <div class="empty-state">No payouts yet</div>
+        </div>
+      </div>
+
+      <!-- Gift Card Redemptions -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>🎟️ My Gift Cards</h3>
+        </div>
+        <div class="gift-cards-list" id="gift-cards-list">
+          <div class="empty-state">No gift cards redeemed</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TAB: SETTINGS ========== -->
+    <section class="tab-content" id="tab-settings">
+      <!-- Profile Settings -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>👤 Profile</h3>
+        </div>
+        <form id="profile-form" class="settings-form">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" id="settings-username" placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea name="bio" id="settings-bio" rows="3" placeholder="Tell your story..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" name="location" id="settings-location" placeholder="City, Country">
+          </div>
+          <button type="submit" class="primary-btn">Save Profile</button>
+        </form>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>🔔 Notifications</h3>
+        </div>
+        <form id="notification-settings-form" class="settings-form">
+          <p class="form-description">Choose which notifications you want to receive.</p>
+
+          <div class="toggle-group">
+            <label class="toggle-row">
+              <span>⚡ XP & Level Updates</span>
+              <input type="checkbox" name="notify_xp" checked>
+              <span class="toggle-switch"></span>
+            </label>
+            <label class="toggle-row">
+              <span>🎁 NFT Rewards</span>
+              <input type="checkbox" name="notify_nft" checked>
+              <span class="toggle-switch"></span>
+            </label>
+            <label class="toggle-row">
+              <span>📁 Project Updates</span>
+              <input type="checkbox" name="notify_project" checked>
+              <span class="toggle-switch"></span>
+            </label>
+            <label class="toggle-row">
+              <span>🗳️ Governance</span>
+              <input type="checkbox" name="notify_governance" checked>
+              <span class="toggle-switch"></span>
+            </label>
+            <label class="toggle-row">
+              <span>💰 Wallet & Payouts</span>
+              <input type="checkbox" name="notify_payout" checked>
+              <span class="toggle-switch"></span>
+            </label>
+            <label class="toggle-row">
+              <span>👥 Social</span>
+              <input type="checkbox" name="notify_social" checked>
+              <span class="toggle-switch"></span>
+            </label>
+            <label class="toggle-row">
+              <span>⭐ Achievements</span>
+              <input type="checkbox" name="notify_achievement" checked>
+              <span class="toggle-switch"></span>
+            </label>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <div class="form-group">
+            <label>Email Notifications</label>
+            <select name="email_frequency" id="email-frequency">
+              <option value="never">Disabled</option>
+              <option value="instant">Instant</option>
+              <option value="daily">Daily Digest</option>
+              <option value="weekly">Weekly Summary</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="email-address-group" style="display: none;">
+            <label>Email Address</label>
+            <input type="email" name="email_address" id="settings-email" placeholder="your@email.com">
+          </div>
+
+          <button type="submit" class="primary-btn">Save Notifications</button>
+        </form>
+      </div>
+
+      <!-- Privacy Settings -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>🔒 Privacy</h3>
+        </div>
+        <form id="privacy-form" class="settings-form">
+          <div class="toggle-group">
+            <label class="toggle-row">
+              <span>Profile Visible</span>
+              <input type="checkbox" name="profile_visible" checked>
+              <span class="toggle-switch"></span>
+            </label>
+            <label class="toggle-row">
+              <span>Show Activity Feed</span>
+              <input type="checkbox" name="activity_visible" checked>
+              <span class="toggle-switch"></span>
+            </label>
+            <label class="toggle-row">
+              <span>Show NFT Collection</span>
+              <input type="checkbox" name="nfts_visible" checked>
+              <span class="toggle-switch"></span>
+            </label>
+          </div>
+          <button type="submit" class="primary-btn">Save Privacy</button>
+        </form>
+      </div>
+
+      <!-- Payout Settings -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>💳 Payout Settings</h3>
+        </div>
+        <form id="payout-settings-form" class="settings-form">
+          <div class="form-group">
+            <label>Preferred Method</label>
+            <select name="preferred_method" id="payout-method">
+              <option value="gift_card">Gift Cards</option>
+              <option value="mobile_money">Mobile Money</option>
+              <option value="crypto">Crypto (SOL)</option>
+            </select>
+          </div>
+
+          <div id="mobile-money-settings" style="display: none;">
+            <div class="form-group">
+              <label>Provider</label>
+              <select name="mobile_provider">
+                <option value="mpesa">M-Pesa</option>
+                <option value="airtel_money">Airtel Money</option>
+                <option value="mtn_momo">MTN MoMo</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" name="mobile_phone" placeholder="+254...">
+            </div>
+          </div>
+
+          <div id="crypto-settings" style="display: none;">
+            <div class="form-group">
+              <label>Wallet Address</label>
+              <input type="text" name="crypto_wallet" id="crypto-wallet" placeholder="Solana wallet address">
+              <button type="button" class="text-btn" onclick="useConnectedWallet()">Use Connected Wallet</button>
+            </div>
+          </div>
+
+          <button type="submit" class="primary-btn">Save Payout Settings</button>
+        </form>
+      </div>
+
+      <!-- Data Export -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>📥 Data Export</h3>
+        </div>
+        <p class="form-description">Download a copy of your data.</p>
+        <div class="export-buttons">
+          <button class="secondary-btn" onclick="exportData('profile')">Export Profile</button>
+          <button class="secondary-btn" onclick="exportData('activity')">Export Activity</button>
+          <button class="secondary-btn" onclick="exportData('all')">Export All</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ========== MODALS ========== -->
+<div class="modal-overlay" id="modal-overlay" style="display: none;">
+  <div class="modal" id="modal-container">
+    <div class="modal-header">
+      <h3 id="modal-title">Modal</h3>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- Dynamic content -->
     </div>
   </div>
 </div>
 
-
-
-
-      <div id="tab-overview" class="tab-content active">
-        <div class="section-header pixel-border">
-          <h2 class="section-title glow-text">█ MISSION_OVERVIEW</h2>
-          <p class="section-subtitle pixel-text">YOUR_WORLDBRIDGER_ONE_STATISTICS</p>
-        </div>
-
-        <div class="overview-grid">
-          <!-- Recent Activity Feed -->
-          <div class="activity-feed pixel-border">
-            <div class="feed-header">
-              <span class="pixel-text">▼ RECENT_ACTIVITY</span>
-            </div>
-            <div class="activity-list" id="activity-list">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <!-- Level Progress Card -->
-          <div class="progress-card pixel-border">
-            <div class="card-header pixel-text">▲ LEVEL_PROGRESSION</div>
-            <div class="level-visual">
-              <div class="level-circle glow-border">
-                <span class="level-number glow-text" id="level-display">1</span>
-              </div>
-              <div class="level-bars">
-                <div class="level-bar pixel-border">
-                  <div class="level-bar-fill" style="width: 0%"></div>
-                </div>
-              </div>
-            </div>
-            <div class="level-info">
-              <p class="pixel-text">RANK: <span class="glow-text" id="rank-name">CADET</span></p>
-              <p class="pixel-text">NEXT_RANK: <span id="next-rank">SCOUT</span></p>
-            </div>
-          </div>
-
-          <!-- Achievements Preview -->
-          <div class="achievements-preview pixel-border">
-            <div class="card-header pixel-text">⭐ LATEST_ACHIEVEMENTS</div>
-            <div class="achievement-slots" id="achievement-preview">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- TAB: MY PROJECTS - Public Project Pages -->
-      <!-- ============================================ -->
-      <div id="tab-my-projects" class="tab-content" style="display: none;">
-        <div class="section-header pixel-border">
-          <h2 class="section-title glow-text">📁 MY_PROJECT_PAGES</h2>
-          <p class="section-subtitle pixel-text">CREATE_AND_MANAGE_PUBLIC_PROJECT_PAGES</p>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="project-stats-bar pixel-border mb-6">
-          <div class="stat-item">
-            <span class="stat-value glow-text" id="projects-published-count">0</span>
-            <span class="stat-label pixel-text">PUBLISHED</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value glow-text" id="projects-draft-count">0</span>
-            <span class="stat-label pixel-text">DRAFTS</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value glow-text" id="projects-total-views">0</span>
-            <span class="stat-label pixel-text">TOTAL_VIEWS</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value glow-text" id="projects-total-likes">0</span>
-            <span class="stat-label pixel-text">TOTAL_LIKES</span>
-          </div>
-        </div>
-
-        <!-- Create New Project Button -->
-        <div class="action-panel pixel-border mb-6">
-          <button class="primary-action-btn pixel-btn" onclick="openProjectModal()">
-            <span class="btn-icon">+</span>
-            <span>CREATE_NEW_PROJECT</span>
-          </button>
-        </div>
-
-        <!-- Projects List -->
-        <div class="my-projects-grid" id="my-projects-grid">
-          <!-- Loading state -->
-          <div class="loading-projects pixel-text" id="projects-loading">
-            <span class="blink">LOADING_PROJECTS...</span>
-          </div>
-        </div>
-
-        <!-- Empty state (hidden by default) -->
-        <div class="empty-projects pixel-border" id="projects-empty" style="display: none;">
-          <div class="empty-icon">📁</div>
-          <h3 class="glow-text">NO_PROJECTS_YET</h3>
-          <p class="pixel-text">Create your first project page to share your work with the world.</p>
-          <p class="pixel-text mt-2">Project pages are public URLs like:</p>
-          <div class="example-urls mt-2">
-            <code class="text-green-400">/projects/your-project-name</code>
-          </div>
-          <button class="pixel-btn mt-4" onclick="openProjectModal()">+ CREATE_PROJECT</button>
-        </div>
-      </div>
-
-      <!-- Project Create/Edit Modal -->
-      <div id="project-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content pixel-border">
-          <div class="modal-header">
-            <h2 class="glow-text" id="project-modal-title">CREATE_NEW_PROJECT</h2>
-            <button class="close-btn pixel-btn" onclick="closeProjectModal()">✕</button>
-          </div>
-
-          <form id="project-form" class="modal-body">
-            <input type="hidden" name="projectId" id="project-id">
-            <input type="hidden" name="projectSlug" id="project-slug">
-
-            <div class="form-group">
-              <label class="pixel-text">PROJECT_TITLE *</label>
-              <input type="text" name="title" id="project-title" required
-                class="form-input" placeholder="e.g., Pain in the Ghetto">
-            </div>
-
-            <div class="form-group">
-              <label class="pixel-text">SUBTITLE</label>
-              <input type="text" name="subtitle" id="project-subtitle"
-                class="form-input" placeholder="A short tagline for your project">
-            </div>
-
-            <div class="form-group">
-              <label class="pixel-text">CATEGORY *</label>
-              <select name="category" id="project-category" class="form-input" required>
-                <option value="music">🎵 Music</option>
-                <option value="science">🔬 Science</option>
-                <option value="art">🎨 Art</option>
-                <option value="technology">💻 Technology</option>
-                <option value="environment">🌍 Environment</option>
-                <option value="education">📚 Education</option>
-                <option value="general">📁 General</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="pixel-text">SHORT_DESCRIPTION</label>
-              <textarea name="description" id="project-description"
-                class="form-input" rows="2" placeholder="Brief description for previews"></textarea>
-            </div>
-
-            <div class="form-group">
-              <label class="pixel-text">FULL_CONTENT (Markdown supported)</label>
-              <textarea name="content" id="project-content"
-                class="form-input" rows="8" placeholder="# Your Project
-
-Write about your project here. Markdown is supported.
-
-## Features
-- Feature 1
-- Feature 2
-
-## About
-Your story..."></textarea>
-            </div>
-
-            <div class="form-group">
-              <label class="pixel-text">COVER_IMAGE_URL</label>
-              <input type="url" name="cover_image" id="project-cover"
-                class="form-input" placeholder="https://...">
-            </div>
-
-            <div class="form-group">
-              <label class="pixel-text">TAGS (comma separated)</label>
-              <input type="text" name="tags" id="project-tags"
-                class="form-input" placeholder="hip-hop, kakuma, social-justice">
-            </div>
-
-            <div class="form-group">
-              <label class="pixel-text">VISIBILITY</label>
-              <select name="visibility" id="project-visibility" class="form-input">
-                <option value="public">🌍 Public - Listed everywhere</option>
-                <option value="unlisted">🔗 Unlisted - Accessible via direct link</option>
-                <option value="private">🔒 Private - Only you can see</option>
-              </select>
-            </div>
-
-            <div class="form-actions">
-              <button type="button" class="pixel-btn secondary" onclick="saveProjectDraft()">
-                SAVE_AS_DRAFT
-              </button>
-              <button type="submit" class="pixel-btn primary">
-                PUBLISH_PROJECT
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- TAB: ECO PROJECTS - Environmental Operations -->
-      <!-- ============================================ -->
-      <div id="tab-eco-projects" class="tab-content" style="display: none;">
-        <div class="section-header pixel-border">
-          <h2 class="section-title glow-text">🌍 ECO_PROJECT_OPERATIONS</h2>
-          <p class="section-subtitle pixel-text">MANAGE_ENVIRONMENTAL_INITIATIVES</p>
-        </div>
-
-        <!-- Project Creation -->
-        <div class="action-panel pixel-border">
-          <button class="primary-action-btn pixel-btn" onclick="createNewProject()">
-            <span class="btn-icon">+</span>
-            <span>LAUNCH_NEW_PROJECT</span>
-          </button>
-        </div>
-
-        <!-- Active Projects Grid -->
-        <div class="projects-grid">
-          <!-- Project Card Template -->
-          <div class="project-card pixel-border">
-            <div class="project-header">
-              <span class="project-status active pixel-text">● ACTIVE</span>
-              <span class="project-type pixel-text">[REFORESTATION]</span>
-            </div>
-            <h3 class="project-title glow-text">Kakuma_Forest_Initiative</h3>
-            <div class="project-stats">
-              <div class="project-stat">
-                <span class="stat-label pixel-text">IMPACT:</span>
-                <span class="stat-value glow-text">127 TREES</span>
-              </div>
-              <div class="project-stat">
-                <span class="stat-label pixel-text">PARTICIPANTS:</span>
-                <span class="stat-value glow-text">43 USERS</span>
-              </div>
-              <div class="project-stat">
-                <span class="stat-label pixel-text">XP_EARNED:</span>
-                <span class="stat-value glow-text">+2,450 XP</span>
-              </div>
-            </div>
-            <div class="project-progress">
-              <div class="progress-label pixel-text">COMPLETION: 67%</div>
-              <div class="progress-bar pixel-border">
-                <div class="progress-fill pixel-gradient" style="width: 67%"></div>
-              </div>
-            </div>
-            <div class="project-actions">
-              <button class="action-btn pixel-btn">VIEW_DETAILS</button>
-              <button class="action-btn pixel-btn">UPDATE_STATUS</button>
-              <button class="action-btn pixel-btn">SHARE_REPORT</button>
-            </div>
-          </div>
-
-          <!-- Add more project cards populated by JS -->
-          <div class="empty-slot pixel-border dashed">
-            <span class="pixel-text">+ CREATE_PROJECT</span>
-          </div>
-        </div>
-
-        <!-- Impact Metrics Dashboard -->
-        <div class="impact-dashboard pixel-border">
-          <h3 class="dashboard-title glow-text">▼ COLLECTIVE_IMPACT_METRICS</h3>
-          <div class="metrics-grid">
-            <div class="metric-card">
-              <div class="metric-icon">🌳</div>
-              <div class="metric-value glow-text">1,247</div>
-              <div class="metric-label pixel-text">TREES_PLANTED</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">💧</div>
-              <div class="metric-value glow-text">8,492</div>
-              <div class="metric-label pixel-text">LITERS_SAVED</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">♻️</div>
-              <div class="metric-value glow-text">342</div>
-              <div class="metric-label pixel-text">KG_RECYCLED</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">🏕️</div>
-              <div class="metric-value glow-text">156</div>
-              <div class="metric-label pixel-text">YOUTH_IMPACTED</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- TAB: MUSIC STUDIO - Creative Content Hub -->
-      <!-- ============================================ -->
-      <div id="tab-music-studio" class="tab-content" style="display: none;">
-        <div class="section-header pixel-border">
-          <h2 class="section-title glow-text">♫ MUSIC_STUDIO_CONTROL</h2>
-          <p class="section-subtitle pixel-text">CREATE_SHARE_AND_BATTLE</p>
-        </div>
-
-        <!-- Creation Tools -->
-        <div class="studio-tools">
-          <button class="tool-btn pixel-btn" onclick="openSampler()">
-            <span class="tool-icon">🎹</span>
-            <span class="tool-label">SAMPLER_PADS</span>
-          </button>
-          <button class="tool-btn pixel-btn" onclick="openRemixLab()">
-            <span class="tool-icon">🎚️</span>
-            <span class="tool-label">REMIX_LAB</span>
-          </button>
-          <button class="tool-btn pixel-btn" onclick="openBattleArena()">
-            <span class="tool-icon">⚔</span>
-            <span class="tool-label">BATTLE_ARENA</span>
-          </button>
-        </div>
-
-        <!-- Your Tracks Library -->
-        <div class="tracks-library pixel-border">
-          <div class="library-header">
-            <h3 class="glow-text">▼ YOUR_TRACKS</h3>
-            <button class="pixel-btn" onclick="uploadTrack()">+ UPLOAD_NEW</button>
-          </div>
-
-          <div class="tracks-grid" id="tracks-grid">
-            <!-- Track Card Template -->
-            <div class="track-card pixel-border">
-              <div class="track-visualizer">
-                <div class="waveform">
-                  <span>█</span><span>▓</span><span>█</span><span>▓</span>
-                  <span>█</span><span>▓</span><span>█</span><span>▓</span>
-                </div>
-              </div>
-              <div class="track-info">
-                <h4 class="track-title glow-text">Beat_001_Final</h4>
-                <p class="track-meta pixel-text">2:34 • 156 BPM • 2024-01-15</p>
-              </div>
-              <div class="track-stats">
-                <span class="stat pixel-text">👁 247</span>
-                <span class="stat pixel-text">❤ 89</span>
-                <span class="stat pixel-text">💬 23</span>
-              </div>
-              <div class="track-actions">
-                <button class="icon-btn pixel-btn" onclick="playTrack()">▶</button>
-                <button class="icon-btn pixel-btn" onclick="editTrack()">✎</button>
-                <button class="icon-btn pixel-btn" onclick="shareTrack()">📤</button>
-                <button class="icon-btn pixel-btn" onclick="deleteTrack()">✕</button>
-              </div>
-            </div>
-
-            <!-- Empty state -->
-            <div class="empty-slot pixel-border dashed">
-              <span class="pixel-text">+ CREATE_FIRST_TRACK</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Battle Stats -->
-        <div class="battle-stats pixel-border">
-          <h3 class="glow-text">⚔ BATTLE_RECORD</h3>
-          <div class="stats-row">
-            <div class="battle-stat">
-              <span class="stat-value glow-text">12</span>
-              <span class="stat-label pixel-text">WINS</span>
-            </div>
-            <div class="battle-stat">
-              <span class="stat-value glow-text">5</span>
-              <span class="stat-label pixel-text">LOSSES</span>
-            </div>
-            <div class="battle-stat">
-              <span class="stat-value glow-text">71%</span>
-              <span class="stat-label pixel-text">WIN_RATE</span>
-            </div>
-            <div class="battle-stat">
-              <span class="stat-value glow-text">5</span>
-              <span class="stat-label pixel-text">STREAK</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- TAB: NFT COLLECTION - Personal NFT Vault -->
-      <!-- ============================================ -->
-      <div id="tab-nft-collection" class="tab-content" style="display: none;">
-        <div class="section-header pixel-border">
-          <h2 class="section-title glow-text">💎 NFT_VAULT</h2>
-          <p class="section-subtitle pixel-text">YOUR_PERSONAL_RAPPER_COLLECTION</p>
-        </div>
-
-        <!-- Collection Summary -->
-        <div class="collection-summary pixel-border">
-          <div class="summary-stats">
-            <div class="summary-stat">
-              <span class="stat-value glow-text" id="owned-count">0</span>
-              <span class="stat-label pixel-text">OWNED</span>
-            </div>
-            <div class="summary-stat">
-              <span class="stat-value glow-text" id="collection-value">0</span>
-              <span class="stat-label pixel-text">TOTAL_VALUE_SOL</span>
-            </div>
-            <div class="summary-stat">
-              <span class="stat-value glow-text" id="rare-count">0</span>
-              <span class="stat-label pixel-text">RARE+</span>
-            </div>
-            <div class="summary-stat">
-              <span class="stat-value glow-text" id="nft-benefits">0</span>
-              <span class="stat-label pixel-text">ACTIVE_BENEFITS</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Filter & Sort Controls -->
-        <div class="nft-controls pixel-border">
-          <div class="control-group">
-            <label class="control-label pixel-text">FILTER:</label>
-            <select id="nft-rarity-filter" class="pixel-select">
-              <option value="all">All Rarities</option>
-              <option value="Common">Common</option>
-              <option value="Uncommon">Uncommon</option>
-              <option value="Rare">Rare</option>
-              <option value="Legendary">Legendary</option>
-            </select>
-          </div>
-          <div class="control-group">
-            <label class="control-label pixel-text">SORT:</label>
-            <select id="nft-sort" class="pixel-select">
-              <option value="recent">Recently Acquired</option>
-              <option value="rarity">By Rarity</option>
-              <option value="id">By ID Number</option>
-              <option value="value">By Value</option>
-            </select>
-          </div>
-          <div class="control-group">
-            <button class="pixel-btn" onclick="viewFullGallery()">
-              <span>VIEW_FULL_GALLERY →</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Owned NFTs Grid -->
-        <div class="owned-nfts-grid" id="owned-nfts-grid">
-          <!-- NFT Card Template (Owned) -->
-          <div class="owned-nft-card pixel-border" data-nft-id="1" data-rarity="Uncommon">
-            <!-- Card Header with Rarity -->
-            <div class="nft-card-header">
-              <span class="nft-number pixel-text">#001</span>
-              <span class="nft-rarity pixel-text" style="color: #00ffff; text-shadow: 0 0 10px #00ffff;">UNCOMMON</span>
-            </div>
-
-            <!-- NFT Preview -->
-            <div class="nft-preview">
-              <div class="nft-preview-image" style="background: linear-gradient(135deg, #8d5524 0%, #00ffff22 100%);">
-                <div class="nft-avatar">🐓</div>
-                <div class="ownership-badge pixel-border">
-                  <span class="pixel-text">OWNED</span>
-                </div>
-              </div>
-              <!-- Sound Wave Indicator -->
-              <div class="nft-sound-indicator">
-                <button class="sound-play-btn pixel-btn" onclick="playNFTSound(1)">
-                  <span>▶ PLAY_SOUND</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- NFT Info -->
-            <div class="nft-info">
-              <h4 class="nft-name glow-text">Chicken Rapper #001</h4>
-              <div class="nft-details pixel-text">
-                <div class="detail-line">
-                  <span>Spirit:</span>
-                  <span class="glow-text">Chicken</span>
-                </div>
-                <div class="detail-line">
-                  <span>Style:</span>
-                  <span class="glow-text">Dreads</span>
-                </div>
-                <div class="detail-line">
-                  <span>Value:</span>
-                  <span class="glow-text">0.5 SOL</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Holder Benefits -->
-            <div class="nft-benefits pixel-border">
-              <div class="benefit-header pixel-text">▼ HOLDER_BENEFITS:</div>
-              <div class="benefit-list">
-                <div class="benefit-item pixel-text">✓ +10% XP_BOOST</div>
-                <div class="benefit-item pixel-text">✓ EXCLUSIVE_SOUNDS</div>
-                <div class="benefit-item pixel-text">✓ PRIORITY_BATTLES</div>
-              </div>
-            </div>
-
-            <!-- Management Actions -->
-            <div class="nft-actions">
-              <button class="action-btn pixel-btn" onclick="viewNFTDetails(1)">
-                <span>VIEW_DETAILS</span>
-              </button>
-              <button class="action-btn pixel-btn" onclick="listNFTForSale(1)">
-                <span>LIST_FOR_SALE</span>
-              </button>
-              <button class="action-btn pixel-btn" onclick="transferNFT(1)">
-                <span>TRANSFER</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Empty State (shown when no NFTs owned) -->
-          <div class="empty-vault pixel-border dashed" id="empty-vault" style="display: none;">
-            <div class="empty-icon">💎</div>
-            <h3 class="pixel-text">NO_NFTs_IN_VAULT</h3>
-            <p class="pixel-text">Visit the gallery to acquire your first NFT</p>
-            <button class="pixel-btn" onclick="viewFullGallery()">
-              <span>BROWSE_COLLECTION →</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Quick Actions Panel -->
-        <div class="nft-quick-actions pixel-border">
-          <h3 class="glow-text">⚡ QUICK_ACTIONS</h3>
-          <div class="quick-actions-grid">
-            <button class="quick-action-btn pixel-btn" onclick="claimFreeNFT()">
-              <span class="action-icon">🎁</span>
-              <span class="action-label">CLAIM_FREE_NFT</span>
-            </button>
-            <button class="quick-action-btn pixel-btn" onclick="viewMarketplace()">
-              <span class="action-icon">🛒</span>
-              <span class="action-label">MARKETPLACE</span>
-            </button>
-            <button class="quick-action-btn pixel-btn" onclick="viewMyListings()">
-              <span class="action-icon">📋</span>
-              <span class="action-label">MY_LISTINGS</span>
-            </button>
-            <button class="quick-action-btn pixel-btn" onclick="viewOffers()">
-              <span class="action-icon">💬</span>
-              <span class="action-label">VIEW_OFFERS</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- TAB: SHARED CONTENT - WorldBridger One Data -->
-      <!-- ============================================ -->
-      <div id="tab-shared-content" class="tab-content" style="display: none;">
-        <div class="section-header pixel-border">
-          <h2 class="section-title glow-text">📡 SHARED_CONTENT_CONTROL</h2>
-          <p class="section-subtitle pixel-text">MANAGE_WORLDBRIDGER_ONE_SHARING</p>
-        </div>
-
-        <!-- Privacy Controls -->
-        <div class="privacy-panel pixel-border">
-          <h3 class="glow-text">🔒 PRIVACY_SETTINGS</h3>
-          <div class="privacy-toggles">
-            <div class="toggle-row">
-              <label class="toggle-label pixel-text">
-                <input type="checkbox" class="privacy-toggle" data-permission="profile_visible" checked />
-                <span class="toggle-switch pixel-border"></span>
-                <span class="toggle-text">PROFILE_VISIBILITY</span>
-              </label>
-              <span class="toggle-status pixel-text">PUBLIC</span>
-            </div>
-            <div class="toggle-row">
-              <label class="toggle-label pixel-text">
-                <input type="checkbox" class="privacy-toggle" data-permission="music_sharing" checked />
-                <span class="toggle-switch pixel-border"></span>
-                <span class="toggle-text">MUSIC_SHARING</span>
-              </label>
-              <span class="toggle-status pixel-text">ENABLED</span>
-            </div>
-            <div class="toggle-row">
-              <label class="toggle-label pixel-text">
-                <input type="checkbox" class="privacy-toggle" data-permission="project_sharing" checked />
-                <span class="toggle-switch pixel-border"></span>
-                <span class="toggle-text">PROJECT_SHARING</span>
-              </label>
-              <span class="toggle-status pixel-text">ENABLED</span>
-            </div>
-            <div class="toggle-row">
-              <label class="toggle-label pixel-text">
-                <input type="checkbox" class="privacy-toggle" data-permission="activity_feed" />
-                <span class="toggle-switch pixel-border"></span>
-                <span class="toggle-text">ACTIVITY_FEED</span>
-              </label>
-              <span class="toggle-status pixel-text">PRIVATE</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Content Permissions -->
-        <div class="permissions-grid">
-          <div class="permission-card pixel-border">
-            <h4 class="card-title glow-text">♫ MUSIC_CONTENT</h4>
-            <p class="pixel-text">Control who can access your tracks and remixes</p>
-            <div class="permission-options">
-              <label class="radio-option pixel-text">
-                <input type="radio" name="music_permission" value="public" checked />
-                <span>PUBLIC - All users</span>
-              </label>
-              <label class="radio-option pixel-text">
-                <input type="radio" name="music_permission" value="community" />
-                <span>COMMUNITY - Verified only</span>
-              </label>
-              <label class="radio-option pixel-text">
-                <input type="radio" name="music_permission" value="private" />
-                <span>PRIVATE - Only me</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="permission-card pixel-border">
-            <h4 class="card-title glow-text">🌍 ECO_PROJECTS</h4>
-            <p class="pixel-text">Control visibility of your environmental work</p>
-            <div class="permission-options">
-              <label class="radio-option pixel-text">
-                <input type="radio" name="project_permission" value="public" checked />
-                <span>PUBLIC - All users</span>
-              </label>
-              <label class="radio-option pixel-text">
-                <input type="radio" name="project_permission" value="community" />
-                <span>COMMUNITY - Verified only</span>
-              </label>
-              <label class="radio-option pixel-text">
-                <input type="radio" name="project_permission" value="private" />
-                <span>PRIVATE - Only me</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Data Export -->
-        <div class="data-export pixel-border">
-          <h3 class="glow-text">📥 DATA_MANAGEMENT</h3>
-          <div class="export-options">
-            <button class="action-btn pixel-btn" onclick="exportProfile()">
-              <span>EXPORT_PROFILE_DATA</span>
-            </button>
-            <button class="action-btn pixel-btn" onclick="exportTracks()">
-              <span>EXPORT_MUSIC_LIBRARY</span>
-            </button>
-            <button class="action-btn pixel-btn" onclick="exportProjects()">
-              <span>EXPORT_PROJECT_DATA</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- TAB: ACHIEVEMENTS - Unlocked Badges -->
-      <!-- ============================================ -->
-      <div id="tab-achievements" class="tab-content" style="display: none;">
-        <div class="section-header pixel-border">
-          <h2 class="section-title glow-text">⭐ ACHIEVEMENT_COLLECTION</h2>
-          <p class="section-subtitle pixel-text">UNLOCKED_BADGES: <span id="achievement-count">0</span>/50</p>
-        </div>
-
-        <div class="achievements-grid" id="achievements-grid">
-          <!-- Achievement Badge Template -->
-          <div class="achievement-badge pixel-border unlocked">
-            <div class="badge-icon glow-text">⭐</div>
-            <h4 class="badge-title pixel-text">FIRST_STEPS</h4>
-            <p class="badge-description">Created your wallet</p>
-            <div class="badge-xp pixel-text">+200 XP</div>
-          </div>
-
-          <div class="achievement-badge pixel-border locked">
-            <div class="badge-icon">🔒</div>
-            <h4 class="badge-title pixel-text">???</h4>
-            <p class="badge-description">Locked achievement</p>
-          </div>
-
-          <!-- More achievement slots populated by JS -->
-        </div>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- TAB: SETTINGS - System Configuration -->
-      <!-- ============================================ -->
-      <div id="tab-settings" class="tab-content" style="display: none;">
-        <div class="section-header pixel-border">
-          <h2 class="section-title glow-text">⚙ SYSTEM_SETTINGS</h2>
-          <p class="section-subtitle pixel-text">CONFIGURE_YOUR_EXPERIENCE</p>
-        </div>
-
-        <form id="settings-form" class="settings-form">
-          <!-- Profile Settings -->
-          <div class="settings-section pixel-border">
-            <h3 class="section-title pixel-text">▼ PROFILE_CONFIGURATION</h3>
-
-            <div class="form-group">
-              <label class="form-label pixel-text">COMMANDER_NAME</label>
-              <input type="text" id="username" name="username" class="pixel-input" placeholder="Enter name..." />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label pixel-text">BIO_DATA</label>
-              <textarea id="bio" name="bio" class="pixel-textarea" rows="4" placeholder="Tell your story..."></textarea>
-              <span class="char-count pixel-text"><span id="bio-count">0</span>/500</span>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label pixel-text">LOCATION_TAG</label>
-              <input type="text" id="location" name="location" class="pixel-input" placeholder="e.g., Nairobi, Kenya" />
-            </div>
-          </div>
-
-          <!-- Display Settings -->
-          <div class="settings-section pixel-border">
-            <h3 class="section-title pixel-text">▼ DISPLAY_OPTIONS</h3>
-
-            <div class="setting-row">
-              <label class="pixel-text">THEME_MODE</label>
-              <select class="pixel-select" name="theme">
-                <option value="dark">DARK_MODE</option>
-                <option value="light">LIGHT_MODE</option>
-                <option value="auto">AUTO_DETECT</option>
-              </select>
-            </div>
-
-            <div class="setting-row">
-              <label class="pixel-text">
-                <input type="checkbox" name="reduce_motion" />
-                REDUCE_ANIMATIONS
-              </label>
-            </div>
-
-            <div class="setting-row">
-              <label class="pixel-text">
-                <input type="checkbox" name="show_xp_notifications" checked />
-                XP_NOTIFICATIONS
-              </label>
-            </div>
-          </div>
-
-          <!-- Notification Settings -->
-          <div class="settings-section pixel-border">
-            <h3 class="section-title pixel-text">▼ NOTIFICATION_PREFERENCES</h3>
-
-            <div class="setting-row">
-              <label class="pixel-text">
-                <input type="checkbox" name="notify_battles" checked />
-                BATTLE_INVITATIONS
-              </label>
-            </div>
-
-            <div class="setting-row">
-              <label class="pixel-text">
-                <input type="checkbox" name="notify_projects" checked />
-                PROJECT_UPDATES
-              </label>
-            </div>
-
-            <div class="setting-row">
-              <label class="pixel-text">
-                <input type="checkbox" name="notify_achievements" checked />
-                ACHIEVEMENT_UNLOCKS
-              </label>
-            </div>
-          </div>
-
-          <!-- Form Actions -->
-          <div class="form-actions">
-            <button type="button" class="secondary-btn pixel-btn" onclick="resetSettings()">
-              RESET_DEFAULTS
-            </button>
-            <button type="submit" class="primary-btn pixel-btn">
-              SAVE_CONFIGURATION
-            </button>
-          </div>
-        </form>
-      </div>
-
-    </div>
-  </div>
 </BaseLayout>
 
-<script>
-/**
- * Mission Control Manager
- * Handles profile data, XP display, and content management
- */
-class MissionControlManager {
-  constructor() {
-    this.userData = null;
-    this.currentTab = 'overview';
-  }
-
-  async initialize() {
-    const walletAddress = window.walletManager?.connectedWallet;
-    if (!walletAddress) {
-      window.location.href = "/";
-      return;
-    }
-
-    // Load user data
-    await this.loadUserData(walletAddress);
-    this.setupEventListeners();
-    this.startAnimations();
-  }
-
-  async loadUserData(walletAddress) {
-    try {
-      // Load progress from progressManager
-      const progress = window.progressManager?.currentProgress;
-
-      if (progress) {
-        this.userData = progress;
-        this.updateAllDisplays();
-      }
-    } catch (error) {
-      console.error('Failed to load user data:', error);
-    }
-  }
-
-  updateAllDisplays() {
-    if (!this.userData) return;
-
-    const { progression, music, environmental } = this.userData;
-
-    // Update header
-    document.getElementById('commander-name').textContent =
-      this.userData.user?.username || 'COMMANDER';
-    document.getElementById('wallet-id').textContent =
-      this.formatWalletId(this.userData.user?.wallet_address);
-
-    // Update XP displays
-    document.getElementById('header-level').textContent = progression.currentLevel;
-    document.getElementById('current-xp').textContent = progression.totalXP;
-    document.getElementById('stat-level').textContent = progression.currentLevel;
-    document.getElementById('level-display').textContent = progression.currentLevel;
-
-    // Calculate XP bar
-    const nextLevelXP = (progression.currentLevel + 1) * 100;
-    const currentLevelXP = progression.currentLevel * 100;
-    const progressToNext = progression.totalXP - currentLevelXP;
-    const xpNeeded = nextLevelXP - currentLevelXP;
-    const percentage = (progressToNext / xpNeeded) * 100;
-
-    document.getElementById('xp-bar').style.width = `${percentage}%`;
-    document.getElementById('xp-to-next').textContent = xpNeeded - progressToNext;
-
-    // Update stats
-    document.getElementById('stat-tracks').textContent = music?.publishedTracks || 0;
-    document.getElementById('stat-projects').textContent = environmental?.projectsParticipated || 0;
-    document.getElementById('stat-battles').textContent = music?.battles?.total || 0;
-
-    // Update rank name
-    document.getElementById('rank-name').textContent = this.getRankName(progression.currentLevel);
-    document.getElementById('next-rank').textContent = this.getRankName(progression.currentLevel + 1);
-  }
-
-  formatWalletId(address) {
-    if (!address) return '----';
-    return `${address.substring(0, 4)}...${address.substring(address.length - 4)}`;
-  }
-
-  getRankName(level) {
-    if (level < 5) return 'CADET';
-    if (level < 10) return 'SCOUT';
-    if (level < 20) return 'OFFICER';
-    if (level < 35) return 'COMMANDER';
-    if (level < 50) return 'CAPTAIN';
-    if (level < 75) return 'MAJOR';
-    if (level < 100) return 'GENERAL';
-    return 'LEGEND';
-  }
-
-  setupEventListeners() {
-    // Tab switching
-    document.querySelectorAll('.mission-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabName = tab.dataset.tab;
-        this.switchTab(tabName);
-      });
-    });
-
-    // Bio character counter
-    const bioInput = document.getElementById('bio');
-    if (bioInput) {
-      bioInput.addEventListener('input', (e) => {
-        document.getElementById('bio-count').textContent = e.target.value.length;
-      });
-    }
-
-    // Settings form
-    const settingsForm = document.getElementById('settings-form');
-    if (settingsForm) {
-      settingsForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await this.saveSettings();
-      });
-    }
-  }
-
-  switchTab(tabName) {
-    // Update active tab
-    document.querySelectorAll('.mission-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-    // Show corresponding content
-    document.querySelectorAll('.tab-content').forEach(content => {
-      content.style.display = 'none';
-    });
-    document.getElementById(`tab-${tabName}`).style.display = 'block';
-
-    this.currentTab = tabName;
-
-    // Load data for specific tabs
-    if (tabName === 'nft-collection') {
-      loadOwnedNFTs();
-    }
-  }
-
-  async saveSettings() {
-    // Save settings logic here
-    console.log('Saving settings...');
-
-    // Award XP for updating profile
-    await window.progressManager?.awardXP(25, 'profile_updated', 'Updated profile settings');
-
-    alert('✅ SETTINGS_SAVED');
-  }
-
-  startAnimations() {
-    // Blink animation for online status
-    setInterval(() => {
-      const blinkElements = document.querySelectorAll('.blink');
-      blinkElements.forEach(el => {
-        el.style.opacity = el.style.opacity === '0' ? '1' : '0';
-      });
-    }, 500);
-  }
-}
-
-// Global functions for button actions
-window.changeAvatar = () => {
-  alert('🎨 AVATAR_CUSTOMIZATION_COMING_SOON');
-};
-
-window.createNewProject = () => {
-  alert('🌍 PROJECT_CREATION_INTERFACE_LOADING...');
-};
-
-window.openSampler = () => {
-  window.location.href = '/sampler';
-};
-
-window.openRemixLab = () => {
-  window.location.href = '/audio-remix-lab';
-};
-
-window.openBattleArena = () => {
-  alert('⚔ BATTLE_ARENA_COMING_SOON');
-};
-
-window.uploadTrack = () => {
-  alert('♫ TRACK_UPLOAD_INTERFACE_LOADING...');
-};
-
-window.exportProfile = () => {
-  alert('📥 EXPORTING_PROFILE_DATA...');
-};
-
-window.exportTracks = () => {
-  alert('📥 EXPORTING_MUSIC_LIBRARY...');
-};
-
-window.exportProjects = () => {
-  alert('📥 EXPORTING_PROJECT_DATA...');
-};
-
-// ============================================
-// PROJECT PAGE MANAGEMENT
-// ============================================
-
-class ProjectPageManager {
-  constructor() {
-    this.projects = [];
-    this.editingProject = null;
-  }
-
-  async loadProjects() {
-    const walletAddress = window.walletManager?.connectedWallet;
-    if (!walletAddress) return;
-
-    try {
-      const response = await fetch(`/api/projects/user?walletAddress=${walletAddress}&viewerWallet=${walletAddress}`);
-      const data = await response.json();
-
-      if (data.success) {
-        this.projects = data.projects || [];
-        this.renderProjects();
-        this.updateStats(data.stats);
-      }
-    } catch (error) {
-      console.error('Failed to load projects:', error);
-      document.getElementById('projects-loading').style.display = 'none';
-      document.getElementById('projects-empty').style.display = 'flex';
-    }
-  }
-
-  updateStats(stats) {
-    if (!stats) return;
-    document.getElementById('projects-published-count').textContent = stats.published_count || 0;
-    document.getElementById('projects-draft-count').textContent = stats.draft_count || 0;
-    document.getElementById('projects-total-views').textContent = (stats.total_views || 0).toLocaleString();
-    document.getElementById('projects-total-likes').textContent = (stats.total_likes || 0).toLocaleString();
-  }
-
-  renderProjects() {
-    const grid = document.getElementById('my-projects-grid');
-    const loading = document.getElementById('projects-loading');
-    const empty = document.getElementById('projects-empty');
-
-    loading.style.display = 'none';
-
-    if (this.projects.length === 0) {
-      empty.style.display = 'flex';
-      grid.innerHTML = '';
-      return;
-    }
-
-    empty.style.display = 'none';
-    grid.innerHTML = this.projects.map(p => this.renderProjectCard(p)).join('');
-  }
-
-  renderProjectCard(project) {
-    const statusClass = project.status === 'published' ? 'active' : 'draft';
-    const statusText = project.status === 'published' ? '● PUBLISHED' : '○ DRAFT';
-    const categoryIcons = {
-      music: '🎵', science: '🔬', art: '🎨', technology: '💻',
-      environment: '🌍', education: '📚', general: '📁'
-    };
-    const icon = categoryIcons[project.category] || '📁';
-
-    return `
-      <div class="project-card pixel-border" data-project-id="${project.id}">
-        <div class="project-header">
-          <span class="project-status ${statusClass} pixel-text">${statusText}</span>
-          <span class="project-type pixel-text">[${icon} ${project.category?.toUpperCase()}]</span>
-        </div>
-        <h3 class="project-title glow-text">${project.title}</h3>
-        ${project.subtitle ? `<p class="project-subtitle pixel-text">${project.subtitle}</p>` : ''}
-        <div class="project-stats">
-          <span class="stat pixel-text">👁 ${(project.view_count || 0).toLocaleString()}</span>
-          <span class="stat pixel-text">❤ ${(project.like_count || 0).toLocaleString()}</span>
-        </div>
-        <div class="project-actions">
-          <button class="action-btn pixel-btn" onclick="window.open('/projects/${project.slug}', '_blank')">VIEW</button>
-          <button class="action-btn pixel-btn" onclick="window.projectPageManager.editProject('${project.slug}')">EDIT</button>
-          <button class="action-btn pixel-btn" onclick="window.projectPageManager.copyProjectLink('${project.slug}')">COPY_LINK</button>
-          <button class="action-btn pixel-btn danger" onclick="window.projectPageManager.deleteProject('${project.slug}')">DELETE</button>
-        </div>
-      </div>
-    `;
-  }
-
-  openModal(project = null) {
-    this.editingProject = project;
-    const modal = document.getElementById('project-modal');
-    const form = document.getElementById('project-form');
-
-    // Reset form
-    form.reset();
-
-    if (project) {
-      document.getElementById('project-modal-title').textContent = 'EDIT_PROJECT';
-      document.getElementById('project-id').value = project.id;
-      document.getElementById('project-slug').value = project.slug;
-      document.getElementById('project-title').value = project.title || '';
-      document.getElementById('project-subtitle').value = project.subtitle || '';
-      document.getElementById('project-category').value = project.category || 'general';
-      document.getElementById('project-description').value = project.description || '';
-      document.getElementById('project-content').value = project.content || '';
-      document.getElementById('project-cover').value = project.cover_image || '';
-      document.getElementById('project-tags').value = (project.tags || []).join(', ');
-      document.getElementById('project-visibility').value = project.visibility || 'public';
-    } else {
-      document.getElementById('project-modal-title').textContent = 'CREATE_NEW_PROJECT';
-      document.getElementById('project-id').value = '';
-      document.getElementById('project-slug').value = '';
-    }
-
-    modal.style.display = 'flex';
-  }
-
-  closeModal() {
-    document.getElementById('project-modal').style.display = 'none';
-    this.editingProject = null;
-  }
-
-  async editProject(slug) {
-    try {
-      const walletAddress = window.walletManager?.connectedWallet;
-      const response = await fetch(`/api/projects/${slug}?walletAddress=${walletAddress}`);
-      const data = await response.json();
-
-      if (data.success && data.project) {
-        this.openModal(data.project);
-      } else {
-        alert('❌ Failed to load project');
-      }
-    } catch (error) {
-      console.error('Failed to load project:', error);
-      alert('❌ Failed to load project');
-    }
-  }
-
-  copyProjectLink(slug) {
-    const url = `${window.location.origin}/projects/${slug}`;
-    navigator.clipboard.writeText(url);
-    alert(`📋 Link copied: ${url}`);
-  }
-
-  async deleteProject(slug) {
-    if (!confirm('Are you sure you want to delete this project? This cannot be undone.')) {
-      return;
-    }
-
-    try {
-      const walletAddress = window.walletManager?.connectedWallet;
-      const response = await fetch('/api/projects/delete', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ walletAddress, slug })
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        alert('✅ Project deleted');
-        this.loadProjects();
-      } else {
-        alert(`❌ ${data.error || 'Failed to delete'}`);
-      }
-    } catch (error) {
-      console.error('Failed to delete project:', error);
-      alert('❌ Failed to delete project');
-    }
-  }
-
-  async saveProject(status = 'published') {
-    const walletAddress = window.walletManager?.connectedWallet;
-    if (!walletAddress) {
-      alert('❌ Please connect your wallet');
-      return;
-    }
-
-    const form = document.getElementById('project-form');
-    const formData = new FormData(form);
-
-    const projectData = {
-      walletAddress,
-      title: formData.get('title'),
-      subtitle: formData.get('subtitle'),
-      category: formData.get('category'),
-      description: formData.get('description'),
-      content: formData.get('content'),
-      cover_image: formData.get('cover_image'),
-      tags: formData.get('tags')?.split(',').map(t => t.trim()).filter(t => t) || [],
-      visibility: formData.get('visibility'),
-      status
-    };
-
-    const projectId = formData.get('projectId');
-    const projectSlug = formData.get('projectSlug');
-
-    try {
-      let response;
-      if (projectId || projectSlug) {
-        // Update existing project
-        projectData.projectId = projectId;
-        projectData.slug = projectSlug;
-        response = await fetch('/api/projects/update', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(projectData)
-        });
-      } else {
-        // Create new project
-        response = await fetch('/api/projects/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(projectData)
-        });
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        this.closeModal();
-        alert(`✅ Project ${status === 'draft' ? 'saved as draft' : 'published'}!${data.project?.slug ? '\nView at: /projects/' + data.project.slug : ''}`);
-        this.loadProjects();
-      } else {
-        alert(`❌ ${data.error || 'Failed to save'}`);
-      }
-    } catch (error) {
-      console.error('Failed to save project:', error);
-      alert('❌ Failed to save project');
-    }
-  }
-}
-
-// Initialize project manager
-window.projectPageManager = new ProjectPageManager();
-
-// Global functions for project management
-window.openProjectModal = (project = null) => {
-  window.projectPageManager.openModal(project);
-};
-
-window.closeProjectModal = () => {
-  window.projectPageManager.closeModal();
-};
-
-window.saveProjectDraft = () => {
-  window.projectPageManager.saveProject('draft');
-};
-
-// Form submit handler
-document.getElementById('project-form')?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  await window.projectPageManager.saveProject('published');
-});
-
-// Load projects when my-projects tab is shown
-const originalSwitchTab = MissionControlManager.prototype.switchTab;
-MissionControlManager.prototype.switchTab = function(tabName) {
-  originalSwitchTab.call(this, tabName);
-  if (tabName === 'my-projects') {
-    window.projectPageManager.loadProjects();
-  }
-};
-
-// ============================================
-// END PROJECT PAGE MANAGEMENT
-// ============================================
-
-window.resetSettings = () => {
-  if (confirm('Reset all settings to defaults?')) {
-    document.getElementById('settings-form').reset();
-  }
-};
-
-// NFT Collection Functions
-window.viewFullGallery = () => {
-  window.location.href = '/nft-gallery';
-};
-
-window.viewNFTDetails = (nftId) => {
-  window.location.href = `/nft-gallery/${nftId}`;
-};
-
-window.playNFTSound = (nftId) => {
-  // Audio playback logic (integrate with nft-gallery audio system)
-  alert(`🔊 PLAYING_NFT_${nftId}_SOUND...`);
-};
-
-window.listNFTForSale = async (mintAddress) => {
-  try {
-    const price = prompt('Enter listing price (in SOL):');
-    if (!price || parseFloat(price) <= 0) return;
-
-    const priceFloat = parseFloat(price);
-    const walletAddress = window.walletManager?.connectedWallet;
-
-    if (!walletAddress) {
-      alert('❌ Please connect your wallet first');
-      return;
-    }
-
-    // Call API to create listing
-    const response = await fetch('/api/nft/list-for-sale', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        mintAddress,
-        sellerAddress: walletAddress,
-        price: priceFloat,
-        duration: 30
-      })
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      alert(`✅ NFT listed for ${priceFloat} SOL!\nListing ID: ${result.listing.listingId}`);
-    } else {
-      alert(`❌ Listing failed: ${result.error}`);
-    }
-  } catch (error) {
-    console.error('Listing error:', error);
-    alert('❌ Failed to list NFT');
-  }
-};
-
-window.transferNFT = async (mintAddress) => {
-  try {
-    const recipient = prompt('Enter recipient wallet address:');
-    if (!recipient) return;
-
-    // Validate address format
-    if (recipient.length < 32) {
-      alert('❌ Invalid wallet address');
-      return;
-    }
-
-    if (!confirm(`Transfer NFT to ${recipient}?`)) return;
-
-    const walletAddress = window.walletManager?.connectedWallet;
-    if (!walletAddress) {
-      alert('❌ Please connect your wallet first');
-      return;
-    }
-
-    alert('⏳ Preparing transfer transaction...');
-
-    // Use Solana NFT Manager to transfer
-    if (!window.nftManager) {
-      window.nftManager = new SolanaNFTManager();
-      await window.nftManager.initialize(window.walletManager);
-    }
-
-    const result = await window.nftManager.transferNFT(mintAddress, recipient);
-
-    if (result.success) {
-      alert(`✅ Transfer successful!\nSignature: ${result.signature}`);
-
-      // Record in API
-      await fetch('/api/nft/transfer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mintAddress,
-          fromAddress: walletAddress,
-          toAddress: recipient,
-          signature: result.signature
-        })
-      });
-
-      // Reload NFTs
-      await loadOwnedNFTs();
-    } else {
-      alert(`❌ Transfer failed: ${result.message}`);
-    }
-  } catch (error) {
-    console.error('Transfer error:', error);
-    alert('❌ Transfer failed: ' + error.message);
-  }
-};
-
-window.claimFreeNFT = () => {
-  // Check eligibility and claim
-  alert('🎁 CHECKING_ELIGIBILITY...\nVisit the gallery to claim your first NFT!');
-  window.location.href = '/nft-gallery';
-};
-
-window.viewMarketplace = () => {
-  alert('🛒 MARKETPLACE_COMING_SOON');
-};
-
-window.viewMyListings = () => {
-  alert('📋 MY_LISTINGS_COMING_SOON');
-};
-
-window.viewOffers = () => {
-  alert('💬 OFFERS_INBOX_COMING_SOON');
-};
-
-// Load owned NFTs
-async function loadOwnedNFTs() {
-  const walletAddress = window.walletManager?.connectedWallet;
-  if (!walletAddress) {
-    console.log('⚠️ No wallet connected');
-    return;
-  }
-
-  try {
-    console.log('🔍 Loading NFTs for wallet:', walletAddress);
-
-    // Initialize NFT Manager if not already done
-    if (!window.nftManager) {
-      window.nftManager = new SolanaNFTManager();
-      await window.nftManager.initialize(window.walletManager);
-    }
-
-    // Fetch owned NFTs using Solana NFT Manager
-    const ownedNFTs = await window.nftManager.getOwnedNFTs(walletAddress);
-
-    console.log(`💎 Loaded ${ownedNFTs.length} NFTs`);
-
-    const grid = document.getElementById('owned-nfts-grid');
-    const emptyState = document.getElementById('empty-vault');
-    const templateCard = grid.querySelector('.owned-nft-card');
-
-    if (ownedNFTs.length === 0) {
-      // Show empty state
-      emptyState.style.display = 'flex';
-      if (templateCard) templateCard.style.display = 'none';
-    } else {
-      // Hide empty state
-      emptyState.style.display = 'none';
-
-      // Clear grid except empty state
-      const cardsToRemove = grid.querySelectorAll('.owned-nft-card');
-      cardsToRemove.forEach(card => card.remove());
-
-      // Render NFTs
-      ownedNFTs.forEach((nft, index) => {
-        const card = createNFTCard(nft, index + 1);
-        grid.insertBefore(card, emptyState);
-      });
-
-      // Update stats
-      updateNFTStats(ownedNFTs);
-    }
-  } catch (error) {
-    console.error('❌ Failed to load owned NFTs:', error);
-  }
-}
-
-// Create NFT card element
-function createNFTCard(nft, displayId) {
-  const card = document.createElement('div');
-  card.className = 'owned-nft-card pixel-border';
-  card.dataset.nftId = displayId;
-  card.dataset.rarity = nft.rarity || 'Common';
-
-  const rarityColors = {
-    'Common': { color: '#00ff00', glow: '0 0 10px #00ff00' },
-    'Uncommon': { color: '#00ffff', glow: '0 0 15px #00ffff' },
-    'Rare': { color: '#ffff00', glow: '0 0 20px #ffff00' },
-    'Legendary': { color: '#ff00ff', glow: '0 0 30px #ff00ff' }
-  };
-
-  const rarityStyle = rarityColors[nft.rarity] || rarityColors['Common'];
-
-  // Get benefits for this rarity
-  const benefits = window.nftManager.getNFTBenefits(nft.rarity || 'Common');
-
-  card.innerHTML = `
-    <!-- Card Header with Rarity -->
-    <div class="nft-card-header">
-      <span class="nft-number pixel-text">#${String(displayId).padStart(3, '0')}</span>
-      <span class="nft-rarity pixel-text" style="color: ${rarityStyle.color}; text-shadow: ${rarityStyle.glow};">
-        ${nft.rarity || 'COMMON'}
-      </span>
-    </div>
-
-    <!-- NFT Preview -->
-    <div class="nft-preview">
-      <div class="nft-preview-image" style="background: linear-gradient(135deg, #0a0e27 0%, ${rarityStyle.color}22 100%);">
-        <div class="nft-avatar">${nft.image || '💎'}</div>
-        <div class="ownership-badge pixel-border">
-          <span class="pixel-text">OWNED</span>
-        </div>
-      </div>
-      <div class="nft-sound-indicator">
-        <button class="sound-play-btn pixel-btn" onclick="playNFTSound('${nft.mint}')">
-          <span>▶ PLAY_SOUND</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- NFT Info -->
-    <div class="nft-info">
-      <h4 class="nft-name glow-text">${nft.name || 'NFT #' + displayId}</h4>
-      <div class="nft-details pixel-text">
-        <div class="detail-line">
-          <span>Spirit:</span>
-          <span class="glow-text">${nft.animalSpirit || 'Unknown'}</span>
-        </div>
-        <div class="detail-line">
-          <span>Mint:</span>
-          <span class="glow-text">${nft.mint.substring(0, 8)}...</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Holder Benefits -->
-    <div class="nft-benefits pixel-border">
-      <div class="benefit-header pixel-text">▼ HOLDER_BENEFITS:</div>
-      <div class="benefit-list">
-        ${benefits.map(b => `<div class="benefit-item pixel-text">${b.icon} ${b.text}</div>`).join('')}
-      </div>
-    </div>
-
-    <!-- Management Actions -->
-    <div class="nft-actions">
-      <button class="action-btn pixel-btn" onclick="viewNFTDetails('${nft.mint}')">
-        <span>VIEW_DETAILS</span>
-      </button>
-      <button class="action-btn pixel-btn" onclick="listNFTForSale('${nft.mint}')">
-        <span>LIST_FOR_SALE</span>
-      </button>
-      <button class="action-btn pixel-btn" onclick="transferNFT('${nft.mint}')">
-        <span>TRANSFER</span>
-      </button>
-    </div>
-  `;
-
-  return card;
-}
-
-function updateNFTStats(nfts) {
-  // Update summary stats
-  document.getElementById('owned-count').textContent = nfts.length;
-
-  const totalValue = nfts.reduce((sum, nft) => sum + (nft.value || 0), 0);
-  document.getElementById('collection-value').textContent = totalValue.toFixed(2);
-
-  const rareCount = nfts.filter(n =>
-    n.rarity === 'Rare' || n.rarity === 'Legendary'
-  ).length;
-  document.getElementById('rare-count').textContent = rareCount;
-
-  // Calculate active benefits
-  const benefitsCount = nfts.length * 3; // Assume 3 benefits per NFT
-  document.getElementById('nft-benefits').textContent = benefitsCount;
-}
-
-// NFT Filter/Sort handlers
-document.addEventListener('DOMContentLoaded', () => {
-  const rarityFilter = document.getElementById('nft-rarity-filter');
-  const sortSelect = document.getElementById('nft-sort');
-
-  if (rarityFilter) {
-    rarityFilter.addEventListener('change', filterOwnedNFTs);
-  }
-
-  if (sortSelect) {
-    sortSelect.addEventListener('change', sortOwnedNFTs);
-  }
-});
-
-function filterOwnedNFTs() {
-  const filter = document.getElementById('nft-rarity-filter').value;
-  const cards = document.querySelectorAll('.owned-nft-card');
-
-  cards.forEach(card => {
-    const rarity = card.dataset.rarity;
-    if (filter === 'all' || rarity === filter) {
-      card.style.display = 'flex';
-    } else {
-      card.style.display = 'none';
-    }
-  });
-}
-
-function sortOwnedNFTs() {
-  const sortBy = document.getElementById('nft-sort').value;
-  const grid = document.getElementById('owned-nfts-grid');
-  const cards = Array.from(grid.querySelectorAll('.owned-nft-card'));
-
-  cards.sort((a, b) => {
-    switch (sortBy) {
-      case 'id':
-        return parseInt(a.dataset.nftId) - parseInt(b.dataset.nftId);
-      case 'rarity':
-        const rarityOrder = { 'Common': 1, 'Uncommon': 2, 'Rare': 3, 'Legendary': 4 };
-        return rarityOrder[b.dataset.rarity] - rarityOrder[a.dataset.rarity];
-      case 'value':
-        // TODO: Add value sorting when data available
-        return 0;
-      default: // recent
-        return 0;
-    }
-  });
-
-  cards.forEach(card => grid.appendChild(card));
-}
-
-// Initialize on page load
-window.missionControl = new MissionControlManager();
-
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    window.missionControl.initialize();
-  }, 500);
-});
-</script>
-
 <style>
-/* ============================================ */
-/* SPACE INVADERS THEME - Retro Gaming Style */
-/* ============================================ */
-
+/* ========== CSS Variables ========== */
 :root {
-  --neon-green: #00ff41;
-  --neon-blue: #00d4ff;
-  --neon-pink: #ff10f0;
-  --neon-yellow: #ffff00;
-  --dark-bg: #0a0e27;
-  --darker-bg: #050812;
-  --pixel-border: #00ff41;
+  --primary: #10b981;
+  --primary-dark: #059669;
+  --secondary: #6366f1;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --bg: #0a0a0f;
+  --bg-card: #111118;
+  --bg-elevated: #1a1a24;
+  --border: #2a2a3a;
+  --text: #e5e5e5;
+  --text-muted: #888;
+  --radius: 12px;
+  --radius-sm: 8px;
 }
 
-.mission-control {
-  background: var(--dark-bg);
+/* ========== Base ========== */
+.profile-page {
   min-height: 100vh;
-  padding: 2rem 0;
-  font-family: 'Courier New', monospace;
+  background: var(--bg);
+  color: var(--text);
+  padding: 1rem;
 }
 
-/* Pixel Art Text Styling */
-.pixel-text {
-  font-family: 'Courier New', monospace;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+.container {
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.glow-text {
-  color: var(--neon-green);
-  text-shadow:
-    0 0 5px var(--neon-green),
-    0 0 10px var(--neon-green),
-    0 0 20px var(--neon-green);
-  animation: textGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes textGlow {
-  from {
-    text-shadow:
-      0 0 5px var(--neon-green),
-      0 0 10px var(--neon-green);
-  }
-  to {
-    text-shadow:
-      0 0 10px var(--neon-green),
-      0 0 20px var(--neon-green),
-      0 0 30px var(--neon-green);
-  }
-}
-
-/* Pixel Borders */
-.pixel-border {
-  border: 3px solid var(--pixel-border);
-  background: var(--darker-bg);
-  box-shadow:
-    0 0 10px rgba(0, 255, 65, 0.3),
-    inset 0 0 10px rgba(0, 255, 65, 0.1);
-}
-
-.pixel-border.dashed {
-  border-style: dashed;
-}
-
-.glow-border {
-  border: 3px solid var(--neon-green);
-  box-shadow:
-    0 0 15px var(--neon-green),
-    0 0 30px var(--neon-green),
-    inset 0 0 15px rgba(0, 255, 65, 0.2);
-}
-
-/* Commander Header */
-.commander-header {
-  margin-bottom: 2rem;
-  padding: 0;
-  overflow: hidden;
-}
-
-.status-bar {
-  background: var(--darker-bg);
-  padding: 0.75rem 1.5rem;
-  border-bottom: 2px solid var(--pixel-border);
-  display: flex;
-  justify-content: space-between;
-  color: var(--neon-green);
-}
-
-.status-item {
+/* ========== Header ========== */
+.profile-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-.blink {
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-.commander-profile {
-  padding: 2rem;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 2rem;
-  align-items: center;
-}
-
-/* Pixel Art Avatar */
-.commander-avatar {
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
   position: relative;
 }
 
-.pixel-character {
-  font-family: monospace;
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.5rem;
-  line-height: 1;
-  color: var(--neon-green);
-  text-shadow: 0 0 10px var(--neon-green);
 }
 
-.pixel-row {
-  display: block;
-  letter-spacing: 0.2em;
+.username {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
 }
 
-.avatar-change-btn {
+.wallet-id {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--primary);
+  color: #000;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.xp-progress {
+  width: 200px;
+}
+
+.xp-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.xp-current {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.xp-next {
+  color: var(--text-muted);
+}
+
+.xp-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transition: width 0.3s;
+}
+
+.notification-bell {
+  position: relative;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+.notification-count {
   position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 30px;
-  height: 30px;
-  padding: 0;
+  top: -4px;
+  right: -4px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Commander Info */
-.commander-info {
+/* ========== Notification Panel ========== */
+.notification-panel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  max-width: 100vw;
+  height: 100vh;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border);
+  z-index: 1000;
+  transition: right 0.3s;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
-.rank-display {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+.notification-panel.open {
+  right: 0;
 }
 
-.rank-label {
-  font-size: 0.75rem;
-  color: var(--neon-blue);
-}
-
-.commander-name {
-  font-size: 2rem;
-  margin: 0;
-}
-
-.id-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--darker-bg);
-  width: fit-content;
-}
-
-.id-label {
-  font-size: 0.75rem;
-  color: var(--neon-green);
-}
-
-.id-value {
-  color: var(--neon-blue);
-  font-size: 0.875rem;
-}
-
-.monospace {
-  font-family: 'Courier New', monospace;
-}
-
-/* XP Display */
-.xp-display {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-width: 500px;
-}
-
-.xp-label-row {
+.panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
-.xp-label {
+.panel-header h3 {
+  margin: 0;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.notification-filters {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.filter-btn {
+  padding: 0.25rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
   font-size: 0.75rem;
-  color: var(--neon-green);
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.xp-value {
+.filter-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #000;
+}
+
+.notification-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.notification-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.notification-item:hover {
+  background: var(--bg-elevated);
+}
+
+.notification-item.unread {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.notification-item .icon {
   font-size: 1.25rem;
 }
 
-.xp-bar-container {
-  height: 20px;
-  background: var(--darker-bg);
-  position: relative;
+.notification-item .content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-item .title {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.notification-item .message {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.xp-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
-  position: relative;
-  transition: width 0.5s ease;
+.notification-item .time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
 }
 
-.pixel-gradient {
-  background: linear-gradient(90deg,
-    var(--neon-green) 0%,
-    var(--neon-green) 25%,
-    var(--neon-blue) 50%,
-    var(--neon-green) 75%,
-    var(--neon-green) 100%
-  );
-  background-size: 200% 100%;
-  animation: gradientSlide 2s linear infinite;
+/* ========== Tab Navigation ========== */
+.tab-nav {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  overflow-x: auto;
 }
 
-@keyframes gradientSlide {
-  0% { background-position: 0% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.xp-bar-shine {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: shine 2s infinite;
-}
-
-@keyframes shine {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-.xp-next {
-  font-size: 0.75rem;
-  color: var(--neon-blue);
-  text-align: right;
-}
-
-/* Quick Stats Grid */
-.quick-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.stat-box {
-  padding: 1rem;
-  text-align: center;
+.tab-btn {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.25rem;
-  background: var(--darker-bg);
-  transition: all 0.3s ease;
+  padding: 0.75rem 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  min-width: 70px;
 }
 
-.stat-box:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+.tab-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: #000;
+}
+
+.tab-icon {
+  font-size: 1.25rem;
+}
+
+.tab-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.tab-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.6rem;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========== Tab Content ========== */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ========== Cards & Sections ========== */
+.section-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.highlight-card {
+  border: 1px solid var(--primary);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
+}
+
+/* ========== Stats Grid ========== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
 }
 
 .stat-icon {
   font-size: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
+  color: var(--primary);
 }
 
 .stat-label {
-  font-size: 0.625rem;
-  color: var(--neon-green);
-}
-
-/* Navigation Tabs */
-.mission-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.mission-tab {
-  padding: 0.75rem 1.5rem;
-  background: var(--darker-bg);
-  border: 2px solid var(--pixel-border);
-  color: var(--neon-green);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  font-family: 'Courier New', monospace;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.mission-tab:hover {
-  background: rgba(0, 255, 65, 0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 255, 65, 0.3);
-}
-
-.mission-tab.active {
-  background: rgba(0, 255, 65, 0.2);
-  box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
-}
-
-/* Pixel Button */
-.pixel-btn {
-  padding: 0.5rem 1rem;
-  background: var(--darker-bg);
-  border: 2px solid var(--pixel-border);
-  color: var(--neon-green);
-  cursor: pointer;
-  font-family: 'Courier New', monospace;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
   text-transform: uppercase;
-  transition: all 0.3s ease;
 }
 
-.pixel-btn:hover {
-  background: rgba(0, 255, 65, 0.2);
-  box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
-  transform: translateY(-2px);
+/* ========== Quick Actions ========== */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
 }
 
-.primary-btn {
-  background: rgba(0, 255, 65, 0.2);
-  border-color: var(--neon-green);
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
 }
 
-.secondary-btn {
-  border-color: var(--neon-blue);
-  color: var(--neon-blue);
+.action-btn:hover {
+  border-color: var(--primary);
+  background: rgba(16, 185, 129, 0.1);
 }
 
-/* Tab Content */
-.tab-content {
-  animation: fadeIn 0.5s ease;
+.action-btn span:first-child {
+  font-size: 1.25rem;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Section Header */
-.section-header {
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+/* ========== Streak Card ========== */
+.streak-card {
   text-align: center;
 }
 
-.section-title {
-  font-size: 2rem;
+.streak-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.25rem;
   margin-bottom: 0.5rem;
 }
 
-.section-subtitle {
-  font-size: 0.875rem;
-  color: var(--neon-blue);
+.streak-count {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--warning);
 }
 
-/* Projects Grid */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+.streak-label {
+  font-size: 1rem;
+  color: var(--text-muted);
 }
 
-.project-card {
-  padding: 1.5rem;
+.streak-message {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* ========== Sub-tabs ========== */
+.sub-tabs {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.project-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.project-status.active {
-  color: var(--neon-green);
-}
-
-.project-title {
-  font-size: 1.25rem;
-  margin: 0;
-}
-
-.project-stats,
-.project-actions {
-  display: flex;
-  flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
 }
 
-.project-stat,
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.progress-bar {
-  height: 12px;
-  background: var(--darker-bg);
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  transition: width 0.5s ease;
-}
-
-/* Empty Slot */
-.empty-slot {
-  padding: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.sub-tab {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.3s ease;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
 }
 
-.empty-slot:hover {
-  background: rgba(0, 255, 65, 0.05);
-  transform: scale(1.02);
+.sub-tab.active {
+  background: var(--bg-elevated);
+  color: var(--text);
 }
 
-/* Form Elements */
-.pixel-input,
-.pixel-textarea,
-.pixel-select {
-  width: 100%;
-  padding: 0.75rem;
-  background: var(--darker-bg);
-  border: 2px solid var(--pixel-border);
-  color: var(--neon-green);
-  font-family: 'Courier New', monospace;
-  font-size: 0.875rem;
+.sub-content {
+  display: none;
 }
 
-.pixel-input:focus,
-.pixel-textarea:focus,
-.pixel-select:focus {
-  outline: none;
-  box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+.sub-content.active {
+  display: block;
 }
 
+/* ========== Balances Grid ========== */
+.balances-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.balance-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.balance-card.primary {
+  grid-column: span 2;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: #000;
+}
+
+.balance-label {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+
+.balance-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.balance-card.primary .balance-value {
+  font-size: 2rem;
+}
+
+.balance-usd {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* ========== Cash Out Options ========== */
+.cashout-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.cashout-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cashout-btn:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.cashout-btn .icon {
+  font-size: 1.5rem;
+}
+
+.cashout-btn .label {
+  font-weight: 600;
+}
+
+.cashout-btn .desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ========== Forms ========== */
 .settings-form {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-}
-
-.settings-section {
-  padding: 1.5rem;
+  gap: 1rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.form-label {
-  color: var(--neon-green);
-  font-size: 0.875rem;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 2rem;
-}
-
-/* ============================================ */
-/* NFT COLLECTION STYLES */
-/* ============================================ */
-
-/* Collection Summary */
-.collection-summary {
-  padding: 2rem;
-  margin-bottom: 2rem;
-}
-
-.summary-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-}
-
-.summary-stat {
-  text-align: center;
-}
-
-.summary-stat .stat-value {
-  font-size: 2.5rem;
-  font-weight: 900;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.summary-stat .stat-label {
-  font-size: 0.875rem;
-  color: var(--neon-blue);
-}
-
-/* NFT Controls */
-.nft-controls {
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.control-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.control-label {
-  font-size: 0.875rem;
-  color: var(--neon-green);
-  white-space: nowrap;
-}
-
-.pixel-select {
-  padding: 0.5rem 1rem;
-  background: var(--darker-bg);
-  border: 2px solid var(--pixel-border);
-  color: var(--neon-green);
-  font-family: 'Courier New', monospace;
-  cursor: pointer;
-}
-
-/* Owned NFTs Grid */
-.owned-nfts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-.owned-nft-card {
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  gap: 1rem;
-  transition: all 0.3s ease;
-}
-
-.owned-nft-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
-}
-
-/* NFT Card Header */
-.nft-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.nft-number {
-  font-size: 0.875rem;
-  color: var(--neon-blue);
-}
-
-.nft-rarity {
-  font-size: 0.875rem;
-  font-weight: 900;
-  letter-spacing: 1px;
-}
-
-/* NFT Preview */
-.nft-preview {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.nft-preview-image {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--pixel-border);
-  position: relative;
-  overflow: hidden;
-}
-
-.nft-avatar {
-  font-size: 5rem;
-  filter: drop-shadow(0 0 15px rgba(0, 255, 65, 0.5));
-}
-
-.ownership-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 0.25rem 0.75rem;
-  background: var(--darker-bg);
-  border: 2px solid var(--neon-green);
-}
-
-.ownership-badge .pixel-text {
-  font-size: 0.75rem;
-  color: var(--neon-green);
-}
-
-.nft-sound-indicator {
-  margin-top: 0.5rem;
-}
-
-.sound-play-btn {
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-}
-
-/* NFT Info */
-.nft-info {
-  margin-bottom: 1rem;
-}
-
-.nft-name {
-  font-size: 1.125rem;
-  margin-bottom: 0.75rem;
-}
-
-.nft-details {
-  font-size: 0.875rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.detail-line {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.25rem 0;
-  border-bottom: 1px solid rgba(0, 255, 65, 0.2);
-}
-
-/* NFT Benefits */
-.nft-benefits {
-  padding: 1rem;
-  background: rgba(0, 255, 65, 0.05);
-}
-
-.benefit-header {
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  color: var(--neon-green);
-}
-
-.benefit-list {
-  display: flex;
-  flex-direction: column;
   gap: 0.25rem;
 }
 
-.benefit-item {
-  font-size: 0.75rem;
-  color: var(--neon-blue);
-  padding: 0.25rem 0;
-}
-
-/* NFT Actions */
-.nft-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.action-btn {
-  padding: 0.75rem;
-  text-align: center;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
-}
-
-.action-btn:hover {
-  background: var(--neon-green);
-  color: var(--darker-bg);
-}
-
-/* Empty Vault State */
-.empty-vault {
-  grid-column: 1 / -1;
-  padding: 4rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  text-align: center;
-}
-
-.empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.empty-vault h3 {
-  color: var(--neon-green);
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.empty-vault p {
-  color: var(--neon-blue);
-  margin-bottom: 1.5rem;
-}
-
-/* Quick Actions Panel */
-.nft-quick-actions {
-  padding: 2rem;
-}
-
-.nft-quick-actions h3 {
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.quick-actions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.quick-action-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.quick-action-btn:hover {
-  background: rgba(0, 255, 65, 0.1);
-  transform: translateY(-3px);
-}
-
-.action-icon {
-  font-size: 2rem;
-}
-
-.action-label {
-  font-size: 0.875rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .commander-profile {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .quick-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .mission-tabs {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-  }
-
-  .summary-stats {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .owned-nfts-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .quick-actions-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .nft-controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .control-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
-/* ============================================ */
-/* PROJECT PAGE MANAGEMENT STYLES */
-/* ============================================ */
-
-.project-stats-bar {
-  display: flex;
-  justify-content: space-around;
-  padding: 1.5rem;
-  background: var(--darker-bg);
-}
-
-.project-stats-bar .stat-item {
-  text-align: center;
-}
-
-.project-stats-bar .stat-value {
-  font-size: 1.5rem;
-  display: block;
-}
-
-.project-stats-bar .stat-label {
-  font-size: 0.7rem;
-  opacity: 0.7;
-}
-
-.my-projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.my-projects-grid .project-card {
-  padding: 1.5rem;
-}
-
-.my-projects-grid .project-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.my-projects-grid .project-status.active {
-  color: var(--neon-green);
-}
-
-.my-projects-grid .project-status.draft {
-  color: var(--neon-yellow);
-}
-
-.my-projects-grid .project-title {
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
-}
-
-.my-projects-grid .project-subtitle {
+.form-group label {
   font-size: 0.8rem;
-  opacity: 0.7;
-  margin-bottom: 1rem;
+  font-weight: 500;
 }
 
-.my-projects-grid .project-stats {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.my-projects-grid .project-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.my-projects-grid .action-btn {
-  font-size: 0.7rem;
-  padding: 0.5rem 0.75rem;
-}
-
-.my-projects-grid .action-btn.danger {
-  color: #ff4444;
-  border-color: #ff4444;
-}
-
-.my-projects-grid .action-btn.danger:hover {
-  background: rgba(255, 68, 68, 0.2);
-}
-
-.loading-projects {
-  text-align: center;
-  padding: 3rem;
-  color: var(--neon-green);
-}
-
-.empty-projects {
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 3rem;
-  gap: 1rem;
-}
-
-.empty-projects .empty-icon {
-  font-size: 3rem;
-}
-
-.empty-projects h3 {
-  font-size: 1.25rem;
-}
-
-.empty-projects .example-urls code {
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.75rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
   font-size: 0.9rem;
 }
 
-/* Project Modal */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-description {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.form-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 0;
+}
+
+/* ========== Toggle Rows ========== */
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.toggle-row input {
+  display: none;
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: var(--border);
+  border-radius: 12px;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle-row input:checked + .toggle-switch {
+  background: var(--primary);
+}
+
+.toggle-row input:checked + .toggle-switch::after {
+  transform: translateX(20px);
+}
+
+/* ========== Buttons ========== */
+.primary-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.primary-btn:hover {
+  background: var(--primary-dark);
+}
+
+.secondary-btn {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.text-btn:hover {
+  text-decoration: underline;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ========== Modal ========== */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1001;
   padding: 1rem;
 }
 
-.modal-content {
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius);
   width: 100%;
-  max-width: 700px;
+  max-width: 500px;
   max-height: 90vh;
-  overflow-y: auto;
-  padding: 0;
+  overflow: auto;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 2px solid var(--pixel-border);
-  position: sticky;
-  top: 0;
-  background: var(--darker-bg);
-  z-index: 1;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
 }
 
-.modal-header h2 {
-  font-size: 1.25rem;
-}
-
-.modal-header .close-btn {
-  background: none;
-  border: none;
-  color: var(--neon-green);
-  font-size: 1.5rem;
-  cursor: pointer;
+.modal-header h3 {
+  margin: 0;
 }
 
 .modal-body {
-  padding: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1.25rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.75rem;
-  color: var(--neon-green);
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.75rem;
-  background: rgba(0, 255, 65, 0.05);
-  border: 2px solid rgba(0, 255, 65, 0.3);
-  color: white;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
-  transition: border-color 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--neon-green);
-}
-
-.form-input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-}
-
-textarea.form-input {
-  resize: vertical;
-  min-height: 100px;
-}
-
-select.form-input {
-  cursor: pointer;
-}
-
-select.form-input option {
-  background: var(--darker-bg);
-  color: white;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0, 255, 65, 0.2);
-}
-
-.form-actions .pixel-btn {
-  flex: 1;
   padding: 1rem;
-  font-size: 0.8rem;
 }
 
-.form-actions .pixel-btn.secondary {
-  background: transparent;
-  color: var(--neon-green);
-  border: 2px solid var(--neon-green);
+/* ========== Utilities ========== */
+.loading {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem;
 }
 
-.form-actions .pixel-btn.primary {
-  background: var(--neon-green);
-  color: var(--darker-bg);
-  border: 2px solid var(--neon-green);
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem;
 }
 
-.form-actions .pixel-btn.primary:hover {
-  background: white;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-@media (max-width: 640px) {
-  .project-stats-bar {
+.section-header h3 {
+  margin: 0;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .profile-header {
     flex-wrap: wrap;
-    gap: 1rem;
   }
 
-  .project-stats-bar .stat-item {
-    flex: 1 1 40%;
+  .xp-progress {
+    width: 100%;
+    order: 3;
+    margin-top: 1rem;
   }
 
-  .my-projects-grid {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quick-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .balances-grid {
     grid-template-columns: 1fr;
   }
 
-  .form-actions {
-    flex-direction: column;
+  .balance-card.primary {
+    grid-column: span 1;
+  }
+
+  .cashout-options {
+    grid-template-columns: 1fr;
+  }
+
+  .notification-panel {
+    width: 100%;
+    right: -100%;
   }
 }
 </style>
+
+<script>
+// ========== Profile Manager ==========
+class ProfileManager {
+  constructor() {
+    this.wallet = null;
+    this.userData = null;
+    this.notifications = [];
+    this.currentTab = 'dashboard';
+  }
+
+  async init() {
+    this.wallet = window.walletManager?.connectedWallet;
+    if (!this.wallet) {
+      // Wait for wallet connection
+      document.addEventListener('walletConnected', () => {
+        this.wallet = window.walletManager?.connectedWallet;
+        this.loadData();
+      });
+      return;
+    }
+    await this.loadData();
+    this.setupEventListeners();
+  }
+
+  async loadData() {
+    if (!this.wallet) return;
+
+    // Load in parallel
+    await Promise.all([
+      this.loadProfile(),
+      this.loadNotifications(),
+      this.loadDashboardData()
+    ]);
+  }
+
+  async loadProfile() {
+    try {
+      const res = await fetch(`/api/profile/get?walletAddress=${this.wallet}`);
+      const data = await res.json();
+      if (data.success) {
+        this.userData = data.profile;
+        this.updateProfileUI();
+      }
+    } catch (e) {
+      console.error('Failed to load profile:', e);
+    }
+  }
+
+  async loadNotifications() {
+    try {
+      const res = await fetch(`/api/notifications?walletAddress=${this.wallet}`);
+      const data = await res.json();
+      if (data.success) {
+        this.notifications = data.notifications;
+        this.updateNotificationsUI(data);
+      }
+    } catch (e) {
+      console.error('Failed to load notifications:', e);
+    }
+  }
+
+  async loadDashboardData() {
+    // Load rewards eligibility
+    try {
+      const res = await fetch(`/api/nft/rewards/check-eligibility?walletAddress=${this.wallet}`);
+      const data = await res.json();
+      if (data.success && data.rewards.eligible.length > 0) {
+        document.getElementById('rewards-badge').style.display = 'flex';
+      }
+    } catch (e) {}
+
+    // Load wallet data
+    try {
+      const res = await fetch(`/api/payout/settings?walletAddress=${this.wallet}`);
+      const data = await res.json();
+      if (data.success) {
+        this.updateWalletUI(data);
+      }
+    } catch (e) {}
+
+    // Load streak
+    try {
+      const res = await fetch(`/api/data/health/log?walletAddress=${this.wallet}`);
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('streak-count').textContent = data.streak || 0;
+        document.getElementById('streak-message').textContent = data.message;
+      }
+    } catch (e) {}
+  }
+
+  updateProfileUI() {
+    if (!this.userData) return;
+    const { username, wallet_address, xp, level } = this.userData;
+
+    document.getElementById('username').textContent = username || 'Anonymous';
+    document.getElementById('wallet-id').textContent =
+      wallet_address ? `${wallet_address.slice(0, 4)}...${wallet_address.slice(-4)}` : '----';
+    document.getElementById('user-level').textContent = level || 1;
+    document.getElementById('current-xp').textContent = xp || 0;
+    document.getElementById('stat-xp').textContent = xp || 0;
+
+    // Calculate XP bar
+    const currentLevel = level || 1;
+    const xpForLevel = (currentLevel - 1) ** 2 * 100;
+    const xpForNext = currentLevel ** 2 * 100;
+    const progress = ((xp - xpForLevel) / (xpForNext - xpForLevel)) * 100;
+    document.getElementById('xp-bar').style.width = `${Math.min(100, progress)}%`;
+    document.getElementById('xp-to-next').textContent = xpForNext;
+
+    // Settings form
+    document.getElementById('settings-username').value = username || '';
+    document.getElementById('settings-bio').value = this.userData.bio || '';
+    document.getElementById('settings-location').value = this.userData.location || '';
+  }
+
+  updateNotificationsUI(data) {
+    const { notifications, totalUnread, unreadCounts } = data;
+
+    // Update bell badge
+    const countEl = document.getElementById('notification-count');
+    if (totalUnread > 0) {
+      countEl.textContent = totalUnread > 99 ? '99+' : totalUnread;
+      countEl.style.display = 'flex';
+    } else {
+      countEl.style.display = 'none';
+    }
+
+    // Update notification list
+    const listEl = document.getElementById('notification-list');
+    if (notifications.length === 0) {
+      listEl.innerHTML = '<div class="empty-state">No notifications</div>';
+      return;
+    }
+
+    listEl.innerHTML = notifications.map(n => `
+      <div class="notification-item ${n.is_read ? '' : 'unread'}" data-id="${n.id}">
+        <span class="icon">${n.icon}</span>
+        <div class="content">
+          <div class="title">${n.title}</div>
+          ${n.message ? `<div class="message">${n.message}</div>` : ''}
+          <div class="time">${this.timeAgo(n.created_at)}</div>
+        </div>
+      </div>
+    `).join('');
+
+    // Also update recent activity on dashboard
+    const activityEl = document.getElementById('recent-activity');
+    const recent = notifications.slice(0, 5);
+    if (recent.length > 0) {
+      activityEl.innerHTML = recent.map(n => `
+        <div class="notification-item ${n.is_read ? '' : 'unread'}">
+          <span class="icon">${n.icon}</span>
+          <div class="content">
+            <div class="title">${n.title}</div>
+            <div class="time">${this.timeAgo(n.created_at)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  updateWalletUI(data) {
+    const { balance, limits, usage } = data;
+
+    document.getElementById('xp-balance').textContent = balance?.xp_balance || 0;
+    document.getElementById('xp-usd-value').textContent = ((balance?.xp_balance || 0) * 0.001).toFixed(2);
+    document.getElementById('usd-balance').textContent = (balance?.usd_balance || 0).toFixed(2);
+    document.getElementById('sol-balance').textContent = (balance?.sol_balance || 0).toFixed(4);
+    document.getElementById('royalties-balance').textContent = (balance?.pending_royalties || 0).toFixed(2);
+
+    document.getElementById('kyc-level-badge').textContent = `Level ${data.kycStatus?.level || 0}`;
+    document.getElementById('kyc-level-name').textContent = data.kycStatus?.levelName || 'None';
+    document.getElementById('daily-limit').textContent = limits?.daily_limit_usd || 50;
+    document.getElementById('daily-used').textContent = (usage?.todayTotal || 0).toFixed(2);
+  }
+
+  timeAgo(date) {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    if (seconds < 60) return 'just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
+  }
+
+  setupEventListeners() {
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        this.switchTab(tab);
+      });
+    });
+
+    // Sub-tab switching
+    document.querySelectorAll('.sub-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const subtab = btn.dataset.subtab;
+        document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`subtab-${subtab}`).classList.add('active');
+      });
+    });
+
+    // Notification filters
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.filterNotifications(btn.dataset.filter);
+      });
+    });
+
+    // Forms
+    document.getElementById('profile-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.saveProfile();
+    });
+
+    document.getElementById('notification-settings-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.saveNotificationSettings();
+    });
+
+    document.getElementById('payout-settings-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.savePayoutSettings();
+    });
+
+    // Payout method change
+    document.getElementById('payout-method')?.addEventListener('change', (e) => {
+      document.getElementById('mobile-money-settings').style.display =
+        e.target.value === 'mobile_money' ? 'block' : 'none';
+      document.getElementById('crypto-settings').style.display =
+        e.target.value === 'crypto' ? 'block' : 'none';
+    });
+
+    // Email frequency change
+    document.getElementById('email-frequency')?.addEventListener('change', (e) => {
+      document.getElementById('email-address-group').style.display =
+        e.target.value !== 'never' ? 'block' : 'none';
+    });
+  }
+
+  switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    this.currentTab = tab;
+
+    // Load tab-specific data
+    if (tab === 'rewards') this.loadRewardsData();
+    if (tab === 'wallet') this.loadWalletData();
+    if (tab === 'work') this.loadWorkData();
+  }
+
+  async loadRewardsData() {
+    const container = document.getElementById('claimable-rewards');
+    try {
+      const res = await fetch(`/api/nft/rewards/check-eligibility?walletAddress=${this.wallet}`);
+      const data = await res.json();
+      if (data.success) {
+        if (data.rewards.eligible.length > 0) {
+          container.innerHTML = data.rewards.eligible.map(r => `
+            <div class="reward-item">
+              <span class="reward-name">${r.name}</span>
+              <span class="reward-rarity">${r.rarityTier}</span>
+              <button class="primary-btn" onclick="profileManager.claimReward('${r.ruleId}')">Claim</button>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = '<div class="empty-state">No rewards to claim right now. Keep contributing!</div>';
+        }
+      }
+    } catch (e) {
+      container.innerHTML = '<div class="empty-state">Failed to load rewards</div>';
+    }
+  }
+
+  async loadWalletData() {
+    // Already loaded in loadDashboardData, but can refresh here
+  }
+
+  async loadWorkData() {
+    // Load projects
+    try {
+      const res = await fetch(`/api/user-projects/list?walletAddress=${this.wallet}`);
+      const data = await res.json();
+      const container = document.getElementById('my-projects-list');
+      if (data.success && data.projects.length > 0) {
+        container.innerHTML = data.projects.map(p => `
+          <div class="project-item">
+            <h4>${p.title}</h4>
+            <span class="status">${p.visibility}</span>
+            <a href="/projects/${p.slug}">View →</a>
+          </div>
+        `).join('');
+        document.getElementById('stat-projects').textContent = data.projects.length;
+      } else {
+        container.innerHTML = '<div class="empty-state">No projects yet</div>';
+      }
+    } catch (e) {}
+  }
+
+  async saveProfile() {
+    const form = document.getElementById('profile-form');
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch('/api/profile/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: this.wallet,
+          username: formData.get('username'),
+          bio: formData.get('bio'),
+          location: formData.get('location')
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Profile saved!');
+      }
+    } catch (e) {
+      alert('Failed to save profile');
+    }
+  }
+
+  async saveNotificationSettings() {
+    const form = document.getElementById('notification-settings-form');
+    const formData = new FormData(form);
+
+    try {
+      await fetch('/api/notifications/preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: this.wallet,
+          notifyXp: form.querySelector('[name="notify_xp"]').checked,
+          notifyNft: form.querySelector('[name="notify_nft"]').checked,
+          notifyProject: form.querySelector('[name="notify_project"]').checked,
+          notifyGovernance: form.querySelector('[name="notify_governance"]').checked,
+          notifyPayout: form.querySelector('[name="notify_payout"]').checked,
+          notifySocial: form.querySelector('[name="notify_social"]').checked,
+          notifyAchievement: form.querySelector('[name="notify_achievement"]').checked,
+          emailFrequency: formData.get('email_frequency'),
+          emailAddress: formData.get('email_address')
+        })
+      });
+      alert('Notification settings saved!');
+    } catch (e) {
+      alert('Failed to save settings');
+    }
+  }
+
+  async savePayoutSettings() {
+    const form = document.getElementById('payout-settings-form');
+    const formData = new FormData(form);
+
+    try {
+      await fetch('/api/payout/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: this.wallet,
+          preferredMethod: formData.get('preferred_method'),
+          mobileMoneyProvider: formData.get('mobile_provider'),
+          mobileMoneyPhone: formData.get('mobile_phone'),
+          cryptoWalletAddress: formData.get('crypto_wallet')
+        })
+      });
+      alert('Payout settings saved!');
+    } catch (e) {
+      alert('Failed to save settings');
+    }
+  }
+
+  filterNotifications(filter) {
+    // Filter notification list
+    const items = document.querySelectorAll('.notification-item');
+    items.forEach(item => {
+      if (filter === 'all') {
+        item.style.display = 'flex';
+      } else {
+        const notif = this.notifications.find(n => n.id == item.dataset.id);
+        item.style.display = notif?.category === filter ? 'flex' : 'none';
+      }
+    });
+  }
+
+  async claimReward(ruleId) {
+    try {
+      const res = await fetch('/api/nft/rewards/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress: this.wallet, ruleId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        this.loadRewardsData();
+      } else {
+        alert(data.error);
+      }
+    } catch (e) {
+      alert('Failed to claim reward');
+    }
+  }
+}
+
+// Global functions
+function toggleNotificationPanel() {
+  document.getElementById('notification-panel').classList.toggle('open');
+}
+
+async function markAllRead() {
+  if (!profileManager.wallet) return;
+  await fetch('/api/notifications', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'markRead', walletAddress: profileManager.wallet })
+  });
+  profileManager.loadNotifications();
+}
+
+function switchTab(tab) {
+  profileManager.switchTab(tab);
+}
+
+function openModal(type, subtype) {
+  const modal = document.getElementById('modal-overlay');
+  const title = document.getElementById('modal-title');
+  const body = document.getElementById('modal-body');
+
+  modal.style.display = 'flex';
+
+  // Set content based on type
+  switch (type) {
+    case 'new-project':
+      title.textContent = 'Create New Project';
+      body.innerHTML = `<p>Project creation form coming soon...</p>`;
+      break;
+    case 'submit-data':
+      title.textContent = 'Submit Data';
+      body.innerHTML = `<p>Data submission form coming soon...</p>`;
+      break;
+    case 'payout':
+      title.textContent = 'Cash Out';
+      body.innerHTML = `<p>Payout form for ${subtype} coming soon...</p>`;
+      break;
+    default:
+      title.textContent = 'Modal';
+      body.innerHTML = '';
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+}
+
+function useConnectedWallet() {
+  const wallet = window.walletManager?.connectedWallet;
+  if (wallet) {
+    document.getElementById('crypto-wallet').value = wallet;
+  }
+}
+
+function exportData(type) {
+  alert(`Exporting ${type} data...`);
+}
+
+// Initialize
+const profileManager = new ProfileManager();
+document.addEventListener('DOMContentLoaded', () => profileManager.init());
+</script>

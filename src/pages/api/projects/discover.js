@@ -168,32 +168,32 @@ function getSampleProjects(category, search) {
       category: 'music',
       owner_username: 'GhettoPoet',
       cover_image: '/images/projects/pain-in-the-ghetto-cover.jpg',
-      view_count: 1247,
-      like_count: 89,
+      view_count: 0,
+      like_count: 0,
       featured: true
     },
     {
       slug: 'fana-ke-rap-battle-glitters-and-golds',
       title: 'Fana Ke Rap Battle: Glitters and Golds',
       subtitle: 'The legendary rap battle series',
-      description: 'A rap battle competition bringing together the best lyricists from East African refugee camps.',
+      description: 'A rap battle competition bringing together the best lyricists from coastal and urban communities.',
       category: 'music',
       owner_username: 'FanaKeBattles',
       cover_image: '/images/projects/fana-ke-cover.jpg',
-      view_count: 3421,
-      like_count: 256,
+      view_count: 0,
+      like_count: 0,
       featured: true
     },
     {
       slug: 'porefec',
       title: 'POREFEC',
       subtitle: 'Portable Renewable Energy for Communities',
-      description: 'Scientific research developing affordable solar energy solutions for refugee camps.',
+      description: 'Scientific research developing affordable solar energy solutions for underserved communities.',
       category: 'science',
       owner_username: 'SolarInnovator',
       cover_image: '/images/projects/porefec-cover.jpg',
-      view_count: 892,
-      like_count: 67,
+      view_count: 0,
+      like_count: 0,
       featured: true
     }
   ];

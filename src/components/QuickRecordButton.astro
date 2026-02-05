@@ -77,51 +77,80 @@
           <p class="step-hint">Hit the button and start rapping! Max 2 minutes.</p>
         </div>
 
-        <!-- Recording Status -->
-        <div class="recording-status-bar">
-          <div class="status-indicator" id="wizard-rec-status">
-            <span class="status-light"></span>
-            <span class="status-text">READY</span>
+        <!-- Recording + Sampler Split Layout -->
+        <div class="record-sampler-layout">
+          <!-- Left: Record Section -->
+          <div class="record-section-main">
+            <!-- Recording Status -->
+            <div class="recording-status-bar">
+              <div class="status-indicator" id="wizard-rec-status">
+                <span class="status-light"></span>
+                <span class="status-text">READY</span>
+              </div>
+              <div class="timer mono neon-text" id="wizard-rec-timer">00:00</div>
+            </div>
+
+            <!-- Large Waveform Display -->
+            <div class="waveform-display">
+              <canvas id="wizard-waveform" width="500" height="160"></canvas>
+              <div class="waveform-message" id="wizard-waveform-msg">
+                <span class="mic-prompt">🎤</span>
+                <span>Click record to start</span>
+              </div>
+            </div>
+
+            <!-- Audio Level Meter -->
+            <div class="level-meter-bar">
+              <div class="level-label">INPUT:</div>
+              <div class="level-track">
+                <div class="level-fill" id="wizard-level-bar"></div>
+              </div>
+              <div class="level-hint">Keep it green!</div>
+            </div>
+
+            <!-- Big Record Button -->
+            <div class="record-button-container">
+              <button class="big-record-btn" id="wizard-record-btn" type="button">
+                <span class="record-icon">⬤</span>
+                <span class="record-text">RECORD</span>
+              </button>
+              <button class="big-stop-btn" id="wizard-stop-btn" type="button" style="display: none;">
+                <span class="stop-icon">⬛</span>
+                <span class="stop-text">STOP</span>
+              </button>
+            </div>
+
+            <!-- Playback after recording -->
+            <div class="playback-section" id="wizard-playback" style="display: none;">
+              <audio id="wizard-audio" controls></audio>
+              <div class="playback-actions">
+                <button class="btn-retro" id="wizard-rerecord-btn">
+                  <span>🔄</span> Re-record
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="timer mono neon-text" id="wizard-rec-timer">00:00</div>
-        </div>
 
-        <!-- Large Waveform Display -->
-        <div class="waveform-display">
-          <canvas id="wizard-waveform" width="700" height="180"></canvas>
-          <div class="waveform-message" id="wizard-waveform-msg">
-            <span class="mic-prompt">🎤</span>
-            <span>Click the button below to start recording</span>
-          </div>
-        </div>
-
-        <!-- Audio Level Meter -->
-        <div class="level-meter-bar">
-          <div class="level-label">INPUT:</div>
-          <div class="level-track">
-            <div class="level-fill" id="wizard-level-bar"></div>
-          </div>
-          <div class="level-hint">Keep it green!</div>
-        </div>
-
-        <!-- Big Record Button -->
-        <div class="record-button-container">
-          <button class="big-record-btn" id="wizard-record-btn" type="button">
-            <span class="record-icon">⬤</span>
-            <span class="record-text">START RECORDING</span>
-          </button>
-          <button class="big-stop-btn" id="wizard-stop-btn" type="button" style="display: none;">
-            <span class="stop-icon">⬛</span>
-            <span class="stop-text">STOP</span>
-          </button>
-        </div>
-
-        <!-- Playback after recording -->
-        <div class="playback-section" id="wizard-playback" style="display: none;">
-          <audio id="wizard-audio" controls></audio>
-          <div class="playback-actions">
-            <button class="btn-retro" id="wizard-rerecord-btn">
-              <span>🔄</span> Re-record
+          <!-- Right: Quick Sampler Access -->
+          <div class="sampler-access-panel">
+            <div class="sampler-panel-header">
+              <span class="sampler-icon">🎛️</span>
+              <h4>Beat Sampler</h4>
+            </div>
+            <p class="sampler-hint">Create a custom beat while recording</p>
+            <div class="sampler-quick-pads">
+              <button class="quick-pad" data-sound="kick">KICK</button>
+              <button class="quick-pad" data-sound="snare">SNARE</button>
+              <button class="quick-pad" data-sound="hihat">HI-HAT</button>
+              <button class="quick-pad" data-sound="bass">808</button>
+            </div>
+            <button class="btn-open-sampler" id="inline-sampler-btn" type="button">
+              <span>🎹</span> OPEN FULL SAMPLER
+            </button>
+            <div class="sampler-divider"></div>
+            <p class="or-text">— or —</p>
+            <button class="btn-quick-beat" id="quick-beat-btn" type="button">
+              <span>⚡</span> USE PRESET BEAT
             </button>
           </div>
         </div>
@@ -144,8 +173,14 @@
 
           <div class="beat-option-card" data-beat="preset">
             <div class="option-icon">🎵</div>
-            <div class="option-label">Quick Beats</div>
-            <div class="option-desc">Choose from preset beats</div>
+            <div class="option-label">Pro Beats</div>
+            <div class="option-desc">High-quality preset beats</div>
+          </div>
+
+          <div class="beat-option-card" data-beat="mybeats">
+            <div class="option-icon">💾</div>
+            <div class="option-label">My Beats</div>
+            <div class="option-desc">Load saved or NFT beats</div>
           </div>
 
           <div class="beat-option-card" data-beat="sampler">
@@ -161,43 +196,238 @@
           </div>
         </div>
 
-        <!-- Preset Beats Section -->
+        <!-- Preset Beats Section - Expanded with all styles -->
         <div class="beat-section" id="preset-beats-section" style="display: none;">
-          <h4>Select a Beat</h4>
-          <div class="preset-beats-grid">
-            <button class="preset-beat-btn" data-genre="trap">
+          <h4>🔥 Pro Rap Beats</h4>
+          <div class="beat-category-tabs">
+            <button class="beat-tab active" data-category="all">All</button>
+            <button class="beat-tab" data-category="trap">Trap</button>
+            <button class="beat-tab" data-category="boombap">Boom Bap</button>
+            <button class="beat-tab" data-category="drill">Drill</button>
+            <button class="beat-tab" data-category="reggae">Reggae</button>
+            <button class="beat-tab" data-category="afro">Afro</button>
+          </div>
+          <div class="preset-beats-grid expanded">
+            <!-- Trap Beats -->
+            <button class="preset-beat-btn" data-genre="trap-hard" data-category="trap">
               <span class="beat-icon">🔥</span>
-              <span class="beat-name">Trap 808</span>
+              <span class="beat-name">Hard Trap 808</span>
               <span class="beat-bpm">140 BPM</span>
+              <span class="beat-tag">HOT</span>
             </button>
-            <button class="preset-beat-btn" data-genre="boombap">
+            <button class="preset-beat-btn" data-genre="trap-melodic" data-category="trap">
+              <span class="beat-icon">🎹</span>
+              <span class="beat-name">Melodic Trap</span>
+              <span class="beat-bpm">130 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="trap-dark" data-category="trap">
+              <span class="beat-icon">🖤</span>
+              <span class="beat-name">Dark Trap</span>
+              <span class="beat-bpm">145 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="trap-bounce" data-category="trap">
+              <span class="beat-icon">💥</span>
+              <span class="beat-name">Trap Bounce</span>
+              <span class="beat-bpm">135 BPM</span>
+            </button>
+
+            <!-- Boom Bap Beats -->
+            <button class="preset-beat-btn" data-genre="boombap-classic" data-category="boombap">
               <span class="beat-icon">💎</span>
-              <span class="beat-name">Boom Bap</span>
+              <span class="beat-name">Classic Boom Bap</span>
               <span class="beat-bpm">90 BPM</span>
+              <span class="beat-tag">CLASSIC</span>
             </button>
-            <button class="preset-beat-btn" data-genre="drill">
-              <span class="beat-icon">⚡</span>
+            <button class="preset-beat-btn" data-genre="boombap-jazz" data-category="boombap">
+              <span class="beat-icon">🎷</span>
+              <span class="beat-name">Jazz Hop</span>
+              <span class="beat-bpm">88 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="boombap-soul" data-category="boombap">
+              <span class="beat-icon">❤️</span>
+              <span class="beat-name">Soul Sample</span>
+              <span class="beat-bpm">92 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="boombap-golden" data-category="boombap">
+              <span class="beat-icon">👑</span>
+              <span class="beat-name">Golden Era</span>
+              <span class="beat-bpm">95 BPM</span>
+            </button>
+
+            <!-- Drill Beats -->
+            <button class="preset-beat-btn" data-genre="drill-uk" data-category="drill">
+              <span class="beat-icon">🇬🇧</span>
               <span class="beat-name">UK Drill</span>
               <span class="beat-bpm">140 BPM</span>
+              <span class="beat-tag">FIRE</span>
             </button>
-            <button class="preset-beat-btn" data-genre="reggae">
+            <button class="preset-beat-btn" data-genre="drill-ny" data-category="drill">
+              <span class="beat-icon">🗽</span>
+              <span class="beat-name">NY Drill</span>
+              <span class="beat-bpm">142 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="drill-chicago" data-category="drill">
+              <span class="beat-icon">🏙️</span>
+              <span class="beat-name">Chi Drill</span>
+              <span class="beat-bpm">138 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="drill-melodic" data-category="drill">
+              <span class="beat-icon">🎵</span>
+              <span class="beat-name">Melodic Drill</span>
+              <span class="beat-bpm">140 BPM</span>
+            </button>
+
+            <!-- Reggae Beats -->
+            <button class="preset-beat-btn" data-genre="reggae-roots" data-category="reggae">
               <span class="beat-icon">🌴</span>
-              <span class="beat-name">Reggae</span>
+              <span class="beat-name">Roots Reggae</span>
               <span class="beat-bpm">75 BPM</span>
+              <span class="beat-tag">IRIE</span>
             </button>
-            <button class="preset-beat-btn" data-genre="afrobeat">
+            <button class="preset-beat-btn" data-genre="reggae-dancehall" data-category="reggae">
+              <span class="beat-icon">🔊</span>
+              <span class="beat-name">Dancehall</span>
+              <span class="beat-bpm">95 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="reggae-dub" data-category="reggae">
+              <span class="beat-icon">🎚️</span>
+              <span class="beat-name">Dub Reggae</span>
+              <span class="beat-bpm">70 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="reggae-modern" data-category="reggae">
+              <span class="beat-icon">🌊</span>
+              <span class="beat-name">Modern Reggae</span>
+              <span class="beat-bpm">85 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="reggae-raggamuffin" data-category="reggae">
+              <span class="beat-icon">🦁</span>
+              <span class="beat-name">Raggamuffin</span>
+              <span class="beat-bpm">100 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="reggae-lovers" data-category="reggae">
+              <span class="beat-icon">💚</span>
+              <span class="beat-name">Lovers Rock</span>
+              <span class="beat-bpm">78 BPM</span>
+            </button>
+
+            <!-- Afro Beats -->
+            <button class="preset-beat-btn" data-genre="afrobeat-classic" data-category="afro">
               <span class="beat-icon">🌍</span>
               <span class="beat-name">Afrobeat</span>
               <span class="beat-bpm">100 BPM</span>
             </button>
-            <button class="preset-beat-btn" data-genre="lofi">
+            <button class="preset-beat-btn" data-genre="afroswing" data-category="afro">
+              <span class="beat-icon">💃</span>
+              <span class="beat-name">Afroswing</span>
+              <span class="beat-bpm">105 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="amapiano" data-category="afro">
+              <span class="beat-icon">🎹</span>
+              <span class="beat-name">Amapiano</span>
+              <span class="beat-bpm">112 BPM</span>
+              <span class="beat-tag">NEW</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="afro-drill" data-category="afro">
+              <span class="beat-icon">⚡</span>
+              <span class="beat-name">Afro Drill</span>
+              <span class="beat-bpm">130 BPM</span>
+            </button>
+
+            <!-- Other Styles -->
+            <button class="preset-beat-btn" data-genre="lofi" data-category="all">
               <span class="beat-icon">🌙</span>
-              <span class="beat-name">Lo-Fi</span>
+              <span class="beat-name">Lo-Fi Chill</span>
               <span class="beat-bpm">85 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="conscious" data-category="all">
+              <span class="beat-icon">✊</span>
+              <span class="beat-name">Conscious Vibe</span>
+              <span class="beat-bpm">88 BPM</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="freestyle" data-category="all">
+              <span class="beat-icon">🎯</span>
+              <span class="beat-name">Freestyle Ready</span>
+              <span class="beat-bpm">95 BPM</span>
+              <span class="beat-tag">REC</span>
+            </button>
+            <button class="preset-beat-btn" data-genre="battle" data-category="all">
+              <span class="beat-icon">⚔️</span>
+              <span class="beat-name">Battle Beat</span>
+              <span class="beat-bpm">100 BPM</span>
             </button>
           </div>
           <div class="beat-preview" id="beat-preview" style="display: none;">
+            <div class="beat-preview-info">
+              <span class="preview-beat-name"></span>
+              <span class="preview-beat-bpm"></span>
+            </div>
             <audio id="beat-audio" controls loop></audio>
+            <button class="btn-select-beat" id="select-beat-btn">✓ USE THIS BEAT</button>
+          </div>
+        </div>
+
+        <!-- My Beats Section - Saved/Created/NFT Beats -->
+        <div class="beat-section" id="mybeats-section" style="display: none;">
+          <h4>💾 My Beats Library</h4>
+          <div class="mybeats-tabs">
+            <button class="mybeat-tab active" data-source="saved">Saved Beats</button>
+            <button class="mybeat-tab" data-source="created">My Creations</button>
+            <button class="mybeat-tab" data-source="nft">Beat NFTs</button>
+          </div>
+
+          <!-- Saved Beats -->
+          <div class="mybeats-content" id="saved-beats-content">
+            <div class="mybeats-list" id="saved-beats-list">
+              <div class="mybeats-empty" id="saved-beats-empty">
+                <span class="empty-icon">📂</span>
+                <p>No saved beats yet</p>
+                <p class="empty-hint">Beats you save from the sampler will appear here</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Created Beats -->
+          <div class="mybeats-content" id="created-beats-content" style="display: none;">
+            <div class="mybeats-list" id="created-beats-list">
+              <div class="mybeats-empty" id="created-beats-empty">
+                <span class="empty-icon">🎛️</span>
+                <p>No beats created yet</p>
+                <p class="empty-hint">Use the sampler to create and save your own beats</p>
+                <button class="btn-retro-neon" id="go-to-sampler-btn">
+                  <span>🎹</span> OPEN SAMPLER
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- NFT Beats -->
+          <div class="mybeats-content" id="nft-beats-content" style="display: none;">
+            <div class="mybeats-list" id="nft-beats-list">
+              <div class="mybeats-empty" id="nft-beats-empty">
+                <span class="empty-icon">🎨</span>
+                <p>No Beat NFTs owned</p>
+                <p class="empty-hint">Beat NFTs you own will be loaded here</p>
+                <button class="btn-retro" id="connect-wallet-beats-btn">
+                  <span>🔗</span> CONNECT WALLET
+                </button>
+              </div>
+            </div>
+            <div class="nft-beat-info">
+              <p class="nft-hint">Own a beat NFT? It will automatically appear here when your wallet is connected.</p>
+            </div>
+          </div>
+
+          <!-- Beat Preview for My Beats -->
+          <div class="mybeat-preview" id="mybeat-preview" style="display: none;">
+            <div class="mybeat-preview-header">
+              <span class="preview-beat-icon">🎵</span>
+              <div class="preview-beat-details">
+                <span class="preview-mybeat-name"></span>
+                <span class="preview-mybeat-source"></span>
+              </div>
+            </div>
+            <audio id="mybeat-audio" controls loop></audio>
+            <button class="btn-select-beat" id="select-mybeat-btn">✓ USE THIS BEAT</button>
           </div>
         </div>
 
@@ -761,6 +991,140 @@
     color: #666;
   }
 
+  /* Record + Sampler Split Layout */
+  .record-sampler-layout {
+    display: grid;
+    grid-template-columns: 1fr 250px;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .record-section-main {
+    flex: 1;
+  }
+
+  .sampler-access-panel {
+    background: linear-gradient(180deg, #1a1a1a 0%, #111 100%);
+    border: 2px solid #333;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .sampler-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sampler-panel-header .sampler-icon {
+    font-size: 28px;
+  }
+
+  .sampler-panel-header h4 {
+    margin: 0;
+    color: #00ff00;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+
+  .sampler-hint {
+    font-size: 11px;
+    color: #666;
+    margin: 0;
+  }
+
+  .sampler-quick-pads {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+
+  .quick-pad {
+    background: #222;
+    border: 2px solid #444;
+    color: #888;
+    padding: 12px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .quick-pad:hover {
+    border-color: #00ff00;
+    color: #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+  }
+
+  .quick-pad:active {
+    transform: scale(0.95);
+    background: #00ff00;
+    color: #000;
+  }
+
+  .btn-open-sampler {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+    border: 2px solid #00ff00;
+    color: #000;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .btn-open-sampler:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    transform: scale(1.02);
+  }
+
+  .sampler-divider {
+    width: 100%;
+    height: 1px;
+    background: #333;
+    margin: 5px 0;
+  }
+
+  .or-text {
+    font-size: 11px;
+    color: #555;
+    margin: 0;
+  }
+
+  .btn-quick-beat {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 2px solid #ff00ff;
+    color: #ff00ff;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .btn-quick-beat:hover {
+    background: rgba(255, 0, 255, 0.1);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+  }
+
   /* Big Record Button */
   .record-button-container {
     display: flex;
@@ -833,15 +1197,15 @@
   /* Beat Options */
   .beat-options {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
     margin-bottom: 25px;
   }
 
   .beat-option-card {
     background: #1a1a1a;
     border: 2px solid #333;
-    padding: 20px;
+    padding: 15px 10px;
     cursor: pointer;
     text-align: center;
     transition: all 0.3s;
@@ -856,19 +1220,25 @@
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
   }
 
+  .beat-option-card[data-beat="mybeats"].active {
+    border-color: #ff00ff;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+  }
+
   .option-icon {
-    font-size: 36px;
-    margin-bottom: 10px;
+    font-size: 28px;
+    margin-bottom: 8px;
   }
 
   .option-label {
     font-weight: bold;
     color: #fff;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
+    font-size: 12px;
   }
 
   .option-desc {
-    font-size: 12px;
+    font-size: 10px;
     color: #888;
   }
 
@@ -886,23 +1256,60 @@
     text-transform: uppercase;
   }
 
+  /* Beat Category Tabs */
+  .beat-category-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+  }
+
+  .beat-tab {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #888;
+    padding: 8px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .beat-tab:hover {
+    border-color: #666;
+    color: #fff;
+  }
+
+  .beat-tab.active {
+    border-color: #00ff00;
+    color: #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+  }
+
   .preset-beats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .preset-beats-grid.expanded {
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .preset-beat-btn {
     background: #1a1a1a;
     border: 2px solid #333;
-    padding: 15px;
+    padding: 12px 10px;
     cursor: pointer;
     text-align: center;
     transition: all 0.2s;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
+    position: relative;
   }
 
   .preset-beat-btn:hover,
@@ -911,19 +1318,238 @@
     background: #0a0a0a;
   }
 
+  .preset-beat-btn.active {
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+  }
+
+  .preset-beat-btn[data-hidden="true"] {
+    display: none;
+  }
+
   .beat-icon {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .beat-name {
     color: #fff;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: bold;
+    line-height: 1.2;
   }
 
   .beat-bpm {
     color: #888;
+    font-size: 10px;
+  }
+
+  .beat-tag {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ff00ff;
+    color: #fff;
+    font-size: 8px;
+    font-weight: bold;
+    padding: 2px 5px;
+  }
+
+  .beat-preview {
+    margin-top: 15px;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    padding: 15px;
+  }
+
+  .beat-preview-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .preview-beat-name {
+    color: #00ff00;
+    font-weight: bold;
+    font-size: 13px;
+  }
+
+  .preview-beat-bpm {
+    color: #888;
+    font-size: 12px;
+  }
+
+  .btn-select-beat {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+    border: 2px solid #00ff00;
+    color: #000;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-select-beat:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+
+  /* My Beats Section */
+  .mybeats-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+  }
+
+  .mybeat-tab {
+    background: transparent;
+    border: 1px solid #333;
+    color: #888;
+    padding: 10px 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mybeat-tab:hover {
+    border-color: #666;
+    color: #fff;
+  }
+
+  .mybeat-tab.active {
+    border-color: #ff00ff;
+    color: #ff00ff;
+    background: rgba(255, 0, 255, 0.1);
+  }
+
+  .mybeats-content {
+    min-height: 150px;
+  }
+
+  .mybeats-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .mybeats-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    color: #666;
+  }
+
+  .mybeats-empty .empty-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 15px;
+    opacity: 0.5;
+  }
+
+  .mybeats-empty p {
+    margin: 5px 0;
+  }
+
+  .mybeats-empty .empty-hint {
+    font-size: 12px;
+    color: #555;
+  }
+
+  .mybeat-item {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mybeat-item:hover {
+    border-color: #ff00ff;
+  }
+
+  .mybeat-item.active {
+    border-color: #ff00ff;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+  }
+
+  .mybeat-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .mybeat-item-icon {
+    font-size: 24px;
+  }
+
+  .mybeat-item-name {
+    color: #fff;
+    font-weight: bold;
+    font-size: 13px;
+  }
+
+  .mybeat-item-meta {
+    display: flex;
+    justify-content: space-between;
     font-size: 11px;
+    color: #666;
+  }
+
+  .mybeat-item-source {
+    color: #ff00ff;
+  }
+
+  .mybeat-preview {
+    margin-top: 15px;
+    background: #0a0a0a;
+    border: 1px solid #ff00ff;
+    padding: 15px;
+  }
+
+  .mybeat-preview-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .preview-beat-icon {
+    font-size: 28px;
+  }
+
+  .preview-beat-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-mybeat-name {
+    color: #ff00ff;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .preview-mybeat-source {
+    color: #888;
+    font-size: 11px;
+  }
+
+  .nft-beat-info {
+    margin-top: 15px;
+    padding: 12px;
+    background: rgba(255, 0, 255, 0.05);
+    border: 1px dashed #444;
+  }
+
+  .nft-beat-info .nft-hint {
+    margin: 0;
+    font-size: 11px;
+    color: #888;
+    text-align: center;
   }
 
   /* Upload Zone */
@@ -1307,17 +1933,63 @@
       padding: 20px;
     }
 
-    .beat-options {
+    .record-sampler-layout {
       grid-template-columns: 1fr;
     }
 
-    .preset-beats-grid {
+    .sampler-access-panel {
+      order: -1;
+      padding: 15px;
+    }
+
+    .sampler-quick-pads {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .beat-options {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .beat-option-card:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .beat-category-tabs {
+      justify-content: center;
+    }
+
+    .preset-beats-grid,
+    .preset-beats-grid.expanded {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mybeats-tabs {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .mybeats-list {
+      grid-template-columns: 1fr;
     }
 
     .final-submit {
       flex-direction: column;
       gap: 20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .sampler-quick-pads {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .beat-category-tabs {
+      gap: 5px;
+    }
+
+    .beat-tab {
+      padding: 6px 10px;
+      font-size: 10px;
     }
   }
 
@@ -1694,10 +2366,241 @@
         card.dataset.beat === 'preset' ? 'block' : 'none';
       document.getElementById('upload-beat-section').style.display =
         card.dataset.beat === 'upload' ? 'block' : 'none';
+      document.getElementById('mybeats-section').style.display =
+        card.dataset.beat === 'mybeats' ? 'block' : 'none';
 
       if (card.dataset.beat === 'sampler') {
         window.open('/sampler', '_blank');
       }
+
+      if (card.dataset.beat === 'mybeats') {
+        loadMyBeats();
+      }
+    });
+  });
+
+  // Beat category tabs
+  document.querySelectorAll('.beat-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.beat-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const category = tab.dataset.category;
+
+      document.querySelectorAll('.preset-beat-btn').forEach(btn => {
+        const btnCategory = btn.dataset.category;
+        if (category === 'all' || btnCategory === category || btnCategory === 'all') {
+          btn.removeAttribute('data-hidden');
+        } else {
+          btn.setAttribute('data-hidden', 'true');
+        }
+      });
+    });
+  });
+
+  // Preset beat selection
+  document.querySelectorAll('.preset-beat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.preset-beat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const beatPreview = document.getElementById('beat-preview');
+      const beatAudio = document.getElementById('beat-audio');
+      const previewName = beatPreview.querySelector('.preview-beat-name');
+      const previewBpm = beatPreview.querySelector('.preview-beat-bpm');
+
+      previewName.textContent = btn.querySelector('.beat-name').textContent;
+      previewBpm.textContent = btn.querySelector('.beat-bpm').textContent;
+
+      // Set beat audio source (placeholder path - adjust to actual beat files)
+      const genre = btn.dataset.genre;
+      beatAudio.src = `/audio/beats/${genre}.mp3`;
+      beatPreview.style.display = 'block';
+
+      wizardState.beatUrl = beatAudio.src;
+      wizardState.beatType = 'preset';
+    });
+  });
+
+  // Select beat button
+  document.getElementById('select-beat-btn')?.addEventListener('click', () => {
+    // Beat is already selected, move to next step
+    navigateStep(1);
+  });
+
+  // My Beats tabs
+  document.querySelectorAll('.mybeat-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.mybeat-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const source = tab.dataset.source;
+
+      document.getElementById('saved-beats-content').style.display =
+        source === 'saved' ? 'block' : 'none';
+      document.getElementById('created-beats-content').style.display =
+        source === 'created' ? 'block' : 'none';
+      document.getElementById('nft-beats-content').style.display =
+        source === 'nft' ? 'block' : 'none';
+
+      document.getElementById('mybeat-preview').style.display = 'none';
+    });
+  });
+
+  // Load my beats from storage/API
+  async function loadMyBeats() {
+    // Load saved beats from localStorage
+    const savedBeats = JSON.parse(localStorage.getItem('savedBeats') || '[]');
+    const savedBeatsList = document.getElementById('saved-beats-list');
+    const savedBeatsEmpty = document.getElementById('saved-beats-empty');
+
+    if (savedBeats.length > 0) {
+      savedBeatsEmpty.style.display = 'none';
+      savedBeatsList.innerHTML = savedBeats.map(beat => `
+        <div class="mybeat-item" data-beat-url="${beat.url}" data-beat-name="${beat.name}">
+          <div class="mybeat-item-header">
+            <span class="mybeat-item-icon">🎵</span>
+            <span class="mybeat-item-name">${beat.name}</span>
+          </div>
+          <div class="mybeat-item-meta">
+            <span>${beat.bpm || '—'} BPM</span>
+            <span class="mybeat-item-source">Saved</span>
+          </div>
+        </div>
+      `).join('');
+      attachMyBeatItemHandlers();
+    }
+
+    // Load created beats from localStorage
+    const createdBeats = JSON.parse(localStorage.getItem('createdBeats') || '[]');
+    const createdBeatsList = document.getElementById('created-beats-list');
+    const createdBeatsEmpty = document.getElementById('created-beats-empty');
+
+    if (createdBeats.length > 0) {
+      createdBeatsEmpty.style.display = 'none';
+      createdBeatsList.innerHTML = createdBeats.map(beat => `
+        <div class="mybeat-item" data-beat-url="${beat.url}" data-beat-name="${beat.name}">
+          <div class="mybeat-item-header">
+            <span class="mybeat-item-icon">🎛️</span>
+            <span class="mybeat-item-name">${beat.name}</span>
+          </div>
+          <div class="mybeat-item-meta">
+            <span>${beat.bpm || '—'} BPM</span>
+            <span class="mybeat-item-source">Created</span>
+          </div>
+        </div>
+      `).join('');
+      attachMyBeatItemHandlers();
+    }
+
+    // Load NFT beats from wallet
+    const walletAddress = localStorage.getItem('connectedWallet');
+    if (walletAddress) {
+      try {
+        const response = await fetch(`/api/nft/beats?wallet=${walletAddress}`);
+        const result = await response.json();
+        if (result.success && result.beats?.length > 0) {
+          const nftBeatsList = document.getElementById('nft-beats-list');
+          const nftBeatsEmpty = document.getElementById('nft-beats-empty');
+          nftBeatsEmpty.style.display = 'none';
+          nftBeatsList.innerHTML = result.beats.map(beat => `
+            <div class="mybeat-item nft-beat" data-beat-url="${beat.audioUrl}" data-beat-name="${beat.name}" data-token-id="${beat.tokenId}">
+              <div class="mybeat-item-header">
+                <span class="mybeat-item-icon">🎨</span>
+                <span class="mybeat-item-name">${beat.name}</span>
+              </div>
+              <div class="mybeat-item-meta">
+                <span>#${beat.tokenId}</span>
+                <span class="mybeat-item-source">NFT</span>
+              </div>
+            </div>
+          `).join('');
+          attachMyBeatItemHandlers();
+        }
+      } catch (error) {
+        console.warn('Could not load NFT beats:', error);
+      }
+    }
+  }
+
+  function attachMyBeatItemHandlers() {
+    document.querySelectorAll('.mybeat-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.mybeat-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+
+        const preview = document.getElementById('mybeat-preview');
+        const audio = document.getElementById('mybeat-audio');
+        const nameEl = preview.querySelector('.preview-mybeat-name');
+        const sourceEl = preview.querySelector('.preview-mybeat-source');
+
+        nameEl.textContent = item.dataset.beatName;
+        sourceEl.textContent = item.querySelector('.mybeat-item-source').textContent;
+        audio.src = item.dataset.beatUrl;
+        preview.style.display = 'block';
+
+        wizardState.beatUrl = item.dataset.beatUrl;
+        wizardState.beatType = 'mybeat';
+      });
+    });
+  }
+
+  // Select my beat button
+  document.getElementById('select-mybeat-btn')?.addEventListener('click', () => {
+    navigateStep(1);
+  });
+
+  // Go to sampler buttons
+  document.getElementById('go-to-sampler-btn')?.addEventListener('click', () => {
+    window.open('/sampler', '_blank');
+  });
+
+  document.getElementById('inline-sampler-btn')?.addEventListener('click', () => {
+    window.open('/sampler?mode=battle', '_blank');
+  });
+
+  // Quick beat button (jump to step 2)
+  document.getElementById('quick-beat-btn')?.addEventListener('click', () => {
+    // Select preset beats option and go to step 2
+    const presetCard = document.querySelector('.beat-option-card[data-beat="preset"]');
+    if (presetCard) {
+      document.querySelectorAll('.beat-option-card').forEach(c => c.classList.remove('active'));
+      presetCard.classList.add('active');
+      wizardState.beatType = 'preset';
+      document.getElementById('preset-beats-section').style.display = 'block';
+    }
+    goToStep(2);
+  });
+
+  // Connect wallet button in NFT beats
+  document.getElementById('connect-wallet-beats-btn')?.addEventListener('click', async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        if (accounts[0]) {
+          localStorage.setItem('connectedWallet', accounts[0]);
+          loadMyBeats();
+        }
+      } catch (error) {
+        console.error('Wallet connection error:', error);
+      }
+    } else {
+      alert('Please install a Web3 wallet like MetaMask');
+    }
+  });
+
+  // Quick sampler pads (simple sound triggers)
+  const quickPadSounds = {
+    kick: '/audio/samples/kick.mp3',
+    snare: '/audio/samples/snare.mp3',
+    hihat: '/audio/samples/hihat.mp3',
+    bass: '/audio/samples/808.mp3'
+  };
+
+  document.querySelectorAll('.quick-pad').forEach(pad => {
+    pad.addEventListener('click', () => {
+      const sound = pad.dataset.sound;
+      const audio = new Audio(quickPadSounds[sound]);
+      audio.volume = 0.7;
+      audio.play().catch(() => {});
     });
   });
 

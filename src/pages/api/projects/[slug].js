@@ -151,7 +151,7 @@ We wanted to create something raw and real - music that speaks to the experience
 
 ## Collaborators
 
-This project features voices from Kakuma Refugee Camp, Nairobi, and beyond.`,
+This project features voices from coastal and urban youth communities, Nairobi, and beyond.`,
       category: 'music',
       tags: ['hip-hop', 'soul', 'kakuma', 'social-justice', 'album'],
       cover_image: '/images/projects/pain-in-the-ghetto-cover.jpg',
@@ -163,8 +163,8 @@ This project features voices from Kakuma Refugee Camp, Nairobi, and beyond.`,
       ],
       visibility: 'public',
       status: 'published',
-      view_count: 1247,
-      like_count: 89,
+      view_count: 0,
+      like_count: 0,
       hasLiked: false,
       isOwner: false
     },
@@ -174,8 +174,8 @@ This project features voices from Kakuma Refugee Camp, Nairobi, and beyond.`,
       owner_wallet: 'DEMO_WALLET_ARTIST_2',
       owner_username: 'FanaKeBattles',
       title: 'Fana Ke Rap Battle: Glitters and Golds',
-      subtitle: 'The legendary rap battle series from Kakuma',
-      description: 'A rap battle competition bringing together the best lyricists from East African refugee camps.',
+      subtitle: 'The legendary rap battle series',
+      description: 'A rap battle competition bringing together the best lyricists from coastal and urban communities.',
       content: `# Fana Ke Rap Battle: Glitters and Golds
 
 > "Where words become weapons and stories become gold"
@@ -198,14 +198,14 @@ The championship tier, where seasoned veterans clash.
 - 10,000+ viewers across Africa
 - 5 battlers signed to music labels`,
       category: 'music',
-      tags: ['rap-battle', 'hip-hop', 'kakuma', 'competition'],
+      tags: ['rap-battle', 'hip-hop', 'coastal-urban', 'competition'],
       cover_image: '/images/projects/fana-ke-cover.jpg',
       media_urls: [],
       links: [],
       visibility: 'public',
       status: 'published',
-      view_count: 3421,
-      like_count: 256,
+      view_count: 0,
+      like_count: 0,
       hasLiked: false,
       isOwner: false
     },
@@ -216,7 +216,7 @@ The championship tier, where seasoned veterans clash.
       owner_username: 'SolarInnovator',
       title: 'POREFEC',
       subtitle: 'Portable Renewable Energy for Communities',
-      description: 'Scientific research developing affordable solar energy solutions for refugee camps.',
+      description: 'Scientific research developing affordable solar energy solutions for underserved communities.',
       content: `# POREFEC - Portable Renewable Energy for Communities
 
 ## Executive Summary
@@ -236,17 +236,17 @@ POREFEC is an innovative research initiative focused on developing cost-effectiv
 - Prototype v1 tested
 
 ### Phase 2: Pilot Deployment 🔄
-- 20 units deployed in Kakuma
+- 20 units deployed in coastal communities
 - Performance monitoring ongoing`,
       category: 'science',
-      tags: ['renewable-energy', 'solar', 'research', 'kakuma'],
+      tags: ['renewable-energy', 'solar', 'research', 'coastal-urban'],
       cover_image: '/images/projects/porefec-cover.jpg',
       media_urls: [],
       links: [],
       visibility: 'public',
       status: 'published',
-      view_count: 892,
-      like_count: 67,
+      view_count: 0,
+      like_count: 0,
       hasLiked: false,
       isOwner: false
     }

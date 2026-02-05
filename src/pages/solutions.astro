@@ -1,0 +1,434 @@
+---
+/**
+ * solutions.astro - SCD Hub Solutions Database
+ * Sustainable Community Development solutions catalog
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="SCD Solutions Hub" activeSection="learn">
+  <main class="solutions-page">
+    <section class="solutions-hero">
+      <div class="container">
+        <div class="hub-badge">
+          <span class="badge-icon">🗃️</span>
+          <span class="badge-text">Building</span>
+        </div>
+        <h1 class="hero-title">SCD Solutions Hub</h1>
+        <p class="hero-description">
+          A community-driven database of proven solutions for water, energy, agriculture,
+          and infrastructure challenges in underserved communities. Share what works. Scale what matters.
+        </p>
+      </div>
+    </section>
+
+    <section class="categories-section">
+      <div class="container">
+        <h2 class="section-title">Solution Categories</h2>
+        <div class="categories-grid">
+          <div class="category-card water">
+            <div class="category-icon">💧</div>
+            <h3>Water & Sanitation</h3>
+            <p>Rainwater harvesting, filtration systems, sanitation infrastructure, and water management.</p>
+            <div class="category-stats">
+              <span class="stat-item">0 Solutions</span>
+              <span class="stat-item">Coming Soon</span>
+            </div>
+          </div>
+
+          <div class="category-card energy">
+            <div class="category-icon">⚡</div>
+            <h3>Renewable Energy</h3>
+            <p>Solar installations, biogas systems, mini-grids, and energy-efficient cooking solutions.</p>
+            <div class="category-stats">
+              <span class="stat-item">0 Solutions</span>
+              <span class="stat-item">Coming Soon</span>
+            </div>
+          </div>
+
+          <div class="category-card agriculture">
+            <div class="category-icon">🌾</div>
+            <h3>Regenerative Agriculture</h3>
+            <p>Permaculture, agroforestry, soil restoration, and sustainable farming practices.</p>
+            <div class="category-stats">
+              <span class="stat-item">0 Solutions</span>
+              <span class="stat-item">Coming Soon</span>
+            </div>
+          </div>
+
+          <div class="category-card building">
+            <div class="category-icon">🏗️</div>
+            <h3>Low-Cost Building</h3>
+            <p>Earth construction, recycled materials, community-built structures, and resilient design.</p>
+            <div class="category-stats">
+              <span class="stat-item">0 Solutions</span>
+              <span class="stat-item">Coming Soon</span>
+            </div>
+          </div>
+
+          <div class="category-card health">
+            <div class="category-icon">🏥</div>
+            <h3>Community Health</h3>
+            <p>Preventive care, traditional medicine, mental health support, and health education.</p>
+            <div class="category-stats">
+              <span class="stat-item">0 Solutions</span>
+              <span class="stat-item">Coming Soon</span>
+            </div>
+          </div>
+
+          <div class="category-card digital">
+            <div class="category-icon">📱</div>
+            <h3>Digital Infrastructure</h3>
+            <p>Connectivity solutions, digital literacy, offline-first tools, and community tech hubs.</p>
+            <div class="category-stats">
+              <span class="stat-item">0 Solutions</span>
+              <span class="stat-item">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-it-works">
+      <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Document</h3>
+            <p>Share solutions that have worked in your community with photos, costs, and outcomes.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Verify</h3>
+            <p>Community experts review and verify implementations to ensure quality data.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Map</h3>
+            <p>Geo-tagged solutions show what's working where, making replication easier.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <h3>Replicate</h3>
+            <p>Communities discover proven solutions they can implement locally with support.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contribute-section">
+      <div class="container">
+        <div class="contribute-box">
+          <h2>Contribute Solutions</h2>
+          <p>
+            Have you implemented a successful community development project? Share your knowledge
+            to help others solve similar challenges. Every solution documented helps communities worldwide.
+          </p>
+          <div class="contribute-actions">
+            <a href="/contribute" class="btn-primary">Submit a Solution</a>
+            <a href="/about#roles" class="btn-secondary">Become a Data Contributor</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="integration-section">
+      <div class="container">
+        <h2 class="section-title">Part of the Purple Point Ecosystem</h2>
+        <p class="section-subtitle">
+          SCD Hub integrates with our other platforms to create comprehensive community support.
+        </p>
+        <div class="integrations-grid">
+          <a href="/learn" class="integration-card">
+            <div class="integration-icon">📺</div>
+            <h3>Approvideo</h3>
+            <p>Video tutorials for implementing solutions</p>
+          </a>
+          <a href="/peace" class="integration-card">
+            <div class="integration-icon">☮️</div>
+            <h3>Peace Engineering</h3>
+            <p>Conflict resolution for community projects</p>
+          </a>
+          <a href="/nairobi-youth" class="integration-card">
+            <div class="integration-icon">🌆</div>
+            <h3>Urban & Coastal Youth</h3>
+            <p>Implementation partners in Kenya</p>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .solutions-page {
+    background: #0a0a0a;
+    color: #fff;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .solutions-hero {
+    padding: 6rem 0 4rem;
+    text-align: center;
+    background: linear-gradient(180deg, #1a2a1a 0%, #0a0a0a 100%);
+    border-bottom: 2px solid #00ff00;
+  }
+
+  .hub-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    padding: 8px 20px;
+    margin-bottom: 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: #00ff00;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    font-family: 'Courier New', monospace;
+    color: #00ff00;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+
+  .hero-description {
+    font-size: 1.2rem;
+    color: #aaa;
+    max-width: 650px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .section-subtitle {
+    text-align: center;
+    color: #888;
+    margin-bottom: 3rem;
+  }
+
+  .categories-section {
+    padding: 5rem 0;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .category-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 2rem;
+    transition: all 0.3s;
+  }
+
+  .category-card.water:hover { border-color: #00bfff; }
+  .category-card.energy:hover { border-color: #ffff00; }
+  .category-card.agriculture:hover { border-color: #00ff00; }
+  .category-card.building:hover { border-color: #ff8800; }
+  .category-card.health:hover { border-color: #ff00ff; }
+  .category-card.digital:hover { border-color: #00ffff; }
+
+  .category-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .category-card h3 {
+    color: #fff;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  .category-card p {
+    color: #888;
+    line-height: 1.6;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .category-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .stat-item {
+    background: #333;
+    padding: 4px 10px;
+    color: #888;
+  }
+
+  .how-it-works {
+    padding: 5rem 0;
+    background: #111;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .step-card {
+    text-align: center;
+    padding: 2rem 1.5rem;
+  }
+
+  .step-number {
+    width: 60px;
+    height: 60px;
+    background: #00ff00;
+    color: #000;
+    font-size: 1.5rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .step-card h3 {
+    color: #fff;
+    margin-bottom: 0.75rem;
+  }
+
+  .step-card p {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .contribute-section {
+    padding: 5rem 0;
+  }
+
+  .contribute-box {
+    text-align: center;
+    padding: 3rem;
+    border: 2px solid #00ff00;
+    background: rgba(0, 255, 0, 0.05);
+  }
+
+  .contribute-box h2 {
+    color: #00ff00;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+  }
+
+  .contribute-box p {
+    color: #aaa;
+    max-width: 550px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+
+  .contribute-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: #00ff00;
+    color: #000;
+    padding: 12px 28px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #00ff00;
+    padding: 12px 28px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-decoration: none;
+    border: 2px solid #00ff00;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(0, 255, 0, 0.1);
+  }
+
+  .integration-section {
+    padding: 5rem 0;
+    background: #111;
+  }
+
+  .integrations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .integration-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 2rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  .integration-card:hover {
+    border-color: #00ff00;
+    transform: translateY(-5px);
+  }
+
+  .integration-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .integration-card h3 {
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .integration-card p {
+    color: #888;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.25rem;
+    }
+
+    .categories-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

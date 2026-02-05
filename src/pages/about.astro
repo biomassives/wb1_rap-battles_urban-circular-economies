@@ -1,0 +1,960 @@
+---
+/**
+ * about.astro - About Purple Point
+ * Comprehensive overview of the platform, roles, and integrated hubs
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About Purple Point" activeSection="about">
+  <main class="about-page">
+    <!-- Hero Section -->
+    <section class="about-hero">
+      <div class="container">
+        <div class="hero-badge">
+          <span class="badge-icon">🎤</span>
+          <span class="badge-text">Built for Community</span>
+        </div>
+        <h1 class="hero-title">
+          <span class="title-line">FREE Forever.</span>
+          <span class="title-line accent">Open Source.</span>
+          <span class="title-line">Community Owned.</span>
+        </h1>
+        <p class="hero-description">
+          Purple Point is a decentralized platform built on <strong>MIT</strong> and <strong>GPL</strong> open source
+          infrastructure. We believe creativity, education, and community building should never have a paywall.
+        </p>
+        <div class="open-source-badges">
+          <div class="license-badge">
+            <span class="license-icon">📜</span>
+            <span class="license-name">MIT License</span>
+          </div>
+          <div class="license-badge">
+            <span class="license-icon">🔓</span>
+            <span class="license-name">GPL v3</span>
+          </div>
+          <div class="license-badge">
+            <span class="license-icon">🌐</span>
+            <span class="license-name">DeFi Native</span>
+          </div>
+          <div class="license-badge">
+            <span class="license-icon">💚</span>
+            <span class="license-name">Forever Free</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission-section">
+      <div class="container">
+        <h2 class="section-title">Our Mission</h2>
+        <div class="mission-grid">
+          <div class="mission-card">
+            <div class="mission-icon">🎵</div>
+            <h3>Creative Expression</h3>
+            <p>Empower artists to create, battle, and earn through music without barriers or gatekeepers.</p>
+          </div>
+          <div class="mission-card">
+            <div class="mission-icon">🌍</div>
+            <h3>Global Community</h3>
+            <p>Connect urban and coastal youth across Kenya and beyond through hip-hop culture and Web3.</p>
+          </div>
+          <div class="mission-card">
+            <div class="mission-icon">📚</div>
+            <h3>Education First</h3>
+            <p>Integrate learning through video, peace engineering, and sustainable solutions.</p>
+          </div>
+          <div class="mission-card">
+            <div class="mission-icon">💎</div>
+            <h3>Fair Ownership</h3>
+            <p>Artists own their work. NFTs ensure provable ownership and royalties forever.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roles Section -->
+    <section class="roles-section">
+      <div class="container">
+        <h2 class="section-title">Available Roles</h2>
+        <p class="section-subtitle">Choose your path and start contributing to the community</p>
+
+        <div class="roles-grid">
+          <!-- Currently Active Roles -->
+          <div class="role-category">
+            <h3 class="category-title active">
+              <span class="status-dot active"></span>
+              Currently Active
+            </h3>
+
+            <div class="role-card active">
+              <div class="role-icon">🎤</div>
+              <div class="role-content">
+                <h4>Artist / Rapper</h4>
+                <p>Create beats, record battles, earn XP and NFTs. No experience needed to start.</p>
+                <a href="/rap-battle" class="role-cta">Start Battle →</a>
+              </div>
+            </div>
+
+            <div class="role-card active">
+              <div class="role-icon">🎧</div>
+              <div class="role-content">
+                <h4>Beat Producer</h4>
+                <p>Use our sampler and Moog synth to create original beats. Sell as NFTs.</p>
+                <a href="/sampler" class="role-cta">Open Sampler →</a>
+              </div>
+            </div>
+
+            <div class="role-card active">
+              <div class="role-icon">⚖️</div>
+              <div class="role-content">
+                <h4>Judge / Voter</h4>
+                <p>Vote on battles, rate performances, help determine winners fairly.</p>
+                <a href="/rap-battle" class="role-cta">Vote Now →</a>
+              </div>
+            </div>
+
+            <div class="role-card active">
+              <div class="role-icon">🎨</div>
+              <div class="role-content">
+                <h4>NFT Collector</h4>
+                <p>Collect rare PFP cards, trade with others, support artists directly.</p>
+                <a href="/#nft-collection" class="role-cta">Browse NFTs →</a>
+              </div>
+            </div>
+
+            <div class="role-card active">
+              <div class="role-icon">💚</div>
+              <div class="role-content">
+                <h4>Impact Supporter</h4>
+                <p>Support youth programs through donations, mentorship, or resources.</p>
+                <a href="/nairobi-youth" class="role-cta">Learn More →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coming Soon Roles -->
+          <div class="role-category">
+            <h3 class="category-title coming">
+              <span class="status-dot coming"></span>
+              Coming Soon
+            </h3>
+
+            <div class="role-card coming">
+              <div class="role-icon">👨‍🏫</div>
+              <div class="role-content">
+                <h4>Mentor / Teacher</h4>
+                <p>Guide new artists, teach production skills, lead workshops via Approvideo.</p>
+                <span class="coming-badge">Q2 2026</span>
+              </div>
+            </div>
+
+            <div class="role-card coming">
+              <div class="role-icon">🛠️</div>
+              <div class="role-content">
+                <h4>Solution Builder</h4>
+                <p>Contribute sustainable solutions to the SCD Hub database.</p>
+                <span class="coming-badge">Q2 2026</span>
+              </div>
+            </div>
+
+            <div class="role-card coming">
+              <div class="role-icon">☮️</div>
+              <div class="role-content">
+                <h4>Peace Engineer</h4>
+                <p>Design and implement community conflict resolution programs.</p>
+                <span class="coming-badge">Q3 2026</span>
+              </div>
+            </div>
+
+            <div class="role-card coming">
+              <div class="role-icon">📊</div>
+              <div class="role-content">
+                <h4>Data Contributor</h4>
+                <p>Help map resources, document solutions, and maintain databases.</p>
+                <span class="coming-badge">Q3 2026</span>
+              </div>
+            </div>
+
+            <div class="role-card coming">
+              <div class="role-icon">🏛️</div>
+              <div class="role-content">
+                <h4>DAO Governor</h4>
+                <p>Vote on platform decisions, allocate treasury funds, shape the future.</p>
+                <span class="coming-badge">Q4 2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integrated Hubs Section -->
+    <section class="hubs-section">
+      <div class="container">
+        <h2 class="section-title">Integrated Hubs</h2>
+        <p class="section-subtitle">Purple Point connects with powerful learning and solution platforms</p>
+
+        <div class="hubs-grid">
+          <!-- Approvideo Learning Hub -->
+          <div class="hub-card approvideo">
+            <div class="hub-header">
+              <div class="hub-icon">📺</div>
+              <div class="hub-status">Integrated</div>
+            </div>
+            <h3 class="hub-title">Approvideo Learning Hub</h3>
+            <p class="hub-description">
+              Video-based learning platform for skill development. Watch tutorials, complete courses,
+              and earn certificates. From beat production to business basics.
+            </p>
+            <ul class="hub-features">
+              <li>🎬 Video tutorials from community mentors</li>
+              <li>📜 Earn verifiable certificates</li>
+              <li>🎵 Music production courses</li>
+              <li>💼 Entrepreneurship training</li>
+              <li>🌱 Environmental education</li>
+            </ul>
+            <div class="hub-actions">
+              <a href="/learn" class="hub-cta primary">Start Learning</a>
+              <a href="/docs#approvideo" class="hub-cta secondary">Documentation</a>
+            </div>
+          </div>
+
+          <!-- Peace Engineering -->
+          <div class="hub-card peace">
+            <div class="hub-header">
+              <div class="hub-icon">☮️</div>
+              <div class="hub-status">Building</div>
+            </div>
+            <h3 class="hub-title">Peace Engineering</h3>
+            <p class="hub-description">
+              Systems and frameworks for community conflict resolution, restorative justice,
+              and building bridges between communities through creative expression.
+            </p>
+            <ul class="hub-features">
+              <li>🤝 Conflict resolution frameworks</li>
+              <li>🎤 Music as peace-building tool</li>
+              <li>👥 Community mediation training</li>
+              <li>📊 Impact measurement tools</li>
+              <li>🌍 Cross-cultural exchange programs</li>
+            </ul>
+            <div class="hub-actions">
+              <a href="/peace" class="hub-cta primary">Explore Peace Hub</a>
+              <a href="/nairobi-youth#mentorship" class="hub-cta secondary">Join as Mentor</a>
+            </div>
+          </div>
+
+          <!-- SCD Hub Solutions Database -->
+          <div class="hub-card scd">
+            <div class="hub-header">
+              <div class="hub-icon">🗃️</div>
+              <div class="hub-status">Building</div>
+            </div>
+            <h3 class="hub-title">SCD Hub Solutions Database</h3>
+            <p class="hub-description">
+              Sustainable Community Development database cataloging proven solutions for
+              water, energy, agriculture, and infrastructure challenges in underserved communities.
+            </p>
+            <ul class="hub-features">
+              <li>💧 Water & sanitation solutions</li>
+              <li>⚡ Renewable energy systems</li>
+              <li>🌾 Regenerative agriculture</li>
+              <li>🏗️ Low-cost building techniques</li>
+              <li>📍 Geo-tagged implementation maps</li>
+            </ul>
+            <div class="hub-actions">
+              <a href="/solutions" class="hub-cta primary">Browse Solutions</a>
+              <a href="/contribute" class="hub-cta secondary">Contribute Data</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Get Started Section -->
+    <section class="get-started-section">
+      <div class="container">
+        <h2 class="section-title">Get Started Today</h2>
+        <p class="section-subtitle">Jump in anywhere - no signup required to explore</p>
+
+        <div class="start-grid">
+          <a href="/rap-battle" class="start-card battle">
+            <div class="start-icon">⚔️</div>
+            <h3>Start a Battle</h3>
+            <p>Record your first rap and challenge the community</p>
+            <span class="start-tag">Most Popular</span>
+          </a>
+
+          <a href="/sampler" class="start-card create">
+            <div class="start-icon">🎹</div>
+            <h3>Create a Beat</h3>
+            <p>Use our sampler pads to make your first beat</p>
+          </a>
+
+          <a href="/learn" class="start-card learn">
+            <div class="start-icon">📚</div>
+            <h3>Learn Skills</h3>
+            <p>Watch tutorials and earn certificates</p>
+          </a>
+
+          <a href="/nairobi-youth" class="start-card impact">
+            <div class="start-icon">💚</div>
+            <h3>Make Impact</h3>
+            <p>Support youth programs and see real results</p>
+          </a>
+
+          <a href="/projects" class="start-card projects">
+            <div class="start-icon">🚀</div>
+            <h3>Browse Projects</h3>
+            <p>Discover community initiatives you can join</p>
+          </a>
+
+          <a href="/docs" class="start-card docs">
+            <div class="start-icon">📖</div>
+            <h3>Read Docs</h3>
+            <p>Deep dive into how everything works</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Open Source Section -->
+    <section class="opensource-section">
+      <div class="container">
+        <div class="opensource-content">
+          <div class="opensource-text">
+            <h2>Built in the Open</h2>
+            <p>
+              Purple Point is part of the <strong>WorldBridger One</strong> ecosystem, built entirely with
+              open source tools and released under permissive licenses. Fork it, improve it, deploy your own.
+            </p>
+            <div class="tech-stack">
+              <span class="tech-badge">Astro</span>
+              <span class="tech-badge">Solana</span>
+              <span class="tech-badge">Metaplex</span>
+              <span class="tech-badge">Arweave</span>
+              <span class="tech-badge">Web Audio API</span>
+            </div>
+          </div>
+          <div class="opensource-cta">
+            <a href="https://github.com/worldbridgerone/purple-point" class="github-btn" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+              View on GitHub
+            </a>
+            <a href="/docs" class="docs-btn">
+              Read Documentation
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SparkHope Connection -->
+    <section class="sparkhope-section">
+      <div class="container">
+        <div class="sparkhope-banner">
+          <div class="sparkhope-icon">🍄</div>
+          <div class="sparkhope-text">
+            <h3>Part of SparkHope.space</h3>
+            <p>Purple Point is integrated with the SparkHope mycological innovation platform, connecting creative expression with regenerative agriculture and sustainable community development.</p>
+          </div>
+          <a href="https://sparkhope.space" class="sparkhope-link" target="_blank" rel="noopener">
+            Visit SparkHope →
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .about-page {
+    background: #0a0a0a;
+    color: #fff;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* Hero Section */
+  .about-hero {
+    padding: 6rem 0 4rem;
+    text-align: center;
+    background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0a 100%);
+    border-bottom: 2px solid #333;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    padding: 8px 20px;
+    margin-bottom: 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: #00ff00;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .title-line {
+    display: block;
+  }
+
+  .title-line.accent {
+    color: #00ff00;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+
+  .hero-description {
+    font-size: 1.25rem;
+    color: #aaa;
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+
+  .hero-description strong {
+    color: #00ff00;
+  }
+
+  .open-source-badges {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .license-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 10px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+  }
+
+  .license-icon {
+    font-size: 1.2rem;
+  }
+
+  /* Section Styles */
+  .section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .section-subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+  }
+
+  /* Mission Section */
+  .mission-section {
+    padding: 5rem 0;
+    background: #111;
+  }
+
+  .mission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .mission-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .mission-card:hover {
+    border-color: #00ff00;
+    transform: translateY(-5px);
+  }
+
+  .mission-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .mission-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: #00ff00;
+  }
+
+  .mission-card p {
+    color: #888;
+    line-height: 1.6;
+  }
+
+  /* Roles Section */
+  .roles-section {
+    padding: 5rem 0;
+    background: #0a0a0a;
+  }
+
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+  }
+
+  .category-title {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .status-dot.active {
+    background: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+  }
+
+  .status-dot.coming {
+    background: #ff00ff;
+    box-shadow: 0 0 10px #ff00ff;
+  }
+
+  .category-title.active {
+    color: #00ff00;
+  }
+
+  .category-title.coming {
+    color: #ff00ff;
+  }
+
+  .role-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+  }
+
+  .role-card.active:hover {
+    border-color: #00ff00;
+  }
+
+  .role-card.coming {
+    opacity: 0.7;
+  }
+
+  .role-card.coming:hover {
+    border-color: #ff00ff;
+    opacity: 1;
+  }
+
+  .role-icon {
+    font-size: 2rem;
+    min-width: 50px;
+    text-align: center;
+  }
+
+  .role-content h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+
+  .role-content p {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .role-cta {
+    color: #00ff00;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+  }
+
+  .role-cta:hover {
+    text-decoration: underline;
+  }
+
+  .coming-badge {
+    display: inline-block;
+    background: #ff00ff;
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Hubs Section */
+  .hubs-section {
+    padding: 5rem 0;
+    background: #111;
+  }
+
+  .hubs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .hub-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 2rem;
+    transition: all 0.3s;
+  }
+
+  .hub-card.approvideo:hover {
+    border-color: #00ffff;
+  }
+
+  .hub-card.peace:hover {
+    border-color: #ffff00;
+  }
+
+  .hub-card.scd:hover {
+    border-color: #00ff00;
+  }
+
+  .hub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .hub-icon {
+    font-size: 2.5rem;
+  }
+
+  .hub-status {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    background: #333;
+    color: #888;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+  }
+
+  .hub-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+
+  .hub-description {
+    color: #888;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .hub-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+  }
+
+  .hub-features li {
+    padding: 8px 0;
+    border-bottom: 1px solid #333;
+    font-size: 0.9rem;
+    color: #aaa;
+  }
+
+  .hub-features li:last-child {
+    border-bottom: none;
+  }
+
+  .hub-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .hub-cta {
+    padding: 10px 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .hub-cta.primary {
+    background: #00ff00;
+    color: #000;
+    border: 2px solid #00ff00;
+  }
+
+  .hub-cta.primary:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+
+  .hub-cta.secondary {
+    background: transparent;
+    color: #888;
+    border: 2px solid #333;
+  }
+
+  .hub-cta.secondary:hover {
+    border-color: #888;
+    color: #fff;
+  }
+
+  /* Get Started Section */
+  .get-started-section {
+    padding: 5rem 0;
+    background: #0a0a0a;
+  }
+
+  .start-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .start-card {
+    display: block;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .start-card:hover {
+    transform: translateY(-5px);
+    border-color: #00ff00;
+  }
+
+  .start-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .start-card h3 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .start-card p {
+    color: #888;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .start-tag {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: #ff00ff;
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Open Source Section */
+  .opensource-section {
+    padding: 5rem 0;
+    background: linear-gradient(180deg, #111 0%, #1a1a2e 100%);
+    border-top: 2px solid #333;
+  }
+
+  .opensource-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .opensource-text h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .opensource-text p {
+    color: #888;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    max-width: 500px;
+  }
+
+  .opensource-text strong {
+    color: #00ff00;
+  }
+
+  .tech-stack {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .tech-badge {
+    background: #333;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    color: #aaa;
+  }
+
+  .opensource-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .github-btn, .docs-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .github-btn {
+    background: #fff;
+    color: #000;
+    border: 2px solid #fff;
+  }
+
+  .github-btn:hover {
+    background: #00ff00;
+    border-color: #00ff00;
+  }
+
+  .docs-btn {
+    background: transparent;
+    color: #888;
+    border: 2px solid #333;
+  }
+
+  .docs-btn:hover {
+    border-color: #888;
+    color: #fff;
+  }
+
+  /* SparkHope Section */
+  .sparkhope-section {
+    padding: 3rem 0;
+    background: #0a0a0a;
+  }
+
+  .sparkhope-banner {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background: linear-gradient(135deg, #1a1a1a, #2a1a2a);
+    border: 2px solid #ff00ff;
+    padding: 2rem;
+  }
+
+  .sparkhope-icon {
+    font-size: 3rem;
+  }
+
+  .sparkhope-text {
+    flex: 1;
+  }
+
+  .sparkhope-text h3 {
+    color: #ff00ff;
+    margin-bottom: 0.5rem;
+  }
+
+  .sparkhope-text p {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .sparkhope-link {
+    color: #ff00ff;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .sparkhope-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.25rem;
+    }
+
+    .roles-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hubs-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .opensource-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .opensource-text p {
+      max-width: 100%;
+    }
+
+    .tech-stack {
+      justify-content: center;
+    }
+
+    .sparkhope-banner {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>

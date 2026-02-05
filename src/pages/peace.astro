@@ -1,0 +1,313 @@
+---
+/**
+ * peace.astro - Peace Engineering Hub
+ * Community conflict resolution and bridge-building through creative expression
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Peace Engineering" activeSection="learn">
+  <main class="peace-page">
+    <section class="peace-hero">
+      <div class="container">
+        <div class="hub-badge">
+          <span class="badge-icon">☮️</span>
+          <span class="badge-text">Building</span>
+        </div>
+        <h1 class="hero-title">Peace Engineering</h1>
+        <p class="hero-description">
+          Systems and frameworks for community conflict resolution, restorative justice,
+          and building bridges between communities through creative expression and music.
+        </p>
+      </div>
+    </section>
+
+    <section class="core-principles">
+      <div class="container">
+        <h2 class="section-title">Core Principles</h2>
+        <div class="principles-grid">
+          <div class="principle-card">
+            <div class="principle-number">01</div>
+            <h3>Music as Bridge</h3>
+            <p>Hip-hop culture transcends boundaries. We use rap battles not for conflict, but for creative expression that builds understanding.</p>
+          </div>
+          <div class="principle-card">
+            <div class="principle-number">02</div>
+            <h3>Restorative Justice</h3>
+            <p>Focus on healing relationships and community, not punishment. Every conflict is an opportunity for growth.</p>
+          </div>
+          <div class="principle-card">
+            <div class="principle-number">03</div>
+            <h3>Youth Leadership</h3>
+            <p>Young people aren't just participants - they're the engineers of peace in their communities.</p>
+          </div>
+          <div class="principle-card">
+            <div class="principle-number">04</div>
+            <h3>Cultural Respect</h3>
+            <p>Honor local traditions while creating new shared spaces for dialogue and collaboration.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="programs-section">
+      <div class="container">
+        <h2 class="section-title">Programs & Frameworks</h2>
+        <div class="programs-grid">
+          <div class="program-card">
+            <div class="program-icon">🤝</div>
+            <h3>Conflict Resolution Workshops</h3>
+            <p>Training for community leaders in mediation, active listening, and de-escalation techniques.</p>
+            <span class="program-status">In Development</span>
+          </div>
+          <div class="program-card">
+            <div class="program-icon">🎤</div>
+            <h3>Battle for Peace Events</h3>
+            <p>Special rap battles focused on unity themes, bringing together artists from different communities.</p>
+            <span class="program-status">Piloting</span>
+          </div>
+          <div class="program-card">
+            <div class="program-icon">📊</div>
+            <h3>Impact Measurement</h3>
+            <p>Tools and frameworks to track peace-building outcomes and community healing progress.</p>
+            <span class="program-status">Research Phase</span>
+          </div>
+          <div class="program-card">
+            <div class="program-icon">🌍</div>
+            <h3>Cross-Cultural Exchange</h3>
+            <p>Connecting artists and communities across Kenya and beyond for collaborative projects.</p>
+            <span class="program-status">Active</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="get-involved">
+      <div class="container">
+        <div class="involvement-box">
+          <h2>Become a Peace Engineer</h2>
+          <p>
+            We're looking for mentors, mediators, artists, and community leaders who want to use
+            creative expression as a tool for building peace.
+          </p>
+          <div class="involvement-actions">
+            <a href="/about#roles" class="btn-primary">See Available Roles</a>
+            <a href="/nairobi-youth#mentorship" class="btn-secondary">Join as Mentor</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .peace-page {
+    background: #0a0a0a;
+    color: #fff;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .peace-hero {
+    padding: 6rem 0 4rem;
+    text-align: center;
+    background: linear-gradient(180deg, #2a2a1a 0%, #0a0a0a 100%);
+    border-bottom: 2px solid #ffff00;
+  }
+
+  .hub-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 0, 0.1);
+    border: 1px solid #ffff00;
+    padding: 8px 20px;
+    margin-bottom: 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: #ffff00;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    font-family: 'Courier New', monospace;
+    color: #ffff00;
+    text-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+  }
+
+  .hero-description {
+    font-size: 1.2rem;
+    color: #aaa;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .core-principles {
+    padding: 5rem 0;
+    background: #111;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 3rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .principle-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 2rem;
+    transition: all 0.3s;
+  }
+
+  .principle-card:hover {
+    border-color: #ffff00;
+  }
+
+  .principle-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #ffff00;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  .principle-card h3 {
+    color: #ffff00;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+  }
+
+  .principle-card p {
+    color: #888;
+    line-height: 1.6;
+    font-size: 0.9rem;
+  }
+
+  .programs-section {
+    padding: 5rem 0;
+  }
+
+  .programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .program-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .program-card:hover {
+    border-color: #ffff00;
+  }
+
+  .program-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .program-card h3 {
+    color: #fff;
+    margin-bottom: 0.75rem;
+  }
+
+  .program-card p {
+    color: #888;
+    line-height: 1.6;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .program-status {
+    display: inline-block;
+    background: #333;
+    color: #ffff00;
+    font-size: 0.7rem;
+    padding: 4px 12px;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+  }
+
+  .get-involved {
+    padding: 5rem 0;
+    background: #111;
+  }
+
+  .involvement-box {
+    text-align: center;
+    padding: 3rem;
+    border: 2px solid #ffff00;
+    background: rgba(255, 255, 0, 0.05);
+  }
+
+  .involvement-box h2 {
+    color: #ffff00;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+  }
+
+  .involvement-box p {
+    color: #aaa;
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+
+  .involvement-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: #ffff00;
+    color: #000;
+    padding: 12px 28px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #ffff00;
+    padding: 12px 28px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-decoration: none;
+    border: 2px solid #ffff00;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 0, 0.1);
+  }
+</style>

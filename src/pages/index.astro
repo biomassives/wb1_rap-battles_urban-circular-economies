@@ -12,6 +12,15 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
 ---
 
 <BaseLayout title="Hobby Farm Collection" activeSection="home">
+  <!-- Testing Mode Banner -->
+  <div class="testing-banner">
+    <div class="testing-banner-content">
+      <span class="testing-icon">🧪</span>
+      <span class="testing-text">TEST MODE - We're currently testing with coastal and urban youth communities</span>
+      <span class="testing-icon">🧪</span>
+    </div>
+  </div>
+
   <!-- Welcome Wizard for New Users -->
   <WelcomeWizard />
 
@@ -47,16 +56,17 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
         </div>
         <div class="hero-stats ska-pattern">
           <div class="stat card-retro">
-            <div class="stat-number neon-text">1000+</div>
+            <div class="stat-number neon-text" id="stat-battles">0</div>
             <div class="stat-label">BATTLES</div>
           </div>
           <div class="stat card-retro">
-            <div class="stat-number neon-text">500+</div>
+            <div class="stat-number neon-text" id="stat-players">0</div>
             <div class="stat-label">PLAYERS</div>
           </div>
-          <div class="stat card-retro">
+          <div class="stat card-retro stat-free">
             <div class="stat-number text-cyan">FREE</div>
-            <div class="stat-label">TO START</div>
+            <div class="stat-label">FOREVER</div>
+            <div class="stat-badge">Open Source</div>
           </div>
         </div>
       </div>
@@ -448,6 +458,41 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
   </div>
 
   <style>
+    /* Testing Banner */
+    .testing-banner {
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+      color: #000;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 100;
+      animation: testingPulse 2s ease-in-out infinite;
+    }
+
+    .testing-banner-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .testing-icon {
+      font-size: 1.25rem;
+    }
+
+    .testing-text {
+      text-transform: uppercase;
+      font-size: 0.875rem;
+    }
+
+    @keyframes testingPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
+    }
+
     /* Rap Battle Hero Section - Retro Dark */
     .rap-battle-hero {
       min-height: 90vh;
@@ -693,6 +738,27 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
       font-weight: 900;
       color: var(--color-white);
       font-family: var(--font-mono);
+    }
+
+    .stat-free {
+      position: relative;
+    }
+
+    .stat-badge {
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #00ff00, #00cc00);
+      color: #000;
+      font-size: 0.65rem;
+      padding: 3px 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      font-family: var(--font-mono);
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
 
     /* How It Works Section */
@@ -2218,8 +2284,56 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
   </style>
 
   <script>
+    // Platform Stats Loader
+    async function loadPlatformStats() {
+      const battlesEl = document.getElementById('stat-battles');
+      const playersEl = document.getElementById('stat-players');
+
+      if (!battlesEl || !playersEl) return;
+
+      try {
+        const response = await fetch('/api/stats/platform');
+        const data = await response.json();
+
+        if (data.success && data.stats) {
+          // Animate the numbers counting up
+          animateNumber(battlesEl, data.stats.battles.total);
+          animateNumber(playersEl, data.stats.players.total);
+        }
+      } catch (error) {
+        console.warn('Could not load platform stats:', error);
+        // Keep showing 0 as fallback
+      }
+    }
+
+    // Animate number counting up
+    function animateNumber(element, target) {
+      const duration = 1000; // 1 second
+      const start = 0;
+      const startTime = performance.now();
+
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease out quad
+        const easeProgress = 1 - (1 - progress) * (1 - progress);
+        const current = Math.floor(start + (target - start) * easeProgress);
+
+        element.textContent = current.toLocaleString();
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+
+      requestAnimationFrame(update);
+    }
+
     // Moog Modal Controller
     document.addEventListener('DOMContentLoaded', () => {
+      // Load platform stats
+      loadPlatformStats();
+
       const openBtn = document.getElementById('open-moog-modal');
       const closeBtn = document.getElementById('close-moog-modal');
       const overlay = document.getElementById('moog-modal-overlay');
