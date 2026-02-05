@@ -1,4 +1,4 @@
-# Purple Point - Complete Page Index
+# WorldBridger One - Complete Page Index
 **Last Updated**: 2026-01-02
 **Build Status**: ✅ All pages building successfully
 

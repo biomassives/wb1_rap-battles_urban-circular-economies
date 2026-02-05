@@ -186,7 +186,7 @@
    ```astro
    <div class="phishing-warning">
      ⚠️ NEVER enter your recovery phrase anywhere except when importing your wallet.
-     Purple Point will NEVER ask for your recovery phrase!
+     WorldBridger One will NEVER ask for your recovery phrase!
    </div>
    ```
 
@@ -450,13 +450,13 @@ npm install @solana/web3.js bip39 @noble/hashes @noble/ciphers @solana/wallet-ad
 ```markdown
 ## Security Disclosure
 
-Purple Point is a non-custodial wallet platform:
+WorldBridger One is a non-custodial wallet platform:
 - We DO NOT have access to your recovery phrase
 - We CANNOT recover your wallet if you lose your phrase
 - We DO NOT store your private keys
 - You are FULLY responsible for wallet security
 
-By using Purple Point, you acknowledge these risks.
+By using WorldBridger One, you acknowledge these risks.
 ```
 
 ---
@@ -554,7 +554,7 @@ By using Purple Point, you acknowledge these risks.
    - [Skip for Now]
    ↓
 8. Security Quiz (3 questions)
-   Q1: "Can Purple Point recover your wallet if you lose your phrase?"
+   Q1: "Can WorldBridger One recover your wallet if you lose your phrase?"
        A. Yes, if I contact support ❌
        B. Yes, using my email ❌
        C. No, it's impossible ✅
@@ -567,7 +567,7 @@ By using Purple Point, you acknowledge these risks.
        D. Email to myself ❌
 
    Q3: "Who can you share your recovery phrase with?"
-       A. Purple Point support ❌
+       A. WorldBridger One support ❌
        B. My family ❌
        C. No one, ever ✅
        D. Technical support ❌
@@ -593,16 +593,16 @@ By using Purple Point, you acknowledge these risks.
 ## Additional Resources
 
 ### For Users:
-- [Wallet Security Guide](https://docs.purplepoint.io/security)
-- [Recovery Phrase Best Practices](https://docs.purplepoint.io/recovery)
-- [Common Scams to Avoid](https://docs.purplepoint.io/scams)
-- [FAQ: Lost My Phrase](https://docs.purplepoint.io/faq#lost-phrase)
+- [Wallet Security Guide](https://docs.worldbridger.one/security)
+- [Recovery Phrase Best Practices](https://docs.worldbridger.one/recovery)
+- [Common Scams to Avoid](https://docs.worldbridger.one/scams)
+- [FAQ: Lost My Phrase](https://docs.worldbridger.one/faq#lost-phrase)
 
 ### For Developers:
 - [Solana Web3.js Docs](https://solana-labs.github.io/solana-web3.js/)
 - [BIP39 Specification](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
 - [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
-- [Security Audit Report](https://docs.purplepoint.io/audit) (when available)
+- [Security Audit Report](https://docs.worldbridger.one/audit) (when available)
 
 ---
 

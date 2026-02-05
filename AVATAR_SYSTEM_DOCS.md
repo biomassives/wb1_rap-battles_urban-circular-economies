@@ -1,4 +1,4 @@
-# Purple Point - Avatar System Documentation
+# WorldBridger One - Avatar System Documentation
 **Created**: 2026-01-02
 **Version**: 1.0
 
@@ -6,7 +6,7 @@
 
 ## 📋 Overview
 
-The Purple Point Avatar System is a **composable NFT-based avatar builder** that allows users to create unique profile pictures (PFPs) and rap battle avatars using:
+The WorldBridger One Avatar System is a **composable NFT-based avatar builder** that allows users to create unique profile pictures (PFPs) and rap battle avatars using:
 
 1. **Vector-based canvas rendering** (HTML5 Canvas)
 2. **Level-gated base characters** (animal mentors)
@@ -209,7 +209,7 @@ const accessoryNFTs = {
 function downloadAvatar() {
   const canvas = document.getElementById('avatarCanvas');
   const link = document.createElement('a');
-  link.download = `purple-point-avatar-${Date.now()}.png`;
+  link.download = `worldbridger-one-avatar-${Date.now()}.png`;
   link.href = canvas.toDataURL('image/png');
   link.click();
 }
@@ -249,9 +249,9 @@ function saveAsProfilePic() {
 async function mintAsNFT() {
   // 1. Generate metadata
   const metadata = {
-    name: `Purple Point Avatar #${userId}`,
+    name: `WorldBridger One Avatar #${userId}`,
     symbol: 'PPAVATAR',
-    description: 'Composable avatar NFT from Purple Point',
+    description: 'Composable avatar NFT from WorldBridger One',
     image: avatarDataUrl,
     attributes: [
       { trait_type: 'Character', value: avatarState.character },
@@ -364,11 +364,11 @@ Avatar NFT (Parent)
 
 ```json
 {
-  "name": "Purple Point Avatar #1234",
+  "name": "WorldBridger One Avatar #1234",
   "symbol": "PPAVATAR",
-  "description": "Composable avatar from Purple Point",
+  "description": "Composable avatar from WorldBridger One",
   "image": "ipfs://QmXx.../avatar.png",
-  "external_url": "https://purplepoint.io/avatar/1234",
+  "external_url": "https://worldbridger.one/avatar/1234",
   "attributes": [
     { "trait_type": "Character", "value": "Chicken" },
     { "trait_type": "Level", "value": 15 },
@@ -390,8 +390,8 @@ Avatar NFT (Parent)
     ]
   },
   "collection": {
-    "name": "Purple Point Avatars",
-    "family": "Purple Point"
+    "name": "WorldBridger One Avatars",
+    "family": "WorldBridger One"
   },
   "composable": {
     "child_nfts": [
@@ -689,7 +689,7 @@ export async function POST({ request }) {
 
 ## 📝 Summary
 
-The Purple Point Avatar System provides:
+The WorldBridger One Avatar System provides:
 
 ✅ **Canvas-based vector avatar builder**
 ✅ **6 level-gated animal characters**
@@ -708,4 +708,4 @@ The Purple Point Avatar System provides:
 
 ---
 
-**Ready to build unique avatars for the Purple Point community! 🎨✨**
+**Ready to build unique avatars for the WorldBridger One community! 🎨✨**

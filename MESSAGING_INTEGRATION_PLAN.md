@@ -1,4 +1,4 @@
-# Purple Point - Messaging Integration Plan
+# WorldBridger One - Messaging Integration Plan
 **Created**: 2026-01-02
 **Status**: Planning Phase
 
@@ -6,7 +6,7 @@
 
 ## 📬 Overview
 
-This document outlines the integration of three messaging systems for the Purple Point platform:
+This document outlines the integration of three messaging systems for the WorldBridger One platform:
 1. **Mailgun** - Email notifications and campaigns
 2. **Twilio** - SMS notifications and alerts
 3. **Web3 Messaging** - Decentralized communication (XMTP, Dialect, Push Protocol)
@@ -56,7 +56,7 @@ export const sendEmail = async ({
 }) => {
   try {
     const msg = await mg.messages.create(import.meta.env.MAILGUN_DOMAIN, {
-      from: 'Purple Point <notifications@purplepoint.io>',
+      from: 'WorldBridger One <notifications@worldbridger.one>',
       to: [to],
       subject: subject,
       template: template,
@@ -89,16 +89,16 @@ export const sendEmail = async ({
   <table width="600" cellpadding="0" cellspacing="0">
     <tr>
       <td class="header">
-        <img src="https://purplepoint.io/images/email/header-banner.svg" alt="Purple Point" />
+        <img src="https://worldbridger.one/images/email/header-banner.svg" alt="WorldBridger One" />
       </td>
     </tr>
     <tr>
       <td class="content">
-        <h1>Welcome to Purple Point, {{username}}!</h1>
+        <h1>Welcome to WorldBridger One, {{username}}!</h1>
         <p>Your journey starts here. Create music, learn sustainability, and earn rewards.</p>
 
         <div class="cta-button">
-          <a href="https://purplepoint.io/profile">Complete Your Profile</a>
+          <a href="https://worldbridger.one/profile">Complete Your Profile</a>
         </div>
 
         <div class="stats">
@@ -137,7 +137,7 @@ export async function POST({ request }) {
 
   const result = await sendEmail({
     to: email,
-    subject: 'Welcome to Purple Point!',
+    subject: 'Welcome to WorldBridger One!',
     template: 'welcome-email',
     variables: {
       username,
@@ -155,8 +155,8 @@ export async function POST({ request }) {
 ### Environment Variables
 ```env
 MAILGUN_API_KEY=your_mailgun_api_key
-MAILGUN_DOMAIN=mg.purplepoint.io
-MAILGUN_FROM_EMAIL=notifications@purplepoint.io
+MAILGUN_DOMAIN=mg.worldbridger.one
+MAILGUN_FROM_EMAIL=notifications@worldbridger.one
 ```
 
 ---
@@ -224,19 +224,19 @@ export const sendWhatsApp = async ({ to, message }) => {
 
 #### 1. Airdrop Reminder
 ```
-Purple Point: Your {tokenAmount} token airdrop expires in 24h!
+WorldBridger One: Your {tokenAmount} token airdrop expires in 24h!
 Claim now: {claimUrl}
 ```
 
 #### 2. Battle Challenge
 ```
-Purple Point: {username} challenged you to a rap battle!
+WorldBridger One: {username} challenged you to a rap battle!
 Join now: {battleUrl}
 ```
 
 #### 3. Mentor Message
 ```
-Purple Point: Your mentor {mentorName} sent you a message.
+WorldBridger One: Your mentor {mentorName} sent you a message.
 View: {messageUrl}
 ```
 

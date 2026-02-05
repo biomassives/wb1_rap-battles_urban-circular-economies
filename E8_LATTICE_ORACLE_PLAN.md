@@ -866,4 +866,4 @@ class SecureKeyManager {
 ---
 
 Built with 🔒 for Privacy, Security, and User Sovereignty
-**Purple Point NFT Platform × E8 Lattice Oracle System**
+**WorldBridger One NFT Platform × E8 Lattice Oracle System**

@@ -702,6 +702,455 @@ const currentYear = new Date().getFullYear();
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.1); }
     }
+
+    /* Brand Icon */
+    .brand-icon {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Nav Primary - Flex container for entire nav */
+    .nav-primary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 12px;
+    }
+
+    /* Nav Menu - Horizontal menu items */
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    /* Mobile menu button - hidden by default */
+    .btn-mobile-menu {
+      display: none;
+      background: transparent;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-mobile-menu:hover {
+      background: #00ff00;
+      color: #000;
+    }
+
+    /* ═══════════════════════════════════════════
+       RETRO SPACE INVADERS NAV ICONS
+       ═══════════════════════════════════════════ */
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    /* Retro Icon Button Base */
+    .nav-icon-btn {
+      background: #0a0a0a;
+      border: 2px solid #00ff00;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      padding: 0;
+    }
+
+    .nav-icon-btn:hover {
+      background: #00ff00;
+      box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+    }
+
+    .nav-icon-btn:hover .retro-icon {
+      color: #000;
+    }
+
+    /* Retro Pixel Icons */
+    .retro-icon {
+      font-size: 12px;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+
+    /* Battle icon animation */
+    .battle-icon {
+      animation: battle-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes battle-pulse {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    /* Retro Badge - Compact pixel style */
+    .retro-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 14px;
+      height: 14px;
+      background: #ff0000;
+      color: #fff;
+      font-size: 8px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2px;
+      line-height: 1;
+    }
+
+    /* Profile Button - Slightly larger */
+    .btn-profile {
+      width: 28px;
+      height: 28px;
+      border-color: #888;
+    }
+
+    .btn-profile:hover {
+      border-color: #00ff00;
+      background: #00ff00;
+    }
+
+    /* Profile Dropdown */
+    .profile-dropdown {
+      position: relative;
+    }
+
+    .profile-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: #0a0a0a;
+      border: 2px solid #00ff00;
+      min-width: 200px;
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    }
+
+    .dropdown-xp-section {
+      padding: 10px 12px;
+      background: #111;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .xp-info {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #00ff00;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+    }
+
+    .xp-icon {
+      font-size: 0.9rem;
+    }
+
+    .level-info {
+      background: #222;
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      color: #888;
+      font-family: 'Courier New', monospace;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: #333;
+      margin: 0;
+    }
+
+    .profile-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.1s;
+      text-align: left;
+      font-family: 'Courier New', monospace;
+    }
+
+    .profile-menu-item:hover {
+      background: #1a1a1a;
+      color: #00ff00;
+    }
+
+    .menu-icon {
+      font-size: 0.9rem;
+      width: 18px;
+      text-align: center;
+    }
+
+    .menu-label {
+      flex: 1;
+    }
+
+    .menu-arrow {
+      font-size: 0.6rem;
+      color: #555;
+    }
+
+    .profile-menu-item.logout-item:hover {
+      background: rgba(255, 0, 0, 0.1);
+      color: #ff6666;
+    }
+
+    /* Language Submenu */
+    .profile-menu-item.has-submenu {
+      position: relative;
+    }
+
+    .language-submenu {
+      display: none;
+      position: absolute;
+      left: 100%;
+      top: 0;
+      background: #0a0a0a;
+      border: 2px solid #00ff00;
+      min-width: 140px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .profile-menu-item.has-submenu:hover .language-submenu {
+      display: block;
+    }
+
+    .language-submenu .language-section-header {
+      padding: 6px 10px;
+      font-size: 0.65rem;
+      color: #555;
+      text-transform: uppercase;
+      background: #111;
+      font-family: 'Courier New', monospace;
+    }
+
+    .language-submenu .language-option {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 0.75rem;
+      cursor: pointer;
+      text-align: left;
+      font-family: 'Courier New', monospace;
+    }
+
+    .language-submenu .language-option:hover {
+      background: #1a1a1a;
+      color: #00ff00;
+    }
+
+    .language-submenu .flag {
+      font-size: 0.9rem;
+    }
+
+    /* Connect Button - Compact */
+    .btn-primary {
+      background: #00ff00;
+      color: #000;
+      border: none;
+      padding: 6px 12px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 12px rgba(0, 255, 0, 0.6);
+    }
+
+    .btn-primary.btn-pulse {
+      animation: connect-pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes connect-pulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(0, 255, 0, 0.4); }
+      50% { box-shadow: 0 0 10px rgba(0, 255, 0, 0.6); }
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE - Fix nav icons at small screens
+       ═══════════════════════════════════════════ */
+
+    @media (max-width: 900px) {
+      .nav-menu {
+        gap: 2px;
+      }
+
+      .nav-dropdown-btn span:not(.nav-icon):not(.dropdown-arrow) {
+        font-size: 0.7rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-primary {
+        gap: 8px;
+      }
+
+      .nav-menu {
+        flex: 1;
+        justify-content: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .nav-menu::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-actions {
+        gap: 3px;
+      }
+
+      .nav-icon-btn {
+        width: 26px;
+        height: 26px;
+      }
+
+      .retro-icon {
+        font-size: 10px;
+      }
+
+      .btn-primary {
+        padding: 5px 8px;
+        font-size: 0.7rem;
+      }
+
+      .profile-dropdown-menu {
+        right: 0;
+        min-width: 180px;
+      }
+
+      .language-submenu {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        max-height: 70vh;
+        width: 85%;
+        max-width: 280px;
+        z-index: 2000;
+      }
+    }
+
+    @media (max-width: 600px) {
+      /* Ensure nav-actions stay visible */
+      .nav-primary {
+        gap: 6px;
+      }
+
+      .nav-actions {
+        position: relative;
+        z-index: 100;
+        gap: 2px;
+        flex-shrink: 0;
+      }
+
+      .nav-icon-btn {
+        width: 24px;
+        height: 24px;
+        border-width: 1px;
+      }
+
+      .retro-icon {
+        font-size: 9px;
+      }
+
+      .retro-badge {
+        min-width: 12px;
+        height: 12px;
+        font-size: 7px;
+        top: -3px;
+        right: -3px;
+      }
+
+      .btn-primary {
+        padding: 4px 6px;
+        font-size: 0.65rem;
+      }
+
+      /* Hide nav menu dropdowns, show hamburger */
+      .nav-menu {
+        display: none;
+      }
+
+      .btn-mobile-menu {
+        display: flex;
+        order: -1;
+      }
+
+      /* Brand icon stays visible */
+      .worldbridger-brand {
+        display: flex;
+      }
+
+      .profile-dropdown-menu {
+        position: fixed;
+        top: auto;
+        bottom: 60px;
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .nav-icon-btn {
+        width: 22px;
+        height: 22px;
+      }
+
+      .btn-primary {
+        padding: 3px 5px;
+        font-size: 0.6rem;
+      }
+
+      .brand-icon {
+        font-size: 1.2rem;
+      }
+    }
   </style>
   
   <script is:inline>
@@ -857,12 +1306,10 @@ const currentYear = new Date().getFullYear();
     <div class="container mx-auto flex justify-between items-center">
       <nav class="nav-primary ">
         
-        <!-- WORLDBRIDGER ONE Bubble Text Logo -->
+        <!-- WORLDBRIDGER ONE Logo -->
         <div class="flex items-center gap-4">
           <a href="/" class="worldbridger-brand" title="WorldBridger One">
-            <h1 class="worldbridger-title">
-              <span class="one">Welcome</span>
-            </h1>
+            <span class="brand-icon">🎤</span>
           </a>
         </div>
 
@@ -1011,123 +1458,94 @@ const currentYear = new Date().getFullYear();
           </li>
         </ul>
 
-        <!-- User Actions -->
+        <!-- User Actions - Retro Space Invaders Style -->
         <div class="nav-actions">
-          <!-- Language Switcher -->
-          <div class="language-switcher">
-            <button id="language-btn" class="btn-icon btn-language" title="Change Language" onclick="toggleLanguage()">
-              <span class="language-icon">🌐</span>
-              <span id="current-language" class="language-code">EN</span>
+          <!-- Notifications - Retro Bell -->
+          <button id="notifications-btn" class="nav-icon-btn" title="Notifications" style="display: none;">
+            <span class="retro-icon">◆</span>
+            <span id="notification-count" class="retro-badge">0</span>
+          </button>
+
+          <!-- Battle Challenge - Retro Swords -->
+          <button id="challenge-create-btn" class="nav-icon-btn" title="Battle" onclick="openChallengeCreateModal()">
+            <span class="retro-icon battle-icon">▼</span>
+          </button>
+
+          <!-- Challenge Invites -->
+          <button id="challenge-invites-btn" class="nav-icon-btn" title="Invites" onclick="showPendingInvites()" style="display: none;">
+            <span class="retro-icon">◀</span>
+            <span id="challenge-invite-count" class="retro-badge">0</span>
+          </button>
+
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown" id="profile-dropdown-container">
+            <button id="profile-dropdown-btn" class="nav-icon-btn btn-profile" title="Menu">
+              <span class="retro-icon" id="profile-avatar-icon">●</span>
             </button>
-            <div id="language-dropdown" class="dropdown-menu language-menu" style="display: none;">
-              <!-- Global Languages Section -->
-              <div class="language-section-header">Global Languages</div>
-              <button class="language-option" data-lang="en">
-                <span class="flag">🇬🇧</span>
-                <span class="lang-name">English</span>
-              </button>
-              <button class="language-option" data-lang="es">
-                <span class="flag">🇪🇸</span>
-                <span class="lang-name">Español</span>
-              </button>
-              <button class="language-option" data-lang="fr">
-                <span class="flag">🇫🇷</span>
-                <span class="lang-name">Français</span>
-              </button>
-              <button class="language-option" data-lang="sw">
-                <span class="flag">🇰🇪</span>
-                <span class="lang-name">Kiswahili</span>
-              </button>
-              <button class="language-option" data-lang="ar">
-                <span class="flag">🇸🇦</span>
-                <span class="lang-name">العربية</span>
-              </button>
-              <button class="language-option" data-lang="pt">
-                <span class="flag">🇧🇷</span>
-                <span class="lang-name">Português</span>
-              </button>
-              <button class="language-option" data-lang="zh">
-                <span class="flag">🇨🇳</span>
-                <span class="lang-name">中文</span>
-              </button>
-              <button class="language-option" data-lang="hi">
-                <span class="flag">🇮🇳</span>
-                <span class="lang-name">हिन्दी</span>
+            <div id="profile-dropdown-menu" class="profile-dropdown-menu" style="display: none;">
+              <!-- XP Display (when logged in) -->
+              <div id="xp-display-dropdown" class="dropdown-xp-section" style="display: none;">
+                <div class="xp-info">
+                  <span class="xp-icon">⭐</span>
+                  <span id="current-xp">0</span> XP
+                </div>
+                <div class="level-info">
+                  Level <span id="current-level">1</span>
+                </div>
+              </div>
+
+              <div class="dropdown-divider" id="xp-divider" style="display: none;"></div>
+
+              <!-- Theme Toggle -->
+              <button class="profile-menu-item" id="theme-toggle-item" onclick="toggleTheme()">
+                <span class="menu-icon theme-icon-dark">🌙</span>
+                <span class="menu-icon theme-icon-light" style="display: none;">☀️</span>
+                <span class="menu-label" id="theme-label">Dark Mode</span>
               </button>
 
-              <!-- Refugee Camp Languages Section -->
-              <div class="language-section-header">Refugee Camp Languages</div>
-              <button class="language-option" data-lang="ps">
-                <span class="flag">🇦🇫</span>
-                <span class="lang-name">پښتو (Pashto)</span>
-              </button>
-              <button class="language-option" data-lang="fa">
-                <span class="flag">🇦🇫</span>
-                <span class="lang-name">دری (Dari)</span>
-              </button>
-              <button class="language-option" data-lang="so">
-                <span class="flag">🇸🇴</span>
-                <span class="lang-name">Soomaali (Somali)</span>
-              </button>
-              <button class="language-option" data-lang="ti">
-                <span class="flag">🇪🇷</span>
-                <span class="lang-name">ትግርኛ (Tigrinya)</span>
-              </button>
-              <button class="language-option" data-lang="my">
-                <span class="flag">🇲🇲</span>
-                <span class="lang-name">မြန်မာ (Burmese)</span>
-              </button>
-              <button class="language-option" data-lang="rw">
-                <span class="flag">🇷🇼</span>
-                <span class="lang-name">Kinyarwanda</span>
-              </button>
-              <button class="language-option" data-lang="rn">
-                <span class="flag">🇧🇮</span>
-                <span class="lang-name">Kirundi</span>
-              </button>
-              <button class="language-option" data-lang="am">
-                <span class="flag">🇪🇹</span>
-                <span class="lang-name">አማርኛ (Amharic)</span>
+              <!-- Language -->
+              <div class="profile-menu-item has-submenu" id="language-menu-item">
+                <span class="menu-icon">🌐</span>
+                <span class="menu-label">Language</span>
+                <span class="menu-arrow">▶</span>
+                <div class="language-submenu" id="language-submenu">
+                  <div class="language-section-header">Global</div>
+                  <button class="language-option" data-lang="en"><span class="flag">🇬🇧</span> English</button>
+                  <button class="language-option" data-lang="es"><span class="flag">🇪🇸</span> Español</button>
+                  <button class="language-option" data-lang="fr"><span class="flag">🇫🇷</span> Français</button>
+                  <button class="language-option" data-lang="sw"><span class="flag">🇰🇪</span> Kiswahili</button>
+                  <button class="language-option" data-lang="ar"><span class="flag">🇸🇦</span> العربية</button>
+                  <button class="language-option" data-lang="pt"><span class="flag">🇧🇷</span> Português</button>
+                  <div class="language-section-header">Regional</div>
+                  <button class="language-option" data-lang="so"><span class="flag">🇸🇴</span> Soomaali</button>
+                  <button class="language-option" data-lang="am"><span class="flag">🇪🇹</span> አማርኛ</button>
+                  <button class="language-option" data-lang="rw"><span class="flag">🇷🇼</span> Kinyarwanda</button>
+                </div>
+              </div>
+
+              <div class="dropdown-divider"></div>
+
+              <!-- Profile Link (when logged in) -->
+              <a href="/profile" class="profile-menu-item" id="profile-link-item" style="display: none;">
+                <span class="menu-icon">👤</span>
+                <span class="menu-label" id="profile-username">Profile</span>
+              </a>
+
+              <!-- About Link -->
+              <a href="/about" class="profile-menu-item">
+                <span class="menu-icon">ℹ️</span>
+                <span class="menu-label">About (Free Forever)</span>
+              </a>
+
+              <div class="dropdown-divider" id="logout-divider" style="display: none;"></div>
+
+              <!-- Logout (when logged in) -->
+              <button class="profile-menu-item logout-item" id="logout-item" style="display: none;" onclick="handleDisconnect()">
+                <span class="menu-icon">🚪</span>
+                <span class="menu-label">Disconnect</span>
               </button>
             </div>
           </div>
-
-          <!-- Theme Switcher -->
-          <button id="theme-toggle" class="btn-icon btn-theme" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
-            <span class="theme-icon-dark">🌙</span>
-            <span class="theme-icon-light" style="display: none;">☀️</span>
-          </button>
-
-          <!-- XP Display (shown when logged in) -->
-          <div id="xp-display" class="xp-badge" style="display: none;">
-            <span class="xp-icon">⭐</span>
-            <span id="current-xp">0</span> XP
-            <span class="level-badge">
-              Lvl <span id="current-level">1</span>
-            </span>
-          </div>
-
-          <!-- Challenge Button -->
-          <div class="challenge-nav-group">
-            <button id="challenge-create-btn" class="btn-icon btn-challenge" title="Create Challenge" onclick="openChallengeCreateModal()">
-              <span class="challenge-icon">⚔️</span>
-            </button>
-            <button id="challenge-invites-btn" class="btn-icon btn-invites" title="Challenge Invites" onclick="showPendingInvites()" style="display: none;">
-              <span class="invites-icon">📨</span>
-              <span id="challenge-invite-count" class="badge-count">0</span>
-            </button>
-          </div>
-
-          <!-- Notifications -->
-          <button id="notifications-btn" class="btn-icon" style="display: none;">
-            <span class="notification-icon">🔔</span>
-            <span id="notification-count" class="badge-count">0</span>
-          </button>
-
-          <!-- Profile Button -->
-          <button id="profile-btn" class="btn-secondary" style="display: none;">
-            <span id="profile-username">Profile</span>
-          </button>
 
           <!-- Connect Wallet Button -->
           <button
@@ -1135,7 +1553,7 @@ const currentYear = new Date().getFullYear();
             class="btn-primary"
             onclick="handleConnectWallet()"
           >
-            Connect Wallet
+            Connect
           </button>
         </div>
 
@@ -1221,13 +1639,24 @@ const currentYear = new Date().getFullYear();
             <li><a href="/feedback">Give Feedback</a></li>
           </ul>
         </div>
+
+        <!-- Legal -->
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <ul class="footer-links">
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
+            <li><a href="/community-guidelines">Community Guidelines</a></li>
+            <li><a href="/license">Open Source License</a></li>
+          </ul>
+        </div>
       </div>
 
       <!-- Footer Bottom -->
       <div class="footer-bottom">
         <p class="copyright">
-          © {currentYear} WorldBridger One. Built by Mupy for POREFPC & Nairobi Urban Youth.
-          <a href="/license">GPL-3.0 License</a>
+          © {currentYear} WorldBridger One. FREE forever. Open Source.
+          <a href="/license">GPL-3.0 License</a> | <a href="/privacy">Privacy</a> | <a href="/terms">Terms</a>
         </p>
         <div class="footer-badges">
           <span class="badge">🌾 Open Source</span>
@@ -1448,35 +1877,72 @@ const currentYear = new Date().getFullYear();
       const isLight = document.body.classList.contains('light-theme');
 
       // Toggle icons
-      const themeDarkIcon = document.querySelector('.theme-icon-dark');
-      const themeLightIcon = document.querySelector('.theme-icon-light');
-      if (themeDarkIcon) themeDarkIcon.style.display = isLight ? 'none' : 'inline-block';
-      if (themeLightIcon) themeLightIcon.style.display = isLight ? 'inline-block' : 'none';
+      document.querySelectorAll('.theme-icon-dark').forEach(el => {
+        el.style.display = isLight ? 'none' : 'inline-block';
+      });
+      document.querySelectorAll('.theme-icon-light').forEach(el => {
+        el.style.display = isLight ? 'inline-block' : 'none';
+      });
+
+      // Update label
+      const themeLabel = document.getElementById('theme-label');
+      if (themeLabel) themeLabel.textContent = isLight ? 'Light Mode' : 'Dark Mode';
 
       // Save preference
       localStorage.setItem('theme', isLight ? 'light' : 'dark');
       console.log('✅ Theme changed to:', isLight ? 'light' : 'dark');
     }
 
-    // Language toggle handler
-    function toggleLanguage() {
-      console.log('🌐 Language toggle clicked');
-      const languageDropdown = document.getElementById('language-dropdown');
-      if (languageDropdown) {
-        const isVisible = languageDropdown.style.display === 'block';
-        languageDropdown.style.display = isVisible ? 'none' : 'block';
+    // Profile dropdown toggle
+    function toggleProfileDropdown() {
+      const menu = document.getElementById('profile-dropdown-menu');
+      if (menu) {
+        const isVisible = menu.style.display === 'block';
+        menu.style.display = isVisible ? 'none' : 'block';
       }
     }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const container = document.getElementById('profile-dropdown-container');
+      const menu = document.getElementById('profile-dropdown-menu');
+      if (container && menu && !container.contains(e.target)) {
+        menu.style.display = 'none';
+      }
+    });
+
+    // Setup profile dropdown button
+    document.addEventListener('DOMContentLoaded', function() {
+      const profileBtn = document.getElementById('profile-dropdown-btn');
+      if (profileBtn) {
+        profileBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toggleProfileDropdown();
+        });
+      }
+
+      // Language option handlers
+      document.querySelectorAll('.language-option').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const lang = this.dataset.lang;
+          localStorage.setItem('preferred-language', lang);
+          console.log('🌐 Language set to:', lang);
+          // Close dropdown
+          const menu = document.getElementById('profile-dropdown-menu');
+          if (menu) menu.style.display = 'none';
+        });
+      });
+    });
 
     // Load theme on page load
     document.addEventListener('DOMContentLoaded', function() {
       const savedTheme = localStorage.getItem('theme') || 'dark';
       if (savedTheme === 'light') {
         document.body.classList.add('light-theme');
-        const themeDarkIcon = document.querySelector('.theme-icon-dark');
-        const themeLightIcon = document.querySelector('.theme-icon-light');
-        if (themeDarkIcon) themeDarkIcon.style.display = 'none';
-        if (themeLightIcon) themeLightIcon.style.display = 'inline-block';
+        document.querySelectorAll('.theme-icon-dark').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.theme-icon-light').forEach(el => el.style.display = 'inline-block');
+        const themeLabel = document.getElementById('theme-label');
+        if (themeLabel) themeLabel.textContent = 'Light Mode';
       }
       console.log('🎨 Initial theme loaded:', savedTheme);
     });
@@ -1775,7 +2241,7 @@ const currentYear = new Date().getFullYear();
             console.log('✅ Found created wallet:', publicKey);
             this.connectedWallet = publicKey;
             this.isAnonymous = false;
-            this.walletType = 'Purple Point Wallet';
+            this.walletType = 'WorldBridger One Wallet';
 
             // Track with WB1 User Manager
             if (window.wb1User) {
@@ -1983,29 +2449,44 @@ const currentYear = new Date().getFullYear();
 
       updateUI() {
         const connectBtn = document.getElementById('connect-wallet-btn');
-        const profileBtn = document.getElementById('profile-btn');
-        const xpDisplay = document.getElementById('xp-display');
         const notificationsBtn = document.getElementById('notifications-btn');
+        // Profile dropdown elements
+        const xpDisplayDropdown = document.getElementById('xp-display-dropdown');
+        const xpDivider = document.getElementById('xp-divider');
+        const profileLinkItem = document.getElementById('profile-link-item');
+        const logoutDivider = document.getElementById('logout-divider');
+        const logoutItem = document.getElementById('logout-item');
+        const profileAvatar = document.getElementById('profile-avatar-icon');
 
         if (this.connectedWallet) {
           // Always show profile and XP for both real and anonymous wallets
           if (this.isAnonymous) {
             connectBtn.style.display = 'block';
-            connectBtn.textContent = 'Claim Progress';
+            connectBtn.textContent = 'Claim';
             connectBtn.className = 'btn-primary btn-pulse';
           } else {
             connectBtn.style.display = 'none';
           }
-          profileBtn.style.display = 'block';
-          xpDisplay.style.display = 'flex';
-          notificationsBtn.style.display = 'block';
+          // Show XP and profile items in dropdown
+          if (xpDisplayDropdown) xpDisplayDropdown.style.display = 'flex';
+          if (xpDivider) xpDivider.style.display = 'block';
+          if (profileLinkItem) profileLinkItem.style.display = 'flex';
+          if (logoutDivider) logoutDivider.style.display = 'block';
+          if (logoutItem) logoutItem.style.display = 'flex';
+          if (notificationsBtn) notificationsBtn.style.display = 'block';
+          if (profileAvatar) profileAvatar.textContent = '◉';
         } else {
           connectBtn.style.display = 'block';
-          connectBtn.textContent = 'Connect Wallet';
+          connectBtn.textContent = 'Connect';
           connectBtn.className = 'btn-primary';
-          profileBtn.style.display = 'none';
-          xpDisplay.style.display = 'none';
-          notificationsBtn.style.display = 'none';
+          // Hide logged-in items in dropdown
+          if (xpDisplayDropdown) xpDisplayDropdown.style.display = 'none';
+          if (xpDivider) xpDivider.style.display = 'none';
+          if (profileLinkItem) profileLinkItem.style.display = 'none';
+          if (logoutDivider) logoutDivider.style.display = 'none';
+          if (logoutItem) logoutItem.style.display = 'none';
+          if (notificationsBtn) notificationsBtn.style.display = 'none';
+          if (profileAvatar) profileAvatar.textContent = '●';
         }
       }
     }

@@ -289,7 +289,7 @@ Low ←→ High Freq
 1. Record voice memo or import audio
 2. Use "Voice Memos" app
 3. Share → Save to Files
-4. Open Purple Point mixer
+4. Open WorldBridger One mixer
 5. Upload from Files app
 ```
 

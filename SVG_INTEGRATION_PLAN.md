@@ -192,8 +192,8 @@
     <!-- Header -->
     <tr>
       <td class="email-header">
-        <img src="https://purplepoint.io/images/email/header-banner.svg" 
-             alt="Purple Point" class="header-graphic" />
+        <img src="https://worldbridger.one/images/email/header-banner.svg" 
+             alt="WorldBridger One" class="header-graphic" />
       </td>
     </tr>
     <!-- Content -->
@@ -205,7 +205,7 @@
     <!-- Footer -->
     <tr>
       <td>
-        <img src="https://purplepoint.io/images/email/footer-divider.svg" />
+        <img src="https://worldbridger.one/images/email/footer-divider.svg" />
       </td>
     </tr>
   </table>

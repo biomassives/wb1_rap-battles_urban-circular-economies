@@ -1,0 +1,513 @@
+---
+/**
+ * privacy.astro
+ * Privacy Policy for WorldBridger One
+ *
+ * Outlines data collection, storage, and user rights
+ * for this open-source, community-owned platform
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const lastUpdated = "February 5, 2026";
+---
+
+<BaseLayout title="Privacy Policy" description="WorldBridger One Privacy Policy - How we protect your data">
+  <main class="legal-page">
+    <div class="container">
+      <header class="legal-header">
+        <h1>Privacy Policy</h1>
+        <p class="last-updated">Last Updated: {lastUpdated}</p>
+        <p class="intro">
+          WorldBridger One is committed to protecting your privacy. As an open-source,
+          community-owned platform, we believe in transparency about how we handle your information.
+        </p>
+      </header>
+
+      <nav class="legal-toc">
+        <h2>Contents</h2>
+        <ol>
+          <li><a href="#overview">Overview & Philosophy</a></li>
+          <li><a href="#data-collected">Information We Collect</a></li>
+          <li><a href="#data-storage">How We Store Your Data</a></li>
+          <li><a href="#blockchain">Blockchain & On-Chain Data</a></li>
+          <li><a href="#third-parties">Third-Party Services</a></li>
+          <li><a href="#your-rights">Your Rights</a></li>
+          <li><a href="#cookies">Cookies & Local Storage</a></li>
+          <li><a href="#children">Children's Privacy</a></li>
+          <li><a href="#changes">Changes to This Policy</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+        </ol>
+      </nav>
+
+      <article class="legal-content">
+
+        <section id="overview">
+          <h2>1. Overview & Philosophy</h2>
+          <p>
+            WorldBridger One is a <strong>non-custodial</strong>, <strong>open-source</strong> platform
+            built on principles of user sovereignty and data minimization. We collect only what's
+            necessary to provide our services.
+          </p>
+          <div class="highlight-box">
+            <h3>Key Privacy Principles</h3>
+            <ul>
+              <li><strong>Self-Custody:</strong> Your wallet keys are never stored on our servers</li>
+              <li><strong>Data Minimization:</strong> We collect only essential information</li>
+              <li><strong>Transparency:</strong> Our code is open source and auditable</li>
+              <li><strong>User Control:</strong> You can export or delete your data anytime</li>
+              <li><strong>No Ads:</strong> We never sell your data to advertisers</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="data-collected">
+          <h2>2. Information We Collect</h2>
+
+          <h3>2.1 Information You Provide</h3>
+          <ul>
+            <li><strong>Profile Information:</strong> Username, bio, avatar (optional)</li>
+            <li><strong>Email Address:</strong> For notifications (optional, you control preferences)</li>
+            <li><strong>Phone Number:</strong> For SMS alerts (optional)</li>
+            <li><strong>Content:</strong> Music tracks, battle submissions, observations you create</li>
+          </ul>
+
+          <h3>2.2 Wallet Information</h3>
+          <ul>
+            <li><strong>Public Wallet Address:</strong> Used to identify your account and display NFTs</li>
+            <li><strong>Transaction History:</strong> Viewable on public blockchain (not controlled by us)</li>
+            <li><strong>Private Keys:</strong> NEVER collected or stored by WorldBridger One</li>
+          </ul>
+
+          <h3>2.3 Automatically Collected</h3>
+          <ul>
+            <li><strong>Usage Data:</strong> Pages visited, features used, XP earned</li>
+            <li><strong>Device Information:</strong> Browser type, operating system (for compatibility)</li>
+            <li><strong>IP Address:</strong> For security and rate limiting (not linked to your identity)</li>
+          </ul>
+
+          <h3>2.4 What We Do NOT Collect</h3>
+          <ul>
+            <li>Private keys or recovery phrases</li>
+            <li>Precise location data (GPS coordinates)</li>
+            <li>Biometric data</li>
+            <li>Financial account information (bank accounts, credit cards)</li>
+            <li>Government ID numbers</li>
+          </ul>
+        </section>
+
+        <section id="data-storage">
+          <h2>3. How We Store Your Data</h2>
+
+          <h3>3.1 Local Storage (Your Browser)</h3>
+          <p>
+            Much of your data is stored locally in your browser using localStorage. This includes:
+          </p>
+          <ul>
+            <li>Encrypted wallet data (if using WorldBridger One Wallet)</li>
+            <li>Progress and XP (synced to server when connected)</li>
+            <li>Preferences and settings</li>
+            <li>Draft content (beats, recordings)</li>
+          </ul>
+
+          <h3>3.2 Server Storage</h3>
+          <p>
+            Our servers (hosted on Vercel/Neon) store:
+          </p>
+          <ul>
+            <li>User profiles linked to wallet addresses</li>
+            <li>Published content (tracks, battle submissions)</li>
+            <li>Achievement records and XP totals</li>
+            <li>Notification preferences</li>
+          </ul>
+          <p>
+            <strong>Encryption:</strong> All data in transit uses TLS 1.3. Sensitive data at rest
+            is encrypted using AES-256.
+          </p>
+
+          <h3>3.3 Decentralized Storage</h3>
+          <p>
+            NFT metadata and permanent content may be stored on:
+          </p>
+          <ul>
+            <li><strong>Arweave:</strong> Permanent, immutable storage</li>
+            <li><strong>IPFS:</strong> Distributed content-addressed storage</li>
+            <li><strong>Solana Blockchain:</strong> On-chain NFT data</li>
+          </ul>
+          <p class="warning">
+            Note: Data stored on blockchain or Arweave is permanent and cannot be deleted.
+          </p>
+        </section>
+
+        <section id="blockchain">
+          <h2>4. Blockchain & On-Chain Data</h2>
+          <p>
+            When you interact with blockchain features (minting NFTs, claiming airdrops, voting),
+            some data becomes permanently public:
+          </p>
+          <ul>
+            <li>Your wallet address and transaction history</li>
+            <li>NFT ownership records</li>
+            <li>Voting participation in governance</li>
+            <li>Smart contract interactions</li>
+          </ul>
+          <div class="warning-box">
+            <h3>Important</h3>
+            <p>
+              Blockchain transactions are irreversible and public. Once recorded, this data
+              cannot be deleted or modified by anyone, including WorldBridger One.
+            </p>
+          </div>
+        </section>
+
+        <section id="third-parties">
+          <h2>5. Third-Party Services</h2>
+          <p>We use the following third-party services:</p>
+
+          <table class="legal-table">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Purpose</th>
+                <th>Data Shared</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Vercel</td>
+                <td>Hosting & Serverless Functions</td>
+                <td>Request logs, IP addresses</td>
+              </tr>
+              <tr>
+                <td>Neon (PostgreSQL)</td>
+                <td>Database</td>
+                <td>User profiles, content</td>
+              </tr>
+              <tr>
+                <td>Solana RPC</td>
+                <td>Blockchain Interaction</td>
+                <td>Wallet addresses, transactions</td>
+              </tr>
+              <tr>
+                <td>Arweave/IPFS</td>
+                <td>Permanent Storage</td>
+                <td>NFT content, metadata</td>
+              </tr>
+              <tr>
+                <td>Mailgun (optional)</td>
+                <td>Email Notifications</td>
+                <td>Email addresses</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            We do not sell or share your data with advertising networks or data brokers.
+          </p>
+        </section>
+
+        <section id="your-rights">
+          <h2>6. Your Rights</h2>
+          <p>You have the right to:</p>
+          <ul>
+            <li><strong>Access:</strong> Request a copy of all data we hold about you</li>
+            <li><strong>Rectification:</strong> Correct inaccurate information</li>
+            <li><strong>Deletion:</strong> Request deletion of your off-chain data</li>
+            <li><strong>Portability:</strong> Export your data in machine-readable format</li>
+            <li><strong>Withdraw Consent:</strong> Opt out of optional data collection</li>
+            <li><strong>Object:</strong> Object to certain processing activities</li>
+          </ul>
+          <p>
+            To exercise these rights, visit your <a href="/profile">Profile Settings</a> or
+            contact us at privacy@worldbridger.one.
+          </p>
+          <div class="highlight-box">
+            <h3>Data Export & Deletion</h3>
+            <p>
+              In your Profile Settings, you can:
+            </p>
+            <ul>
+              <li>Download all your data as JSON</li>
+              <li>Delete your account and off-chain data</li>
+              <li>Clear local storage data</li>
+            </ul>
+            <p>
+              Note: On-chain data (NFTs, transactions) cannot be deleted from blockchain.
+            </p>
+          </div>
+        </section>
+
+        <section id="cookies">
+          <h2>7. Cookies & Local Storage</h2>
+          <p>We use minimal cookies and local storage:</p>
+
+          <h3>Essential (Required)</h3>
+          <ul>
+            <li><strong>Session:</strong> Keeps you logged in</li>
+            <li><strong>Theme Preference:</strong> Dark/light mode setting</li>
+            <li><strong>Wallet Connection:</strong> Remembers your connected wallet</li>
+          </ul>
+
+          <h3>Optional (Your Choice)</h3>
+          <ul>
+            <li><strong>Analytics:</strong> Basic usage statistics (disabled by default)</li>
+            <li><strong>Preferences:</strong> UI customizations</li>
+          </ul>
+
+          <p>
+            We do NOT use tracking cookies, advertising cookies, or cross-site trackers.
+          </p>
+        </section>
+
+        <section id="children">
+          <h2>8. Children's Privacy</h2>
+          <p>
+            WorldBridger One is designed to be educational and accessible. However:
+          </p>
+          <ul>
+            <li>Users under 13 should use the platform with parental supervision</li>
+            <li>We do not knowingly collect personal information from children under 13</li>
+            <li>Financial features (NFT trading, token transfers) require users to be 18+</li>
+            <li>Educational content is available to all ages</li>
+          </ul>
+          <p>
+            Parents/guardians can contact us to request deletion of a child's data.
+          </p>
+        </section>
+
+        <section id="changes">
+          <h2>9. Changes to This Policy</h2>
+          <p>
+            We may update this Privacy Policy to reflect changes in our practices or for
+            legal compliance. We will:
+          </p>
+          <ul>
+            <li>Post the updated policy on this page</li>
+            <li>Update the "Last Updated" date</li>
+            <li>Notify users of material changes via email or in-app notification</li>
+            <li>Allow 30 days before significant changes take effect</li>
+          </ul>
+        </section>
+
+        <section id="contact">
+          <h2>10. Contact Us</h2>
+          <p>
+            For privacy-related questions or to exercise your rights:
+          </p>
+          <ul>
+            <li><strong>Email:</strong> privacy@worldbridger.one</li>
+            <li><strong>Discord:</strong> #privacy-support channel</li>
+            <li><strong>GitHub:</strong> Open an issue for transparency</li>
+          </ul>
+          <p>
+            As an open-source project, our data handling practices are publicly auditable
+            in our <a href="https://github.com/worldbridger/worldbridger-one" target="_blank">GitHub repository</a>.
+          </p>
+        </section>
+
+      </article>
+
+      <footer class="legal-footer">
+        <p>
+          This Privacy Policy is licensed under
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+          Feel free to adapt it for your own projects.
+        </p>
+        <div class="legal-nav">
+          <a href="/terms">Terms of Service</a>
+          <a href="/community-guidelines">Community Guidelines</a>
+          <a href="/license">Open Source License</a>
+        </div>
+      </footer>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .legal-page {
+    padding: 2rem 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .legal-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--color-neon-green, #00ff00);
+  }
+
+  .legal-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-neon-green, #00ff00);
+  }
+
+  .last-updated {
+    color: var(--color-text-muted, #888);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .intro {
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .legal-toc {
+    background: var(--color-surface, #111);
+    border: 1px solid var(--color-border, #333);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .legal-toc h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--color-neon-green, #00ff00);
+  }
+
+  .legal-toc ol {
+    columns: 2;
+    column-gap: 2rem;
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+
+  .legal-toc li {
+    margin-bottom: 0.5rem;
+  }
+
+  .legal-toc a {
+    color: var(--color-text, #fff);
+    text-decoration: none;
+  }
+
+  .legal-toc a:hover {
+    color: var(--color-neon-green, #00ff00);
+  }
+
+  .legal-content section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 100px;
+  }
+
+  .legal-content h2 {
+    font-size: 1.5rem;
+    color: var(--color-neon-green, #00ff00);
+    border-bottom: 1px solid var(--color-border, #333);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .legal-content h3 {
+    font-size: 1.2rem;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--color-text, #fff);
+  }
+
+  .legal-content p, .legal-content li {
+    line-height: 1.7;
+    color: var(--color-text-secondary, #ccc);
+  }
+
+  .legal-content ul, .legal-content ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .legal-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .highlight-box {
+    background: rgba(0, 255, 0, 0.05);
+    border: 1px solid var(--color-neon-green, #00ff00);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .highlight-box h3 {
+    margin-top: 0;
+    color: var(--color-neon-green, #00ff00);
+  }
+
+  .warning-box {
+    background: rgba(255, 200, 0, 0.1);
+    border: 1px solid #ffcc00;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .warning-box h3 {
+    margin-top: 0;
+    color: #ffcc00;
+  }
+
+  .warning {
+    color: #ffcc00;
+    font-style: italic;
+  }
+
+  .legal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+
+  .legal-table th, .legal-table td {
+    border: 1px solid var(--color-border, #333);
+    padding: 0.75rem;
+    text-align: left;
+  }
+
+  .legal-table th {
+    background: var(--color-surface, #111);
+    color: var(--color-neon-green, #00ff00);
+  }
+
+  .legal-table td {
+    color: var(--color-text-secondary, #ccc);
+  }
+
+  .legal-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--color-border, #333);
+    text-align: center;
+  }
+
+  .legal-nav {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+
+  .legal-nav a {
+    color: var(--color-neon-green, #00ff00);
+    text-decoration: none;
+  }
+
+  .legal-nav a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .legal-toc ol {
+      columns: 1;
+    }
+
+    .legal-header h1 {
+      font-size: 2rem;
+    }
+
+    .legal-nav {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>

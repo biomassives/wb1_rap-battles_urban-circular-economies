@@ -641,4 +641,4 @@ async function loadCharacter(gender, config) {
 
 ---
 
-Built with ⚡ for Purple Point NFT Platform
+Built with ⚡ for WorldBridger One NFT Platform

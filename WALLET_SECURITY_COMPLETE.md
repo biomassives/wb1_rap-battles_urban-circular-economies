@@ -180,7 +180,7 @@ Follow the integration guide step-by-step
 
 ### New User Flow (8-10 minutes)
 ```
-1. Land on Purple Point
+1. Land on WorldBridger One
    ↓
 2. Demo wallet auto-created (try features immediately)
    ↓
@@ -256,7 +256,7 @@ Ready for production integration! ✅
 ## 📁 File Structure
 
 ```
-purple-point/
+worldbridger-one/
 ├── src/
 │   ├── components/
 │   │   ├── RecoveryPhraseModal.astro          ✅ NEW
@@ -426,7 +426,7 @@ window.importWalletFromMnemonic(phrase)
 
 ## 🎉 Congratulations!
 
-You now have a **production-ready, secure, user-friendly wallet system** for Purple Point!
+You now have a **production-ready, secure, user-friendly wallet system** for WorldBridger One!
 
 ### Key Achievements
 ✅ No technical knowledge required for users

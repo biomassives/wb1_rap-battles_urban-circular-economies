@@ -1,18 +1,18 @@
-# Purple Point - Rap Battle NFT Platform
+# WorldBridger One - Rap Battle NFT Platform
 
 **WorldBridger One Ecosystem**
 A retro-arcade themed rap battle platform where artists create beats, battle with rhymes, earn NFTs, and support urban and coastal youth communities across Kenya.
 
 ## Vision
 
-Purple Point combines hip-hop culture, Web3 technology, and environmental education to create an engaging platform where freestyle rap battles intersect with community empowerment. Battle, create, learn—and support youth in Nairobi and Lamu through music, tech literacy, and social enterprise.
+WorldBridger One combines hip-hop culture, Web3 technology, and environmental education to create an engaging platform where freestyle rap battles intersect with community empowerment. Battle, create, learn—and support youth in Nairobi and Lamu through music, tech literacy, and social enterprise.
 
 ---
 
 ## Role-Based Workflows
 
 ### 🎤 **New User Journey**
-**Goal:** Onboard quickly and understand what Purple Point offers
+**Goal:** Onboard quickly and understand what WorldBridger One offers
 
 1. **Land on Homepage** → [View Homepage](/)
    - See hero section: "SHOW SKILLS. WIN BATTLES. EARN NFTS."
@@ -349,8 +349,8 @@ Purple Point combines hip-hop culture, Web3 technology, and environmental educat
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/purple-point.git
-cd purple-point/pp
+git clone https://github.com/YOUR_USERNAME/worldbridger-one.git
+cd worldbridger-one/pp
 
 # Install dependencies
 npm install

@@ -1,4 +1,4 @@
-# Purple Point - Launch Readiness Inventory
+# WorldBridger One - Launch Readiness Inventory
 **Date**: 2026-01-02
 **Status**: Pre-Launch Review
 

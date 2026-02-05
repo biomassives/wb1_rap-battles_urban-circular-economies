@@ -1,4 +1,4 @@
-# Purple Point - Page Improvement Plan
+# WorldBridger One - Page Improvement Plan
 **Created**: 2026-01-02
 
 ---

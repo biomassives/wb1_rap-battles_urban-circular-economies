@@ -7,7 +7,7 @@
 
 ## Overview
 
-Purple Point now features a complete NFT collection system with **daily generated sounds** and an advanced **audio remix laboratory**. This document summarizes all implemented features and provides guidance for usage and extension.
+WorldBridger One now features a complete NFT collection system with **daily generated sounds** and an advanced **audio remix laboratory**. This document summarizes all implemented features and provides guidance for usage and extension.
 
 ---
 
@@ -390,7 +390,7 @@ async function uploadToArweave(audioBlob, metadata) {
 
   // Add tags
   transaction.addTag('Content-Type', 'audio/wav');
-  transaction.addTag('App-Name', 'PurplePoint');
+  transaction.addTag('App-Name', 'WorldBridgerOne');
   transaction.addTag('Card-ID', metadata.cardId);
   transaction.addTag('Rarity', metadata.rarity);
   transaction.addTag('Animal-Spirit', metadata.animalSpirit);
@@ -441,7 +441,7 @@ function generateDailyCollection(date) {
 
 ## 🎉 Summary
 
-Purple Point now features a **complete NFT collection system** with:
+WorldBridger One now features a **complete NFT collection system** with:
 
 ✅ **55 Daily Generated Cards** with unique sounds
 ✅ **Advanced Musical Synthesis** using scales and harmonics

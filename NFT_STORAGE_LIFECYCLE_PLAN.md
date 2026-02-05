@@ -1,7 +1,7 @@
 # NFT Storage & Media Lifecycle Plan
 
 ## Overview
-Purple Point NFT collection requires a robust, decentralized storage strategy for media assets and metadata. This document outlines the data lifecycle for active content including audio, visual, and metadata files.
+WorldBridger One NFT collection requires a robust, decentralized storage strategy for media assets and metadata. This document outlines the data lifecycle for active content including audio, visual, and metadata files.
 
 ---
 
@@ -367,4 +367,4 @@ async function fetchAsset(assetId) {
 
 **Status:** Planning Phase
 **Last Updated:** 2026-01-03
-**Owner:** Purple Point Dev Team
+**Owner:** WorldBridger One Dev Team

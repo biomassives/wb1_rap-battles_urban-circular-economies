@@ -92,7 +92,7 @@ class WalletManager {
 
       // Connect to existing wallet
       this.connectedWallet = publicKey;
-      this.walletType = 'Purple Point Wallet';
+      this.walletType = 'WorldBridger One Wallet';
       this.isAnonymous = false;
       this.updateUI();
       await this.loadProgress(publicKey);
@@ -118,7 +118,7 @@ class WalletManager {
       .then(() => {
         const publicKey = window.getWalletPublicKey();
         this.connectedWallet = publicKey;
-        this.walletType = 'Purple Point Wallet';
+        this.walletType = 'WorldBridger One Wallet';
         this.updateUI();
         location.reload();
       })
@@ -170,7 +170,7 @@ function showExternalWalletOptions() {
         console.error('Phantom connection failed:', err);
       });
   } else {
-    alert('No external wallet detected.\n\nPlease install Phantom wallet or create a Purple Point wallet.');
+    alert('No external wallet detected.\n\nPlease install Phantom wallet or create a WorldBridger One wallet.');
   }
 }
 ```
@@ -271,7 +271,7 @@ Here's the full user journey:
 ✅ **Error Prevention** - Validation before proceeding
 ✅ **Helpful Hints** - Tips and warnings at each step
 ✅ **Mobile Responsive** - Works on all screen sizes
-✅ **Retro Gaming Theme** - Consistent with Purple Point aesthetic
+✅ **Retro Gaming Theme** - Consistent with WorldBridger One aesthetic
 
 ### Security Features:
 🔒 **AES-GCM Encryption** - Industry standard
