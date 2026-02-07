@@ -1,0 +1,737 @@
+---
+/**
+ * Challenge Join Page
+ * Renders challenge details and allows users to join via invite code link
+ * URL: /challenge/join/[code] (e.g., /challenge/join/JPK66D)
+ */
+
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+export const prerender = false;
+
+const { code } = Astro.params;
+const inviteCode = code?.toUpperCase() || '';
+
+// Try to fetch challenge data server-side
+let challenge = null;
+let fetchError = null;
+
+try {
+  const { neon } = await import('@neondatabase/serverless');
+  const sql = neon(import.meta.env.DATABASE_URL || import.meta.env.NILE_DATABASE_URL);
+
+  const challenges = await sql`
+    SELECT c.*,
+      (SELECT COUNT(*)::int FROM challenge_participants WHERE challenge_id = c.id AND status = 'accepted') as participant_count,
+      creator.username as creator_name,
+      creator.avatar_url as creator_avatar,
+      creator.level as creator_level
+    FROM challenges c
+    LEFT JOIN user_profiles creator ON c.creator_wallet = creator.wallet_address
+    WHERE c.invite_code = ${inviteCode}
+  `;
+
+  if (challenges.length > 0) {
+    challenge = challenges[0];
+  }
+} catch (e) {
+  fetchError = e.message;
+  console.error('Failed to fetch challenge:', e.message);
+}
+
+const isExpired = challenge?.expires_at && new Date(challenge.expires_at) < new Date();
+const isFull = challenge && challenge.participant_count >= challenge.max_participants;
+const canJoin = challenge && !isExpired && !isFull && ['pending', 'accepted'].includes(challenge.status);
+
+const typeLabels = {
+  rap_battle: 'Rap Battle',
+  beat_battle: 'Beat Battle',
+  remix_challenge: 'Remix Challenge',
+  freestyle: 'Freestyle',
+  learning_race: 'Learning Race',
+  eco_challenge: 'Eco Challenge'
+};
+
+const typeIcons = {
+  rap_battle: '🎤',
+  beat_battle: '🥁',
+  remix_challenge: '🎧',
+  freestyle: '🔥',
+  learning_race: '📚',
+  eco_challenge: '🌱'
+};
+---
+
+<BaseLayout
+  title={challenge ? `Join: ${challenge.title}` : `Join Challenge ${inviteCode}`}
+  description="Join a challenge on WorldBridger One"
+  activeSection="music"
+>
+  <div class="join-page">
+
+    <!-- Header -->
+    <header class="join-header">
+      <a href="/challenge-arena" class="back-link">← Challenge Arena</a>
+      <h1>Challenge Invite</h1>
+      <p class="invite-code-display">Code: <span class="code">{inviteCode}</span></p>
+    </header>
+
+    <!-- Challenge Card -->
+    <main class="join-main">
+      {challenge ? (
+        <div class="challenge-detail-card">
+          <!-- Type Badge -->
+          <div class="type-badge-row">
+            <span class="type-badge">{typeIcons[challenge.type] || '⚔️'} {typeLabels[challenge.type] || challenge.type}</span>
+            <span class={`status-badge status-${challenge.status}`}>{challenge.status}</span>
+          </div>
+
+          <!-- Title -->
+          <h2 class="challenge-title">{challenge.title}</h2>
+          {challenge.description && <p class="challenge-desc">{challenge.description}</p>}
+
+          <!-- Creator -->
+          <div class="creator-row">
+            <div class="creator-avatar">{challenge.creator_avatar ? '' : (challenge.creator_name?.charAt(0)?.toUpperCase() || 'C')}</div>
+            <div class="creator-info">
+              <span class="creator-name">{challenge.creator_name || `User_${challenge.creator_wallet?.slice(0, 6)}`}</span>
+              <span class="creator-label">Creator</span>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat">
+              <span class="stat-label">Mode</span>
+              <span class="stat-value">{challenge.mode}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Stakes</span>
+              <span class="stat-value">{challenge.stakes_amount} {challenge.stakes_type?.toUpperCase()}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Participants</span>
+              <span class="stat-value">{challenge.participant_count} / {challenge.max_participants}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Duration</span>
+              <span class="stat-value">{challenge.duration_hours}h</span>
+            </div>
+          </div>
+
+          <!-- Time Remaining -->
+          {challenge.expires_at && (
+            <div class="time-remaining" id="time-remaining">
+              {isExpired ? (
+                <span class="expired">Challenge expired</span>
+              ) : (
+                <span class="countdown" data-expires={challenge.expires_at}>Calculating...</span>
+              )}
+            </div>
+          )}
+
+          <!-- Beat Info -->
+          {challenge.beat_config && (
+            <div class="beat-info">
+              <span class="beat-label">🎵 Beat attached</span>
+              <span class="beat-bpm">{challenge.beat_config.bpm || '?'} BPM</span>
+              {challenge.beat_audio_url && (
+                <audio controls preload="none" class="beat-preview">
+                  <source src={challenge.beat_audio_url} type="audio/webm" />
+                </audio>
+              )}
+            </div>
+          )}
+
+          <!-- Join Actions -->
+          <div class="join-actions">
+            {canJoin ? (
+              <div class="join-form">
+                <button id="btn-join" class="btn-join">Join Challenge</button>
+                <p class="join-hint">Connect your wallet to join</p>
+              </div>
+            ) : isExpired ? (
+              <div class="status-msg expired-msg">This challenge has expired</div>
+            ) : isFull ? (
+              <div class="status-msg full-msg">This challenge is full</div>
+            ) : (
+              <div class="status-msg">This challenge is {challenge.status}</div>
+            )}
+          </div>
+
+          <!-- Share -->
+          <div class="share-row">
+            <button id="btn-copy-link" class="btn-share">Copy Invite Link</button>
+          </div>
+        </div>
+      ) : (
+        <!-- Challenge Not Found -->
+        <div class="not-found-card">
+          <div class="not-found-icon">🔍</div>
+          <h2>Challenge Not Found</h2>
+          <p>No challenge found with code <strong>{inviteCode}</strong></p>
+          <p class="not-found-hint">The challenge may have expired or the code may be incorrect.</p>
+
+          <!-- Manual Entry -->
+          <div class="manual-entry">
+            <label for="manual-code">Try a different code:</label>
+            <div class="manual-input-row">
+              <input type="text" id="manual-code" maxlength="6" placeholder="ABC123" value={inviteCode} />
+              <button id="btn-try-code" class="btn-try">Go</button>
+            </div>
+          </div>
+
+          <!-- Fallback: Check localStorage -->
+          <div id="local-challenge-section" style="display: none;">
+            <div class="divider">or</div>
+            <div id="local-challenge-info" class="local-challenge-card"></div>
+          </div>
+
+          <a href="/challenge-arena" class="btn-arena">Browse Challenge Arena</a>
+        </div>
+      )}
+    </main>
+  </div>
+
+  <style>
+    .join-page {
+      min-height: 100vh;
+      background: #05070a;
+      color: #e0e0e0;
+      padding: 1rem;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .join-header {
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: #00e5ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .join-header h1 {
+      font-size: 1.8rem;
+      color: #fff;
+      margin: 0.5rem 0;
+    }
+
+    .invite-code-display {
+      color: #888;
+      font-size: 0.95rem;
+    }
+    .invite-code-display .code {
+      color: #00ff9c;
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+    }
+
+    .join-main {
+      padding: 1rem 0;
+    }
+
+    /* Challenge Detail Card */
+    .challenge-detail-card {
+      background: #0b0f17;
+      border: 1px solid #1a2035;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .type-badge-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .type-badge {
+      background: rgba(0, 229, 255, 0.1);
+      color: #00e5ff;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .status-pending { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+    .status-accepted { background: rgba(0, 255, 156, 0.15); color: #00ff9c; }
+    .status-in_progress { background: rgba(0, 229, 255, 0.15); color: #00e5ff; }
+    .status-voting { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; }
+    .status-completed { background: rgba(128, 128, 128, 0.15); color: #888; }
+
+    .challenge-title {
+      font-size: 1.5rem;
+      color: #fff;
+      margin: 0 0 0.5rem;
+    }
+
+    .challenge-desc {
+      color: #999;
+      font-size: 0.95rem;
+      margin: 0 0 1.25rem;
+      line-height: 1.5;
+    }
+
+    /* Creator */
+    .creator-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-top: 1px solid #1a2035;
+      border-bottom: 1px solid #1a2035;
+      margin-bottom: 1.25rem;
+    }
+
+    .creator-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e5ff, #00ff9c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #0b0f17;
+      font-size: 1.1rem;
+    }
+
+    .creator-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .creator-name {
+      color: #fff;
+      font-weight: 600;
+    }
+    .creator-label {
+      color: #666;
+      font-size: 0.8rem;
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .stat {
+      background: #0f1520;
+      border: 1px solid #1a2035;
+      border-radius: 8px;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .stat-label {
+      display: block;
+      color: #666;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      display: block;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* Time Remaining */
+    .time-remaining {
+      text-align: center;
+      padding: 0.75rem;
+      background: rgba(0, 229, 255, 0.05);
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
+    }
+    .time-remaining .expired { color: #ff6b6b; }
+    .time-remaining .countdown { color: #00e5ff; }
+
+    /* Beat Info */
+    .beat-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      padding: 0.75rem;
+      background: rgba(0, 255, 156, 0.05);
+      border: 1px solid rgba(0, 255, 156, 0.15);
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+    }
+    .beat-label { color: #00ff9c; font-weight: 500; }
+    .beat-bpm { color: #888; font-size: 0.9rem; }
+    .beat-preview {
+      width: 100%;
+      height: 32px;
+      margin-top: 0.5rem;
+    }
+
+    /* Join Actions */
+    .join-actions {
+      margin-bottom: 1rem;
+    }
+
+    .btn-join {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #00e5ff, #00ff9c);
+      color: #0b0f17;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-join:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 229, 255, 0.3);
+    }
+    .btn-join:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .join-hint {
+      text-align: center;
+      color: #666;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .status-msg {
+      text-align: center;
+      padding: 1rem;
+      border-radius: 8px;
+      background: rgba(128, 128, 128, 0.1);
+      color: #888;
+      font-weight: 500;
+    }
+    .expired-msg { background: rgba(255, 107, 107, 0.1); color: #ff6b6b; }
+    .full-msg { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+
+    /* Share */
+    .share-row {
+      text-align: center;
+    }
+
+    .btn-share {
+      background: transparent;
+      border: 1px solid #1a2035;
+      color: #00e5ff;
+      padding: 0.5rem 1.25rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .btn-share:hover {
+      border-color: #00e5ff;
+      background: rgba(0, 229, 255, 0.05);
+    }
+
+    /* Not Found Card */
+    .not-found-card {
+      background: #0b0f17;
+      border: 1px solid #1a2035;
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .not-found-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .not-found-card h2 {
+      color: #fff;
+      margin: 0 0 0.75rem;
+    }
+
+    .not-found-card p {
+      color: #888;
+      margin: 0 0 0.5rem;
+    }
+
+    .not-found-hint {
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem !important;
+    }
+
+    /* Manual Entry */
+    .manual-entry {
+      margin: 1.5rem 0;
+    }
+
+    .manual-entry label {
+      display: block;
+      color: #888;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .manual-input-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .manual-input-row input {
+      background: #0f1520;
+      border: 1px solid #1a2035;
+      color: #fff;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-family: monospace;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      width: 140px;
+      text-align: center;
+    }
+    .manual-input-row input:focus {
+      outline: none;
+      border-color: #00e5ff;
+    }
+
+    .btn-try {
+      background: #00e5ff;
+      color: #0b0f17;
+      border: none;
+      padding: 0.6rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-try:hover { opacity: 0.9; }
+
+    .divider {
+      color: #444;
+      margin: 1.25rem 0;
+      font-size: 0.85rem;
+    }
+
+    .local-challenge-card {
+      background: #0f1520;
+      border: 1px solid #1a2035;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+
+    .btn-arena {
+      display: inline-block;
+      margin-top: 1rem;
+      background: transparent;
+      border: 1px solid #00e5ff;
+      color: #00e5ff;
+      padding: 0.6rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-arena:hover {
+      background: rgba(0, 229, 255, 0.1);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0b0f17;
+      border: 1px solid #00ff9c;
+      color: #00ff9c;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      z-index: 1000;
+      transition: opacity 0.3s;
+    }
+  </style>
+
+  <script is:inline>
+    (function() {
+      const inviteCode = document.querySelector('.invite-code-display .code')?.textContent?.trim();
+
+      // Countdown timer
+      const countdownEl = document.querySelector('.countdown');
+      if (countdownEl) {
+        const expiresAt = new Date(countdownEl.dataset.expires);
+        function updateCountdown() {
+          const now = Date.now();
+          const remaining = expiresAt - now;
+          if (remaining <= 0) {
+            countdownEl.textContent = 'Expired';
+            countdownEl.className = 'expired';
+            return;
+          }
+          const hours = Math.floor(remaining / (1000 * 60 * 60));
+          const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+          if (hours > 24) {
+            const days = Math.floor(hours / 24);
+            countdownEl.textContent = `${days}d ${hours % 24}h remaining`;
+          } else {
+            countdownEl.textContent = `${hours}h ${minutes}m ${seconds}s remaining`;
+          }
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+
+      // Join button
+      const joinBtn = document.getElementById('btn-join');
+      if (joinBtn) {
+        joinBtn.addEventListener('click', async () => {
+          const wallet = localStorage.getItem('connectedWallet') || localStorage.getItem('anonymousWallet');
+          if (!wallet) {
+            showToast('Connect your wallet first');
+            return;
+          }
+
+          joinBtn.disabled = true;
+          joinBtn.textContent = 'Joining...';
+
+          try {
+            const res = await fetch(`/api/challenges/join/${inviteCode}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ wallet })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+              // Also save to local challenge manager if available
+              if (window.wb1Challenges) {
+                try {
+                  window.wb1Challenges.joinChallengeByCode(inviteCode);
+                } catch (e) {
+                  console.warn('Local join sync:', e.message);
+                }
+              }
+
+              if (data.alreadyJoined) {
+                showToast('You\'re already in this challenge!');
+              } else {
+                showToast('Successfully joined!');
+              }
+
+              // Redirect to arena or challenge detail after a moment
+              setTimeout(() => {
+                window.location.href = '/challenge-arena';
+              }, 1500);
+            } else {
+              showToast(data.error || 'Failed to join');
+              joinBtn.disabled = false;
+              joinBtn.textContent = 'Join Challenge';
+            }
+          } catch (err) {
+            console.error('Join error:', err);
+            showToast('Network error. Please try again.');
+            joinBtn.disabled = false;
+            joinBtn.textContent = 'Join Challenge';
+          }
+        });
+      }
+
+      // Copy link button
+      const copyBtn = document.getElementById('btn-copy-link');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const url = `${window.location.origin}/challenge/join/${inviteCode}`;
+          navigator.clipboard.writeText(url).then(() => {
+            showToast('Link copied!');
+          }).catch(() => {
+            prompt('Copy this link:', url);
+          });
+        });
+      }
+
+      // Manual code entry
+      const tryBtn = document.getElementById('btn-try-code');
+      if (tryBtn) {
+        tryBtn.addEventListener('click', () => {
+          const input = document.getElementById('manual-code');
+          const code = input?.value?.trim().toUpperCase();
+          if (code && code.length >= 4) {
+            window.location.href = `/challenge/join/${code}`;
+          }
+        });
+
+        // Enter key support
+        document.getElementById('manual-code')?.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') tryBtn.click();
+        });
+      }
+
+      // Check localStorage fallback for not-found challenges
+      const localSection = document.getElementById('local-challenge-section');
+      const localInfo = document.getElementById('local-challenge-info');
+      if (localSection && localInfo && inviteCode) {
+        try {
+          const challenges = JSON.parse(localStorage.getItem('wb1_challenges') || '[]');
+          const localChallenge = challenges.find(c =>
+            c.inviteCode === inviteCode || c.invite_code === inviteCode
+          );
+
+          if (localChallenge) {
+            localSection.style.display = 'block';
+            localInfo.innerHTML = `
+              <h4 style="color: #fff; margin: 0 0 0.5rem;">${localChallenge.title || 'Untitled Challenge'}</h4>
+              <p style="color: #888; margin: 0 0 0.5rem; font-size: 0.85rem;">Found in your local challenges</p>
+              <p style="color: #00ff9c; font-size: 0.85rem;">Type: ${localChallenge.type || 'Unknown'} | Status: ${localChallenge.state || localChallenge.status || 'unknown'}</p>
+            `;
+          }
+        } catch (e) {
+          // localStorage not available
+        }
+      }
+
+      function showToast(message) {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 300);
+        }, 2500);
+      }
+    })();
+  </script>
+
+</BaseLayout>

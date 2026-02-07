@@ -1531,6 +1531,12 @@ const currentYear = new Date().getFullYear();
                 <span class="menu-label" id="profile-username">Profile</span>
               </a>
 
+              <!-- Settings Link -->
+              <a href="/settings" class="profile-menu-item">
+                <span class="menu-icon">&#9881;</span>
+                <span class="menu-label">Settings</span>
+              </a>
+
               <!-- About Link -->
               <a href="/about" class="profile-menu-item">
                 <span class="menu-icon">ℹ️</span>
@@ -3001,46 +3007,48 @@ const currentYear = new Date().getFullYear();
       const languageCode = document.getElementById('current-language');
       const languageOptions = document.querySelectorAll('.language-option');
 
-      // Load saved language
-      const savedLang = localStorage.getItem('language') || 'en';
-      languageCode.textContent = savedLang.toUpperCase();
+      // Load saved language (only if elements exist)
+      if (languageCode && languageDropdown) {
+        const savedLang = localStorage.getItem('language') || 'en';
+        languageCode.textContent = savedLang.toUpperCase();
 
-      // Mark active language
-      languageOptions.forEach(option => {
-        if (option.dataset.lang === savedLang) {
-          option.classList.add('active');
-        }
-      });
-
-      // Toggle dropdown
-      languageBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isVisible = languageDropdown.style.display === 'block';
-        languageDropdown.style.display = isVisible ? 'none' : 'block';
-      });
-
-      // Language selection
-      languageOptions.forEach(option => {
-        option.addEventListener('click', () => {
-          const lang = option.dataset.lang;
-
-          // Update UI
-          languageCode.textContent = lang.toUpperCase();
-
-          // Update active state
-          languageOptions.forEach(opt => opt.classList.remove('active'));
-          option.classList.add('active');
-
-          // Save preference
-          localStorage.setItem('language', lang);
-
-          // Close dropdown
-          languageDropdown.style.display = 'none';
-
-          // TODO: Actually translate the page
-          console.log(`Language changed to: ${lang}`);
+        // Mark active language
+        languageOptions.forEach(option => {
+          if (option.dataset.lang === savedLang) {
+            option.classList.add('active');
+          }
         });
-      });
+
+        // Toggle dropdown
+        languageBtn?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isVisible = languageDropdown.style.display === 'block';
+          languageDropdown.style.display = isVisible ? 'none' : 'block';
+        });
+
+        // Language selection
+        languageOptions.forEach(option => {
+          option.addEventListener('click', () => {
+            const lang = option.dataset.lang;
+
+            // Update UI
+            languageCode.textContent = lang.toUpperCase();
+
+            // Update active state
+            languageOptions.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+
+            // Save preference
+            localStorage.setItem('language', lang);
+
+            // Close dropdown
+            languageDropdown.style.display = 'none';
+
+            // TODO: Actually translate the page
+            console.log(`Language changed to: ${lang}`);
+          });
+        });
+      }
 
       // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {

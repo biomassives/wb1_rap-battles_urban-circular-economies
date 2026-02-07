@@ -450,6 +450,145 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   background: rgba(255, 151, 112, 0.2);
 }
 
+.transport-btn.record.recording {
+  background: rgba(255, 50, 50, 0.3);
+  border-color: #ff3232;
+  color: #ff3232;
+  animation: record-pulse 1s ease-in-out infinite;
+}
+
+@keyframes record-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 50, 50, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(255, 50, 50, 0.6); }
+}
+
+/* Recording indicator bar */
+.recording-indicator {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 50, 50, 0.1);
+  border: 1px solid rgba(255, 50, 50, 0.3);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+.recording-indicator.active { display: flex; }
+.recording-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #ff3232;
+  animation: record-pulse 1s ease-in-out infinite;
+}
+.recording-time { color: #ff3232; font-family: monospace; font-size: 0.9rem; }
+.recording-stop { background: #ff3232; color: #fff; border: none; padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+
+/* Export modal */
+.export-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.export-modal-overlay.active { display: flex; }
+.export-modal {
+  background: #0b0f17;
+  border: 1px solid #1a2035;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 420px;
+}
+.export-modal h3 { color: #fff; margin: 0 0 1rem; }
+.export-modal .option-group { margin-bottom: 1rem; }
+.export-modal label { display: block; color: #888; font-size: 0.85rem; margin-bottom: 0.4rem; }
+.export-modal select, .export-modal input {
+  width: 100%;
+  background: #0f1520;
+  border: 1px solid #1a2035;
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+.export-modal .btn-row { display: flex; gap: 0.5rem; margin-top: 1rem; }
+.export-modal .btn-export {
+  flex: 1;
+  padding: 0.6rem;
+  background: linear-gradient(135deg, #00e5ff, #00ff9c);
+  color: #0b0f17;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.export-modal .btn-cancel {
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: 1px solid #333;
+  color: #888;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.export-progress { margin-top: 0.75rem; display: none; }
+.export-progress.active { display: block; }
+.export-progress-bar { height: 4px; background: #1a2035; border-radius: 2px; overflow: hidden; }
+.export-progress-fill { height: 100%; background: #00e5ff; width: 0; transition: width 0.3s; }
+.export-progress-text { color: #00e5ff; font-size: 0.8rem; margin-top: 0.25rem; }
+
+/* Battle choice modal */
+.battle-choice-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.battle-choice-overlay.active { display: flex; }
+.battle-choice-modal {
+  background: #0b0f17;
+  border: 1px solid #1a2035;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+.battle-choice-modal h3 { color: #fff; margin: 0 0 0.5rem; }
+.battle-choice-modal p { color: #888; margin: 0 0 1.25rem; font-size: 0.9rem; }
+.battle-choice-btn {
+  display: block;
+  width: 100%;
+  padding: 0.9rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+.battle-choice-btn.primary {
+  background: linear-gradient(135deg, #00e5ff, #00ff9c);
+  color: #0b0f17;
+}
+.battle-choice-btn.secondary {
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  color: #00e5ff;
+}
+.battle-choice-btn.ghost {
+  background: transparent;
+  color: #666;
+  border: 1px solid #333;
+}
+.battle-choice-btn:hover { transform: translateY(-1px); }
+
 /* BPM Control */
 .bpm-control {
   display: flex;
@@ -1836,6 +1975,12 @@ console.log('🎵🎵🎵 BEAT PLAYGROUND - CORE AUDIO ENGINE 🎵🎵🎵');
             <span class="bpm-value" id="bpm-display">90</span>
             <input type="range" min="60" max="180" value="90" class="volume-slider" id="bpm-slider" style="width: 120px;" oninput="document.getElementById('bpm-display').textContent = this.value" onchange="window.setBPM && window.setBPM(this.value)">
           </div>
+          <!-- Recording Indicator -->
+          <div class="recording-indicator" id="recording-indicator">
+            <div class="recording-dot"></div>
+            <span class="recording-time" id="recording-time">0:00</span>
+            <button class="recording-stop" id="btn-stop-recording" onclick="window.stopRecordingMix && window.stopRecordingMix()">Stop</button>
+          </div>
         </div>
 
         <!-- Strudel Pattern Builder -->
@@ -2051,6 +2196,52 @@ console.log('🎵🎵🎵 BEAT PLAYGROUND - CORE AUDIO ENGINE 🎵🎵🎵');
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div class="export-modal-overlay" id="export-modal">
+  <div class="export-modal">
+    <h3>Export Mix</h3>
+    <div class="option-group">
+      <label for="export-duration">Duration</label>
+      <select id="export-duration">
+        <option value="4">4 bars</option>
+        <option value="8" selected>8 bars</option>
+        <option value="16">16 bars</option>
+        <option value="custom">Custom (seconds)</option>
+      </select>
+    </div>
+    <div class="option-group" id="custom-duration-group" style="display: none;">
+      <label for="export-seconds">Seconds</label>
+      <input type="number" id="export-seconds" min="5" max="300" value="30" />
+    </div>
+    <div class="option-group">
+      <label for="export-format">Format</label>
+      <select id="export-format">
+        <option value="audio/webm;codecs=opus">WebM (Opus)</option>
+        <option value="audio/wav">WAV</option>
+      </select>
+    </div>
+    <div class="export-progress" id="export-progress">
+      <div class="export-progress-bar"><div class="export-progress-fill" id="export-progress-fill"></div></div>
+      <div class="export-progress-text" id="export-progress-text">Recording...</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-export" id="btn-do-export">Export</button>
+      <button class="btn-cancel" id="btn-cancel-export">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Battle Choice Modal -->
+<div class="battle-choice-overlay" id="battle-choice-modal">
+  <div class="battle-choice-modal">
+    <h3>Use Beat in Battle</h3>
+    <p>How do you want to use this mix?</p>
+    <button class="battle-choice-btn primary" id="btn-create-challenge">Create New Challenge</button>
+    <button class="battle-choice-btn secondary" id="btn-go-battle">Join Existing Battle</button>
+    <button class="battle-choice-btn ghost" id="btn-cancel-battle">Cancel</button>
   </div>
 </div>
 
@@ -3604,8 +3795,76 @@ function stopStrudel() {
   }
 }
 
-function startRecordingMix() {
-  alert('Mix recording coming soon! This will capture your layered beat as a single audio file.');
+// ==========================================
+// MIX RECORDING via MediaStreamDestination
+// ==========================================
+let mixRecorder = null;
+let mixRecordedChunks = [];
+let mixRecordingBlob = null;
+let recordingStartTime = 0;
+let recordingTimerInterval = null;
+
+async function startRecordingMix() {
+  if (mixRecorder && mixRecorder.state === 'recording') {
+    stopRecordingMix();
+    return;
+  }
+
+  if (!audioEngine.ctx || !audioEngine.masterGain) {
+    await audioEngine.init();
+  }
+  await audioEngine.resume();
+
+  // Create MediaStreamDestination
+  const dest = audioEngine.ctx.createMediaStreamDestination();
+  audioEngine.masterGain.connect(dest);
+
+  // Store reference for cleanup
+  audioEngine._recordDest = dest;
+
+  const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+    ? 'audio/webm;codecs=opus' : 'audio/webm';
+
+  mixRecorder = new MediaRecorder(dest.stream, { mimeType });
+  mixRecordedChunks = [];
+
+  mixRecorder.ondataavailable = (e) => {
+    if (e.data.size > 0) mixRecordedChunks.push(e.data);
+  };
+
+  mixRecorder.onstop = () => {
+    mixRecordingBlob = new Blob(mixRecordedChunks, { type: mimeType });
+    // Disconnect recording destination
+    try { audioEngine.masterGain.disconnect(dest); } catch(e) {}
+    audioEngine._recordDest = null;
+
+    clearInterval(recordingTimerInterval);
+    document.getElementById('recording-indicator')?.classList.remove('active');
+    document.getElementById('btn-record')?.classList.remove('recording');
+
+    showNotification('Mix recorded! Use Export or Battle buttons.');
+  };
+
+  mixRecorder.start(100); // collect data every 100ms
+  recordingStartTime = Date.now();
+
+  // UI feedback
+  document.getElementById('btn-record')?.classList.add('recording');
+  document.getElementById('recording-indicator')?.classList.add('active');
+
+  recordingTimerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    const timeEl = document.getElementById('recording-time');
+    if (timeEl) timeEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+  }, 250);
+}
+
+function stopRecordingMix() {
+  if (mixRecorder && mixRecorder.state === 'recording') {
+    mixRecorder.stop();
+  }
 }
 
 // BPM Control
@@ -3861,7 +4120,7 @@ function useBeatInBattle() {
     return;
   }
 
-  // Save current configuration for battle
+  // Save current configuration
   const battleBeat = {
     name: 'Custom Mix',
     type: 'playground',
@@ -3876,12 +4135,229 @@ function useBeatInBattle() {
   localStorage.setItem('currentBattleBeat', JSON.stringify(battleBeat));
   localStorage.setItem('currentBattlePattern', '');
 
-  // Redirect to battle
-  window.location.href = '/rap-battle';
+  // Show choice modal
+  const modal = document.getElementById('battle-choice-modal');
+  if (!modal) {
+    window.location.href = '/rap-battle';
+    return;
+  }
+  modal.classList.add('active');
+
+  document.getElementById('btn-create-challenge').onclick = async () => {
+    modal.classList.remove('active');
+
+    const wallet = localStorage.getItem('connectedWallet') || localStorage.getItem('anonymousWallet');
+
+    // Try to create challenge via API
+    try {
+      const title = prompt('Challenge title:', `Beat Battle - ${currentBPM} BPM`);
+      if (!title) return;
+
+      const res = await fetch('/api/challenges/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          creatorWallet: wallet || 'anonymous',
+          title: title,
+          type: 'beat_battle',
+          mode: '1v1',
+          category: 'freestyle',
+          stakesType: 'xp',
+          stakesAmount: 50,
+          beatConfig: battleBeat,
+          durationHours: 72,
+          isPublic: true
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        // Also create locally if challenge manager available
+        if (window.wb1Challenges) {
+          try {
+            window.wb1Challenges.createChallenge({
+              title: title,
+              type: 'beat_battle',
+              mode: '1v1',
+              beatConfig: battleBeat,
+              dbId: data.challenge.id,
+              inviteCode: data.challenge.inviteCode
+            });
+          } catch(e) { console.warn('Local sync:', e.message); }
+        }
+
+        const shareLink = `${window.location.origin}/challenge/join/${data.challenge.inviteCode}`;
+        navigator.clipboard.writeText(shareLink).catch(() => {});
+
+        showNotification(`Challenge created! Code: ${data.challenge.inviteCode}`);
+        setTimeout(() => {
+          window.location.href = '/challenge-arena';
+        }, 1500);
+      } else {
+        showNotification(data.error || 'Failed to create challenge');
+      }
+    } catch (err) {
+      console.error('Create challenge error:', err);
+      // Fallback: open ChallengeModal if available
+      if (typeof window.openChallengeCreateModal === 'function') {
+        window.openChallengeCreateModal();
+      } else {
+        showNotification('Error creating challenge. Try the Challenge Arena page.');
+      }
+    }
+  };
+
+  document.getElementById('btn-go-battle').onclick = () => {
+    modal.classList.remove('active');
+    window.location.href = '/rap-battle';
+  };
+
+  document.getElementById('btn-cancel-battle').onclick = () => {
+    modal.classList.remove('active');
+  };
 }
 
 function exportMix() {
-  alert('Export functionality coming soon! This will let you download your mix as an audio file.');
+  if (layers.length === 0) {
+    alert('Add some layers first!');
+    return;
+  }
+
+  // If we have a recorded blob, offer to download it directly
+  if (mixRecordingBlob) {
+    showExportModal(mixRecordingBlob);
+    return;
+  }
+
+  // Otherwise show export modal to record a new export
+  showExportModal(null);
+}
+
+function showExportModal(existingBlob) {
+  const modal = document.getElementById('export-modal');
+  if (!modal) return;
+  modal.classList.add('active');
+
+  const durationSelect = document.getElementById('export-duration');
+  const customGroup = document.getElementById('custom-duration-group');
+  const doExportBtn = document.getElementById('btn-do-export');
+  const cancelBtn = document.getElementById('btn-cancel-export');
+  const progressEl = document.getElementById('export-progress');
+
+  durationSelect.onchange = () => {
+    customGroup.style.display = durationSelect.value === 'custom' ? 'block' : 'none';
+  };
+
+  if (existingBlob) {
+    doExportBtn.textContent = 'Download Recording';
+  } else {
+    doExportBtn.textContent = 'Record & Export';
+  }
+
+  cancelBtn.onclick = () => {
+    modal.classList.remove('active');
+    progressEl.classList.remove('active');
+  };
+
+  doExportBtn.onclick = async () => {
+    if (existingBlob) {
+      downloadBlob(existingBlob, `beat-mix-${Date.now()}`);
+      modal.classList.remove('active');
+      return;
+    }
+
+    // Calculate duration in seconds
+    let durationSec;
+    const durVal = durationSelect.value;
+    if (durVal === 'custom') {
+      durationSec = parseInt(document.getElementById('export-seconds').value) || 30;
+    } else {
+      const bars = parseInt(durVal);
+      const beatsPerBar = 4;
+      durationSec = (bars * beatsPerBar * 60) / currentBPM;
+    }
+
+    doExportBtn.disabled = true;
+    progressEl.classList.add('active');
+    const fillEl = document.getElementById('export-progress-fill');
+    const textEl = document.getElementById('export-progress-text');
+    textEl.textContent = 'Recording mix...';
+    fillEl.style.width = '0%';
+
+    // Start recording
+    if (!audioEngine.ctx || !audioEngine.masterGain) {
+      await audioEngine.init();
+    }
+    await audioEngine.resume();
+
+    const dest = audioEngine.ctx.createMediaStreamDestination();
+    audioEngine.masterGain.connect(dest);
+
+    const formatSelect = document.getElementById('export-format');
+    let mimeType = formatSelect.value;
+    if (!MediaRecorder.isTypeSupported(mimeType)) {
+      mimeType = 'audio/webm';
+    }
+
+    const recorder = new MediaRecorder(dest.stream, { mimeType });
+    const chunks = [];
+
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+
+    recorder.onstop = () => {
+      try { audioEngine.masterGain.disconnect(dest); } catch(e) {}
+      const blob = new Blob(chunks, { type: mimeType });
+      mixRecordingBlob = blob;
+
+      fillEl.style.width = '100%';
+      textEl.textContent = 'Downloading...';
+
+      const ext = mimeType.includes('wav') ? 'wav' : 'webm';
+      downloadBlob(blob, `beat-mix-${Date.now()}`, ext);
+
+      setTimeout(() => {
+        modal.classList.remove('active');
+        progressEl.classList.remove('active');
+        doExportBtn.disabled = false;
+      }, 500);
+    };
+
+    recorder.start(100);
+
+    // Progress animation
+    const startTime = Date.now();
+    const progressInterval = setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      const pct = Math.min((elapsed / durationSec) * 100, 99);
+      fillEl.style.width = pct + '%';
+      textEl.textContent = `Recording... ${Math.floor(elapsed)}s / ${Math.ceil(durationSec)}s`;
+    }, 200);
+
+    // If beats aren't playing, start them
+    if (!isPlaying) {
+      document.getElementById('master-play')?.click();
+    }
+
+    // Stop after duration
+    setTimeout(() => {
+      clearInterval(progressInterval);
+      recorder.stop();
+    }, durationSec * 1000);
+  };
+}
+
+function downloadBlob(blob, name, ext) {
+  ext = ext || (blob.type.includes('wav') ? 'wav' : 'webm');
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${name}.${ext}`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
 function shareMix() {
@@ -3988,6 +4464,7 @@ window.layerPlayers = layerPlayers;
 window.toggleMasterPlay = toggleMasterPlay;
 window.stopAll = stopAll;
 window.startRecordingMix = startRecordingMix;
+window.stopRecordingMix = stopRecordingMix;
 window.adjustBPM = adjustBPM;
 window.setBPM = setBPM;
 window.openSourcePopup = openSourcePopup;

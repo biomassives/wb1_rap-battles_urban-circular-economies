@@ -35,13 +35,13 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
         </div>
         <h1 class="hero-title glitch">
           <span class="block">SHOW SKILLS.</span>
-          <span class="block">WIN BATTLES.</span>
-          <span class="block neon-text">EARN NFTS.</span>
+          <span class="block">EARN REWARDS.</span>
+          <span class="block neon-text">OWN YOUR FUTURE.</span>
         </h1>
         <p class="hero-tagline mono">
-          > CREATE_BEATS()<br/>
-          > RAP_VS_OTHERS()<br/>
-          > COLLECT_PFP_CARDS()<br/>
+          > RAP_BATTLES() → EARN_XP()<br/>
+          > MENTOR_&_LEARN() → LEVEL_UP()<br/>
+          > GOVERN_&_BUILD() → GET_AIRDROPS()<br/>
           <span class="neon-text blink">█</span>
         </p>
         <div class="hero-actions">
@@ -117,30 +117,30 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
   <!-- How It Works Section -->
   <section id="how-it-works" class="how-it-works-section">
     <div class="container mx-auto">
-      <h2 class="section-title">3 Simple Steps to Battle</h2>
+      <h2 class="section-title">3 Steps: Earn XP → Get Airdrops</h2>
       <div class="steps-grid">
         <div class="step-card">
           <div class="step-number">1</div>
           <div class="step-icon">🎵</div>
-          <h3 class="step-title">Create Your Beat</h3>
-          <p class="step-description">Use our Moog synth or sampler pads to create a unique beat in seconds. No music experience needed!</p>
+          <h3 class="step-title">Create & Battle</h3>
+          <p class="step-description">Make beats, battle others, review artists. Rap battles, challenge submissions, and votes all earn XP toward your airdrop tier.</p>
         </div>
         <div class="step-card">
           <div class="step-number">2</div>
-          <div class="step-icon">🎤</div>
-          <h3 class="step-title">Battle & Record</h3>
-          <p class="step-description">Challenge others or go solo. Record your rap, get votes, and earn XP for every battle.</p>
+          <div class="step-icon">🌍</div>
+          <h3 class="step-title">Contribute & Grow</h3>
+          <p class="step-description">Mentor peers, submit citizen science data, vote in DAO governance. Your XP determines your airdrop tier — Bronze through Mythic.</p>
         </div>
         <div class="step-card">
           <div class="step-number">3</div>
           <div class="step-icon">💎</div>
-          <h3 class="step-title">Collect NFT Cards</h3>
-          <p class="step-description">Every battle earns you a custom PFP card with your rapper persona and bling badges. Trade, collect, win!</p>
+          <h3 class="step-title">Earn Airdrops & NFTs</h3>
+          <p class="step-description">Higher XP = rarer drops, more tokens, better NFTs. Scheduled airdrops reward active community members every cycle.</p>
         </div>
       </div>
       <div class="cta-center">
         <a href="/rap-battle" class="btn-primary-large">
-          Ready to Battle? Let's Go! 🔥
+          Start Earning XP Now 🔥
         </a>
       </div>
     </div>
@@ -154,7 +154,7 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
           <span class="neon-text blink">🎨 DAILY COLLECTION 🎨</span>
         </div>
         <h2 class="showcase-title glitch">
-          <span class="block neon-text">55 UNIQUE NFT RAPPERS</span>
+          <span class="block neon-text"><a href="/nft-gallery" title="Worldbridgr One Hobby Farm NFT Gallery">55 Hobby Farm Animal Rappers</a></span>
           <span class="block">WITH GENERATED SOUNDS</span>
         </h2>
         <p class="showcase-subtitle mono">
@@ -381,8 +381,8 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
           <div class="feature-icon-wrapper">
             <span class="feature-icon">🎁</span>
           </div>
-          <h4>Airdrop Rewards</h4>
-          <p>Card holders get token airdrops, whitelist access, and exclusive physical merch raffles</p>
+          <h4>XP-Based Airdrops</h4>
+          <p>Your XP tier determines airdrop rarity and quantity — higher tiers earn rarer drops, more tokens, and exclusive rewards every cycle</p>
         </div>
 
         <div class="feature-card">
@@ -435,6 +435,58 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
         <p class="tiers-description">
           Win streaks, community votes, and special achievements increase your rarity chances!
         </p>
+      </div>
+
+      <!-- XP Airdrop Tiers -->
+      <div class="xp-tiers-section">
+        <h3 class="tiers-title">Airdrop Tiers — Earn More, Get More</h3>
+        <p class="xp-tiers-subtitle">Every action earns XP. Your total XP determines your airdrop tier.</p>
+        <div class="xp-tiers-grid">
+          <div class="xp-tier-item bronze-tier">
+            <span class="xp-tier-icon">🥉</span>
+            <span class="xp-tier-name">Bronze</span>
+            <span class="xp-tier-range">0 - 499 XP</span>
+            <span class="xp-tier-detail">1x drops</span>
+          </div>
+          <div class="xp-tier-item silver-tier">
+            <span class="xp-tier-icon">🥈</span>
+            <span class="xp-tier-name">Silver</span>
+            <span class="xp-tier-range">500 - 1,999 XP</span>
+            <span class="xp-tier-detail">1.25x tokens</span>
+          </div>
+          <div class="xp-tier-item gold-tier">
+            <span class="xp-tier-icon">🥇</span>
+            <span class="xp-tier-name">Gold</span>
+            <span class="xp-tier-range">2,000 - 4,999 XP</span>
+            <span class="xp-tier-detail">1.5x + 2 drops</span>
+          </div>
+          <div class="xp-tier-item platinum-tier">
+            <span class="xp-tier-icon">💠</span>
+            <span class="xp-tier-name">Platinum</span>
+            <span class="xp-tier-range">5,000 - 14,999 XP</span>
+            <span class="xp-tier-detail">2x + 3 drops</span>
+          </div>
+          <div class="xp-tier-item diamond-tier">
+            <span class="xp-tier-icon">💎</span>
+            <span class="xp-tier-name">Diamond</span>
+            <span class="xp-tier-range">15,000 - 49,999 XP</span>
+            <span class="xp-tier-detail">3x + 4 drops</span>
+          </div>
+          <div class="xp-tier-item mythic-xp-tier">
+            <span class="xp-tier-icon">🌈</span>
+            <span class="xp-tier-name">Mythic</span>
+            <span class="xp-tier-range">50,000+ XP</span>
+            <span class="xp-tier-detail">5x + 5 drops</span>
+          </div>
+        </div>
+        <div class="xp-earn-methods">
+          <span class="xp-method">🎤 Rap Battles</span>
+          <span class="xp-method">🎵 Music</span>
+          <span class="xp-method">⭐ Reviews</span>
+          <span class="xp-method">🧑‍🏫 Mentoring</span>
+          <span class="xp-method">🔬 Citizen Science</span>
+          <span class="xp-method">🏛️ DAO Governance</span>
+        </div>
       </div>
     </div>
   </section>
@@ -1294,6 +1346,79 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
       line-height: 1.6;
     }
 
+    /* XP Airdrop Tiers Section */
+    .xp-tiers-section {
+      margin-top: 4rem;
+      padding: 3rem 2rem;
+      background: linear-gradient(135deg, rgba(0, 255, 156, 0.03), rgba(0, 229, 255, 0.03));
+      border: 1px solid rgba(0, 255, 156, 0.15);
+      border-radius: 1rem;
+      text-align: center;
+    }
+
+    .xp-tiers-subtitle {
+      opacity: 0.7;
+      margin-bottom: 2rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+    }
+
+    .xp-tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .xp-tier-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 1rem 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      background: rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .xp-tier-item:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 255, 156, 0.3);
+    }
+
+    .xp-tier-icon { font-size: 1.75rem; }
+    .xp-tier-name { font-weight: bold; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .xp-tier-range { font-size: 0.7rem; opacity: 0.6; font-family: 'Courier New', monospace; }
+    .xp-tier-detail { font-size: 0.75rem; color: var(--neon-green, #00ff9c); font-weight: 600; }
+
+    .bronze-tier { border-color: rgba(205, 127, 50, 0.4); }
+    .silver-tier { border-color: rgba(192, 192, 192, 0.4); }
+    .gold-tier { border-color: rgba(255, 215, 0, 0.4); }
+    .platinum-tier { border-color: rgba(0, 229, 255, 0.4); }
+    .diamond-tier { border-color: rgba(155, 89, 182, 0.4); }
+    .mythic-xp-tier {
+      border-color: rgba(231, 76, 60, 0.4);
+      background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(231, 76, 60, 0.1));
+    }
+
+    .xp-earn-methods {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .xp-method {
+      padding: 0.4rem 0.85rem;
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      font-family: 'Courier New', monospace;
+      background: rgba(0, 229, 255, 0.05);
+      white-space: nowrap;
+    }
+
     /* Mobile Responsive Styles for Battle Cards */
     @media (max-width: 768px) {
       .battle-cards-section {
@@ -1355,6 +1480,20 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
       .tier-name {
         font-size: 0.875rem;
       }
+
+      .xp-tiers-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+      }
+
+      .xp-tier-item { padding: 0.75rem 0.25rem; }
+      .xp-tier-icon { font-size: 1.25rem; }
+      .xp-tier-name { font-size: 0.75rem; }
+
+      .xp-earn-methods {
+        gap: 0.5rem;
+      }
+      .xp-method { font-size: 0.7rem; padding: 0.3rem 0.6rem; }
     }
 
     .feature-icon {

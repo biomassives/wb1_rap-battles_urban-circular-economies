@@ -309,6 +309,127 @@ GROUP BY user_wallet;
 --   EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================
+-- CHALLENGES TABLE
+-- Public challenge system with invite codes
+-- ============================================
+CREATE TABLE IF NOT EXISTS challenges (
+  id SERIAL PRIMARY KEY,
+  invite_code VARCHAR(6) UNIQUE NOT NULL,
+  creator_wallet VARCHAR(44) NOT NULL,
+
+  -- Challenge details
+  title VARCHAR(200) NOT NULL,
+  description TEXT,
+  type VARCHAR(30) NOT NULL DEFAULT 'rap_battle',
+    -- rap_battle, beat_battle, remix_challenge, freestyle, learning_race, eco_challenge
+  mode VARCHAR(20) NOT NULL DEFAULT '1v1',
+    -- 1v1, group, open
+  category VARCHAR(50) DEFAULT 'freestyle',
+
+  -- Stakes
+  stakes_type VARCHAR(20) DEFAULT 'xp',  -- xp, bragging, nft
+  stakes_amount INTEGER DEFAULT 50,
+
+  -- Beat config from beat playground
+  beat_config JSONB,
+    -- { name, type, bpm, layers: [{source, beat, volume}] }
+  beat_audio_url TEXT,
+
+  -- Participants & limits
+  max_participants INTEGER DEFAULT 2,
+  min_participants INTEGER DEFAULT 2,
+
+  -- State
+  status VARCHAR(20) DEFAULT 'pending',
+    -- pending, accepted, in_progress, voting, completed, cancelled, expired
+
+  -- Linked battle (when challenge spawns a database battle)
+  battle_id INTEGER REFERENCES battles(id),
+
+  -- Timing
+  duration_hours INTEGER DEFAULT 72,
+  created_at TIMESTAMP DEFAULT NOW(),
+  expires_at TIMESTAMP NOT NULL,
+  started_at TIMESTAMP,
+  voting_ends_at TIMESTAMP,
+  completed_at TIMESTAMP,
+
+  -- Visibility & moderation
+  is_public BOOLEAN DEFAULT TRUE,
+  is_featured BOOLEAN DEFAULT FALSE,
+  is_flagged BOOLEAN DEFAULT FALSE,
+  flag_reason TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_challenges_invite_code ON challenges(invite_code);
+CREATE INDEX IF NOT EXISTS idx_challenges_creator ON challenges(creator_wallet);
+CREATE INDEX IF NOT EXISTS idx_challenges_status ON challenges(status);
+CREATE INDEX IF NOT EXISTS idx_challenges_type ON challenges(type);
+CREATE INDEX IF NOT EXISTS idx_challenges_public ON challenges(is_public, status);
+CREATE INDEX IF NOT EXISTS idx_challenges_created ON challenges(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_challenges_expires ON challenges(expires_at);
+
+-- ============================================
+-- CHALLENGE_PARTICIPANTS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS challenge_participants (
+  id SERIAL PRIMARY KEY,
+  challenge_id INTEGER NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  wallet_address VARCHAR(44) NOT NULL,
+  role VARCHAR(20) DEFAULT 'challenger',  -- creator, challenger
+  status VARCHAR(20) DEFAULT 'accepted',  -- accepted, declined, left
+  joined_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(challenge_id, wallet_address)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cp_challenge ON challenge_participants(challenge_id);
+CREATE INDEX IF NOT EXISTS idx_cp_wallet ON challenge_participants(wallet_address);
+
+-- ============================================
+-- CHALLENGE_SUBMISSIONS TABLE
+-- Entries submitted by participants
+-- ============================================
+CREATE TABLE IF NOT EXISTS challenge_submissions (
+  id SERIAL PRIMARY KEY,
+  challenge_id INTEGER NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  participant_wallet VARCHAR(44) NOT NULL,
+  audio_url TEXT NOT NULL,
+  beat_config JSONB,
+  description TEXT,
+  submitted_at TIMESTAMP DEFAULT NOW(),
+  vote_count INTEGER DEFAULT 0,
+  UNIQUE(challenge_id, participant_wallet)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cs_challenge ON challenge_submissions(challenge_id);
+CREATE INDEX IF NOT EXISTS idx_cs_participant ON challenge_submissions(participant_wallet);
+
+-- ============================================
+-- CHALLENGE_VOTES TABLE
+-- Community votes on challenge submissions
+-- ============================================
+CREATE TABLE IF NOT EXISTS challenge_votes (
+  id SERIAL PRIMARY KEY,
+  challenge_id INTEGER NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  submission_id INTEGER NOT NULL REFERENCES challenge_submissions(id) ON DELETE CASCADE,
+  voter_wallet VARCHAR(44) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(challenge_id, voter_wallet)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cv_challenge ON challenge_votes(challenge_id);
+CREATE INDEX IF NOT EXISTS idx_cv_voter ON challenge_votes(voter_wallet);
+
+-- ============================================
+-- ALTER BATTLES TABLE
+-- Add beat config and challenge link columns
+-- ============================================
+ALTER TABLE battles ADD COLUMN IF NOT EXISTS beat_config JSONB;
+ALTER TABLE battles ADD COLUMN IF NOT EXISTS beat_audio_url TEXT;
+ALTER TABLE battles ADD COLUMN IF NOT EXISTS challenge_id INTEGER REFERENCES challenges(id);
+ALTER TABLE battles ADD COLUMN IF NOT EXISTS title VARCHAR(200);
+
+-- ============================================
 -- SAMPLE DATA (Optional - for testing)
 -- ============================================
 
@@ -334,6 +455,7 @@ GROUP BY user_wallet;
  * - Collaboration tracking
  * - Play/like tracking with rate limiting
  * - Rap battle system
+ * - Challenge system with invite codes and public arena
  * - NFT integration (mint addresses)
  * - Comments (optional)
  * - Playlists (optional)

@@ -1,0 +1,1154 @@
+---
+/**
+ * Settings > Database Connection Setup Wizard
+ * Guides novice users through connecting a Neon (or NileDB) Postgres database
+ * to their WorldBridger One instance
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const prerender = false;
+---
+
+<BaseLayout
+  title="Database Settings"
+  description="Connect a Neon or NileDB Postgres database to your WorldBridger One instance"
+  activeSection="home"
+>
+  <div class="settings-page">
+
+    <!-- Header -->
+    <header class="settings-header">
+      <a href="/settings" class="breadcrumb-link">&larr; Settings</a>
+      <h1>Database Connection</h1>
+      <p class="subtitle">Connect a Neon or NileDB Postgres database to power your wb1 platform</p>
+    </header>
+
+    <!-- Current Status Banner -->
+    <div class="status-banner" id="status-banner">
+      <div class="status-icon" id="status-icon">...</div>
+      <div class="status-text">
+        <span class="status-label" id="status-label">Checking database connection...</span>
+        <span class="status-detail" id="status-detail"></span>
+      </div>
+    </div>
+
+    <!-- Settings Sections -->
+    <div class="settings-grid">
+
+      <!-- Database Connection Card -->
+      <section class="settings-card db-card">
+        <div class="card-header">
+          <h2>Database Connection</h2>
+          <span class="badge" id="db-badge">Checking...</span>
+        </div>
+
+        <!-- Step Wizard -->
+        <div class="wizard">
+
+          <!-- Step Indicators -->
+          <div class="step-indicators">
+            <div class="step-dot active" data-step="1"><span>1</span></div>
+            <div class="step-line"></div>
+            <div class="step-dot" data-step="2"><span>2</span></div>
+            <div class="step-line"></div>
+            <div class="step-dot" data-step="3"><span>3</span></div>
+            <div class="step-line"></div>
+            <div class="step-dot" data-step="4"><span>4</span></div>
+          </div>
+          <div class="step-labels">
+            <span class="step-label active" data-step="1">Get Database</span>
+            <span class="step-label" data-step="2">Connect</span>
+            <span class="step-label" data-step="3">Create Tables</span>
+            <span class="step-label" data-step="4">Done</span>
+          </div>
+
+          <!-- Step 1: Sign Up for Neon -->
+          <div class="wizard-step active" id="step-1">
+            <div class="step-content">
+              <h3>Get a Free Neon Database</h3>
+              <p class="step-desc">Neon provides free PostgreSQL databases in the cloud. No credit card needed, and the free tier is generous enough for wb1.</p>
+
+              <div class="guide-box">
+                <div class="guide-step">
+                  <div class="guide-num">1</div>
+                  <div class="guide-text">
+                    <strong>Sign up at Neon</strong>
+                    <p>Click the button below to open Neon's signup page. You can sign up with GitHub, Google, or email.</p>
+                    <a href="https://neon.tech" target="_blank" rel="noopener" class="btn-external">
+                      Open neon.tech
+                      <span class="external-icon">&#8599;</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="guide-step">
+                  <div class="guide-num">2</div>
+                  <div class="guide-text">
+                    <strong>Create a new project</strong>
+                    <p>After signing in, click <strong>"New Project"</strong>. Give it a name like <code>worldbridger-one</code>.</p>
+                    <div class="tip-box">
+                      <span class="tip-label">Tip</span>
+                      Choose a region close to your users. US East or EU Central work well.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="guide-step">
+                  <div class="guide-num">3</div>
+                  <div class="guide-text">
+                    <strong>Copy your connection string</strong>
+                    <p>After creating the project, Neon shows your connection string. It looks like:</p>
+                    <div class="connection-example">
+                      <code>postgresql://username:password@ep-cool-name-123456.us-east-2.aws.neon.tech/neondb?sslmode=require</code>
+                    </div>
+                    <p>Copy the <strong>entire string</strong> including the password. You'll paste it in the next step.</p>
+                    <div class="tip-box">
+                      <span class="tip-label">Where to find it later</span>
+                      Dashboard > Your Project > Connection Details > Connection string dropdown
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <button class="btn-next" id="btn-to-step-2">I have my connection string</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Enter & Test Connection -->
+          <div class="wizard-step" id="step-2">
+            <div class="step-content">
+              <h3>Connect Your Database</h3>
+              <p class="step-desc">Paste the connection string from your Neon dashboard below. We'll test the connection before saving.</p>
+
+              <div class="input-group">
+                <label for="conn-string">Connection String</label>
+                <div class="input-with-toggle">
+                  <input
+                    type="password"
+                    id="conn-string"
+                    placeholder="postgresql://user:password@ep-name.region.aws.neon.tech/dbname?sslmode=require"
+                    class="conn-input"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <button class="toggle-vis" id="toggle-vis" title="Show/hide">
+                    <span id="vis-icon">&#128065;</span>
+                  </button>
+                </div>
+                <div class="input-help">
+                  Starts with <code>postgresql://</code> or <code>postgres://</code>
+                </div>
+              </div>
+
+              <!-- Parse Preview -->
+              <div class="parse-preview" id="parse-preview" style="display: none;">
+                <h4>Connection Details</h4>
+                <div class="parse-grid">
+                  <div class="parse-item"><span class="parse-label">Host</span><span class="parse-value" id="parse-host">-</span></div>
+                  <div class="parse-item"><span class="parse-label">Database</span><span class="parse-value" id="parse-db">-</span></div>
+                  <div class="parse-item"><span class="parse-label">User</span><span class="parse-value" id="parse-user">-</span></div>
+                  <div class="parse-item"><span class="parse-label">SSL</span><span class="parse-value" id="parse-ssl">-</span></div>
+                </div>
+              </div>
+
+              <!-- Test Result -->
+              <div class="test-result" id="test-result" style="display: none;">
+                <div class="test-icon" id="test-icon"></div>
+                <div class="test-info">
+                  <div class="test-status" id="test-status"></div>
+                  <div class="test-detail" id="test-detail"></div>
+                  <div class="test-hint" id="test-hint"></div>
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <button class="btn-back" id="btn-back-1">Back</button>
+                <button class="btn-test" id="btn-test-conn">Test Connection</button>
+                <button class="btn-next" id="btn-to-step-3" style="display: none;">Next: Create Tables</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Initialize Schema -->
+          <div class="wizard-step" id="step-3">
+            <div class="step-content">
+              <h3>Create Database Tables</h3>
+              <p class="step-desc">We'll create the tables wb1 needs. All statements use IF NOT EXISTS so it's safe to run multiple times.</p>
+
+              <!-- Schema Groups -->
+              <div class="schema-groups" id="schema-groups">
+                <label class="schema-group-item">
+                  <input type="checkbox" value="core" checked disabled />
+                  <div class="schema-group-info">
+                    <strong>Core</strong>
+                    <span>user_profiles, activity_log</span>
+                  </div>
+                  <span class="schema-tag required">Required</span>
+                </label>
+                <label class="schema-group-item">
+                  <input type="checkbox" value="music" checked />
+                  <div class="schema-group-info">
+                    <strong>Music</strong>
+                    <span>tracks, collaborators, likes, plays, comments, playlists</span>
+                  </div>
+                </label>
+                <label class="schema-group-item">
+                  <input type="checkbox" value="battles" checked />
+                  <div class="schema-group-info">
+                    <strong>Battles</strong>
+                    <span>battles, battle_submissions, battle_votes</span>
+                  </div>
+                </label>
+                <label class="schema-group-item">
+                  <input type="checkbox" value="challenges" checked />
+                  <div class="schema-group-info">
+                    <strong>Challenges</strong>
+                    <span>challenges, participants, submissions, votes</span>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Init Result -->
+              <div class="init-result" id="init-result" style="display: none;">
+                <div class="init-progress" id="init-progress">
+                  <div class="init-progress-bar"><div class="init-progress-fill" id="init-fill"></div></div>
+                  <span class="init-progress-text" id="init-text">Initializing...</span>
+                </div>
+                <div class="init-details" id="init-details"></div>
+              </div>
+
+              <div class="step-actions">
+                <button class="btn-back" id="btn-back-2">Back</button>
+                <button class="btn-primary" id="btn-init-schema">Create Tables</button>
+                <button class="btn-next" id="btn-to-step-4" style="display: none;">Finish Setup</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Complete -->
+          <div class="wizard-step" id="step-4">
+            <div class="step-content step-complete">
+              <div class="complete-icon">&#10003;</div>
+              <h3>Database Connected!</h3>
+              <p class="step-desc">Your Neon database is connected and all wb1 tables are ready.</p>
+
+              <div class="complete-summary" id="complete-summary">
+                <div class="summary-item">
+                  <span class="summary-label">Database</span>
+                  <span class="summary-value" id="summary-db">-</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Tables</span>
+                  <span class="summary-value" id="summary-tables">-</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Latency</span>
+                  <span class="summary-value" id="summary-latency">-</span>
+                </div>
+              </div>
+
+              <div class="env-instructions">
+                <h4>Save for Deployment</h4>
+                <p>To persist this connection, add the following to your <code>.env</code> file or Vercel environment variables:</p>
+                <div class="env-block">
+                  <pre id="env-output">DATABASE_URL="your-connection-string"
+NILE_DATABASE_URL="your-connection-string"</pre>
+                  <button class="btn-copy-env" id="btn-copy-env">Copy</button>
+                </div>
+                <div class="tip-box">
+                  <span class="tip-label">Vercel Deployment</span>
+                  Go to Vercel Dashboard > Your Project > Settings > Environment Variables, and add DATABASE_URL with your connection string.
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <a href="/challenge-arena" class="btn-primary">Go to Challenge Arena</a>
+                <a href="/beat-playground" class="btn-secondary-link">Beat Playground</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Quick Info Sidebar -->
+      <aside class="settings-sidebar">
+
+        <!-- Connection Status Card -->
+        <div class="sidebar-card">
+          <h3>Current Connection</h3>
+          <div class="current-conn" id="current-conn">
+            <div class="conn-checking">Checking...</div>
+          </div>
+        </div>
+
+        <!-- Neon Free Tier Info -->
+        <div class="sidebar-card info-card">
+          <h3>Neon Free Tier</h3>
+          <ul class="free-tier-list">
+            <li><strong>0.5 GB</strong> storage</li>
+            <li><strong>190 hours</strong> compute/month</li>
+            <li><strong>Unlimited</strong> projects</li>
+            <li><strong>Auto-suspend</strong> when idle</li>
+            <li><strong>Branching</strong> for dev/staging</li>
+            <li>No credit card required</li>
+          </ul>
+        </div>
+
+        <!-- Help Links -->
+        <div class="sidebar-card">
+          <h3>Help</h3>
+          <div class="help-links">
+            <a href="https://neon.tech/docs/get-started-with-neon/signing-up" target="_blank" rel="noopener">Neon Getting Started Guide &#8599;</a>
+            <a href="https://neon.tech/docs/connect/connect-from-any-app" target="_blank" rel="noopener">Connection String Help &#8599;</a>
+            <a href="/nile-admin" class="internal-link">Nile Admin Dashboard</a>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <style>
+    .settings-page {
+      min-height: 100vh;
+      background: #05070a;
+      color: #e0e0e0;
+      padding: 0 1rem 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .settings-header {
+      padding: 1.5rem 0;
+    }
+    .breadcrumb-link {
+      display: inline-block;
+      color: #00e5ff;
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+    .breadcrumb-link:hover { text-decoration: underline; }
+    .settings-header h1 {
+      font-size: 2rem;
+      color: #fff;
+      margin: 0;
+    }
+    .subtitle {
+      color: #666;
+      margin: 0.25rem 0 0;
+    }
+
+    /* Status Banner */
+    .status-banner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      background: #0b0f17;
+      border: 1px solid #1a2035;
+      transition: all 0.3s;
+    }
+    .status-banner.connected {
+      border-color: rgba(0, 255, 156, 0.3);
+      background: rgba(0, 255, 156, 0.05);
+    }
+    .status-banner.disconnected {
+      border-color: rgba(255, 193, 7, 0.3);
+      background: rgba(255, 193, 7, 0.05);
+    }
+    .status-banner.error {
+      border-color: rgba(255, 107, 107, 0.3);
+      background: rgba(255, 107, 107, 0.05);
+    }
+    .status-icon { font-size: 1.5rem; }
+    .status-label { color: #fff; font-weight: 600; display: block; }
+    .status-detail { color: #888; font-size: 0.85rem; }
+
+    /* Grid Layout */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* Main Card */
+    .settings-card {
+      background: #0b0f17;
+      border: 1px solid #1a2035;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .card-header h2 { color: #fff; margin: 0; font-size: 1.3rem; }
+    .badge {
+      padding: 0.2rem 0.7rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge.connected { background: rgba(0, 255, 156, 0.15); color: #00ff9c; }
+    .badge.disconnected { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+    .badge.error { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; }
+
+    /* Step Indicators */
+    .step-indicators {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 0.5rem;
+    }
+    .step-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #1a2035;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #555;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+    .step-dot.active { background: #00e5ff; color: #0b0f17; }
+    .step-dot.complete { background: #00ff9c; color: #0b0f17; }
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: #1a2035;
+      max-width: 80px;
+    }
+    .step-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding: 0 0.5rem;
+    }
+    .step-label {
+      font-size: 0.7rem;
+      color: #555;
+      text-align: center;
+      flex: 1;
+    }
+    .step-label.active { color: #00e5ff; }
+    .step-label.complete { color: #00ff9c; }
+
+    /* Wizard Steps */
+    .wizard-step { display: none; }
+    .wizard-step.active { display: block; }
+
+    .step-content h3 {
+      color: #fff;
+      margin: 0 0 0.5rem;
+      font-size: 1.15rem;
+    }
+    .step-desc {
+      color: #888;
+      margin: 0 0 1.25rem;
+      line-height: 1.5;
+      font-size: 0.9rem;
+    }
+
+    /* Guide Steps */
+    .guide-box { margin-bottom: 1.5rem; }
+    .guide-step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid #111827;
+    }
+    .guide-step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .guide-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 229, 255, 0.15);
+      color: #00e5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .guide-text strong { color: #fff; display: block; margin-bottom: 0.3rem; }
+    .guide-text p { color: #888; margin: 0 0 0.5rem; font-size: 0.85rem; line-height: 1.5; }
+    .guide-text code {
+      background: rgba(0, 229, 255, 0.1);
+      color: #00e5ff;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.85em;
+    }
+
+    .btn-external {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1.25rem;
+      background: linear-gradient(135deg, #00e5ff, #00ff9c);
+      color: #0b0f17;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn-external:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3); }
+    .external-icon { font-size: 0.9em; }
+
+    .connection-example {
+      background: #0f1520;
+      border: 1px solid #1a2035;
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      margin: 0.5rem 0;
+      overflow-x: auto;
+    }
+    .connection-example code {
+      color: #00ff9c;
+      font-size: 0.75rem;
+      word-break: break-all;
+      background: none;
+      padding: 0;
+    }
+
+    .tip-box {
+      background: rgba(0, 229, 255, 0.05);
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #aaa;
+      line-height: 1.4;
+    }
+    .tip-label {
+      display: inline-block;
+      background: rgba(0, 229, 255, 0.15);
+      color: #00e5ff;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-right: 0.3rem;
+    }
+
+    /* Input Group */
+    .input-group { margin-bottom: 1.25rem; }
+    .input-group label {
+      display: block;
+      color: #aaa;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      font-weight: 500;
+    }
+    .input-with-toggle {
+      display: flex;
+      position: relative;
+    }
+    .conn-input {
+      flex: 1;
+      background: #0f1520;
+      border: 1px solid #1a2035;
+      color: #fff;
+      padding: 0.65rem 2.5rem 0.65rem 0.8rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+    .conn-input:focus { outline: none; border-color: #00e5ff; }
+    .conn-input.error { border-color: #ff6b6b; }
+    .conn-input.success { border-color: #00ff9c; }
+    .toggle-vis {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #555;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0.2rem;
+    }
+    .input-help {
+      color: #555;
+      font-size: 0.75rem;
+      margin-top: 0.3rem;
+    }
+    .input-help code { background: rgba(0, 229, 255, 0.08); color: #00e5ff; padding: 0.05rem 0.3rem; border-radius: 2px; }
+
+    /* Parse Preview */
+    .parse-preview {
+      background: #0f1520;
+      border: 1px solid #1a2035;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+    }
+    .parse-preview h4 { color: #aaa; font-size: 0.8rem; margin: 0 0 0.5rem; text-transform: uppercase; }
+    .parse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+    .parse-item { display: flex; flex-direction: column; }
+    .parse-label { color: #555; font-size: 0.7rem; }
+    .parse-value { color: #00e5ff; font-family: monospace; font-size: 0.8rem; }
+
+    /* Test Result */
+    .test-result {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      align-items: flex-start;
+    }
+    .test-result.success { background: rgba(0, 255, 156, 0.05); border: 1px solid rgba(0, 255, 156, 0.2); }
+    .test-result.error { background: rgba(255, 107, 107, 0.05); border: 1px solid rgba(255, 107, 107, 0.2); }
+    .test-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .test-status { font-weight: 600; margin-bottom: 0.2rem; }
+    .test-result.success .test-status { color: #00ff9c; }
+    .test-result.error .test-status { color: #ff6b6b; }
+    .test-detail { color: #888; font-size: 0.85rem; }
+    .test-hint { color: #ffc107; font-size: 0.8rem; margin-top: 0.3rem; }
+
+    /* Schema Groups */
+    .schema-groups { margin-bottom: 1.25rem; }
+    .schema-group-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.8rem;
+      background: #0f1520;
+      border: 1px solid #1a2035;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .schema-group-item:hover { border-color: #00e5ff33; }
+    .schema-group-item input[type="checkbox"] {
+      accent-color: #00e5ff;
+      width: 16px; height: 16px;
+    }
+    .schema-group-info { flex: 1; }
+    .schema-group-info strong { color: #fff; font-size: 0.9rem; display: block; }
+    .schema-group-info span { color: #666; font-size: 0.75rem; }
+    .schema-tag {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .schema-tag.required { background: rgba(0, 229, 255, 0.15); color: #00e5ff; }
+
+    /* Init Progress */
+    .init-progress { margin-bottom: 0.75rem; }
+    .init-progress-bar { height: 6px; background: #1a2035; border-radius: 3px; overflow: hidden; }
+    .init-progress-fill { height: 100%; background: linear-gradient(90deg, #00e5ff, #00ff9c); width: 0; transition: width 0.5s; }
+    .init-progress-text { color: #00e5ff; font-size: 0.8rem; margin-top: 0.3rem; }
+    .init-details { font-size: 0.8rem; color: #888; }
+    .init-details .init-group-result { margin-bottom: 0.3rem; }
+    .init-details .init-success { color: #00ff9c; }
+    .init-details .init-error { color: #ff6b6b; }
+
+    /* Complete Step */
+    .step-complete { text-align: center; }
+    .complete-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e5ff, #00ff9c);
+      color: #0b0f17;
+      font-size: 2rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+    }
+
+    .complete-summary {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+    .summary-item { text-align: center; }
+    .summary-label { display: block; color: #555; font-size: 0.7rem; text-transform: uppercase; }
+    .summary-value { display: block; color: #fff; font-size: 1.1rem; font-weight: 600; }
+
+    .env-instructions {
+      background: #0f1520;
+      border: 1px solid #1a2035;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+    .env-instructions h4 { color: #fff; margin: 0 0 0.5rem; font-size: 0.95rem; }
+    .env-instructions p { color: #888; font-size: 0.85rem; margin: 0 0 0.75rem; }
+    .env-instructions code { background: rgba(0, 229, 255, 0.1); color: #00e5ff; padding: 0.1rem 0.3rem; border-radius: 2px; }
+    .env-block {
+      position: relative;
+      background: #05070a;
+      border: 1px solid #1a2035;
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+    .env-block pre {
+      color: #00ff9c;
+      font-size: 0.75rem;
+      margin: 0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .btn-copy-env {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.4rem;
+      background: #1a2035;
+      border: none;
+      color: #888;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+    .btn-copy-env:hover { color: #fff; }
+
+    /* Buttons */
+    .step-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .btn-next, .btn-primary {
+      padding: 0.6rem 1.5rem;
+      background: linear-gradient(135deg, #00e5ff, #00ff9c);
+      color: #0b0f17;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-next:hover, .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3); }
+    .btn-next:disabled, .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-back {
+      padding: 0.6rem 1.25rem;
+      background: transparent;
+      border: 1px solid #333;
+      color: #888;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-back:hover { border-color: #555; color: #aaa; }
+    .btn-test {
+      padding: 0.6rem 1.5rem;
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      color: #00e5ff;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-test:hover { background: rgba(0, 229, 255, 0.25); }
+    .btn-test:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary-link {
+      padding: 0.6rem 1.25rem;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      color: #00e5ff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* Sidebar */
+    .settings-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+    .sidebar-card {
+      background: #0b0f17;
+      border: 1px solid #1a2035;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+    .sidebar-card h3 { color: #fff; font-size: 1rem; margin: 0 0 0.75rem; }
+
+    .current-conn { font-size: 0.85rem; }
+    .conn-checking { color: #888; }
+    .conn-active { color: #00ff9c; }
+    .conn-active .conn-url { color: #666; font-family: monospace; font-size: 0.75rem; word-break: break-all; display: block; margin-top: 0.3rem; }
+    .conn-none { color: #ffc107; }
+
+    .free-tier-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .free-tier-list li {
+      padding: 0.3rem 0;
+      color: #888;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #111827;
+    }
+    .free-tier-list li:last-child { border-bottom: none; }
+    .free-tier-list strong { color: #00ff9c; }
+
+    .help-links { display: flex; flex-direction: column; gap: 0.5rem; }
+    .help-links a {
+      color: #00e5ff;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .help-links a:hover { color: #fff; }
+    .help-links .internal-link { color: #888; }
+    .help-links .internal-link:hover { color: #00e5ff; }
+
+    @media (max-width: 900px) {
+      .settings-grid { grid-template-columns: 1fr; }
+      .settings-sidebar { order: -1; }
+    }
+  </style>
+
+  <script is:inline>
+  (function() {
+    let currentStep = 1;
+    let testedConnectionString = '';
+    let testResult = null;
+
+    // Check current database status on load
+    checkCurrentConnection();
+
+    // Step Navigation
+    document.getElementById('btn-to-step-2')?.addEventListener('click', () => goToStep(2));
+    document.getElementById('btn-to-step-3')?.addEventListener('click', () => goToStep(3));
+    document.getElementById('btn-to-step-4')?.addEventListener('click', () => goToStep(4));
+    document.getElementById('btn-back-1')?.addEventListener('click', () => goToStep(1));
+    document.getElementById('btn-back-2')?.addEventListener('click', () => goToStep(2));
+
+    function goToStep(step) {
+      currentStep = step;
+      document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+      document.getElementById(`step-${step}`)?.classList.add('active');
+
+      document.querySelectorAll('.step-dot').forEach(dot => {
+        const s = parseInt(dot.dataset.step);
+        dot.classList.remove('active', 'complete');
+        if (s === step) dot.classList.add('active');
+        else if (s < step) dot.classList.add('complete');
+      });
+
+      document.querySelectorAll('.step-label').forEach(label => {
+        const s = parseInt(label.dataset.step);
+        label.classList.remove('active', 'complete');
+        if (s === step) label.classList.add('active');
+        else if (s < step) label.classList.add('complete');
+      });
+    }
+
+    // Connection string input - parse on type
+    const connInput = document.getElementById('conn-string');
+    connInput?.addEventListener('input', () => {
+      const val = connInput.value.trim();
+      if (val.length > 15 && (val.startsWith('postgres://') || val.startsWith('postgresql://'))) {
+        parseConnectionString(val);
+      } else {
+        document.getElementById('parse-preview').style.display = 'none';
+      }
+    });
+
+    // Toggle visibility
+    document.getElementById('toggle-vis')?.addEventListener('click', () => {
+      const input = document.getElementById('conn-string');
+      if (input.type === 'password') {
+        input.type = 'text';
+        document.getElementById('vis-icon').innerHTML = '&#128064;';
+      } else {
+        input.type = 'password';
+        document.getElementById('vis-icon').innerHTML = '&#128065;';
+      }
+    });
+
+    function parseConnectionString(url) {
+      try {
+        const parsed = new URL(url);
+        document.getElementById('parse-host').textContent = parsed.hostname || '-';
+        document.getElementById('parse-db').textContent = parsed.pathname?.replace('/', '') || '-';
+        document.getElementById('parse-user').textContent = parsed.username ? `${parsed.username.substring(0, 8)}...` : '-';
+        document.getElementById('parse-ssl').textContent = url.includes('sslmode=require') ? 'Required' : 'Default';
+        document.getElementById('parse-preview').style.display = 'block';
+      } catch (e) {
+        document.getElementById('parse-preview').style.display = 'none';
+      }
+    }
+
+    // Test Connection
+    document.getElementById('btn-test-conn')?.addEventListener('click', async () => {
+      const connStr = document.getElementById('conn-string')?.value?.trim();
+      if (!connStr) {
+        showTestError('Please enter a connection string', '');
+        return;
+      }
+
+      const btn = document.getElementById('btn-test-conn');
+      btn.disabled = true;
+      btn.textContent = 'Testing...';
+
+      const resultEl = document.getElementById('test-result');
+      resultEl.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/settings/test-db', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ connectionString: connStr })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          testedConnectionString = connStr;
+          testResult = data;
+
+          resultEl.className = 'test-result success';
+          resultEl.style.display = 'flex';
+          document.getElementById('test-icon').textContent = '✓';
+          document.getElementById('test-status').textContent = 'Connection successful!';
+
+          const detail = [
+            `${data.connection.version}`,
+            `Database: ${data.connection.database}`,
+            `Latency: ${data.connection.latency}`,
+            `${data.tables.total} tables found`
+          ];
+
+          if (data.tables.wb1TablesFound > 0) {
+            detail.push(`${data.tables.wb1TablesFound}/${data.tables.wb1TablesTotal} wb1 tables present`);
+          }
+
+          document.getElementById('test-detail').textContent = detail.join(' | ');
+          document.getElementById('test-hint').textContent = '';
+
+          document.getElementById('conn-string').classList.remove('error');
+          document.getElementById('conn-string').classList.add('success');
+
+          // Show next button
+          document.getElementById('btn-to-step-3').style.display = 'inline-block';
+
+          // If schema already ready, allow skip to step 4
+          if (data.tables.schemaReady) {
+            document.getElementById('btn-to-step-3').textContent = 'Next: Verify Tables';
+          }
+        } else {
+          showTestError(data.error, data.hint || '');
+          document.getElementById('conn-string').classList.add('error');
+          document.getElementById('conn-string').classList.remove('success');
+        }
+      } catch (err) {
+        showTestError('Network error - could not reach the test endpoint', 'Make sure the dev server is running.');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Test Connection';
+    });
+
+    function showTestError(message, hint) {
+      const resultEl = document.getElementById('test-result');
+      resultEl.className = 'test-result error';
+      resultEl.style.display = 'flex';
+      document.getElementById('test-icon').textContent = '✗';
+      document.getElementById('test-status').textContent = message;
+      document.getElementById('test-detail').textContent = '';
+      document.getElementById('test-hint').textContent = hint;
+      document.getElementById('btn-to-step-3').style.display = 'none';
+    }
+
+    // Initialize Schema
+    document.getElementById('btn-init-schema')?.addEventListener('click', async () => {
+      if (!testedConnectionString) {
+        alert('Please test your connection first (Step 2)');
+        goToStep(2);
+        return;
+      }
+
+      const checkboxes = document.querySelectorAll('#schema-groups input[type="checkbox"]:checked');
+      const tables = Array.from(checkboxes).map(cb => cb.value);
+
+      const btn = document.getElementById('btn-init-schema');
+      btn.disabled = true;
+      btn.textContent = 'Creating tables...';
+
+      const resultEl = document.getElementById('init-result');
+      resultEl.style.display = 'block';
+
+      const fillEl = document.getElementById('init-fill');
+      const textEl = document.getElementById('init-text');
+      fillEl.style.width = '20%';
+      textEl.textContent = 'Sending schema to database...';
+
+      try {
+        const res = await fetch('/api/settings/init-schema', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            connectionString: testedConnectionString,
+            tables
+          })
+        });
+
+        const data = await res.json();
+
+        fillEl.style.width = '100%';
+
+        if (data.success) {
+          textEl.textContent = data.message;
+          textEl.style.color = '#00ff9c';
+
+          // Show group results
+          const detailsEl = document.getElementById('init-details');
+          detailsEl.innerHTML = data.results.map(r =>
+            `<div class="init-group-result">
+              <span class="${r.errors.length === 0 ? 'init-success' : 'init-error'}">
+                ${r.errors.length === 0 ? '✓' : '⚠'} ${r.label}: ${r.success}/${r.statements} statements
+              </span>
+            </div>`
+          ).join('');
+
+          if (data.summary?.tablesNow) {
+            detailsEl.innerHTML += `<div style="margin-top: 0.5rem; color: #00e5ff;">${data.summary.tablesNow.length} total tables in database</div>`;
+          }
+
+          // Show next
+          document.getElementById('btn-to-step-4').style.display = 'inline-block';
+
+          // Pre-fill step 4
+          document.getElementById('summary-db').textContent = testResult?.connection?.database || '-';
+          document.getElementById('summary-tables').textContent = `${data.summary?.tablesNow?.length || '?'} tables`;
+          document.getElementById('summary-latency').textContent = testResult?.connection?.latency || '-';
+
+          // Generate env output
+          const envOutput = `DATABASE_URL="${testedConnectionString}"\nNILE_DATABASE_URL="${testedConnectionString}"`;
+          document.getElementById('env-output').textContent = envOutput;
+        } else {
+          textEl.textContent = data.message || 'Schema initialization failed';
+          textEl.style.color = '#ff6b6b';
+
+          const detailsEl = document.getElementById('init-details');
+          if (data.results) {
+            detailsEl.innerHTML = data.results.map(r =>
+              r.errors.map(e => `<div class="init-error">${e.statement}: ${e.error}</div>`).join('')
+            ).join('');
+          }
+        }
+      } catch (err) {
+        fillEl.style.width = '100%';
+        textEl.textContent = 'Error: ' + err.message;
+        textEl.style.color = '#ff6b6b';
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Create Tables';
+    });
+
+    // Copy env
+    document.getElementById('btn-copy-env')?.addEventListener('click', () => {
+      const text = document.getElementById('env-output')?.textContent;
+      if (text) {
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById('btn-copy-env');
+          btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+      }
+    });
+
+    // Check current connection on load
+    async function checkCurrentConnection() {
+      const banner = document.getElementById('status-banner');
+      const badge = document.getElementById('db-badge');
+      const connEl = document.getElementById('current-conn');
+
+      try {
+        const res = await fetch('/api/settings/test-db');
+        const data = await res.json();
+
+        if (data.success && data.configured) {
+          banner.className = 'status-banner connected';
+          document.getElementById('status-icon').textContent = '✓';
+          document.getElementById('status-label').textContent = 'Database connected';
+          document.getElementById('status-detail').textContent =
+            `${data.connection.database} | ${data.connection.latency}`;
+
+          badge.className = 'badge connected';
+          badge.textContent = 'Connected';
+
+          connEl.innerHTML = `
+            <div class="conn-active">
+              Connected to <strong>${data.connection.database}</strong>
+              <span class="conn-url">${data.connection.url}</span>
+            </div>`;
+
+          // If already connected, jump to step 2 with pre-fill hint
+        } else if (data.configured && !data.success) {
+          banner.className = 'status-banner error';
+          document.getElementById('status-icon').textContent = '!';
+          document.getElementById('status-label').textContent = 'Database connection error';
+          document.getElementById('status-detail').textContent = data.error || 'Check your connection string';
+
+          badge.className = 'badge error';
+          badge.textContent = 'Error';
+
+          connEl.innerHTML = `<div class="conn-none">Connection configured but failing: ${data.error || 'Unknown error'}</div>`;
+        } else {
+          banner.className = 'status-banner disconnected';
+          document.getElementById('status-icon').textContent = '⚠';
+          document.getElementById('status-label').textContent = 'No database configured';
+          document.getElementById('status-detail').textContent = 'Follow the setup wizard below to connect a database';
+
+          badge.className = 'badge disconnected';
+          badge.textContent = 'Not Connected';
+
+          connEl.innerHTML = `<div class="conn-none">No DATABASE_URL configured. Use the wizard below to set up.</div>`;
+        }
+      } catch (e) {
+        banner.className = 'status-banner disconnected';
+        document.getElementById('status-icon').textContent = '?';
+        document.getElementById('status-label').textContent = 'Could not check database status';
+        document.getElementById('status-detail').textContent = '';
+
+        badge.className = 'badge disconnected';
+        badge.textContent = 'Unknown';
+
+        connEl.innerHTML = `<div class="conn-none">Could not check status</div>`;
+      }
+    }
+
+  })();
+  </script>
+
+</BaseLayout>

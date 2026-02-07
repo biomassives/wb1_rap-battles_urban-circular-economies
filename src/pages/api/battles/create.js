@@ -12,6 +12,9 @@
  * - stakeAmount: number (optional)
  * - stakeCurrency: 'XP' | 'SOL' (default: 'XP')
  * - title: string (optional - custom battle title)
+ * - beatConfig: object (optional - beat playground config)
+ * - beatAudioUrl: string (optional - exported mix audio URL)
+ * - challengeId: number (optional - linked challenge ID)
  */
 
 import { neon } from '@neondatabase/serverless';
@@ -42,7 +45,10 @@ export async function POST({ request }) {
       timeLimit = '24h',
       stakeAmount = null,
       stakeCurrency = 'XP',
-      title = null
+      title = null,
+      beatConfig = null,
+      beatAudioUrl = null,
+      challengeId = null
     } = body;
 
     // Validate required fields
@@ -97,7 +103,11 @@ export async function POST({ request }) {
         stake_amount,
         stake_currency,
         status,
-        expires_at
+        expires_at,
+        beat_config,
+        beat_audio_url,
+        challenge_id,
+        title
       ) VALUES (
         ${challengerWallet},
         ${opponentWallet},
@@ -108,7 +118,11 @@ export async function POST({ request }) {
         ${stakeAmount},
         ${stakeCurrency},
         ${opponentWallet ? 'pending' : 'pending'},
-        ${expiresAt.toISOString()}
+        ${expiresAt.toISOString()},
+        ${beatConfig ? JSON.stringify(beatConfig) : null},
+        ${beatAudioUrl},
+        ${challengeId},
+        ${title}
       )
       RETURNING id, created_at
     `;

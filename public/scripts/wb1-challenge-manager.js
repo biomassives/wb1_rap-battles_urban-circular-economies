@@ -230,13 +230,79 @@
         }
       };
 
+      // Use pre-set invite code/dbId if provided (from beat playground flow)
+      if (options.inviteCode) challenge.inviteCode = options.inviteCode;
+      if (options.dbId) challenge.dbId = options.dbId;
+      if (options.beatConfig) challenge.beatConfig = options.beatConfig;
+
       this.challenges.push(challenge);
       this.saveChallenges();
 
       console.log('⚔️ Challenge created:', challenge.id, challenge.inviteCode);
       this.emit('challenge-created', challenge);
 
+      // Sync to database (non-blocking)
+      if (!options.dbId) {
+        this.syncChallengeToServer(challenge).catch(err => {
+          console.warn('DB sync failed (using localStorage):', err.message);
+        });
+      }
+
       return challenge;
+    }
+
+    /**
+     * Sync a local challenge to the server database
+     */
+    async syncChallengeToServer(challenge) {
+      try {
+        const typeMap = {
+          'Rap Battle': 'rap_battle',
+          'Beat Battle': 'beat_battle',
+          'Remix Challenge': 'remix_challenge',
+          'Freestyle': 'freestyle',
+          'Learning Race': 'learning_race',
+          'Eco Challenge': 'eco_challenge'
+        };
+
+        const modeMap = {
+          '1v1': '1v1',
+          'Group': 'group',
+          'Open': 'open'
+        };
+
+        const response = await fetch('/api/challenges/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            creatorWallet: challenge.creator?.wallet || 'anonymous',
+            title: challenge.title,
+            description: challenge.description,
+            type: typeMap[challenge.type] || 'rap_battle',
+            mode: modeMap[challenge.mode] || '1v1',
+            category: challenge.metadata?.category || 'freestyle',
+            stakesType: challenge.stakes?.type || 'xp',
+            stakesAmount: challenge.stakes?.amount || 50,
+            beatConfig: challenge.beatConfig || null,
+            maxParticipants: challenge.maxParticipants || 2,
+            durationHours: 72,
+            isPublic: challenge.metadata?.visibility !== 'private'
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Update local challenge with server data
+          challenge.dbId = data.challenge.id;
+          challenge.inviteCode = data.challenge.inviteCode;
+          this.saveChallenges();
+          console.log('✅ Challenge synced to DB:', data.challenge.inviteCode);
+          return data.challenge;
+        }
+      } catch (err) {
+        console.warn('Challenge sync error:', err.message);
+      }
+      return null;
     }
 
     /**
@@ -703,23 +769,75 @@
      */
     async fetchAndJoinChallenge(inviteCode) {
       try {
+        const wallet = this.getActiveWallet()?.address;
         const response = await fetch(`/api/challenges/join/${inviteCode}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            wallet: this.getActiveWallet()?.address
-          })
+          body: JSON.stringify({ wallet })
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          // Add to local challenges
-          this.challenges.push(data.challenge);
-          this.saveChallenges();
-          return { success: true, challenge: data.challenge };
+        const data = await response.json();
+
+        if (data.success && data.challenge) {
+          // Convert server challenge format to local format
+          const serverChallenge = data.challenge;
+          const localChallenge = {
+            id: generateId('challenge'),
+            dbId: serverChallenge.id,
+            inviteCode: serverChallenge.inviteCode,
+            creator: {
+              wallet: serverChallenge.creator?.wallet,
+              username: serverChallenge.creator?.name,
+              createdAt: serverChallenge.createdAt
+            },
+            type: serverChallenge.type,
+            mode: serverChallenge.mode,
+            title: serverChallenge.title,
+            description: serverChallenge.description || '',
+            participants: [{
+              wallet: wallet,
+              username: this.getUsername(wallet),
+              role: 'challenger',
+              status: 'accepted',
+              joinedAt: new Date().toISOString()
+            }],
+            maxParticipants: serverChallenge.maxParticipants || 2,
+            minParticipants: 2,
+            invites: [],
+            stakes: serverChallenge.stakes || { type: 'xp', amount: 50 },
+            timing: {
+              expiresAt: serverChallenge.expiresAt,
+              startAt: null,
+              endAt: null,
+              votingEndsAt: null
+            },
+            state: serverChallenge.status || 'pending',
+            stateHistory: [],
+            submissions: [],
+            voting: { enabled: true, type: 'community', votes: [] },
+            results: null,
+            metadata: {
+              category: serverChallenge.category || 'general',
+              tags: [],
+              visibility: serverChallenge.isPublic ? 'public' : 'private'
+            },
+            beatConfig: serverChallenge.beatConfig || null
+          };
+
+          // Check if already in local challenges
+          const existing = this.challenges.find(c =>
+            c.inviteCode === inviteCode || c.dbId === serverChallenge.id
+          );
+          if (!existing) {
+            this.challenges.push(localChallenge);
+            this.saveChallenges();
+          }
+
+          this.emit('challenge-joined', localChallenge);
+          return { success: true, challenge: localChallenge, alreadyJoined: data.alreadyJoined };
         }
 
-        return { success: false, error: 'Failed to join challenge' };
+        return { success: false, error: data.error || 'Failed to join challenge' };
       } catch (error) {
         return { success: false, error: error.message };
       }

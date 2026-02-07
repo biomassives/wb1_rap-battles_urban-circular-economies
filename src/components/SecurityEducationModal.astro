@@ -51,6 +51,15 @@
             <p class="text-warning">Acknowledge risks & continue</p>
           </div>
         </button>
+
+        <button class="choice-btn choice-existing btn-retro" onclick="showExistingWallet()">
+          <div class="choice-icon">📋</div>
+          <div class="choice-content">
+            <h3 class="mono">Use Existing Wallet</h3>
+            <p class="text-muted">I already have a Solana wallet address</p>
+            <p class="text-cyan">Paste your public address to connect</p>
+          </div>
+        </button>
       </div>
     </div>
 
@@ -92,6 +101,44 @@
         <button class="btn-retro" onclick="console.log('Back button clicked'); backToChoice()">← Back</button>
         <button class="btn-retro-neon" id="proceedQuickBtn" onclick="console.log('Proceed button clicked!'); proceedQuickStart()" disabled>
           I Understand - Create Wallet →
+        </button>
+      </div>
+    </div>
+
+    <!-- Existing Wallet Input -->
+    <div class="existing-wallet-screen" id="existingWalletScreen" style="display: none;">
+      <div class="education-header">
+        <div class="education-icon">📋</div>
+        <h2 class="education-title mono neon-text">
+          CONNECT YOUR WALLET
+        </h2>
+        <p class="education-subtitle mono">
+          Enter your Solana wallet public address
+        </p>
+      </div>
+
+      <div class="existing-wallet-box card-retro">
+        <label class="wallet-input-label mono" for="existingWalletInput">
+          Wallet Address (Public Key)
+        </label>
+        <input
+          type="text"
+          id="existingWalletInput"
+          class="wallet-address-input mono"
+          placeholder="e.g. 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+          spellcheck="false"
+          autocomplete="off"
+        />
+        <div class="wallet-input-hint mono text-muted">
+          Your public address is safe to share — it's like a bank account number.
+        </div>
+        <div class="wallet-input-error mono" id="walletInputError" style="display: none;"></div>
+      </div>
+
+      <div class="quick-start-actions">
+        <button class="btn-retro" onclick="backToChoiceFromExisting()">← Back</button>
+        <button class="btn-retro-neon" id="connectExistingBtn" onclick="connectExistingWallet()" disabled>
+          Connect Wallet →
         </button>
       </div>
     </div>
@@ -872,6 +919,67 @@
     background: rgba(255, 255, 0, 0.05);
   }
 
+  .choice-existing {
+    border-color: var(--color-neon-cyan);
+  }
+
+  .choice-existing:hover {
+    background: rgba(0, 229, 255, 0.05);
+  }
+
+  /* Existing Wallet Input */
+  .existing-wallet-box {
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .wallet-input-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-neon-cyan);
+    margin-bottom: 0.75rem;
+  }
+
+  .wallet-address-input {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    background: var(--color-black);
+    border: 3px solid var(--color-mid-gray);
+    color: var(--color-white);
+    font-size: 0.95rem;
+    font-family: var(--font-mono);
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+  }
+
+  .wallet-address-input:focus {
+    outline: none;
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 15px var(--color-neon-cyan-glow);
+  }
+
+  .wallet-address-input.valid {
+    border-color: var(--color-neon-green);
+  }
+
+  .wallet-address-input.invalid {
+    border-color: #dc2626;
+  }
+
+  .wallet-input-hint {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .wallet-input-error {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: #dc2626;
+    font-weight: 700;
+  }
+
   .choice-icon {
     font-size: 3rem;
     flex-shrink: 0;
@@ -1075,6 +1183,56 @@
     document.getElementById('educationChoice').style.display = 'block';
   };
 
+  window.showExistingWallet = function() {
+    document.getElementById('educationChoice').style.display = 'none';
+    document.getElementById('existingWalletScreen').style.display = 'block';
+
+    // Reset input state
+    const input = document.getElementById('existingWalletInput');
+    input.value = '';
+    input.className = 'wallet-address-input mono';
+    document.getElementById('walletInputError').style.display = 'none';
+    document.getElementById('connectExistingBtn').disabled = true;
+  };
+
+  window.backToChoiceFromExisting = function() {
+    document.getElementById('existingWalletScreen').style.display = 'none';
+    document.getElementById('educationChoice').style.display = 'block';
+  };
+
+  // Validate Solana address: base58 characters, 32-44 chars long
+  function isValidSolanaAddress(address) {
+    const base58Regex = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+    return base58Regex.test(address);
+  }
+
+  window.connectExistingWallet = async function() {
+    const input = document.getElementById('existingWalletInput');
+    const address = input.value.trim();
+    const errorEl = document.getElementById('walletInputError');
+
+    if (!isValidSolanaAddress(address)) {
+      errorEl.textContent = 'Invalid Solana address. Must be 32-44 base58 characters.';
+      errorEl.style.display = 'block';
+      input.className = 'wallet-address-input mono invalid';
+      return;
+    }
+
+    // Close modal
+    document.getElementById('securityEducationModal').style.display = 'none';
+    document.body.style.overflow = '';
+
+    // Connect the wallet
+    if (window.walletManager) {
+      await window.walletManager.connect(address);
+      // Track as external wallet
+      if (window.wb1User) {
+        window.wb1User.addWalletToHistory(address, 'external');
+        window.wb1User.setPrimaryWallet(address);
+      }
+    }
+  };
+
   window.proceedQuickStart = function() {
     console.log('═══════════════════════════════════════');
     console.log('⚡ PROCEED QUICK START CLICKED');
@@ -1134,6 +1292,30 @@
       console.log('✅ Checkbox handler attached');
     } else {
       console.error('❌ Could not find checkbox or button!');
+    }
+
+    // Existing wallet input validation
+    const walletInput = document.getElementById('existingWalletInput');
+    const connectBtn = document.getElementById('connectExistingBtn');
+    const walletError = document.getElementById('walletInputError');
+    if (walletInput && connectBtn) {
+      walletInput.addEventListener('input', () => {
+        const val = walletInput.value.trim();
+        if (!val) {
+          walletInput.className = 'wallet-address-input mono';
+          connectBtn.disabled = true;
+          walletError.style.display = 'none';
+        } else if (isValidSolanaAddress(val)) {
+          walletInput.className = 'wallet-address-input mono valid';
+          connectBtn.disabled = false;
+          walletError.style.display = 'none';
+        } else {
+          walletInput.className = 'wallet-address-input mono invalid';
+          connectBtn.disabled = true;
+          walletError.textContent = 'Invalid address format';
+          walletError.style.display = 'block';
+        }
+      });
     }
   });
 

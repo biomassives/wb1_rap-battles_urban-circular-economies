@@ -1,11 +1,11 @@
-# WorldBridger One - Rap Battle NFT Platform
+# WorldBridger One - Community-Owned Music & Impact Platform
 
 **WorldBridger One Ecosystem**
-A retro-arcade themed rap battle platform where artists create beats, battle with rhymes, earn NFTs, and support urban and coastal youth communities across Kenya.
+A retro-arcade themed platform where artists create beats, battle with rhymes, mentor peers, contribute citizen science data, govern through DAO — and earn XP-based airdrops that reward every action. Supporting urban and coastal youth communities across Kenya.
 
 ## Vision
 
-WorldBridger One combines hip-hop culture, Web3 technology, and environmental education to create an engaging platform where freestyle rap battles intersect with community empowerment. Battle, create, learn—and support youth in Nairobi and Lamu through music, tech literacy, and social enterprise.
+WorldBridger One combines hip-hop culture, Web3 technology, environmental stewardship, and community governance into a platform where every contribution earns XP. Rap battles, artist reviews, mentoring sessions, citizen science data, and DAO governance all feed into a unified XP system that determines your airdrop tier — from Bronze to Mythic. Higher tiers earn rarer drops, more tokens, and better NFTs. Battle, create, mentor, research, govern — and support youth in Nairobi and Lamu through music, tech literacy, eco-community action, and social enterprise.
 
 ---
 
@@ -207,6 +207,37 @@ WorldBridger One combines hip-hop culture, Web3 technology, and environmental ed
    - Run through quick test checklist
    - Verify no console errors
    - Check mobile responsiveness
+
+**Status:** ✅ Working
+
+---
+
+### 🌍 **Eco-Community Contributor**
+**Goal:** Earn XP through mentoring, citizen science, and DAO governance
+
+1. **Mentor Peers** → [Mentoring Check-in](/api/community/mentoring-checkin)
+   - Log mentoring sessions (25-50 XP)
+   - Become a mentor for 150 XP one-time bonus
+   - Support fellow community members
+
+2. **Submit Citizen Science Data** → [Citizen Science](/api/data/citizen-science)
+   - Record water quality, species counts, weather, soil health (40 XP)
+   - Get data peer-verified for bonus XP (75 XP)
+   - Contribute to real environmental research
+
+3. **Participate in DAO Governance** → [Governance](/dao)
+   - Vote on proposals (25 XP per vote)
+   - Create proposals (100 XP)
+   - Delegate voting power, shape the platform's future
+
+4. **Review Artists** → [Artist Reviews](/api/community/artist-review)
+   - Review tracks and profiles (20-35 XP)
+   - Help artists improve through constructive feedback
+
+5. **Track Your Airdrop Tier** → [Airdrop Tier](/api/airdrop/tier)
+   - All XP accumulates toward your tier: Bronze → Silver → Gold → Platinum → Diamond → Mythic
+   - Higher tiers earn rarer drops, more tokens, and more items per airdrop cycle
+   - See [XP_AIRDROP_GAME_LOGIC.md](XP_AIRDROP_GAME_LOGIC.md) for full details
 
 **Status:** ✅ Working
 

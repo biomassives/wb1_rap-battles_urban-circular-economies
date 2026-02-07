@@ -520,12 +520,53 @@ Week 4 (Jan 22-31):
 - [Quarterly] Success Story (Jan 31)
 ```
 
+## XP-Based Airdrop Tiers (NEW)
+
+Your accumulated XP now directly determines your airdrop tier. Higher tiers get rarer drops, more tokens, and more items per cycle.
+
+### Tier Table
+
+| Tier | XP Range | Token Multiplier | Rarity Boost | Drops Per Cycle |
+|---|---|---|---|---|
+| Bronze | 0 – 499 | 1.0x | +0% | 1 |
+| Silver | 500 – 1,999 | 1.25x | +5% | 1 |
+| Gold | 2,000 – 4,999 | 1.5x | +10% | 2 |
+| Platinum | 5,000 – 14,999 | 2.0x | +20% | 3 |
+| Diamond | 15,000 – 49,999 | 3.0x | +35% | 4 |
+| Mythic | 50,000+ | 5.0x | +50% | 5 |
+
+### New XP-Earning Activities
+
+Beyond the 25 reward templates, these activities also earn XP toward your tier:
+
+- **Rap battles**: 25 XP per verse, 10 XP per vote, 150 XP for winning
+- **Challenge submissions**: 30 XP, votes: 15 XP
+- **Artist reviews**: 20-35 XP per review
+- **Mentoring**: 25-150 XP per session
+- **Citizen science data**: 40-75 XP per submission
+- **DAO governance votes**: 25 XP, proposals: 100 XP
+- **Music uploads**: 100-180 XP per track
+- **Environmental observations**: 25-75 XP
+
+### API Endpoints
+
+```
+GET /api/airdrop/tier?walletAddress=<wallet>  — Check your current tier
+GET /api/check-drop?wallet=<wallet>           — Check drop eligibility with tier-based rarity
+```
+
+See **XP_AIRDROP_GAME_LOGIC.md** for the full game design document.
+
+---
+
 ## Integration with Other Systems
 
 ### XP System
 - All airdrops award XP
 - XP contributes to level progression
+- XP determines airdrop tier (Bronze → Mythic)
 - Syncs with ProgressManager
+- Config centralized in `src/lib/xp-config.js`
 
 ### Wallet System
 - Requires wallet connection
