@@ -1,13 +1,13 @@
-// src/pages/api/metabolic/system-health.js
-import { nileQuery } from '../../../lib/db/nile/client.js';
+import { sql } from '../../../lib/db.js';
+export const prerender = false;
 
 export async function GET() {
   try {
-    await nileQuery('SELECT 1');
+    await sql`SELECT 1`;
 
     return new Response(JSON.stringify({
       ok: true,
-      nile: 'healthy'
+      db: 'healthy'
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
@@ -18,7 +18,7 @@ export async function GET() {
 
     return new Response(JSON.stringify({
       ok: false,
-      nile: 'error',
+      db: 'error',
       message: error.message
     }), {
       status: 500,
@@ -26,4 +26,3 @@ export async function GET() {
     });
   }
 }
-

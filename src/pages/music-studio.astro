@@ -1,7 +1,7 @@
 ---
 /**
- * Music Studio - Simplified Beat Production
- * Focus: Sampler pads, sequencer, import/export, Strudel integration
+ * Music Studio - Beat Production, Track Upload & Library
+ * Tabs: Beat Studio | Upload Track | My Library
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -9,147 +9,389 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout
   title="Music Studio"
-  description="Create beats with sampler pads and live coding"
+  description="Create beats, upload tracks, and manage your music library"
   activeSection="music"
 >
   <div class="studio-container">
 
-    <!-- Simple Header -->
+    <!-- Header -->
     <header class="studio-header">
-      <h1>🎵 Music Studio</h1>
+      <h1>Music Studio</h1>
       <nav class="header-nav">
-        <a href="/battle" class="nav-link">🥊 Battles</a>
-        <a href="/profile" class="nav-link">👤 Profile</a>
-        <a href="/" class="nav-link">🏠 Home</a>
+        <a href="/rap-battle" class="nav-link">Battle</a>
+        <a href="/profile" class="nav-link">Profile</a>
+        <a href="/" class="nav-link">Home</a>
       </nav>
     </header>
 
-    <!-- Main Studio Workspace -->
-    <div class="studio-workspace">
+    <!-- Tab Navigation -->
+    <nav class="studio-tabs">
+      <button class="studio-tab active" data-tab="studio">Beat Studio</button>
+      <button class="studio-tab" data-tab="upload">Upload Track</button>
+      <button class="studio-tab" data-tab="library">My Library</button>
+    </nav>
 
-      <!-- Left: Controls -->
-      <aside class="studio-sidebar">
-        <section class="control-section">
-          <h3>⚙️ Controls</h3>
+    <!-- ========== TAB 1: BEAT STUDIO ========== -->
+    <section id="tab-studio" class="tab-content active">
+      <div class="studio-workspace">
 
-          <div class="control-group">
-            <label>BPM</label>
-            <div class="bpm-control">
-              <button id="bpm-down" class="bpm-btn">-</button>
-              <input type="number" id="bpm-input" value="120" min="60" max="200" />
-              <button id="bpm-up" class="bpm-btn">+</button>
+        <!-- Left: Controls -->
+        <aside class="studio-sidebar">
+          <section class="control-section">
+            <h3>Controls</h3>
+
+            <div class="control-group">
+              <label>BPM</label>
+              <div class="bpm-control">
+                <button id="bpm-down" class="bpm-btn">-</button>
+                <input type="number" id="bpm-input" value="120" min="60" max="200" />
+                <button id="bpm-up" class="bpm-btn">+</button>
+              </div>
+              <input type="range" id="bpm-slider" min="60" max="200" value="120" />
             </div>
-            <input type="range" id="bpm-slider" min="60" max="200" value="120" />
-          </div>
 
-          <div class="control-group">
-            <label>Volume</label>
-            <input type="range" id="master-volume" min="0" max="100" value="80" />
-            <span id="volume-display">80%</span>
-          </div>
-
-          <div class="transport-buttons">
-            <button id="play-btn" class="btn-transport">▶️ Play</button>
-            <button id="stop-btn" class="btn-transport">⏹️ Stop</button>
-            <button id="record-btn" class="btn-transport record">🔴 Record</button>
-          </div>
-        </section>
-
-        <section class="control-section">
-          <h3>💾 Sequence</h3>
-          <button id="clear-btn" class="btn-action">🗑️ Clear</button>
-          <button id="export-btn" class="btn-action">📤 Export</button>
-          <button id="import-btn" class="btn-action">📥 Import</button>
-          <input type="file" id="import-file" accept=".json" style="display: none;" />
-        </section>
-
-        <section class="control-section">
-          <h3>🎹 Sound Bank</h3>
-          <select id="bank-select" class="bank-selector">
-            <option value="drums">🥁 Drums</option>
-            <option value="synth">🎹 Synth</option>
-            <option value="bass">🎸 Bass</option>
-            <option value="fx">✨ FX</option>
-          </select>
-        </section>
-
-        <section class="control-section">
-          <h3>📊 Info</h3>
-          <div class="info-display">
-            <div class="info-item">
-              <span>Voices:</span>
-              <span id="voice-count">0/8</span>
+            <div class="control-group">
+              <label>Volume</label>
+              <input type="range" id="master-volume" min="0" max="100" value="80" />
+              <span id="volume-display">80%</span>
             </div>
-            <div class="info-item">
-              <span>Mode:</span>
-              <span id="mode-display">Synth</span>
+
+            <div class="transport-buttons">
+              <button id="play-btn" class="btn-transport">Play</button>
+              <button id="stop-btn" class="btn-transport">Stop</button>
+              <button id="record-btn" class="btn-transport record">Record</button>
             </div>
+          </section>
+
+          <section class="control-section">
+            <h3>Sequence</h3>
+            <button id="clear-btn" class="btn-action">Clear</button>
+            <button id="export-btn" class="btn-action">Export</button>
+            <button id="import-btn" class="btn-action">Import</button>
+            <input type="file" id="import-file" accept=".json" style="display: none;" />
+          </section>
+
+          <section class="control-section">
+            <h3>Sound Bank</h3>
+            <select id="bank-select" class="bank-selector">
+              <option value="drums">Drums</option>
+              <option value="synth">Synth</option>
+              <option value="bass">Bass</option>
+              <option value="fx">FX</option>
+            </select>
+          </section>
+
+          <section class="control-section">
+            <h3>Info</h3>
+            <div class="info-display">
+              <div class="info-item">
+                <span>Voices:</span>
+                <span id="voice-count">0/8</span>
+              </div>
+              <div class="info-item">
+                <span>Mode:</span>
+                <span id="mode-display">Drums</span>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <!-- Center: Pads & Sequencer -->
+        <main class="studio-main">
+
+          <!-- Sequencer Display Toggle -->
+          <div class="sequencer-toggle">
+            <label>
+              <input type="checkbox" id="show-sequencer" checked />
+              <span>Show Sequencer</span>
+            </label>
           </div>
-        </section>
-      </aside>
 
-      <!-- Center: Pads & Sequencer -->
-      <main class="studio-main">
+          <!-- 16-Step Sequencer -->
+          <section id="sequencer-section" class="sequencer-section">
+            <div class="sequencer-header">
+              <h3>16-Step Sequencer</h3>
+              <div class="step-numbers">
+                <span>1</span><span>2</span><span>3</span><span>4</span>
+                <span>5</span><span>6</span><span>7</span><span>8</span>
+                <span>9</span><span>10</span><span>11</span><span>12</span>
+                <span>13</span><span>14</span><span>15</span><span>16</span>
+              </div>
+            </div>
+            <div id="sequencer-grid" class="sequencer-grid">
+              <!-- Generated by JS -->
+            </div>
+          </section>
 
-        <!-- Sequencer Display Toggle -->
-        <div class="sequencer-toggle">
-          <label>
-            <input type="checkbox" id="show-sequencer" checked />
-            <span>Show Sequencer</span>
-          </label>
+          <!-- 16 Sampler Pads -->
+          <section class="pads-section">
+            <h3>Sampler Pads</h3>
+            <div id="sampler-pads" class="pad-grid">
+              <!-- Generated by JS -->
+            </div>
+          </section>
+
+        </main>
+
+        <!-- Right: Strudel -->
+        <aside class="studio-sidebar strudel-panel">
+          <section class="control-section">
+            <h3>Strudel</h3>
+
+            <div class="strudel-word-cloud" id="strudel-word-cloud">
+              <button class="cloud-tag size-lg" data-preset="boombap">boom bap</button>
+              <button class="cloud-tag size-sm" data-preset="trap">trap</button>
+              <button class="cloud-tag size-md" data-preset="lofi">lo-fi</button>
+              <button class="cloud-tag size-lg" data-preset="drill">drill</button>
+              <button class="cloud-tag size-sm" data-preset="reggae">reggae</button>
+              <button class="cloud-tag size-md" data-preset="afrobeat">afrobeat</button>
+              <button class="cloud-tag size-sm" data-preset="grime">grime</button>
+              <button class="cloud-tag size-md" data-preset="dancehall">dancehall</button>
+              <button class="cloud-tag size-lg" data-preset="jazz">jazzy</button>
+              <button class="cloud-tag size-sm" data-preset="bounce">bounce</button>
+              <button class="cloud-tag size-md" data-preset="dirty">dirty south</button>
+              <button class="cloud-tag size-sm" data-preset="phonk">phonk</button>
+            </div>
+
+            <div class="strudel-preview">
+              <label>Pattern:</label>
+              <textarea id="strudel-code" rows="6" placeholder='s("bd sd, hh*8").cpm(120)'></textarea>
+              <div class="strudel-btns">
+                <button id="strudel-play" class="btn-action">Play Pattern</button>
+                <button id="strudel-stop" class="btn-action btn-action-dim">Stop</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <h3>BPM Presets</h3>
+            <div class="preset-list">
+              <button class="preset-btn" data-bpm="72">Reggae (72)</button>
+              <button class="preset-btn" data-bpm="85">Hip Hop (85)</button>
+              <button class="preset-btn" data-bpm="120">House (120)</button>
+              <button class="preset-btn" data-bpm="140">Trap (140)</button>
+            </div>
+          </section>
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- ========== TAB 2: UPLOAD TRACK ========== -->
+    <section id="tab-upload" class="tab-content" style="display:none;">
+      <div class="upload-layout">
+
+        <div class="upload-form-container">
+          <h2 class="tab-section-title">Upload New Track</h2>
+          <p class="tab-section-subtitle">Share your music with the community (+100 XP)</p>
+
+          <form id="track-upload-form" class="upload-form">
+
+            <div class="form-group">
+              <label for="track-title" class="form-label">Track Title *</label>
+              <input
+                type="text"
+                id="track-title"
+                name="title"
+                class="form-input"
+                placeholder="My Awesome Track"
+                required
+                maxlength="200"
+              />
+              <span class="form-hint">Maximum 200 characters</span>
+            </div>
+
+            <div class="form-group">
+              <label for="track-genre" class="form-label">Genre *</label>
+              <select id="track-genre" name="genre" class="form-select" required>
+                <option value="">Select genre...</option>
+                <option value="rap">Rap</option>
+                <option value="hip-hop">Hip-Hop</option>
+                <option value="reggae">Reggae</option>
+                <option value="dancehall">Dancehall</option>
+                <option value="conscious">Conscious</option>
+                <option value="fusion">Fusion</option>
+                <option value="afrobeat">Afrobeat</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="audio-file" class="form-label">Audio File *</label>
+              <div class="file-upload-area" id="audio-upload-area">
+                <input
+                  type="file"
+                  id="audio-file"
+                  name="audioFile"
+                  accept="audio/mp3,audio/wav,audio/m4a,audio/mpeg"
+                  required
+                  hidden
+                />
+                <div class="file-upload-content" id="audio-upload-content">
+                  <div class="upload-icon">&#127925;</div>
+                  <p class="upload-text"><strong>Click to upload</strong> or drag and drop</p>
+                  <p class="upload-hint-text">MP3, WAV, or M4A (max 20MB)</p>
+                </div>
+                <div class="file-selected" id="audio-file-selected" style="display: none;">
+                  <span class="file-name" id="audio-file-name"></span>
+                  <span class="file-size" id="audio-file-size"></span>
+                  <button type="button" class="btn-remove" id="btn-remove-audio">&times;</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="cover-art" class="form-label">Cover Art (Optional)</label>
+              <div class="file-upload-area small" id="cover-upload-area">
+                <input
+                  type="file"
+                  id="cover-art"
+                  name="coverArt"
+                  accept="image/jpeg,image/png,image/webp"
+                  hidden
+                />
+                <div class="file-upload-content" id="cover-upload-content">
+                  <div class="upload-icon">&#128444;</div>
+                  <p class="upload-text">Upload cover art</p>
+                  <p class="upload-hint-text">JPG, PNG, or WebP (max 5MB)</p>
+                </div>
+                <div class="cover-preview" id="cover-preview" style="display: none;">
+                  <img id="cover-preview-img" src="" alt="Cover" />
+                  <button type="button" class="btn-remove" id="btn-remove-cover">&times;</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="track-lyrics" class="form-label">Lyrics (Optional)</label>
+              <textarea
+                id="track-lyrics"
+                name="lyrics"
+                class="form-textarea"
+                rows="8"
+                placeholder="[Verse 1]&#10;Your lyrics here...&#10;&#10;[Chorus]&#10;..."
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="track-description" class="form-label">Description (Optional)</label>
+              <textarea
+                id="track-description"
+                name="description"
+                class="form-textarea"
+                rows="3"
+                placeholder="Tell listeners about this track..."
+                maxlength="1000"
+              ></textarea>
+              <span class="form-hint">Maximum 1000 characters</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Release Options</label>
+              <div class="radio-group">
+                <label class="form-radio">
+                  <input type="radio" name="releaseOption" value="now" checked />
+                  Publish now
+                </label>
+                <label class="form-radio">
+                  <input type="radio" name="releaseOption" value="draft" />
+                  Save as draft
+                </label>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" id="btn-reset-form">Cancel</button>
+              <button type="submit" class="btn-primary" id="upload-track-btn">
+                Upload Track (+100 XP)
+              </button>
+            </div>
+
+          </form>
         </div>
 
-        <!-- 16-Step Sequencer -->
-        <section id="sequencer-section" class="sequencer-section">
-          <div class="sequencer-header">
-            <h3>16-Step Sequencer</h3>
-            <div class="step-numbers">
-              <span>1</span><span>2</span><span>3</span><span>4</span>
-              <span>5</span><span>6</span><span>7</span><span>8</span>
-              <span>9</span><span>10</span><span>11</span><span>12</span>
-              <span>13</span><span>14</span><span>15</span><span>16</span>
-            </div>
+        <aside class="upload-sidebar">
+          <div class="tips-card">
+            <h3>Upload Tips</h3>
+            <ul class="tips-list">
+              <li><strong>Audio Quality:</strong> 320kbps MP3 or WAV recommended</li>
+              <li><strong>Cover Art:</strong> Square images (1:1 ratio), min 1000x1000px</li>
+              <li><strong>Lyrics:</strong> Help listeners connect with your message</li>
+              <li><strong>Tags:</strong> Use relevant genre tags for discoverability</li>
+            </ul>
           </div>
-          <div id="sequencer-grid" class="sequencer-grid">
-            <!-- Generated by JS -->
+
+          <div class="tips-card">
+            <h3>XP Rewards</h3>
+            <div class="reward-row"><span>Upload track</span><span class="reward-xp">+100 XP</span></div>
+            <div class="reward-row"><span>First track bonus</span><span class="reward-xp">+50 XP</span></div>
+            <div class="reward-row"><span>Include lyrics</span><span class="reward-xp">+25 XP</span></div>
           </div>
-        </section>
+        </aside>
 
-        <!-- 16 Sampler Pads -->
-        <section class="pads-section">
-          <h3>Sampler Pads</h3>
-          <div id="sampler-pads" class="pad-grid">
-            <!-- Generated by JS -->
+      </div>
+    </section>
+
+    <!-- ========== TAB 3: MY LIBRARY ========== -->
+    <section id="tab-library" class="tab-content" style="display:none;">
+      <div class="library-container">
+
+        <h2 class="tab-section-title">My Music Library</h2>
+
+        <div class="library-stats">
+          <div class="lib-stat">
+            <div class="lib-stat-value" id="lib-total-tracks">0</div>
+            <div class="lib-stat-label">Total Tracks</div>
           </div>
-        </section>
-
-      </main>
-
-      <!-- Right: Strudel (Future) -->
-      <aside class="studio-sidebar strudel-panel">
-        <section class="control-section">
-          <h3>✨ Strudel</h3>
-          <p class="info-text">Live coding integration coming soon</p>
-
-          <div class="strudel-preview">
-            <label>Pattern:</label>
-            <textarea id="strudel-code" rows="6" placeholder='s("bd sd, hh*8").cpm(120)'></textarea>
-            <button id="strudel-play" class="btn-action">▶️ Play Pattern</button>
+          <div class="lib-stat">
+            <div class="lib-stat-value" id="lib-total-plays">0</div>
+            <div class="lib-stat-label">Total Plays</div>
           </div>
-        </section>
-
-        <section class="control-section">
-          <h3>📚 Presets</h3>
-          <div class="preset-list">
-            <button class="preset-btn" data-bpm="72">Reggae (72)</button>
-            <button class="preset-btn" data-bpm="85">Hip Hop (85)</button>
-            <button class="preset-btn" data-bpm="120">House (120)</button>
-            <button class="preset-btn" data-bpm="140">Trap (140)</button>
+          <div class="lib-stat">
+            <div class="lib-stat-value" id="lib-total-likes">0</div>
+            <div class="lib-stat-label">Total Likes</div>
           </div>
-        </section>
-      </aside>
+        </div>
 
-    </div>
+        <div class="library-categories">
+          <button class="category-tab active" data-category="all">All</button>
+          <button class="category-tab" data-category="created">Created</button>
+          <button class="category-tab" data-category="collected">Collected</button>
+          <button class="category-tab" data-category="featured">Featured</button>
+        </div>
+
+        <div class="library-filters">
+          <div class="filter-group">
+            <label>Sort by:</label>
+            <select id="library-sort" class="form-select">
+              <option value="created_at">Most Recent</option>
+              <option value="likes">Most Liked</option>
+              <option value="plays">Most Played</option>
+              <option value="title">Title (A-Z)</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Status:</label>
+            <select id="library-filter" class="form-select">
+              <option value="all">All</option>
+              <option value="published">Published</option>
+              <option value="draft">Drafts</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="library-tracks" class="library-tracks">
+          <div class="library-loading">Loading your music...</div>
+        </div>
+
+        <div id="library-load-more" class="library-load-more" style="display:none;">
+          <button class="btn-secondary" id="btn-load-more">Load More</button>
+        </div>
+
+        <audio id="library-audio" preload="none"></audio>
+
+      </div>
+    </section>
 
   </div>
 </BaseLayout>
@@ -157,12 +399,49 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <!-- Load Strudel -->
 <script src="https://unpkg.com/@strudel/web@1.0.3"></script>
 
-<script>
-console.log('🎵 Music Studio loading...');
+<script is:inline>
+console.log('Music Studio loading...');
 
-/**
- * Simplified Music Studio
- */
+// ============================================
+// TAB SWITCHING
+// ============================================
+function switchStudioTab(tabName) {
+  document.querySelectorAll('.studio-tab').forEach(t => t.classList.remove('active'));
+  const activeTab = document.querySelector(`.studio-tab[data-tab="${tabName}"]`);
+  if (activeTab) activeTab.classList.add('active');
+
+  document.querySelectorAll('.tab-content').forEach(c => {
+    c.style.display = 'none';
+    c.classList.remove('active');
+  });
+  const target = document.getElementById('tab-' + tabName);
+  if (target) {
+    target.style.display = '';
+    target.classList.add('active');
+  }
+
+  history.replaceState(null, null, '#' + tabName);
+
+  // Lazy-load library on first visit
+  if (tabName === 'library' && window.libraryManager && !window.libraryManager.loaded) {
+    window.libraryManager.load();
+  }
+}
+
+document.querySelectorAll('.studio-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchStudioTab(tab.dataset.tab));
+});
+
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.slice(1);
+  if (hash && document.getElementById('tab-' + hash)) {
+    switchStudioTab(hash);
+  }
+});
+
+// ============================================
+// BEAT STUDIO (MusicStudio class)
+// ============================================
 class MusicStudio {
   constructor() {
     this.audioContext = null;
@@ -177,285 +456,166 @@ class MusicStudio {
     this.intervalId = null;
     this.currentBank = 'drums';
     this.strudelReady = false;
-
-    // Performance
+    this.strudelInitPromise = null;
     this.activeOscillators = [];
     this.maxPolyphony = 8;
 
-    // Sound banks with better frequencies
     this.soundBanks = {
-      drums: [
-        60,   // Kick
-        200,  // Snare
-        400,  // Hi-hat
-        300,  // Clap
-        100,  // Tom 1
-        120,  // Tom 2
-        600,  // Crash
-        500,  // Ride
-        80,   // Floor Tom
-        150,  // Rim
-        250,  // Cowbell
-        350,  // Wood Block
-        180,  // Clave
-        220,  // Tambourine
-        280,  // Shaker
-        320   // Cabasa
-      ],
-      synth: [
-        261.63, // C4
-        293.66, // D4
-        329.63, // E4
-        349.23, // F4
-        392.00, // G4
-        440.00, // A4
-        493.88, // B4
-        523.25, // C5
-        587.33, // D5
-        659.25, // E5
-        698.46, // F5
-        783.99, // G5
-        880.00, // A5
-        987.77, // B5
-        1046.50, // C6
-        1174.66  // D6
-      ],
-      bass: [
-        55, 58, 62, 65, 69, 73, 77, 82,
-        87, 92, 98, 103, 110, 116, 123, 130
-      ],
-      fx: [
-        200, 400, 600, 800, 1000, 1200, 1400, 1600,
-        300, 500, 700, 900, 1100, 1300, 1500, 1700
-      ]
+      drums: [60,200,400,300,100,120,600,500,80,150,250,350,180,220,280,320],
+      synth: [261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99,880.00,987.77,1046.50,1174.66],
+      bass: [55,58,62,65,69,73,77,82,87,92,98,103,110,116,123,130],
+      fx: [200,400,600,800,1000,1200,1400,1600,300,500,700,900,1100,1300,1500,1700]
     };
 
-    this.padNames = [
-      'Kick', 'Snare', 'HiHat', 'Clap',
-      'Tom1', 'Tom2', 'Crash', 'Ride',
-      'Tom3', 'Rim', 'Bell', 'Wood',
-      'Clav', 'Tamb', 'Shake', 'Caba'
-    ];
+    this.padNames = ['Kick','Snare','HiHat','Clap','Tom1','Tom2','Crash','Ride','Tom3','Rim','Bell','Wood','Clav','Tamb','Shake','Caba'];
 
     this.init();
   }
 
   async init() {
-    console.log('🎛️ Initializing Music Studio...');
-
-    // Audio Context
     try {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      console.log('✅ Audio context created');
     } catch (error) {
-      console.error('❌ Audio context error:', error);
+      console.error('Audio context error:', error);
       return;
     }
 
-    // Strudel
-    if (typeof initStrudel !== 'undefined') {
-      try {
-        initStrudel();
-        this.strudelReady = true;
-        console.log('✅ Strudel ready');
-      } catch (error) {
-        console.error('⚠️ Strudel init error:', error);
-      }
-    }
+    // Strudel init is deferred to first play click (needs user gesture + async sample loading)
 
-    // Initialize sequencer data
     for (let i = 0; i < 16; i++) {
       this.sequencerData[i] = new Array(16).fill(false);
     }
 
-    // Generate UI
     this.generatePads();
     this.generateSequencer();
     this.setupEventListeners();
-
-    console.log('✅ Music Studio ready');
   }
 
   generatePads() {
-    const padGrid = document.getElementById('sampler-pads');
-    if (!padGrid) {
-      console.error('❌ Pad grid not found');
-      return;
-    }
-
-    // Clear existing
+    var padGrid = document.getElementById('sampler-pads');
+    if (!padGrid) return;
     padGrid.innerHTML = '';
     this.pads = [];
 
-    // Gradient colors
-    const colors = [
-      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // Purple
-      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // Pink
-      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', // Cyan
-      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', // Green
-      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', // Sunset
-      'linear-gradient(135deg, #30cfd0 0%, #330867 100%)', // Ocean
-      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', // Pastel
-      'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', // Rose
-      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', // Peach
-      'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)', // Sky
-      'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)', // Lavender
-      'linear-gradient(135deg, #f8b195 0%, #f67280 100%)', // Coral
-      'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)', // Cream
-      'linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)', // Mint
-      'linear-gradient(135deg, #9890e3 0%, #b1f4cf 100%)', // Sage
-      'linear-gradient(135deg, #ebc0fd 0%, #d9ded8 100%)'  // Gray
+    var colors = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+      'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+      'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)',
+      'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)',
+      'linear-gradient(135deg, #f8b195 0%, #f67280 100%)',
+      'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)',
+      'linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)',
+      'linear-gradient(135deg, #9890e3 0%, #b1f4cf 100%)',
+      'linear-gradient(135deg, #ebc0fd 0%, #d9ded8 100%)'
     ];
 
-    for (let i = 0; i < 16; i++) {
-      const pad = document.createElement('div');
+    for (var i = 0; i < 16; i++) {
+      var pad = document.createElement('div');
       pad.className = 'pad';
       pad.dataset.index = i;
       pad.style.background = colors[i];
+      pad.innerHTML = '<div class="pad-content"><div class="pad-number">' + (i + 1) + '</div><div class="pad-label">' + this.padNames[i] + '</div></div>';
 
-      pad.innerHTML = `
-        <div class="pad-content">
-          <div class="pad-number">${i + 1}</div>
-          <div class="pad-label">${this.padNames[i]}</div>
-        </div>
-      `;
-
-      // Events
-      pad.addEventListener('click', () => {
-        this.selectPad(i);
-        this.playPad(i);
-      });
+      (function(studio, idx) {
+        pad.addEventListener('click', function() {
+          studio.selectPad(idx);
+          studio.playPad(idx);
+        });
+      })(this, i);
 
       padGrid.appendChild(pad);
       this.pads.push(pad);
     }
-
-    console.log(`✅ Generated ${this.pads.length} pads`);
   }
 
   generateSequencer() {
-    const grid = document.getElementById('sequencer-grid');
+    var grid = document.getElementById('sequencer-grid');
     if (!grid) return;
-
     grid.innerHTML = '';
 
-    for (let padIndex = 0; padIndex < 16; padIndex++) {
-      // Instrument label
-      const label = document.createElement('div');
+    for (var padIndex = 0; padIndex < 16; padIndex++) {
+      var label = document.createElement('div');
       label.className = 'seq-label';
       label.textContent = this.padNames[padIndex];
       label.dataset.pad = padIndex;
-      label.addEventListener('click', () => this.selectPad(padIndex));
+      (function(studio, pi) {
+        label.addEventListener('click', function() { studio.selectPad(pi); });
+      })(this, padIndex);
       grid.appendChild(label);
 
-      // 16 step cells
-      for (let step = 0; step < 16; step++) {
-        const cell = document.createElement('div');
+      for (var step = 0; step < 16; step++) {
+        var cell = document.createElement('div');
         cell.className = 'seq-cell';
         cell.dataset.pad = padIndex;
         cell.dataset.step = step;
-
-        // Beat markers every 4 steps
-        if (step % 4 === 0) {
-          cell.classList.add('beat-marker');
-        }
-
-        cell.addEventListener('click', () => this.toggleStep(padIndex, step));
+        if (step % 4 === 0) cell.classList.add('beat-marker');
+        (function(studio, pi, s) {
+          cell.addEventListener('click', function() { studio.toggleStep(pi, s); });
+        })(this, padIndex, step);
         grid.appendChild(cell);
       }
     }
-
-    console.log('✅ Sequencer generated');
   }
 
   selectPad(index) {
-    this.pads.forEach(p => p.classList.remove('selected'));
+    this.pads.forEach(function(p) { p.classList.remove('selected'); });
     this.selectedPad = index;
     this.pads[index].classList.add('selected');
-
-    // Highlight in sequencer
-    document.querySelectorAll('.seq-label').forEach(l => l.classList.remove('selected'));
-    const label = document.querySelector(`.seq-label[data-pad="${index}"]`);
+    document.querySelectorAll('.seq-label').forEach(function(l) { l.classList.remove('selected'); });
+    var label = document.querySelector('.seq-label[data-pad="' + index + '"]');
     if (label) label.classList.add('selected');
-
-    console.log(`✓ Selected pad ${index + 1}: ${this.padNames[index]}`);
   }
 
   playPad(index) {
-    const pad = this.pads[index];
+    var pad = this.pads[index];
     if (!pad) return;
-
-    // Visual feedback
     pad.classList.add('active');
-    setTimeout(() => pad.classList.remove('active'), 150);
-
-    // If recording, add to current step
+    setTimeout(function() { pad.classList.remove('active'); }, 150);
     if (this.isRecording && this.isPlaying) {
       this.sequencerData[index][this.currentStep] = true;
       this.updateCell(index, this.currentStep);
     }
-
-    // Play sound
     this.playSound(index);
-
-    console.log(`🎵 Pad ${index + 1}: ${this.padNames[index]}`);
   }
 
   playSound(index) {
     if (!this.audioContext) return;
-
-    // Resume context if needed
+    var studio = this;
     if (this.audioContext.state === 'suspended') {
-      this.audioContext.resume().then(() => this.playSound(index));
+      this.audioContext.resume().then(function() { studio.playSound(index); });
       return;
     }
-
-    // Polyphony limiting
     if (this.activeOscillators.length >= this.maxPolyphony) {
-      const oldest = this.activeOscillators.shift();
-      if (oldest?.osc) {
-        try {
-          oldest.osc.stop();
-          oldest.osc.disconnect();
-        } catch (e) {}
-      }
+      var oldest = this.activeOscillators.shift();
+      if (oldest && oldest.osc) { try { oldest.osc.stop(); oldest.osc.disconnect(); } catch(e){} }
     }
-
-    const freq = this.soundBanks[this.currentBank][index];
-    const now = this.audioContext.currentTime;
-
+    var freq = this.soundBanks[this.currentBank][index];
+    var now = this.audioContext.currentTime;
     try {
-      const osc = this.audioContext.createOscillator();
-      const gain = this.audioContext.createGain();
-
-      // Waveform by bank
-      const waveforms = {
-        drums: 'triangle',
-        synth: 'sine',
-        bass: 'sawtooth',
-        fx: 'square'
-      };
-
+      var osc = this.audioContext.createOscillator();
+      var gain = this.audioContext.createGain();
+      var waveforms = { drums: 'triangle', synth: 'sine', bass: 'sawtooth', fx: 'square' };
       osc.type = waveforms[this.currentBank] || 'sine';
       osc.frequency.value = freq;
-
       gain.gain.setValueAtTime(this.masterVolume, now);
       gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-
       osc.connect(gain);
       gain.connect(this.audioContext.destination);
-
       osc.start(now);
       osc.stop(now + 0.3);
-
-      this.activeOscillators.push({ osc, stopTime: now + 0.3 });
-
-      setTimeout(() => {
-        const idx = this.activeOscillators.findIndex(o => o.osc === osc);
-        if (idx !== -1) this.activeOscillators.splice(idx, 1);
-        this.updateVoiceCount();
+      this.activeOscillators.push({ osc: osc, stopTime: now + 0.3 });
+      setTimeout(function() {
+        var idx = studio.activeOscillators.findIndex(function(o) { return o.osc === osc; });
+        if (idx !== -1) studio.activeOscillators.splice(idx, 1);
+        studio.updateVoiceCount();
       }, 350);
-
       this.updateVoiceCount();
     } catch (error) {
       console.error('Sound error:', error);
@@ -463,18 +623,11 @@ class MusicStudio {
   }
 
   updateVoiceCount() {
-    const display = document.getElementById('voice-count');
+    var display = document.getElementById('voice-count');
     if (display) {
-      const count = this.activeOscillators.length;
-      display.textContent = `${count}/${this.maxPolyphony}`;
-
-      if (count >= this.maxPolyphony) {
-        display.style.color = '#ef4444';
-      } else if (count >= this.maxPolyphony * 0.7) {
-        display.style.color = '#f59e0b';
-      } else {
-        display.style.color = '#10b981';
-      }
+      var count = this.activeOscillators.length;
+      display.textContent = count + '/' + this.maxPolyphony;
+      display.style.color = count >= this.maxPolyphony ? '#ef4444' : count >= this.maxPolyphony * 0.7 ? '#f59e0b' : '#10b981';
     }
   }
 
@@ -484,151 +637,95 @@ class MusicStudio {
   }
 
   updateCell(padIndex, step) {
-    const cell = document.querySelector(
-      `.seq-cell[data-pad="${padIndex}"][data-step="${step}"]`
-    );
-    if (cell) {
-      cell.classList.toggle('active', this.sequencerData[padIndex][step]);
-    }
+    var cell = document.querySelector('.seq-cell[data-pad="' + padIndex + '"][data-step="' + step + '"]');
+    if (cell) cell.classList.toggle('active', this.sequencerData[padIndex][step]);
   }
 
   play() {
     if (this.isPlaying) return;
-
     this.isPlaying = true;
     this.currentStep = 0;
-
-    if (this.audioContext?.state === 'suspended') {
-      this.audioContext.resume();
-    }
-
-    const stepDuration = (60000 / this.bpm) / 4; // 16th notes
-
-    this.intervalId = setInterval(() => {
-      this.playStep();
-      this.currentStep = (this.currentStep + 1) % 16;
+    if (this.audioContext && this.audioContext.state === 'suspended') this.audioContext.resume();
+    var stepDuration = (60000 / this.bpm) / 4;
+    var studio = this;
+    this.intervalId = setInterval(function() {
+      studio.playStep();
+      studio.currentStep = (studio.currentStep + 1) % 16;
     }, stepDuration);
-
-    document.getElementById('play-btn').classList.add('playing');
-    console.log('▶️ Playing');
+    var playBtn = document.getElementById('play-btn');
+    if (playBtn) playBtn.classList.add('playing');
   }
 
   stop() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
-
+    if (this.intervalId) { clearInterval(this.intervalId); this.intervalId = null; }
     this.isPlaying = false;
     this.isRecording = false;
     this.currentStep = 0;
-
-    document.getElementById('play-btn').classList.remove('playing');
-    document.getElementById('record-btn').classList.remove('recording');
-    document.querySelectorAll('.seq-cell.playing').forEach(c => c.classList.remove('playing'));
-
-    console.log('⏹️ Stopped');
+    var playBtn = document.getElementById('play-btn');
+    var recBtn = document.getElementById('record-btn');
+    if (playBtn) playBtn.classList.remove('playing');
+    if (recBtn) recBtn.classList.remove('recording');
+    document.querySelectorAll('.seq-cell.playing').forEach(function(c) { c.classList.remove('playing'); });
   }
 
   playStep() {
-    // Clear previous
-    document.querySelectorAll('.seq-cell.playing').forEach(c => c.classList.remove('playing'));
-
-    // Highlight current step
-    const cells = document.querySelectorAll(`.seq-cell[data-step="${this.currentStep}"]`);
-    cells.forEach(c => c.classList.add('playing'));
-
-    // Play active pads
-    for (let padIndex = 0; padIndex < 16; padIndex++) {
-      if (this.sequencerData[padIndex][this.currentStep]) {
-        this.playPad(padIndex);
-      }
+    document.querySelectorAll('.seq-cell.playing').forEach(function(c) { c.classList.remove('playing'); });
+    document.querySelectorAll('.seq-cell[data-step="' + this.currentStep + '"]').forEach(function(c) { c.classList.add('playing'); });
+    for (var padIndex = 0; padIndex < 16; padIndex++) {
+      if (this.sequencerData[padIndex][this.currentStep]) this.playPad(padIndex);
     }
   }
 
   toggleRecord() {
     this.isRecording = !this.isRecording;
-
-    const btn = document.getElementById('record-btn');
+    var btn = document.getElementById('record-btn');
     if (this.isRecording) {
-      btn.classList.add('recording');
+      if (btn) btn.classList.add('recording');
       if (!this.isPlaying) this.play();
-      console.log('🔴 Recording');
     } else {
-      btn.classList.remove('recording');
-      console.log('⏹️ Record stopped');
+      if (btn) btn.classList.remove('recording');
     }
   }
 
   clearSequence() {
     if (!confirm('Clear entire sequence?')) return;
-
-    for (let i = 0; i < 16; i++) {
-      this.sequencerData[i] = new Array(16).fill(false);
-    }
-
-    document.querySelectorAll('.seq-cell.active').forEach(c => c.classList.remove('active'));
-    console.log('🗑️ Sequence cleared');
+    for (var i = 0; i < 16; i++) this.sequencerData[i] = new Array(16).fill(false);
+    document.querySelectorAll('.seq-cell.active').forEach(function(c) { c.classList.remove('active'); });
   }
 
   exportSequence() {
-    const sequence = {
-      name: `Sequence ${new Date().toISOString()}`,
-      bpm: this.bpm,
-      bank: this.currentBank,
-      data: this.sequencerData,
-      padNames: this.padNames,
+    var sequence = {
+      name: 'Sequence ' + new Date().toISOString(),
+      bpm: this.bpm, bank: this.currentBank,
+      data: this.sequencerData, padNames: this.padNames,
       created: new Date().toISOString()
     };
-
-    const json = JSON.stringify(sequence, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `sequence_${Date.now()}.json`;
-    a.click();
-
+    var blob = new Blob([JSON.stringify(sequence, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'sequence_' + Date.now() + '.json'; a.click();
     URL.revokeObjectURL(url);
-    console.log('📤 Sequence exported');
   }
 
   importSequence(file) {
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
+    var studio = this;
+    var reader = new FileReader();
+    reader.onload = function(e) {
       try {
-        const sequence = JSON.parse(e.target.result);
-
-        if (!sequence.data || !Array.isArray(sequence.data)) {
-          throw new Error('Invalid sequence format');
-        }
-
-        this.sequencerData = sequence.data;
-        this.bpm = sequence.bpm || 120;
-        this.currentBank = sequence.bank || 'drums';
-
-        // Update UI
-        document.getElementById('bpm-input').value = this.bpm;
-        document.getElementById('bpm-slider').value = this.bpm;
-        document.getElementById('bank-select').value = this.currentBank;
-
-        // Update cells
-        for (let i = 0; i < 16; i++) {
-          for (let j = 0; j < 16; j++) {
-            this.updateCell(i, j);
-          }
-        }
-
-        console.log('📥 Sequence imported');
+        var sequence = JSON.parse(e.target.result);
+        if (!sequence.data || !Array.isArray(sequence.data)) throw new Error('Invalid sequence format');
+        studio.sequencerData = sequence.data;
+        studio.bpm = sequence.bpm || 120;
+        studio.currentBank = sequence.bank || 'drums';
+        document.getElementById('bpm-input').value = studio.bpm;
+        document.getElementById('bpm-slider').value = studio.bpm;
+        document.getElementById('bank-select').value = studio.currentBank;
+        for (var i = 0; i < 16; i++) { for (var j = 0; j < 16; j++) { studio.updateCell(i, j); } }
         alert('Sequence imported successfully!');
       } catch (error) {
-        console.error('Import error:', error);
         alert('Failed to import sequence: ' + error.message);
       }
     };
-
     reader.readAsText(file);
   }
 
@@ -636,134 +733,583 @@ class MusicStudio {
     this.bpm = Math.max(60, Math.min(200, bpm));
     document.getElementById('bpm-input').value = this.bpm;
     document.getElementById('bpm-slider').value = this.bpm;
-
-    if (this.isPlaying) {
-      this.stop();
-      this.play();
-    }
+    if (this.isPlaying) { this.stop(); this.play(); }
   }
 
   setBank(bank) {
     this.currentBank = bank;
-    document.getElementById('mode-display').textContent = bank.charAt(0).toUpperCase() + bank.slice(1);
-    console.log(`🎹 Bank: ${bank}`);
+    var modeDisplay = document.getElementById('mode-display');
+    if (modeDisplay) modeDisplay.textContent = bank.charAt(0).toUpperCase() + bank.slice(1);
   }
 
-  playStrudelCode() {
-    if (!this.strudelReady) {
-      alert('Strudel not ready');
-      return;
+  async ensureStrudel() {
+    if (this.strudelReady) return true;
+    if (typeof initStrudel === 'undefined') {
+      alert('Strudel library not loaded. Check your connection.');
+      return false;
     }
-
-    const code = document.getElementById('strudel-code').value.trim();
-    if (!code) {
-      alert('Enter Strudel code first');
-      return;
+    if (!this.strudelInitPromise) {
+      this.strudelInitPromise = initStrudel();
     }
-
     try {
-      hush();
-      eval(code + '.play()');
-      console.log('✨ Strudel playing');
-    } catch (error) {
-      console.error('Strudel error:', error);
-      alert('Strudel error: ' + error.message);
+      await this.strudelInitPromise;
+      this.strudelReady = true;
+      return true;
+    } catch (e) {
+      console.error('Strudel init error:', e);
+      this.strudelInitPromise = null;
+      alert('Strudel failed to initialize: ' + e.message);
+      return false;
     }
+  }
+
+  async playStrudelCode() {
+    var ready = await this.ensureStrudel();
+    if (!ready) return;
+    var code = document.getElementById('strudel-code').value.trim();
+    if (!code) { alert('Enter a pattern first'); return; }
+    try {
+      if (typeof hush !== 'undefined') hush();
+      eval(code + '.play()');
+    } catch (error) {
+      alert('Pattern error: ' + error.message);
+    }
+  }
+
+  stopStrudel() {
+    try { if (typeof hush !== 'undefined') hush(); } catch(e) {}
+  }
+
+  loadStrudelPreset(name) {
+    var presets = {
+      boombap: {
+        bpm: 90,
+        code: 's("bd ~ sd ~, ~ hh ~ hh, ~ ~ oh ~").slow(1).cpm(90)'
+      },
+      trap: {
+        bpm: 140,
+        code: 's("bd bd ~ bd ~ ~ sd ~, hh*16").slow(1).cpm(140)'
+      },
+      lofi: {
+        bpm: 75,
+        code: 's("bd ~ [~ bd] ~, ~ sd ~ sd, hh hh oh hh").slow(1).cpm(75)'
+      },
+      drill: {
+        bpm: 145,
+        code: 's("bd ~ ~ bd ~ bd sd ~, hh*16, ~ ~ oh ~").slow(1).cpm(145)'
+      },
+      reggae: {
+        bpm: 72,
+        code: 's("~ bd ~ ~, ~ ~ sd ~, hh hh hh hh, ~ rim ~ rim").slow(1).cpm(72)'
+      },
+      afrobeat: {
+        bpm: 108,
+        code: 's("bd ~ bd ~, ~ sd ~ sd, hh*8, ~ [cp ~] ~ ~").slow(1).cpm(108)'
+      },
+      grime: {
+        bpm: 140,
+        code: 's("bd ~ bd sd ~ bd sd ~, hh*8, ~ ~ cp ~").slow(1).cpm(140)'
+      },
+      dancehall: {
+        bpm: 100,
+        code: 's("bd ~ ~ bd, ~ ~ sd ~, hh*8, ~ rim ~ rim").slow(1).cpm(100)'
+      },
+      jazz: {
+        bpm: 82,
+        code: 's("bd ~ ~ bd ~ ~, ~ ~ sd ~ ~ sd, hh hh oh hh hh oh").slow(1.5).cpm(82)'
+      },
+      bounce: {
+        bpm: 98,
+        code: 's("bd ~ bd ~ bd ~, ~ sd ~ sd ~ sd, hh*12").slow(1.5).cpm(98)'
+      },
+      dirty: {
+        bpm: 78,
+        code: 's("bd ~ [bd bd] ~, ~ sd ~ [~ sd], hh*8, ~ ~ cp ~").slow(1).cpm(78)'
+      },
+      phonk: {
+        bpm: 130,
+        code: 's("bd ~ ~ [bd bd] ~ ~ sd ~, hh*16, ~ ~ ~ cp").slow(1).cpm(130)'
+      }
+    };
+
+    var preset = presets[name];
+    if (!preset) return;
+
+    var textarea = document.getElementById('strudel-code');
+    if (textarea) textarea.value = preset.code;
+    this.setBPM(preset.bpm);
+
+    // Highlight active tag
+    document.querySelectorAll('.cloud-tag').forEach(function(t) { t.classList.remove('active'); });
+    var activeTag = document.querySelector('.cloud-tag[data-preset="' + name + '"]');
+    if (activeTag) activeTag.classList.add('active');
   }
 
   setupEventListeners() {
-    // Transport
-    document.getElementById('play-btn')?.addEventListener('click', () => this.play());
-    document.getElementById('stop-btn')?.addEventListener('click', () => this.stop());
-    document.getElementById('record-btn')?.addEventListener('click', () => this.toggleRecord());
+    var studio = this;
 
-    // BPM
-    document.getElementById('bpm-up')?.addEventListener('click', () => this.setBPM(this.bpm + 1));
-    document.getElementById('bpm-down')?.addEventListener('click', () => this.setBPM(this.bpm - 1));
+    document.getElementById('play-btn')?.addEventListener('click', function() { studio.play(); });
+    document.getElementById('stop-btn')?.addEventListener('click', function() { studio.stop(); });
+    document.getElementById('record-btn')?.addEventListener('click', function() { studio.toggleRecord(); });
+    document.getElementById('bpm-up')?.addEventListener('click', function() { studio.setBPM(studio.bpm + 1); });
+    document.getElementById('bpm-down')?.addEventListener('click', function() { studio.setBPM(studio.bpm - 1); });
 
-    document.getElementById('bpm-input')?.addEventListener('change', (e) => {
-      this.setBPM(parseInt(e.target.value) || 120);
+    document.getElementById('bpm-input')?.addEventListener('change', function(e) {
+      studio.setBPM(parseInt(e.target.value) || 120);
+    });
+    document.getElementById('bpm-slider')?.addEventListener('input', function(e) {
+      studio.setBPM(parseInt(e.target.value));
+    });
+    document.getElementById('master-volume')?.addEventListener('input', function(e) {
+      studio.masterVolume = e.target.value / 100;
+      document.getElementById('volume-display').textContent = e.target.value + '%';
+    });
+    document.getElementById('bank-select')?.addEventListener('change', function(e) {
+      studio.setBank(e.target.value);
     });
 
-    document.getElementById('bpm-slider')?.addEventListener('input', (e) => {
-      this.setBPM(parseInt(e.target.value));
-    });
-
-    // Volume
-    document.getElementById('master-volume')?.addEventListener('input', (e) => {
-      this.masterVolume = e.target.value / 100;
-      document.getElementById('volume-display').textContent = `${e.target.value}%`;
-    });
-
-    // Bank
-    document.getElementById('bank-select')?.addEventListener('change', (e) => {
-      this.setBank(e.target.value);
-    });
-
-    // Sequence
-    document.getElementById('clear-btn')?.addEventListener('click', () => this.clearSequence());
-    document.getElementById('export-btn')?.addEventListener('click', () => this.exportSequence());
-
-    document.getElementById('import-btn')?.addEventListener('click', () => {
+    document.getElementById('clear-btn')?.addEventListener('click', function() { studio.clearSequence(); });
+    document.getElementById('export-btn')?.addEventListener('click', function() { studio.exportSequence(); });
+    document.getElementById('import-btn')?.addEventListener('click', function() {
       document.getElementById('import-file').click();
     });
-
-    document.getElementById('import-file')?.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) this.importSequence(file);
+    document.getElementById('import-file')?.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (file) studio.importSequence(file);
       e.target.value = '';
     });
 
-    // Sequencer toggle
-    document.getElementById('show-sequencer')?.addEventListener('change', (e) => {
-      const section = document.getElementById('sequencer-section');
-      section.style.display = e.target.checked ? 'block' : 'none';
+    document.getElementById('show-sequencer')?.addEventListener('change', function(e) {
+      var section = document.getElementById('sequencer-section');
+      if (section) section.style.display = e.target.checked ? 'block' : 'none';
     });
 
-    // Strudel
-    document.getElementById('strudel-play')?.addEventListener('click', () => this.playStrudelCode());
+    document.getElementById('strudel-play')?.addEventListener('click', function() { studio.playStrudelCode(); });
+    document.getElementById('strudel-stop')?.addEventListener('click', function() { studio.stopStrudel(); });
 
-    // Presets
-    document.querySelectorAll('.preset-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const bpm = parseInt(btn.dataset.bpm);
-        this.setBPM(bpm);
-      });
+    document.querySelectorAll('.cloud-tag').forEach(function(tag) {
+      tag.addEventListener('click', function() { studio.loadStrudelPreset(tag.dataset.preset); });
     });
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    document.querySelectorAll('.preset-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { studio.setBPM(parseInt(btn.dataset.bpm)); });
+    });
 
+    document.addEventListener('keydown', function(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
       if (e.code === 'Space') {
         e.preventDefault();
-        if (this.isPlaying) this.stop();
-        else this.play();
+        if (studio.isPlaying) studio.stop(); else studio.play();
       }
     });
   }
 }
 
-// Initialize
+// ============================================
+// TRACK UPLOADER
+// ============================================
+var trackUploader = {
+  audioFile: null,
+  coverArtFile: null,
+
+  init: function() {
+    var self = this;
+
+    // Audio file upload area
+    var audioArea = document.getElementById('audio-upload-area');
+    var audioInput = document.getElementById('audio-file');
+    if (audioArea) {
+      audioArea.addEventListener('click', function() { audioInput.click(); });
+      audioArea.addEventListener('dragover', function(e) { e.preventDefault(); audioArea.classList.add('dragover'); });
+      audioArea.addEventListener('dragleave', function() { audioArea.classList.remove('dragover'); });
+      audioArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        audioArea.classList.remove('dragover');
+        var file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('audio/')) {
+          self.setAudioFile(file);
+          // Update the input so the form knows
+          var dt = new DataTransfer();
+          dt.items.add(file);
+          audioInput.files = dt.files;
+        }
+      });
+    }
+    if (audioInput) {
+      audioInput.addEventListener('change', function(e) {
+        if (e.target.files[0]) self.setAudioFile(e.target.files[0]);
+      });
+    }
+
+    // Cover art upload area
+    var coverArea = document.getElementById('cover-upload-area');
+    var coverInput = document.getElementById('cover-art');
+    if (coverArea) {
+      coverArea.addEventListener('click', function() { coverInput.click(); });
+    }
+    if (coverInput) {
+      coverInput.addEventListener('change', function(e) {
+        if (e.target.files[0]) self.setCoverFile(e.target.files[0]);
+      });
+    }
+
+    // Remove buttons
+    var btnRemoveAudio = document.getElementById('btn-remove-audio');
+    if (btnRemoveAudio) btnRemoveAudio.addEventListener('click', function(e) { e.stopPropagation(); self.removeAudio(); });
+    var btnRemoveCover = document.getElementById('btn-remove-cover');
+    if (btnRemoveCover) btnRemoveCover.addEventListener('click', function(e) { e.stopPropagation(); self.removeCover(); });
+
+    // Reset button
+    var btnReset = document.getElementById('btn-reset-form');
+    if (btnReset) btnReset.addEventListener('click', function() { self.resetForm(); });
+
+    // Form submit
+    var form = document.getElementById('track-upload-form');
+    if (form) form.addEventListener('submit', function(e) { self.handleSubmit(e); });
+  },
+
+  setAudioFile: function(file) {
+    if (file.size > 20 * 1024 * 1024) {
+      this.showToast('Audio file too large. Maximum size is 20MB.', 'error');
+      return;
+    }
+    this.audioFile = file;
+    document.getElementById('audio-file-name').textContent = file.name;
+    document.getElementById('audio-file-size').textContent = this.formatSize(file.size);
+    document.getElementById('audio-upload-content').style.display = 'none';
+    document.getElementById('audio-file-selected').style.display = 'flex';
+  },
+
+  removeAudio: function() {
+    this.audioFile = null;
+    document.getElementById('audio-file').value = '';
+    document.getElementById('audio-upload-content').style.display = '';
+    document.getElementById('audio-file-selected').style.display = 'none';
+    var player = document.getElementById('audio-preview-player');
+    if (player) player.remove();
+  },
+
+  setCoverFile: function(file) {
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('Cover art too large. Maximum size is 5MB.', 'error');
+      return;
+    }
+    this.coverArtFile = file;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('cover-preview-img').src = e.target.result;
+      document.getElementById('cover-upload-content').style.display = 'none';
+      document.getElementById('cover-preview').style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  },
+
+  removeCover: function() {
+    this.coverArtFile = null;
+    document.getElementById('cover-art').value = '';
+    document.getElementById('cover-upload-content').style.display = '';
+    document.getElementById('cover-preview').style.display = 'none';
+  },
+
+  resetForm: function() {
+    var form = document.getElementById('track-upload-form');
+    if (form) form.reset();
+    this.removeAudio();
+    this.removeCover();
+  },
+
+  handleSubmit: async function(event) {
+    event.preventDefault();
+
+    if (!this.audioFile) {
+      this.showToast('Please upload an audio file', 'error');
+      return;
+    }
+
+    var wallet = localStorage.getItem('wallet_publicKey') || localStorage.getItem('connectedWallet');
+    if (!wallet) {
+      this.showToast('Please connect your wallet first', 'error');
+      return;
+    }
+
+    var submitBtn = document.getElementById('upload-track-btn');
+    var originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Uploading...';
+
+    try {
+      var formData = new FormData(document.getElementById('track-upload-form'));
+      formData.set('audioFile', this.audioFile);
+      if (this.coverArtFile) formData.set('coverArt', this.coverArtFile);
+      formData.set('walletAddress', wallet);
+
+      var res = await fetch('/api/music/create-track', {
+        method: 'POST',
+        body: formData
+      });
+      var data = await res.json();
+
+      if (data.success) {
+        this.showToast('Track uploaded successfully!', 'success');
+        this.resetForm();
+        // Award XP
+        if (window.progressManager) {
+          window.progressManager.awardXP(100, 'track_upload', 'Track uploaded');
+        }
+        // Switch to library tab
+        setTimeout(function() { switchStudioTab('library'); }, 1500);
+      } else {
+        this.showToast(data.error || 'Upload failed. Please try again.', 'error');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      this.showToast('Upload failed. Check your connection.', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  },
+
+  formatSize: function(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  },
+
+  showToast: function(message, type) {
+    document.querySelectorAll('.toast').forEach(function(t) { t.remove(); });
+    var toast = document.createElement('div');
+    toast.className = 'toast toast-' + (type || 'info');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 10);
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() { toast.remove(); }, 300);
+    }, 3000);
+  }
+};
+
+// ============================================
+// LIBRARY MANAGER
+// ============================================
+window.libraryManager = {
+  tracks: [],
+  currentCategory: 'all',
+  currentSort: 'created_at',
+  currentStatus: 'all',
+  offset: 0,
+  limit: 20,
+  hasMore: false,
+  loaded: false,
+  playingTrackId: null,
+  audioEl: null,
+
+  init: function() {
+    var self = this;
+
+    var sortEl = document.getElementById('library-sort');
+    var filterEl = document.getElementById('library-filter');
+    var loadMoreBtn = document.getElementById('btn-load-more');
+
+    if (sortEl) sortEl.addEventListener('change', function() { self.currentSort = sortEl.value; self.reset(); });
+    if (filterEl) filterEl.addEventListener('change', function() { self.currentStatus = filterEl.value; self.reset(); });
+    if (loadMoreBtn) loadMoreBtn.addEventListener('click', function() { self.loadMore(); });
+
+    document.querySelectorAll('.category-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.category-tab').forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        self.currentCategory = tab.dataset.category;
+        self.reset();
+      });
+    });
+  },
+
+  load: async function() {
+    var wallet = localStorage.getItem('wallet_publicKey') || localStorage.getItem('connectedWallet');
+    var container = document.getElementById('library-tracks');
+    if (!container) return;
+
+    if (!wallet) {
+      container.innerHTML = '<div class="library-empty">Connect your wallet to see your music library.</div>';
+      return;
+    }
+
+    if (this.offset === 0) {
+      container.innerHTML = '<div class="library-loading">Loading your music...</div>';
+    }
+
+    try {
+      var params = new URLSearchParams({
+        walletAddress: wallet,
+        sortBy: this.currentSort,
+        sortOrder: this.currentSort === 'title' ? 'asc' : 'desc',
+        limit: this.limit,
+        offset: this.offset
+      });
+
+      if (this.currentStatus !== 'all') params.set('status', this.currentStatus);
+      if (this.currentCategory === 'featured') {
+        params.set('featured', 'true');
+      } else if (this.currentCategory !== 'all') {
+        params.set('source', this.currentCategory);
+      }
+
+      var res = await fetch('/api/music/user-tracks?' + params);
+      var data = await res.json();
+
+      if (!data.success) {
+        container.innerHTML = '<div class="library-empty">Could not load tracks. Try again later.</div>';
+        return;
+      }
+
+      if (this.offset === 0) {
+        this.tracks = data.tracks;
+      } else {
+        this.tracks = this.tracks.concat(data.tracks);
+      }
+
+      this.hasMore = data.pagination && data.pagination.hasMore;
+      if (data.stats) this.updateStats(data.stats);
+      this.render();
+      this.loaded = true;
+    } catch (err) {
+      console.error('Library load error:', err);
+      if (this.offset === 0) {
+        container.innerHTML = '<div class="library-empty">Could not load tracks. Check your connection.</div>';
+      }
+    }
+  },
+
+  updateStats: function(stats) {
+    var el = function(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; };
+    el('lib-total-tracks', stats.totalTracks || 0);
+    el('lib-total-plays', stats.totalPlays || 0);
+    el('lib-total-likes', stats.totalLikes || 0);
+  },
+
+  render: function() {
+    var container = document.getElementById('library-tracks');
+    if (!container) return;
+
+    if (this.tracks.length === 0) {
+      var catMsg = this.currentCategory === 'all' ? 'Upload your first track or earn music through battles and airdrops.' : 'No ' + this.currentCategory + ' tracks found.';
+      container.innerHTML = '<div class="library-empty"><div class="empty-icon">&#127925;</div><h3>No tracks yet</h3><p>' + catMsg + '</p><button class="btn-primary" onclick="switchStudioTab(\'upload\')">Upload a Track</button></div>';
+      var loadMoreEl = document.getElementById('library-load-more');
+      if (loadMoreEl) loadMoreEl.style.display = 'none';
+      return;
+    }
+
+    var self = this;
+    container.innerHTML = this.tracks.map(function(track) { return self.renderTrack(track); }).join('');
+
+    var loadMoreEl = document.getElementById('library-load-more');
+    if (loadMoreEl) loadMoreEl.style.display = this.hasMore ? 'block' : 'none';
+  },
+
+  renderTrack: function(track) {
+    var date = track.created_at ? new Date(track.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+    var isPlaying = this.playingTrackId === track.id;
+    var starClass = track.is_featured ? 'featured-star active' : 'featured-star';
+    var audioUrl = (track.audio_url || '').replace(/'/g, "\\'");
+
+    return '<div class="library-track-row" data-track-id="' + track.id + '">' +
+      '<button class="track-play-btn" onclick="window.libraryManager.togglePlay(' + track.id + ', \'' + audioUrl + '\')" title="' + (isPlaying ? 'Pause' : 'Play') + '">' + (isPlaying ? '&#9208;' : '&#9654;') + '</button>' +
+      '<div class="track-cover">' + (track.cover_art_url ? '<img src="' + track.cover_art_url + '" alt="" />' : '<div class="cover-placeholder">&#127925;</div>') + '</div>' +
+      '<div class="track-info"><div class="track-title">' + (track.title || 'Untitled') + '</div><div class="track-meta">' + (track.genre || '') + (track.status === 'draft' ? ' (Draft)' : '') + (date ? ' &middot; ' + date : '') + '</div></div>' +
+      '<div class="track-stats"><span class="stat">' + (track.plays || 0) + ' plays</span><span class="stat">' + (track.likes || 0) + ' likes</span></div>' +
+      '<div class="track-actions"><button class="' + starClass + '" onclick="window.libraryManager.toggleFeature(' + track.id + ')" title="' + (track.is_featured ? 'Unfeature' : 'Feature') + '">&#9733;</button><button class="btn-icon" onclick="window.libraryManager.shareTrack(' + track.id + ')" title="Share">&#128279;</button></div>' +
+    '</div>';
+  },
+
+  togglePlay: function(trackId, audioUrl) {
+    if (!this.audioEl) this.audioEl = document.getElementById('library-audio');
+    if (!this.audioEl || !audioUrl) return;
+
+    var self = this;
+    if (this.playingTrackId === trackId) {
+      this.audioEl.pause();
+      this.playingTrackId = null;
+    } else {
+      this.audioEl.src = audioUrl;
+      this.audioEl.play().catch(function() {});
+      this.playingTrackId = trackId;
+      this.audioEl.onended = function() { self.playingTrackId = null; self.render(); };
+    }
+    this.render();
+  },
+
+  toggleFeature: async function(trackId) {
+    var wallet = localStorage.getItem('wallet_publicKey') || localStorage.getItem('connectedWallet');
+    if (!wallet) return;
+
+    try {
+      var res = await fetch('/api/music/track/' + trackId + '/feature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress: wallet })
+      });
+      var data = await res.json();
+      if (data.success) {
+        var track = this.tracks.find(function(t) { return t.id === trackId; });
+        if (track) track.is_featured = data.is_featured;
+        this.render();
+      }
+    } catch (err) {
+      console.error('Feature toggle error:', err);
+    }
+  },
+
+  shareTrack: function(trackId) {
+    var wallet = localStorage.getItem('wallet_publicKey') || localStorage.getItem('connectedWallet');
+    var url = window.location.origin + '/music-studio#library';
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(function() { alert('Link copied!'); }).catch(function() {});
+    } else {
+      prompt('Copy this link:', url);
+    }
+  },
+
+  loadMore: function() {
+    this.offset += this.limit;
+    this.load();
+  },
+
+  reset: function() {
+    this.offset = 0;
+    this.tracks = [];
+    this.load();
+  }
+};
+
+// ============================================
+// INITIALIZATION
+// ============================================
 function initStudio() {
   if (!window.musicStudio) {
     window.musicStudio = new MusicStudio();
-    console.log('✅ Music Studio initialized');
+  }
+  trackUploader.init();
+  window.libraryManager.init();
+
+  // Check hash on load
+  var hash = window.location.hash.slice(1);
+  if (hash && document.getElementById('tab-' + hash)) {
+    switchStudioTab(hash);
   }
 }
 
-document.addEventListener('DOMContentLoaded', initStudio);
-document.addEventListener('astro:page-load', initStudio);
-
-if (document.readyState !== 'loading') {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initStudio);
+} else {
   initStudio();
 }
+document.addEventListener('astro:page-load', initStudio);
 </script>
 
 <style>
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
 
   .studio-container {
     min-height: 100vh;
@@ -782,37 +1328,58 @@ if (document.readyState !== 'loading') {
     background: rgba(0, 0, 0, 0.3);
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   }
-
   .studio-header h1 {
     margin: 0;
     font-size: 1.75rem;
     background: linear-gradient(135deg, #667eea, #764ba2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-
-  .header-nav {
-    display: flex;
-    gap: 1rem;
-  }
-
+  .header-nav { display: flex; gap: 0.75rem; }
   .nav-link {
-    padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.4rem 0.8rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 0.5rem;
     color: white;
     text-decoration: none;
     font-weight: 600;
+    font-size: 0.85rem;
     transition: all 0.2s;
   }
+  .nav-link:hover { background: rgba(255,255,255,0.2); }
 
-  .nav-link:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+  /* Tab Navigation */
+  .studio-tabs {
+    display: flex;
+    gap: 0;
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0 2rem;
+  }
+  .studio-tab {
+    padding: 0.85rem 1.5rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .studio-tab:hover { color: rgba(255,255,255,0.8); }
+  .studio-tab.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
   }
 
-  /* Workspace */
+  /* Tab Content */
+  .tab-content { display: none; flex: 1; }
+  .tab-content.active { display: flex; flex-direction: column; }
+
+  /* ============ BEAT STUDIO TAB ============ */
   .studio-workspace {
     flex: 1;
     display: flex;
@@ -820,15 +1387,14 @@ if (document.readyState !== 'loading') {
     padding: 1rem;
     overflow: hidden;
   }
-
   .studio-sidebar {
-    width: 280px;
+    width: 260px;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     overflow-y: auto;
+    flex-shrink: 0;
   }
-
   .studio-main {
     flex: 1;
     display: flex;
@@ -836,418 +1402,485 @@ if (document.readyState !== 'loading') {
     gap: 1rem;
     overflow-y: auto;
   }
-
-  /* Control Sections */
   .control-section {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 0.75rem;
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
-
   .control-section h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1rem;
+    margin: 0 0 0.75rem 0;
+    font-size: 0.9rem;
     color: #667eea;
     text-transform: uppercase;
     letter-spacing: 1px;
   }
-
-  .control-group {
-    margin-bottom: 1.5rem;
-  }
-
+  .control-group { margin-bottom: 1.25rem; }
   .control-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255,255,255,0.8);
   }
-
-  .bpm-control {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
+  .bpm-control { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
   .bpm-btn {
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 0.5rem;
-    color: white;
-    font-size: 1.25rem;
-    cursor: pointer;
-    transition: all 0.2s;
+    color: white; font-size: 1.1rem;
+    cursor: pointer; transition: all 0.2s;
   }
-
-  .bpm-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-
+  .bpm-btn:hover { background: rgba(255,255,255,0.2); }
   #bpm-input {
-    flex: 1;
-    padding: 0.5rem;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex: 1; padding: 0.4rem;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 0.5rem;
-    color: white;
-    font-size: 1.25rem;
-    text-align: center;
-    font-weight: 700;
+    color: white; font-size: 1.1rem;
+    text-align: center; font-weight: 700;
   }
-
-  input[type="range"] {
-    width: 100%;
-    margin: 0.5rem 0;
-  }
-
-  .transport-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
+  input[type="range"] { width: 100%; margin: 0.4rem 0; }
+  .transport-buttons { display: flex; flex-direction: column; gap: 0.4rem; }
   .btn-transport {
-    padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.6rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 0.5rem;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+    color: white; font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
-
-  .btn-transport:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-  }
-
-  .btn-transport.playing {
-    background: #10b981;
-    border-color: #10b981;
-  }
-
+  .btn-transport:hover { background: rgba(255,255,255,0.2); }
+  .btn-transport.playing { background: #10b981; border-color: #10b981; }
   .btn-transport.record.recording {
-    background: #ef4444;
-    border-color: #ef4444;
-    animation: pulse 1s infinite;
+    background: #ef4444; border-color: #ef4444; animation: pulse 1s infinite;
   }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
 
   .btn-action {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-    background: rgba(102, 126, 234, 0.2);
+    width: 100%; padding: 0.6rem; margin-bottom: 0.4rem;
+    background: rgba(102,126,234,0.2);
     border: 1px solid #667eea;
     border-radius: 0.5rem;
-    color: #667eea;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+    color: #667eea; font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
-
-  .btn-action:hover {
-    background: rgba(102, 126, 234, 0.3);
-    transform: translateY(-2px);
-  }
-
+  .btn-action:hover { background: rgba(102,126,234,0.3); }
   .bank-selector {
-    width: 100%;
-    padding: 0.75rem;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 100%; padding: 0.6rem;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 0.5rem;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
+    color: white; font-weight: 600; cursor: pointer;
   }
-
-  .info-display {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
+  .info-display { display: flex; flex-direction: column; gap: 0.5rem; }
   .info-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
+    display: flex; justify-content: space-between;
+    padding: 0.4rem 0.5rem;
+    background: rgba(0,0,0,0.3); border-radius: 0.5rem; font-size: 0.8rem;
   }
+  .info-text { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 0.75rem; }
 
-  .info-text {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 1rem;
+  /* Strudel Word Cloud */
+  .strudel-word-cloud {
+    display: flex; flex-wrap: wrap; gap: 0.35rem;
+    margin-bottom: 0.75rem;
+    justify-content: center;
+  }
+  .cloud-tag {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 2rem;
+    color: rgba(255,255,255,0.55);
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .cloud-tag.size-sm { padding: 0.25rem 0.55rem; font-size: 0.65rem; }
+  .cloud-tag.size-md { padding: 0.3rem 0.65rem; font-size: 0.75rem; }
+  .cloud-tag.size-lg { padding: 0.35rem 0.75rem; font-size: 0.85rem; }
+  .cloud-tag:hover {
+    background: rgba(102,126,234,0.2);
+    border-color: rgba(102,126,234,0.5);
+    color: #a5b4fc;
+  }
+  .cloud-tag.active {
+    background: rgba(102,126,234,0.35);
+    border-color: #667eea;
+    color: white;
+    box-shadow: 0 0 8px rgba(102,126,234,0.3);
   }
 
   .strudel-preview textarea {
-    width: 100%;
-    padding: 0.75rem;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(0, 255, 0, 0.3);
+    width: 100%; padding: 0.6rem;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,255,0,0.3);
     border-radius: 0.5rem;
-    color: #0f0;
-    font-family: 'Courier New', monospace;
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-    resize: vertical;
+    color: #0f0; font-family: 'Courier New', monospace; font-size: 0.8rem;
+    margin-bottom: 0.4rem; resize: vertical;
+  }
+  .strudel-btns { display: flex; gap: 0.4rem; }
+  .strudel-btns .btn-action { margin-bottom: 0; }
+  .btn-action-dim {
+    background: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255,255,255,0.2) !important;
+    color: rgba(255,255,255,0.5) !important;
+  }
+  .btn-action-dim:hover {
+    background: rgba(255,255,255,0.1) !important;
+    color: rgba(255,255,255,0.8) !important;
   }
 
-  .preset-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
+  .preset-list { display: flex; flex-direction: column; gap: 0.4rem; }
   .preset-btn {
-    padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.6rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 0.5rem;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+    color: white; font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
-
-  .preset-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  /* Sequencer Toggle */
-  .sequencer-toggle {
-    padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-  }
-
-  .sequencer-toggle label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-  }
+  .preset-btn:hover { background: rgba(255,255,255,0.1); }
 
   /* Sequencer */
-  .sequencer-section {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-  }
-
-  .sequencer-header {
-    margin-bottom: 1rem;
-  }
-
-  .sequencer-header h3 {
-    margin: 0 0 0.75rem 0;
-    color: #667eea;
-  }
-
-  .step-numbers {
-    display: grid;
-    grid-template-columns: repeat(16, 1fr);
-    gap: 2px;
-    font-size: 0.75rem;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.5);
-    margin-bottom: 0.5rem;
-  }
-
-  .sequencer-grid {
-    display: grid;
-    grid-template-columns: 80px repeat(16, 1fr);
-    gap: 2px;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 4px;
+  .sequencer-toggle {
+    padding: 0.6rem;
+    background: rgba(255,255,255,0.05);
     border-radius: 0.5rem;
+    display: flex; align-items: center;
   }
-
+  .sequencer-toggle label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+  .sequencer-section {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.75rem; padding: 1.25rem;
+  }
+  .sequencer-header { margin-bottom: 0.75rem; }
+  .sequencer-header h3 { margin: 0 0 0.5rem 0; color: #667eea; }
+  .step-numbers {
+    display: grid; grid-template-columns: repeat(16, 1fr); gap: 2px;
+    font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.5); margin-bottom: 0.4rem;
+  }
+  .sequencer-grid {
+    display: grid; grid-template-columns: 70px repeat(16, 1fr); gap: 2px;
+    background: rgba(0,0,0,0.3); padding: 4px; border-radius: 0.5rem;
+  }
   .seq-label {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+    display: flex; align-items: center; padding: 0.4rem;
+    background: rgba(255,255,255,0.05); border-radius: 4px;
+    font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
-
-  .seq-label:hover, .seq-label.selected {
-    background: rgba(102, 126, 234, 0.3);
-    color: #667eea;
-  }
-
+  .seq-label:hover, .seq-label.selected { background: rgba(102,126,234,0.3); color: #667eea; }
   .seq-cell {
     aspect-ratio: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.15s;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3px; cursor: pointer; transition: all 0.15s;
   }
-
-  .seq-cell:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: scale(1.1);
-  }
-
-  .seq-cell.beat-marker {
-    border-color: rgba(102, 126, 234, 0.3);
-  }
-
+  .seq-cell:hover { background: rgba(255,255,255,0.15); transform: scale(1.1); }
+  .seq-cell.beat-marker { border-color: rgba(102,126,234,0.3); }
   .seq-cell.active {
     background: linear-gradient(135deg, #667eea, #764ba2);
-    border-color: #667eea;
-    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    border-color: #667eea; box-shadow: 0 0 8px rgba(102,126,234,0.5);
   }
-
   .seq-cell.playing {
-    background: rgba(16, 185, 129, 0.5);
-    border-color: #10b981;
-    border-width: 2px;
-    animation: cellPulse 0.3s;
+    background: rgba(16,185,129,0.5); border-color: #10b981;
+    border-width: 2px; animation: cellPulse 0.3s;
   }
-
-  @keyframes cellPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-  }
+  @keyframes cellPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 
   /* Sampler Pads */
   .pads-section {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.75rem;
-    padding: 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.75rem; padding: 1.25rem;
   }
-
-  .pads-section h3 {
-    margin: 0 0 1rem 0;
-    color: #667eea;
-  }
-
+  .pads-section h3 { margin: 0 0 0.75rem 0; color: #667eea; }
   .pad-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
     grid-template-rows: repeat(4, 1fr) !important;
-    gap: 1rem;
-    width: 100%;
-    aspect-ratio: 1;
+    gap: 0.75rem; width: 100%; aspect-ratio: 1;
   }
-
   .pad {
-    width: 100%;
-    height: 100%;
-    min-height: 80px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
+    width: 100%; height: 100%; min-height: 70px;
+    border: 3px solid rgba(255,255,255,0.3);
     border-radius: 1rem;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
+    display: flex !important; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s;
+    position: relative; overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .pad::before {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(0,0,0,0.2); transition: all 0.2s;
+  }
+  .pad:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.6); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+  .pad:hover::before { background: rgba(255,255,255,0.1); }
+  .pad.selected { border-color: white; border-width: 4px; box-shadow: 0 0 20px rgba(255,255,255,0.5); }
+  .pad.active { transform: scale(0.95); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+  .pad.active::before { background: rgba(255,255,255,0.3); }
+  .pad-content { position: relative; z-index: 1; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+  .pad-number { font-size: 2rem; font-weight: 900; color: white; line-height: 1; }
+  .pad-label { font-size: 0.75rem; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.3rem; }
+
+  /* ============ UPLOAD TAB ============ */
+  .upload-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .upload-form-container { min-width: 0; }
+  .tab-section-title {
+    font-size: 1.5rem; font-weight: 700; margin: 0 0 0.25rem 0;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .tab-section-subtitle { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin: 0 0 1.5rem 0; }
+
+  .upload-form {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+  }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-label {
+    display: block; margin-bottom: 0.4rem;
+    font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.85);
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 0.6rem 0.75rem;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 0.5rem;
+    color: white; font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none; border-color: #667eea;
+  }
+  .form-textarea { resize: vertical; font-family: inherit; }
+  .form-select option { background: #1a1a2e; color: white; }
+  .form-hint { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.25rem; display: block; }
+
+  .file-upload-area {
+    border: 2px dashed rgba(255,255,255,0.2);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
     cursor: pointer;
     transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  .file-upload-area:hover, .file-upload-area.dragover {
+    border-color: #667eea;
+    background: rgba(102,126,234,0.1);
+  }
+  .file-upload-area.small { padding: 1rem; }
+  .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .upload-text { color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0; }
+  .upload-hint-text { color: rgba(255,255,255,0.4); font-size: 0.75rem; margin: 0.25rem 0 0; }
+
+  .file-selected {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.5rem; justify-content: center;
+  }
+  .file-name { color: #667eea; font-weight: 600; font-size: 0.85rem; }
+  .file-size { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+  .btn-remove {
+    background: rgba(239,68,68,0.2); border: 1px solid #ef4444;
+    color: #ef4444; border-radius: 50%; width: 24px; height: 24px;
+    cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;
+    line-height: 1; padding: 0;
+  }
+  .btn-remove:hover { background: rgba(239,68,68,0.4); }
+
+  .cover-preview {
+    display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  }
+  .cover-preview img { width: 80px; height: 80px; object-fit: cover; border-radius: 0.5rem; }
+
+  .radio-group { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .form-radio {
+    display: flex; align-items: center; gap: 0.4rem;
+    color: rgba(255,255,255,0.8); font-size: 0.85rem; cursor: pointer;
   }
 
-  .pad::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.2);
-    transition: all 0.2s;
+  .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+  .btn-primary {
+    padding: 0.65rem 1.25rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none; border-radius: 0.5rem;
+    color: white; font-weight: 600; font-size: 0.9rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    padding: 0.65rem 1.25rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 0.5rem;
+    color: white; font-weight: 600; font-size: 0.9rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+  /* Upload Sidebar */
+  .upload-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+  .tips-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.75rem; padding: 1.25rem;
+  }
+  .tips-card h3 { margin: 0 0 0.75rem 0; font-size: 0.95rem; color: #667eea; }
+  .tips-list {
+    list-style: none; padding: 0; margin: 0;
+    font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.6;
+  }
+  .tips-list li { margin-bottom: 0.5rem; }
+  .tips-list strong { color: rgba(255,255,255,0.85); }
+  .reward-row {
+    display: flex; justify-content: space-between; padding: 0.4rem 0;
+    font-size: 0.8rem; color: rgba(255,255,255,0.6);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .reward-xp { color: #10b981; font-weight: 600; }
+
+  /* ============ LIBRARY TAB ============ */
+  .library-container { padding: 1.5rem; max-width: 900px; margin: 0 auto; width: 100%; }
+
+  .library-stats { display: flex; gap: 1rem; margin-bottom: 1.25rem; }
+  .lib-stat {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem; text-align: center;
+  }
+  .lib-stat-value { font-size: 1.4rem; font-weight: 700; color: #667eea; }
+  .lib-stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 0.15rem; }
+
+  .library-categories { display: flex; gap: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .category-tab {
+    padding: 0.35rem 0.85rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 2rem;
+    background: transparent;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
+  }
+  .category-tab:hover { border-color: #667eea; color: #667eea; }
+  .category-tab.active { background: #667eea; color: white; border-color: #667eea; }
+
+  .library-filters { display: flex; gap: 1rem; margin-bottom: 1.25rem; align-items: center; flex-wrap: wrap; }
+  .filter-group { display: flex; align-items: center; gap: 0.4rem; }
+  .filter-group label { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+  .filter-group .form-select {
+    padding: 0.35rem 0.6rem; font-size: 0.8rem;
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 0.5rem; color: white;
   }
 
-  .pad:hover {
-    transform: translateY(-4px);
-    border-color: rgba(255, 255, 255, 0.6);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  .library-tracks { min-height: 200px; }
+
+  .library-track-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 0.5rem;
+    margin-bottom: 0.4rem; transition: background 0.2s;
+  }
+  .library-track-row:hover { background: rgba(255,255,255,0.08); }
+
+  .track-play-btn {
+    width: 32px; height: 32px; border-radius: 50%; border: none;
+    background: #667eea; color: white; font-size: 0.9rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .track-play-btn:hover { background: #764ba2; }
+
+  .track-cover {
+    width: 40px; height: 40px; border-radius: 0.35rem;
+    overflow: hidden; flex-shrink: 0; background: rgba(255,255,255,0.05);
+  }
+  .track-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .cover-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; background: linear-gradient(135deg, #667eea, #764ba2);
   }
 
-  .pad:hover::before {
-    background: rgba(255, 255, 255, 0.1);
+  .track-info { flex: 1; min-width: 0; }
+  .track-title {
+    font-weight: 600; color: white; font-size: 0.85rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .track-meta { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.1rem; }
 
-  .pad.selected {
-    border-color: white;
-    border-width: 4px;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  }
+  .track-stats { display: flex; gap: 0.6rem; font-size: 0.75rem; color: rgba(255,255,255,0.4); flex-shrink: 0; }
 
-  .pad.active {
-    transform: scale(0.95);
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+  .track-actions { display: flex; gap: 0.15rem; flex-shrink: 0; }
+  .track-actions .btn-icon {
+    background: none; border: none; cursor: pointer;
+    font-size: 0.9rem; padding: 0.2rem; border-radius: 0.25rem;
   }
+  .track-actions .btn-icon:hover { background: rgba(255,255,255,0.1); }
 
-  .pad.active::before {
-    background: rgba(255, 255, 255, 0.3);
+  .featured-star {
+    background: none; border: none; cursor: pointer;
+    font-size: 1.1rem; color: rgba(255,255,255,0.2);
+    padding: 0.2rem; transition: color 0.2s;
   }
+  .featured-star:hover { color: #fbbf24; }
+  .featured-star.active { color: #f59e0b; }
 
-  .pad-content {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  .library-empty {
+    text-align: center; padding: 2.5rem 1rem; color: rgba(255,255,255,0.5);
   }
+  .library-empty .empty-icon { font-size: 2.5rem; margin-bottom: 0.4rem; }
+  .library-empty h3 { color: white; margin-bottom: 0.4rem; }
+  .library-empty .btn-primary { margin-top: 0.75rem; }
 
-  .pad-number {
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: white;
-    line-height: 1;
-  }
+  .library-loading { text-align: center; padding: 2.5rem; color: rgba(255,255,255,0.4); font-size: 0.85rem; }
 
-  .pad-label {
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 0.5rem;
+  .library-load-more { text-align: center; padding: 0.75rem; }
+
+  /* Toast */
+  :global(.toast) {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px);
+    padding: 0.75rem 1.5rem; border-radius: 0.5rem;
+    font-weight: 600; font-size: 0.85rem; z-index: 10000;
+    opacity: 0; transition: all 0.3s; pointer-events: none;
   }
+  :global(.toast.show) { opacity: 1; transform: translateX(-50%) translateY(0); }
+  :global(.toast-success) { background: #10b981; color: white; }
+  :global(.toast-error) { background: #ef4444; color: white; }
+  :global(.toast-info) { background: #667eea; color: white; }
 
   /* Responsive */
   @media (max-width: 1200px) {
-    .studio-workspace {
-      flex-direction: column;
-    }
-
-    .studio-sidebar, .strudel-panel {
-      width: 100%;
-    }
-
-    .pad-grid {
-      aspect-ratio: auto;
-      min-height: 400px;
-    }
+    .studio-workspace { flex-direction: column; }
+    .studio-sidebar, .strudel-panel { width: 100%; }
+    .pad-grid { aspect-ratio: auto; min-height: 350px; }
   }
-
   @media (max-width: 768px) {
-    .pad-number {
-      font-size: 1.75rem;
-    }
-
-    .pad-label {
-      font-size: 0.75rem;
-    }
+    .studio-header { padding: 0.75rem 1rem; }
+    .studio-tabs { padding: 0 1rem; }
+    .studio-tab { padding: 0.7rem 1rem; font-size: 0.8rem; }
+    .upload-layout { grid-template-columns: 1fr; }
+    .library-stats { flex-direction: column; gap: 0.5rem; }
+    .library-track-row { flex-wrap: wrap; }
+    .track-stats { width: 100%; justify-content: flex-start; padding-left: 2.5rem; }
+    .track-actions { width: 100%; justify-content: flex-end; }
+    .pad-number { font-size: 1.5rem; }
+    .pad-label { font-size: 0.65rem; }
   }
 </style>

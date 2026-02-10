@@ -9,7 +9,7 @@
  * - Recent XP activity summary (last 7 days)
  */
 
-import { neon } from '@neondatabase/serverless';
+import { sql } from '../../../lib/db.js';
 import { getTierForXP, getAdjustedRarityWeights, AIRDROP_TIERS } from '../../../lib/xp-config.js';
 
 export const prerender = false;
@@ -43,10 +43,8 @@ export async function GET({ request }) {
       headers: { 'Content-Type': 'application/json' }
     });
   }
-
-  const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL || process.env.lab_POSTGRES_URL;
-
-  if (!dbUrl) {
+  const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL;
+    if (!dbUrl) {
     const tier = getTierForXP(0);
     return new Response(JSON.stringify({
       success: true,
@@ -63,8 +61,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(dbUrl);
-
     // Get user XP
     const userResult = await sql`
       SELECT xp, level FROM user_profiles

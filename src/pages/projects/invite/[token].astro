@@ -1,0 +1,387 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { sql } from '../../../lib/db.js';
+
+export const prerender = false;
+
+const { token } = Astro.params;
+
+// Look up the invite
+let invite = null;
+let project = null;
+let inviterName = '';
+let error = '';
+
+try {
+  const invites = await sql`
+    SELECT m.*, p.title, p.description, p.category, p.owner_wallet
+    FROM project_members m
+    JOIN user_projects p ON m.project_id = p.id
+    WHERE m.invite_token = ${token}
+  `;
+
+  if (invites.length === 0) {
+    error = 'invalid';
+  } else {
+    invite = invites[0];
+    project = { title: invite.title, description: invite.description, category: invite.category };
+
+    const inviterProfiles = await sql`
+      SELECT username FROM user_profiles WHERE wallet_address = ${invite.invited_by}
+    `.catch(() => []);
+    inviterName = inviterProfiles[0]?.username || invite.invited_by.slice(0, 8) + '...';
+  }
+} catch (e) {
+  console.error('Invite page error:', e);
+  error = 'error';
+}
+---
+
+<BaseLayout title="Project Invite - WorldBridger One" description="Accept a project invitation">
+
+<div class="invite-page">
+  <div class="invite-container">
+    <div class="brand">
+      <h1>WorldBridger One</h1>
+    </div>
+
+    {error === 'invalid' && (
+      <div class="invite-card error-card">
+        <h2>Invalid Invite</h2>
+        <p>This invite link is not valid or has expired.</p>
+        <a href="/" class="btn-primary">Go Home</a>
+      </div>
+    )}
+
+    {error === 'error' && (
+      <div class="invite-card error-card">
+        <h2>Something went wrong</h2>
+        <p>Please try again later.</p>
+        <a href="/" class="btn-primary">Go Home</a>
+      </div>
+    )}
+
+    {!error && invite?.invite_status === 'accepted' && (
+      <div class="invite-card">
+        <h2>Already Accepted</h2>
+        <p>This invite has already been accepted.</p>
+        <a href="/profile" class="btn-primary">Go to Profile</a>
+      </div>
+    )}
+
+    {!error && invite?.invite_status === 'pending' && (
+      <div class="invite-card">
+        <div class="invite-from">
+          <span class="label">Invited by</span>
+          <span class="name">{inviterName}</span>
+        </div>
+
+        <div class="project-preview">
+          <span class="category-badge">{project?.category || 'general'}</span>
+          <h2>{project?.title}</h2>
+          {project?.description && <p class="description">{project.description}</p>}
+        </div>
+
+        <div class="role-info">
+          <span class="label">Your role:</span>
+          <span class="role-badge">{invite.role}</span>
+        </div>
+
+        <div id="accept-section">
+          <button class="btn-accept" id="accept-btn" onclick="acceptInvite()">
+            Accept Invite
+          </button>
+        </div>
+
+        <div id="wallet-section" style="display:none;">
+          <div class="wallet-result">
+            <h3>Your New Wallet</h3>
+            <p class="wallet-warning">Save your secret key below. It will NOT be shown again!</p>
+
+            <label>Wallet Address</label>
+            <div class="key-display" id="wallet-address">—</div>
+
+            <label>Secret Key</label>
+            <div class="key-display secret" id="secret-key">—</div>
+
+            <button class="btn-copy" onclick="copyKey()">Copy Secret Key</button>
+            <p class="copied-msg" id="copied-msg" style="display:none;">Copied!</p>
+
+            <a href="/profile" class="btn-primary" id="continue-btn" style="display:none;">
+              Continue to Profile
+            </a>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
+<script is:inline>
+  async function acceptInvite() {
+    const btn = document.getElementById('accept-btn');
+    btn.disabled = true;
+    btn.textContent = 'Accepting...';
+
+    try {
+      const token = window.location.pathname.split('/').pop();
+      const res = await fetch('/api/projects/invite-accept', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // Show wallet info
+        document.getElementById('accept-section').style.display = 'none';
+        document.getElementById('wallet-section').style.display = 'block';
+        document.getElementById('wallet-address').textContent = data.walletAddress;
+        document.getElementById('secret-key').textContent = data.secretKey;
+
+        // Set localStorage for platform identity
+        localStorage.setItem('connectedWallet', data.walletAddress);
+        localStorage.setItem('walletType', 'generated');
+
+        // Show continue button after a delay
+        setTimeout(() => {
+          document.getElementById('continue-btn').style.display = 'block';
+        }, 3000);
+      } else {
+        btn.textContent = data.error || 'Failed to accept';
+        btn.disabled = false;
+      }
+    } catch (e) {
+      btn.textContent = 'Error - try again';
+      btn.disabled = false;
+    }
+  }
+
+  function copyKey() {
+    const key = document.getElementById('secret-key').textContent;
+    navigator.clipboard.writeText(key).then(() => {
+      const msg = document.getElementById('copied-msg');
+      msg.style.display = 'block';
+      setTimeout(() => { msg.style.display = 'none'; }, 2000);
+    });
+  }
+</script>
+
+</BaseLayout>
+
+<style>
+  .invite-page {
+    min-height: 100vh;
+    background: #0a0a0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .invite-container {
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .brand {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .brand h1 {
+    color: #10b981;
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .invite-card {
+    background: #111118;
+    border: 1px solid #2a2a3a;
+    border-radius: 12px;
+    padding: 2rem;
+  }
+
+  .error-card {
+    text-align: center;
+  }
+
+  .error-card h2 {
+    color: #ef4444;
+    margin: 0 0 0.5rem;
+  }
+
+  .error-card p {
+    color: #888;
+    margin: 0 0 1.5rem;
+  }
+
+  .invite-from {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: #888;
+    font-size: 0.9rem;
+  }
+
+  .invite-from .name {
+    color: #e5e5e5;
+    font-weight: 600;
+  }
+
+  .project-preview {
+    background: #0a0a0f;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .category-badge {
+    display: inline-block;
+    background: #10b981;
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-preview h2 {
+    color: #e5e5e5;
+    margin: 0 0 0.5rem;
+    font-size: 1.3rem;
+  }
+
+  .description {
+    color: #888;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .role-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: #888;
+    font-size: 0.9rem;
+  }
+
+  .role-badge {
+    display: inline-block;
+    background: #1a1a24;
+    color: #10b981;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+
+  .btn-accept {
+    display: block;
+    width: 100%;
+    background: #10b981;
+    color: #000;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-accept:hover:not(:disabled) {
+    background: #059669;
+  }
+
+  .btn-accept:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    background: #10b981;
+    color: #000;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 1rem;
+  }
+
+  .wallet-result {
+    text-align: center;
+  }
+
+  .wallet-result h3 {
+    color: #10b981;
+    margin: 0 0 0.5rem;
+  }
+
+  .wallet-warning {
+    color: #f59e0b;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0 0 1.5rem;
+    padding: 8px;
+    background: rgba(245,158,11,0.1);
+    border-radius: 6px;
+  }
+
+  .wallet-result label {
+    display: block;
+    text-align: left;
+    color: #888;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    margin-top: 1rem;
+  }
+
+  .key-display {
+    background: #0a0a0f;
+    border: 1px solid #2a2a3a;
+    border-radius: 6px;
+    padding: 10px;
+    color: #e5e5e5;
+    font-family: monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    text-align: left;
+  }
+
+  .key-display.secret {
+    border-color: #f59e0b;
+    color: #f59e0b;
+  }
+
+  .btn-copy {
+    margin-top: 1rem;
+    background: #1a1a24;
+    color: #e5e5e5;
+    border: 1px solid #2a2a3a;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .btn-copy:hover {
+    background: #2a2a3a;
+  }
+
+  .copied-msg {
+    color: #10b981;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+</style>

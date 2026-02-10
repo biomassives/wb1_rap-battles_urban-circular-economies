@@ -1,8 +1,7 @@
 // /api/payout/settings.js
 // Manage user payout preferences
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 // GET - Get user's payout settings
 export async function GET({ request }) {
   const url = new URL(request.url);
@@ -16,8 +15,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get payout settings
     const settings = await sql`
       SELECT * FROM user_payout_settings
@@ -175,9 +172,6 @@ export async function POST({ request }) {
         }), { status: 400, headers: { 'Content-Type': 'application/json' } });
       }
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Upsert settings
     await sql`
       INSERT INTO user_payout_settings (

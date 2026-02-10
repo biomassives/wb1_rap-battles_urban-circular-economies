@@ -61,7 +61,7 @@ The key insight: **small groups need recognition, skill-building, and economic o
 ### Original Design: Rap Battles
 
 The rap battle system provides:
-- **Beat selection** (Sampler Bank, Strudel patterns, AutoMoog, uploads)
+- **Beat selection** (Sampler Bank, Strudel patterns, WorldBridger Moog, uploads)
 - **Battle configuration** (title, type, XP stakes, duration)
 - **Recording studio** (beat playback, visualizer, timer)
 - **Community voting** on outcomes

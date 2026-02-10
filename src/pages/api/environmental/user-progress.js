@@ -1,7 +1,6 @@
 // src/pages/api/environmental/user-progress.js
 // Returns user's environmental progress and observations
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 /**
@@ -50,19 +49,6 @@ export async function GET({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    // Try to connect to database
-    const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL || process.env.lab_POSTGRES_URL;
-
-    if (!dbUrl) {
-      console.warn('No database URL configured, returning default environmental progress');
-      return new Response(JSON.stringify(getDefaultEnvironmentalProgress(walletAddress)), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const sql = neon(dbUrl);
 
     // Query observations count
     let observationsTotal = 0;

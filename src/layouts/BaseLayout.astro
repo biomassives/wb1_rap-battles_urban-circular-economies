@@ -717,6 +717,7 @@ const currentYear = new Date().getFullYear();
       justify-content: space-between;
       width: 100%;
       gap: 12px;
+      position: relative;
     }
 
     /* Nav Menu - Horizontal menu items */
@@ -819,6 +820,225 @@ const currentYear = new Date().getFullYear();
       padding: 0 2px;
       line-height: 1;
     }
+
+    /* ======== UFO Mothership Notification Icon ======== */
+    .notif-bell {
+      overflow: visible;
+    }
+
+    .ufo-icon {
+      display: block;
+      width: 16px;
+      height: 10px;
+      position: relative;
+      /* UFO body built with box-shadow pixels (3px per pixel) */
+      background: transparent;
+    }
+
+    .ufo-icon::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 2px;
+      width: 3px; height: 3px;
+      background: transparent;
+      /* UFO mothership pixel art (Space Invaders style)
+         Row 1 (dome):          . . X X X X . .
+         Row 2 (body):        X X X X X X X X
+         Row 3 (underside):     . X . X . X .   */
+      box-shadow:
+        /* Row 1 - dome */
+        3px 0 0 #00ff00, 6px 0 0 #00ff00, 9px 0 0 #00ff00, 12px 0 0 #00ff00,
+        /* Row 2 - wide body */
+        -3px 3px 0 #00ff00, 0px 3px 0 #00ff00, 3px 3px 0 #00ff00,
+        6px 3px 0 #00ff00, 9px 3px 0 #00ff00, 12px 3px 0 #00ff00,
+        15px 3px 0 #00ff00, 18px 3px 0 #00ff00,
+        /* Row 3 - windows/undercarriage */
+        0px 6px 0 #00ff00, 6px 6px 0 #00ff00, 12px 6px 0 #00ff00;
+    }
+
+    /* Active state: glide animation + glow */
+    .ufo-icon.ufo-active {
+      animation: ufo-glide 3s ease-in-out infinite;
+    }
+
+    .ufo-icon.ufo-active::before {
+      box-shadow:
+        3px 0 0 #00ff88, 6px 0 0 #00ff88, 9px 0 0 #00ff88, 12px 0 0 #00ff88,
+        -3px 3px 0 #00ff00, 0px 3px 0 #00ff00, 3px 3px 0 #00ff00,
+        6px 3px 0 #00ff00, 9px 3px 0 #00ff00, 12px 3px 0 #00ff00,
+        15px 3px 0 #00ff00, 18px 3px 0 #00ff00,
+        0px 6px 0 #44ff44, 6px 6px 0 #44ff44, 12px 6px 0 #44ff44;
+      filter: drop-shadow(0 0 4px rgba(0, 255, 0, 0.6));
+    }
+
+    /* Love beam particle (when active) */
+    .ufo-icon.ufo-active::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      width: 2px;
+      height: 6px;
+      background: linear-gradient(to bottom, #00ff00, transparent);
+      animation: love-beam 2s ease-in-out infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes ufo-glide {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(3px); }
+      75% { transform: translateX(-3px); }
+    }
+
+    @keyframes love-beam {
+      0%, 100% { opacity: 0; transform: translateY(0); }
+      50% { opacity: 0.8; transform: translateY(4px); }
+    }
+
+    /* ======== Notification Panel ======== */
+    .notif-panel {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 10002;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .notif-panel-backdrop {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .notif-panel.open .notif-panel-backdrop { opacity: 1; }
+
+    .notif-panel-content {
+      position: relative;
+      width: 360px;
+      max-width: 90vw;
+      height: 100%;
+      background: #0a0e14;
+      border-left: 2px solid #00ff00;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      box-shadow: -4px 0 20px rgba(0, 255, 0, 0.1);
+    }
+    .notif-panel.open .notif-panel-content { transform: translateX(0); }
+
+    .notif-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      border-bottom: 1px solid #1a2a1a;
+    }
+    .notif-panel-header h3 {
+      margin: 0;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .notif-header-actions { display: flex; gap: 0.5rem; align-items: center; }
+    .notif-mark-all {
+      background: none; border: 1px solid #333; color: #888;
+      font-size: 10px; padding: 3px 8px; cursor: pointer;
+      font-family: 'Courier New', monospace;
+      transition: all 0.2s;
+    }
+    .notif-mark-all:hover { border-color: #00ff00; color: #00ff00; }
+    .notif-close {
+      background: none; border: none; color: #888;
+      font-size: 18px; cursor: pointer; padding: 0 4px;
+    }
+    .notif-close:hover { color: #ff0000; }
+
+    /* Category tabs */
+    .notif-category-tabs {
+      display: flex;
+      gap: 2px;
+      padding: 0.5rem;
+      border-bottom: 1px solid #1a2a1a;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    .notif-cat {
+      background: #111; border: 1px solid #222; color: #666;
+      font-size: 10px; padding: 3px 8px; cursor: pointer;
+      font-family: 'Courier New', monospace;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .notif-cat:hover { border-color: #00ff00; color: #aaa; }
+    .notif-cat.active { background: #00ff00; color: #000; border-color: #00ff00; }
+
+    /* Notification list */
+    .notif-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    .notif-item {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-left: 3px solid transparent;
+      background: #0d1117;
+    }
+    .notif-item:hover { background: #151d28; }
+    .notif-item.unread { border-left-color: #00ff00; background: #0d1a12; }
+    .notif-item.high-priority { border-left-color: #ff6600; }
+    .notif-item.unread.high-priority { border-left-color: #ff6600; background: #1a150d; }
+
+    .notif-icon { font-size: 16px; flex-shrink: 0; width: 24px; text-align: center; }
+    .notif-body { flex: 1; min-width: 0; }
+    .notif-title {
+      color: #e0e0e0; font-size: 12px; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .notif-message { color: #888; font-size: 11px; margin-top: 2px; }
+    .notif-meta {
+      display: flex; flex-direction: column; align-items: flex-end;
+      gap: 4px; flex-shrink: 0;
+    }
+    .notif-time { color: #555; font-size: 10px; font-family: 'Courier New', monospace; }
+    .notif-dismiss {
+      background: none; border: none; color: #555;
+      font-size: 14px; cursor: pointer; padding: 0; line-height: 1;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .notif-item:hover .notif-dismiss { opacity: 1; }
+    .notif-dismiss:hover { color: #ff0000; }
+
+    .notif-empty {
+      text-align: center; padding: 2rem; color: #555;
+      font-family: 'Courier New', monospace; font-size: 12px;
+    }
+    .notif-empty-ufo {
+      width: 40px; height: 20px; margin: 0 auto 1rem;
+      opacity: 0.3;
+    }
+    .notif-loading { text-align: center; padding: 2rem; color: #555; font-size: 12px; }
+
+    .notif-load-more {
+      text-align: center; padding: 0.5rem;
+      border-top: 1px solid #1a2a1a;
+    }
+    .notif-load-more button {
+      background: none; border: 1px solid #333; color: #888;
+      font-size: 11px; padding: 4px 16px; cursor: pointer;
+      font-family: 'Courier New', monospace;
+    }
+    .notif-load-more button:hover { border-color: #00ff00; color: #00ff00; }
 
     /* Profile Button - Slightly larger */
     .btn-profile {
@@ -1112,11 +1332,56 @@ const currentYear = new Date().getFullYear();
       /* Hide nav menu dropdowns, show hamburger */
       .nav-menu {
         display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #0a0e14;
+        border: 1px solid #00ff0040;
+        border-top: 2px solid #00ff00;
+        z-index: 1000;
+        padding: 8px 0;
+        gap: 0;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      }
+
+      .nav-menu.active {
+        display: flex;
+      }
+
+      .nav-menu .nav-dropdown {
+        width: 100%;
+      }
+
+      .nav-menu .nav-dropdown-btn {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 10px 16px;
+        border: none;
+        border-bottom: 1px solid #00ff0015;
+      }
+
+      .nav-menu .nav-dropdown-menu {
+        position: static;
+        border: none;
+        background: #060a10;
+        box-shadow: none;
+        padding: 0 0 0 24px;
+      }
+
+      .nav-menu .dropdown-item {
+        padding: 8px 16px;
       }
 
       .btn-mobile-menu {
         display: flex;
         order: -1;
+      }
+
+      .btn-mobile-menu.active {
+        background: #00ff00;
+        color: #000;
       }
 
       /* Brand icon stays visible */
@@ -1318,7 +1583,7 @@ const currentYear = new Date().getFullYear();
           <a href="/rap-battle" class="hover:text-white transition-colors battle-link">⚔️ Battle</a>
           <a href="/beat-playground" class="hover:text-white transition-colors">🎛️ Beats</a>
           <a href="/profile" class="hover:text-white transition-colors">Mission_Control</a>
-          <a href="/music" class="hover:text-white transition-colors">Studio</a>
+          <a href="/music-studio" class="hover:text-white transition-colors">Studio</a>
         </nav>
 
         <!-- Main Navigation - Zen Minimal -->
@@ -1368,7 +1633,7 @@ const currentYear = new Date().getFullYear();
                 <span class="item-icon">◈</span>
                 <span>Moog Synth</span>
               </a>
-              <a href="/music" class="dropdown-item">
+              <a href="/music-studio" class="dropdown-item">
                 <span class="item-icon">🎹</span>
                 <span>Music Studio</span>
               </a>
@@ -1383,7 +1648,7 @@ const currentYear = new Date().getFullYear();
               </a>
               <a href="/rapper-template-builder" class="dropdown-item">
                 <span class="item-icon">📝</span>
-                <span>Verse Builder</span>
+                <span>Character Designer</span>
               </a>
             </div>
           </li>
@@ -1460,10 +1725,10 @@ const currentYear = new Date().getFullYear();
 
         <!-- User Actions - Retro Space Invaders Style -->
         <div class="nav-actions">
-          <!-- Notifications - Retro Bell -->
-          <button id="notifications-btn" class="nav-icon-btn" title="Notifications" style="display: none;">
-            <span class="retro-icon">◆</span>
-            <span id="notification-count" class="retro-badge">0</span>
+          <!-- Notifications - UFO Mothership -->
+          <button id="notifications-btn" class="nav-icon-btn notif-bell" title="Notifications" onclick="window.notificationManager?.toggle()">
+            <span class="ufo-icon" id="ufo-icon"></span>
+            <span id="notification-count" class="retro-badge" style="display:none;">0</span>
           </button>
 
           <!-- Battle Challenge - Retro Swords -->
@@ -1618,7 +1883,7 @@ const currentYear = new Date().getFullYear();
           <h4>Platform</h4>
           <ul class="footer-links">
             <li><a href="/progress">Your Progress</a></li>
-            <li><a href="/music">Music Studio</a></li>
+            <li><a href="/music-studio">Music Studio</a></li>
             <li><a href="/learning">Learning Hub</a></li>
             <li><a href="/nairobi-youth">Nairobi Youth</a></li>
           </ul>
@@ -1677,15 +1942,31 @@ const currentYear = new Date().getFullYear();
   <!-- MODALS & OVERLAYS -->
   <!-- ============================================ -->
   
-  <!-- Notifications Panel -->
-  <div id="notifications-panel" class="panel-overlay" style="display: none;">
-    <div class="panel-content">
-      <div class="panel-header">
+  <!-- Notifications Panel (slides from right) -->
+  <div id="notifications-panel" class="notif-panel" style="display: none;">
+    <div class="notif-panel-backdrop" onclick="window.notificationManager?.toggle()"></div>
+    <div class="notif-panel-content">
+      <div class="notif-panel-header">
         <h3>Notifications</h3>
-        <button class="btn-close" onclick="window.uiManager?.closeNotifications()">×</button>
+        <div class="notif-header-actions">
+          <button class="notif-mark-all" onclick="window.notificationManager?.markAllRead()">Mark All Read</button>
+          <button class="notif-close" onclick="window.notificationManager?.toggle()">&times;</button>
+        </div>
       </div>
-      <div id="notifications-list" class="notifications-list">
-        <!-- Notifications will be loaded here -->
+      <div class="notif-category-tabs" id="notif-category-tabs">
+        <button class="notif-cat active" data-cat="all">All</button>
+        <button class="notif-cat" data-cat="xp">XP</button>
+        <button class="notif-cat" data-cat="social">Social</button>
+        <button class="notif-cat" data-cat="nft">NFT</button>
+        <button class="notif-cat" data-cat="achievement">Achieve</button>
+        <button class="notif-cat" data-cat="governance">Gov</button>
+        <button class="notif-cat" data-cat="system">System</button>
+      </div>
+      <div id="notifications-list" class="notif-list">
+        <div class="notif-empty">No notifications yet</div>
+      </div>
+      <div id="notif-load-more" class="notif-load-more" style="display:none;">
+        <button onclick="window.notificationManager?.loadMore()">Load More</button>
       </div>
     </div>
   </div>
@@ -3052,7 +3333,7 @@ const currentYear = new Date().getFullYear();
 
       // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {
-        if (!languageBtn?.contains(e.target) && !languageDropdown?.contains(e.target)) {
+        if (languageDropdown && !languageBtn?.contains(e.target) && !languageDropdown.contains(e.target)) {
           languageDropdown.style.display = 'none';
         }
       });
@@ -3098,8 +3379,34 @@ const currentYear = new Date().getFullYear();
       });
 
       // Mobile menu
-      document.getElementById('mobile-menu-toggle')?.addEventListener('click', () => {
-        document.querySelector('.nav-menu')?.classList.toggle('active');
+      const mobileToggle = document.getElementById('mobile-menu-toggle');
+      const navMenu = document.querySelector('.nav-menu');
+
+      mobileToggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = navMenu?.classList.toggle('active');
+        mobileToggle.classList.toggle('active', isOpen);
+        mobileToggle.querySelector('.hamburger-icon').textContent = isOpen ? '✕' : '☰';
+      });
+
+      // Close mobile menu when clicking a nav link
+      navMenu?.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navMenu.classList.remove('active');
+          mobileToggle?.classList.remove('active');
+          const icon = mobileToggle?.querySelector('.hamburger-icon');
+          if (icon) icon.textContent = '☰';
+        });
+      });
+
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (navMenu?.classList.contains('active') && !navMenu.contains(e.target) && e.target !== mobileToggle) {
+          navMenu.classList.remove('active');
+          mobileToggle?.classList.remove('active');
+          const icon = mobileToggle?.querySelector('.hamburger-icon');
+          if (icon) icon.textContent = '☰';
+        }
       });
     };
 
@@ -3107,5 +3414,274 @@ const currentYear = new Date().getFullYear();
     document.addEventListener('astro:page-load', initializeWalletButton);
     document.addEventListener('DOMContentLoaded', initializeWalletButton);
   </script>
+
+  <!-- ============================================ -->
+  <!-- NOTIFICATION MANAGER -->
+  <!-- ============================================ -->
+  <script is:inline>
+  window.notificationManager = {
+    notifications: [],
+    unreadCount: 0,
+    isOpen: false,
+    currentCategory: 'all',
+    offset: 0,
+    limit: 20,
+    hasMore: false,
+    pollInterval: null,
+    userRole: 'member',
+    userTier: 'Bronze',
+
+    // Visibility rules: { category: { minTier, minRole } }
+    visibility: {
+      xp: { minTier: 0, minRole: 'member' },
+      achievement: { minTier: 0, minRole: 'member' },
+      social: { minTier: 0, minRole: 'member' },
+      nft: { minTier: 0, minRole: 'member' },
+      system: { minTier: 0, minRole: 'member' },
+      payout: { minTier: 500, minRole: 'member' },
+      governance: { minTier: 2000, minRole: 'member' },
+      project: { minTier: 0, minRole: 'mentor' }
+    },
+
+    tierXP: { Bronze: 0, Silver: 500, Gold: 2000, Platinum: 5000, Diamond: 15000, Mythic: 50000 },
+    roleRank: { member: 0, mentor: 1, moderator: 2, admin: 3 },
+
+    getWallet() {
+      return localStorage.getItem('wallet_publicKey') || localStorage.getItem('connectedWallet');
+    },
+
+    init() {
+      const wallet = this.getWallet();
+      if (!wallet) return;
+
+      // Load user role/tier from localStorage or profile
+      this.userRole = localStorage.getItem('user_role') || 'member';
+      const xp = parseInt(localStorage.getItem('user_xp') || '0');
+      this.userTier = xp >= 50000 ? 'Mythic' : xp >= 15000 ? 'Diamond' : xp >= 5000 ? 'Platinum' : xp >= 2000 ? 'Gold' : xp >= 500 ? 'Silver' : 'Bronze';
+
+      // Setup category tab clicks
+      document.querySelectorAll('.notif-cat').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.notif-cat').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          this.currentCategory = tab.dataset.cat;
+          this.offset = 0;
+          this.notifications = [];
+          this.load();
+        });
+      });
+
+      // Start polling
+      this.poll();
+      this.pollInterval = setInterval(() => this.poll(), 60000);
+    },
+
+    async poll() {
+      const wallet = this.getWallet();
+      if (!wallet) return;
+      try {
+        const res = await fetch(`/api/notifications?walletAddress=${wallet}&unreadOnly=true&limit=1`);
+        const data = await res.json();
+        if (data.success) {
+          this.unreadCount = data.totalUnread || 0;
+          this.updateBadge();
+        }
+      } catch (e) { /* silent fail */ }
+    },
+
+    toggle() {
+      this.isOpen = !this.isOpen;
+      const panel = document.getElementById('notifications-panel');
+      if (!panel) return;
+
+      if (this.isOpen) {
+        panel.style.display = 'flex';
+        requestAnimationFrame(() => panel.classList.add('open'));
+        if (this.notifications.length === 0) this.load();
+      } else {
+        panel.classList.remove('open');
+        setTimeout(() => { panel.style.display = 'none'; }, 300);
+      }
+    },
+
+    async load() {
+      const wallet = this.getWallet();
+      if (!wallet) return;
+
+      const list = document.getElementById('notifications-list');
+      if (this.offset === 0 && list) list.innerHTML = '<div class="notif-loading">Loading...</div>';
+
+      try {
+        const params = new URLSearchParams({ walletAddress: wallet, limit: this.limit, offset: this.offset });
+        if (this.currentCategory !== 'all') params.set('category', this.currentCategory);
+
+        const res = await fetch(`/api/notifications?${params}`);
+        const data = await res.json();
+
+        if (!data.success) {
+          if (list) list.innerHTML = '<div class="notif-empty">Could not load notifications.</div>';
+          return;
+        }
+
+        const filtered = data.notifications.filter(n => this.shouldShow(n));
+
+        if (this.offset === 0) {
+          this.notifications = filtered;
+        } else {
+          this.notifications = [...this.notifications, ...filtered];
+        }
+
+        this.hasMore = data.pagination.count >= this.limit;
+        this.unreadCount = data.totalUnread || 0;
+        this.updateBadge();
+        this.render();
+      } catch (e) {
+        console.error('Notification load error:', e);
+        if (list && this.offset === 0) list.innerHTML = '<div class="notif-empty">Failed to load.</div>';
+      }
+    },
+
+    shouldShow(notif) {
+      const rule = this.visibility[notif.category];
+      if (!rule) return true;
+
+      // Admin/moderator bypasses all
+      if (this.roleRank[this.userRole] >= 2) return true;
+
+      // Check tier
+      const userXP = this.tierXP[this.userTier] || 0;
+      if (userXP < rule.minTier) return false;
+
+      // Check role
+      if (this.roleRank[this.userRole] < this.roleRank[rule.minRole]) return false;
+
+      return true;
+    },
+
+    render() {
+      const list = document.getElementById('notifications-list');
+      if (!list) return;
+
+      if (this.notifications.length === 0) {
+        list.innerHTML = '<div class="notif-empty"><div class="notif-empty-ufo"></div><p>No notifications yet</p></div>';
+        document.getElementById('notif-load-more').style.display = 'none';
+        return;
+      }
+
+      list.innerHTML = this.notifications.map(n => {
+        const unreadClass = n.is_read ? '' : ' unread';
+        const time = this.timeAgo(n.created_at);
+        const priorityClass = n.priority === 'high' || n.priority === 'urgent' ? ' high-priority' : '';
+
+        return `<div class="notif-item${unreadClass}${priorityClass}" data-id="${n.id}" onclick="window.notificationManager.clickNotif(${n.id}, '${(n.action_url || '').replace(/'/g, "\\'")}')">
+          <div class="notif-icon">${n.icon || '📢'}</div>
+          <div class="notif-body">
+            <div class="notif-title">${n.title}</div>
+            ${n.message ? `<div class="notif-message">${n.message}</div>` : ''}
+          </div>
+          <div class="notif-meta">
+            <span class="notif-time">${time}</span>
+            <button class="notif-dismiss" onclick="event.stopPropagation(); window.notificationManager.dismiss([${n.id}])" title="Dismiss">&times;</button>
+          </div>
+        </div>`;
+      }).join('');
+
+      const loadMore = document.getElementById('notif-load-more');
+      if (loadMore) loadMore.style.display = this.hasMore ? 'block' : 'none';
+    },
+
+    async clickNotif(id, url) {
+      await this.markRead([id]);
+      if (url) window.location.href = url;
+    },
+
+    async markRead(ids) {
+      const wallet = this.getWallet();
+      if (!wallet) return;
+      try {
+        await fetch('/api/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'markRead', walletAddress: wallet, notificationIds: ids })
+        });
+        this.notifications.forEach(n => { if (ids.includes(n.id)) n.is_read = true; });
+        this.unreadCount = Math.max(0, this.unreadCount - ids.length);
+        this.updateBadge();
+        this.render();
+      } catch (e) { console.error(e); }
+    },
+
+    async markAllRead() {
+      const wallet = this.getWallet();
+      if (!wallet) return;
+      try {
+        await fetch('/api/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'markRead', walletAddress: wallet })
+        });
+        this.notifications.forEach(n => n.is_read = true);
+        this.unreadCount = 0;
+        this.updateBadge();
+        this.render();
+      } catch (e) { console.error(e); }
+    },
+
+    async dismiss(ids) {
+      const wallet = this.getWallet();
+      if (!wallet) return;
+      try {
+        await fetch('/api/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'dismiss', walletAddress: wallet, notificationIds: ids })
+        });
+        this.notifications = this.notifications.filter(n => !ids.includes(n.id));
+        this.render();
+      } catch (e) { console.error(e); }
+    },
+
+    loadMore() {
+      this.offset += this.limit;
+      this.load();
+    },
+
+    updateBadge() {
+      const badge = document.getElementById('notification-count');
+      const ufo = document.getElementById('ufo-icon');
+      if (badge) {
+        if (this.unreadCount > 0) {
+          badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+      if (ufo) {
+        if (this.unreadCount > 0) {
+          ufo.classList.add('ufo-active');
+        } else {
+          ufo.classList.remove('ufo-active');
+        }
+      }
+    },
+
+    timeAgo(dateStr) {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'now';
+      if (mins < 60) return mins + 'm';
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) return hours + 'h';
+      const days = Math.floor(hours / 24);
+      if (days < 30) return days + 'd';
+      return Math.floor(days / 30) + 'mo';
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => window.notificationManager.init());
+  document.addEventListener('astro:page-load', () => window.notificationManager.init());
+  </script>
+
 </body>
 </html>

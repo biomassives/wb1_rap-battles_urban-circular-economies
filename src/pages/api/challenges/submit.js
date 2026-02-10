@@ -10,8 +10,8 @@
  * - description: string (optional)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
+import { notify, notifyFromTemplate } from '../../../lib/notify.js';
 export const prerender = false;
 
 export async function POST({ request }) {
@@ -45,9 +45,6 @@ export async function POST({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     // Verify challenge exists and is in a submittable state
     const challenges = await sql`
       SELECT id, status, expires_at FROM challenges WHERE id = ${challengeId}
@@ -159,6 +156,37 @@ export async function POST({ request }) {
       `;
     } catch (logError) {
       console.warn('Failed to log activity/award XP:', logError.message);
+    }
+
+    // Notify challenge creator about new submission
+    try {
+      const creatorResult = await sql`
+        SELECT creator_wallet FROM challenges WHERE id = ${challengeId}
+      `;
+      if (creatorResult.length > 0 && creatorResult[0].creator_wallet !== participantWallet) {
+        await notify(creatorResult[0].creator_wallet, {
+          category: 'social',
+          type: 'challenge_submission',
+          title: 'New Challenge Submission',
+          message: 'Someone submitted an entry to your challenge',
+          icon: '🎵',
+          actionUrl: `/challenge-arena?id=${challengeId}`,
+          actionLabel: 'View Submission',
+          priority: 'normal'
+        });
+      }
+    } catch (notifError) {
+      console.warn('Notification failed:', notifError.message);
+    }
+
+    // Notify submitter about XP earned
+    try {
+      await notifyFromTemplate(participantWallet, 'xp_earned', {
+        amount: xpAwarded,
+        description: 'Challenge submission'
+      });
+    } catch (notifError) {
+      console.warn('Notification failed:', notifError.message);
     }
 
     return new Response(JSON.stringify({

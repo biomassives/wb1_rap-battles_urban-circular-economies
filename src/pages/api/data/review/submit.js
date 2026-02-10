@@ -1,8 +1,7 @@
 // /api/data/review/submit.js
 // Submit review decision for pending data
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 const REVIEW_XP = {
   base: 15,
   quality_bonus_per_point: 2, // Extra XP for high-quality reviews
@@ -59,9 +58,6 @@ export async function POST({ request }) {
         error: 'Quality score is required (1-10)'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Verify reviewer is qualified
     const reviewer = await sql`
       SELECT * FROM data_reviewers
@@ -281,8 +277,6 @@ export async function GET({ request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     let reviews;
 
     if (submissionId && submissionType) {

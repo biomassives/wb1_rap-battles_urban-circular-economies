@@ -6,8 +6,7 @@
  * - walletAddress: string (optional, to check if user voted)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function GET({ params, request }) {
@@ -25,9 +24,6 @@ export async function GET({ params, request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     // Get battle details
     const battles = await sql`
       SELECT

@@ -8,8 +8,7 @@
  * - category: string (optional - filter by category)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function GET({ request }) {
@@ -18,9 +17,6 @@ export async function GET({ request }) {
     const period = url.searchParams.get('period') || 'week';
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '10'), 50);
     const category = url.searchParams.get('category');
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     // Calculate date filter
     let dateFilter = '';
     const now = new Date();

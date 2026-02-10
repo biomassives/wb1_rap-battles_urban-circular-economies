@@ -117,8 +117,7 @@ export async function POST({ request }) {
     // Store audio metadata in database (if available)
     try {
       // Import database connection if available
-      const { neon } = await import('@neondatabase/serverless');
-      const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
+      const { sql } = await import('../../../lib/db.js');
 
       await sql`
         INSERT INTO audio_uploads (

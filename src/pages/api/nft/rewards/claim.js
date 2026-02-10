@@ -1,8 +1,7 @@
 // /api/nft/rewards/claim.js
 // Claim an eligible NFT reward
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function POST({ request }) {
   try {
     const body = await request.json();
@@ -21,9 +20,6 @@ export async function POST({ request }) {
         error: 'Rule ID is required'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check if already claimed
     const existingClaim = await sql`
       SELECT id, status FROM nft_reward_claims
@@ -193,8 +189,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     const claims = await sql`
       SELECT
         c.id,

@@ -1,8 +1,7 @@
 // /api/proposals/create.js
 // Create a new project proposal
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 const XP_VALUES = {
   proposal_submitted: 100,
   proposal_approved: 500
@@ -63,9 +62,6 @@ export async function POST({ request }) {
         error: 'Funding goal must be between $100 and $1,000,000'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check user has enough XP/level to create proposals (level 5+)
     const user = await sql`
       SELECT level, xp FROM user_profiles
@@ -204,8 +200,6 @@ export async function GET({ request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     let proposals;
 
     if (walletAddress) {

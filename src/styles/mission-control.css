@@ -2,7 +2,8 @@
   Astro + Vanilla JS + Bio-Token Interface
 */
 
-:root {
+/* Scoped to .mission-control so these don't pollute light-background pages */
+body.mission-control {
   /* THEME 01: STABLE_EMERALD (Deep Ecological Focus) */
   --bg: #030503;
   --panel: rgba(5, 15, 5, 0.8);
@@ -14,7 +15,7 @@
   --noise: 0.02;
 }
 
-[data-theme="light"] {
+body.mission-control[data-theme="light"] {
   /* THEME 02: GLITCH_OVERDRIVE (System Instability / High Energy) */
   --bg: #0a000a;
   --panel: rgba(20, 0, 20, 0.9);

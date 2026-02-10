@@ -1,8 +1,7 @@
 // src/api/gamification/user-progress.js
 // Returns user's XP, level, achievements, and stats
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function GET({ request }) {
@@ -28,19 +27,6 @@ export async function GET({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    // Try to connect to database
-    const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL || process.env.lab_POSTGRES_URL;
-
-    if (!dbUrl) {
-      console.warn('No database URL configured, returning default progress');
-      return new Response(JSON.stringify(getDefaultProgress(walletAddress)), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const sql = neon(dbUrl);
 
     // Get user profile from database
     let users;

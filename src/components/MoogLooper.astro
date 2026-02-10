@@ -1,6 +1,6 @@
 ---
 /**
- * MoogLooper.astro - AutoMoog Engine
+ * MoogLooper.astro - WorldBridger Moog Engine
  *
  * DSP-focused analog-style generative music engine.
  * Features:
@@ -25,7 +25,7 @@ const { compact = false } = Astro.props;
   <div class="engine-header">
     <div class="engine-title">
       <span class="title-icon">◈</span>
-      <span class="title-text">AutoMoog</span>
+      <span class="title-text">WorldBridger Moog</span>
       <span class="engine-status" id="engine-status">●</span>
     </div>
     <div class="header-controls">
@@ -831,7 +831,7 @@ const { compact = false } = Astro.props;
 
 <script>
   // ============================================================================
-  // AUTOMOOG ENGINE CONTROLLER
+  // WORLDBRIDGER MOOG ENGINE CONTROLLER
   // ============================================================================
 
   class AutoMoogController {
@@ -1158,7 +1158,7 @@ const { compact = false } = Astro.props;
 
       const exportData = {
         id: `moog_${Date.now()}`,
-        name: `AutoMoog ${mood.charAt(0).toUpperCase() + mood.slice(1)}`,
+        name: `WorldBridger Moog ${mood.charAt(0).toUpperCase() + mood.slice(1)}`,
         type: 'moog',
         mood: mood,
         bpm: 120,
@@ -1202,7 +1202,7 @@ const { compact = false } = Astro.props;
       try {
         // Check if modules are already loaded
         if (window.AutoMoogDSP && window.AutoMoogSpace && window.AutoMoogMoods) {
-          console.log('AutoMoog modules already loaded');
+          console.log('WorldBridger Moog modules already loaded');
           return;
         }
 
@@ -1217,9 +1217,9 @@ const { compact = false } = Astro.props;
           await this.loadScript(src);
         }
 
-        console.log('AutoMoog modules loaded');
+        console.log('WorldBridger Moog modules loaded');
       } catch (error) {
-        console.error('Failed to load AutoMoog modules:', error);
+        console.error('Failed to load WorldBridger Moog modules:', error);
       }
     }
 
@@ -1411,7 +1411,7 @@ const { compact = false } = Astro.props;
       try {
         // Ensure modules are loaded first
         if (!window.AutoMoogDSP || !window.AutoMoogSpace || !window.AutoMoogMoods) {
-          console.log('Waiting for AutoMoog modules to load...');
+          console.log('Waiting for WorldBridger Moog modules to load...');
           await this.loadModules();
 
           // Wait a bit for modules to initialize
@@ -1420,12 +1420,12 @@ const { compact = false } = Astro.props;
 
         // Check modules loaded successfully
         if (!window.AutoMoogDSP) {
-          console.error('AutoMoogDSP module not available');
+          console.error('WorldBridger Moog DSP module not available');
           alert('Failed to load audio engine. Please refresh the page.');
           return;
         }
 
-        console.log('AutoMoogDSP loaded:', Object.keys(window.AutoMoogDSP));
+        console.log('WorldBridger Moog DSP loaded:', Object.keys(window.AutoMoogDSP));
 
         // Initialize audio context
         if (!this.audioContext) {
@@ -1483,7 +1483,7 @@ const { compact = false } = Astro.props;
 
         // Initialize DSP voice
         if (!this.voice) {
-          console.log('Creating AutoMoogVoice...');
+          console.log('Creating WorldBridger Moog Voice...');
           try {
             this.voice = new window.AutoMoogDSP.AutoMoogVoice(this.audioContext);
             console.log('Voice instance created');
@@ -1542,11 +1542,11 @@ const { compact = false } = Astro.props;
         this.isRunning = true;
         this.updateUI();
 
-        console.log('AutoMoog engine started successfully');
+        console.log('WorldBridger Moog engine started successfully');
         console.log('Master gain value:', this.voice.masterGain?.gain?.value);
         console.log('Amp env gain value:', this.voice.ampEnv?.gainNode?.gain?.value);
       } catch (error) {
-        console.error('Failed to start AutoMoog:', error);
+        console.error('Failed to start WorldBridger Moog:', error);
         alert('Audio error: ' + error.message);
       }
     }

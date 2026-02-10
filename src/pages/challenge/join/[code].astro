@@ -17,8 +17,7 @@ let challenge = null;
 let fetchError = null;
 
 try {
-  const { neon } = await import('@neondatabase/serverless');
-  const sql = neon(import.meta.env.DATABASE_URL || import.meta.env.NILE_DATABASE_URL);
+  const { sql } = await import('../../../lib/db.js');
 
   const challenges = await sql`
     SELECT c.*,

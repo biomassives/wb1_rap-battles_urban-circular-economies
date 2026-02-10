@@ -1,8 +1,7 @@
 // /api/payout/initiate.js
 // Initiate a payout request
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 const CONVERSION_RATES = {
   XP_TO_USD: 0.001, // 1000 XP = $1
   USD_TO_KES: 130,
@@ -57,9 +56,6 @@ export async function POST({ request }) {
         error: 'Source amount is required and must be positive'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get user settings and verify payout method is configured
     const settings = await sql`
       SELECT * FROM user_payout_settings
@@ -362,8 +358,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     const payouts = await sql`
       SELECT
         id,

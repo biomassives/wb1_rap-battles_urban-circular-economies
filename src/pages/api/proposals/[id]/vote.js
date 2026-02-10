@@ -1,8 +1,7 @@
 // /api/proposals/[id]/vote.js
 // Vote on a project proposal
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 const XP_VALUES = {
   vote_cast: 10,
   first_vote_bonus: 25
@@ -40,9 +39,6 @@ export async function POST({ params, request }) {
         error: `Vote choice is required. Must be one of: ${validChoices.join(', ')}`
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get proposal
     const proposal = await sql`
       SELECT id, title, status, proposer_wallet, voting_ends
@@ -233,8 +229,6 @@ export async function GET({ params, request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get proposal
     const proposal = await sql`
       SELECT id, title, votes_for, votes_against, total_voters, status

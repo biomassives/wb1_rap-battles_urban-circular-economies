@@ -6,7 +6,8 @@
  * Rarity and quantity are determined by the user's XP-based airdrop tier.
  */
 
-import { neon } from '@neondatabase/serverless';
+import { sql } from '../../lib/db.js';
+import { notifyFromTemplate } from '../../lib/notify.js';
 import { getTierForXP, getAdjustedRarityWeights } from '../../lib/xp-config.js';
 
 export const prerender = false;
@@ -34,11 +35,8 @@ export async function GET({ request }) {
   // Look up user's real XP tier
   let userXP = 0;
   let tierSource = 'default';
-
-  const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL || process.env.lab_POSTGRES_URL;
-  if (dbUrl && !wallet.startsWith('anon_') && !wallet.startsWith('TEST_WALLET_')) {
+  if (!wallet.startsWith('anon_') && !wallet.startsWith('TEST_WALLET_')) {
     try {
-      const sql = neon(dbUrl);
       const result = await sql`
         SELECT xp FROM user_profiles WHERE wallet_address = ${wallet} LIMIT 1
       `;
@@ -69,6 +67,27 @@ export async function GET({ request }) {
         dropRarity = rarity.toUpperCase();
         break;
       }
+    }
+  }
+
+  // Notify about claimable airdrop (once per window, skip anon wallets)
+  if (is_ready && tierSource === 'database') {
+    try {
+      const recentNotif = await sql`
+        SELECT id FROM user_notifications
+        WHERE wallet_address = ${wallet}
+          AND notification_type = 'nft_claimable'
+          AND created_at > NOW() - INTERVAL '2 hours'
+        LIMIT 1
+      `.catch(() => []);
+      if (recentNotif.length === 0) {
+        await notifyFromTemplate(wallet, 'nft_claimable', {
+          rarity: dropRarity,
+          quantity: tier.dropQuantity
+        });
+      }
+    } catch (notifError) {
+      console.warn('Notification failed:', notifError.message);
     }
   }
 

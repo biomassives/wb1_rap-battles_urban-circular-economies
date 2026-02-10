@@ -1,8 +1,7 @@
 // /api/nft/marketplace/list.js
 // List an NFT for sale on the marketplace
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function POST({ request }) {
   try {
     const body = await request.json();
@@ -52,9 +51,6 @@ export async function POST({ request }) {
         error: 'Starting bid is required for auctions'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check if NFT is already listed or staked
     const existingListing = await sql`
       SELECT id FROM nft_listings
@@ -169,8 +165,6 @@ export async function GET({ request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Build query
     let listings = await sql`
       SELECT

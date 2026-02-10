@@ -1,0 +1,457 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Devnet SOL Faucet"
+  description="Request devnet SOL via Phantom wallet"
+  activeSection="settings"
+>
+
+<div class="faucet-page scanlines">
+  <div class="container mx-auto" style="max-width: 600px;">
+
+    <header class="faucet-header pixel-border arcade-screen" style="text-align: center; padding: 2rem; margin-bottom: 2rem;">
+      <h1 class="glitch" style="font-size: 2.5rem; font-family: var(--font-mono);">
+        <span class="neon-text">DEVNET FAUCET</span>
+      </h1>
+      <p class="mono" style="color: #888; margin-top: 0.5rem;">Request testnet SOL via Phantom</p>
+    </header>
+
+    <div class="card-retro" style="padding: 2rem;">
+
+      <!-- Status -->
+      <div id="walletStatus" class="mono" style="padding: 1rem; background: #0b0f17; border: 1px solid #333; margin-bottom: 1.5rem;">
+        <span style="color: #ff6b6b;">Wallet not connected</span>
+      </div>
+
+      <!-- Balance -->
+      <div id="balanceDisplay" class="mono" style="padding: 1rem; background: #0b0f17; border: 1px solid #333; margin-bottom: 1.5rem; display: none;">
+        Balance: <span id="balanceValue" class="neon-text">0</span> SOL
+      </div>
+
+      <!-- Airdrop Controls -->
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+
+        <button id="connectBtn" class="btn-retro-neon mono" style="padding: 1rem; font-size: 1rem; width: 100%;">
+          CONNECT PHANTOM
+        </button>
+
+        <button id="airdropBtn" class="btn-retro mono" style="padding: 1rem; font-size: 1rem; width: 100%; display: none;" disabled>
+          REQUEST 1 SOL AIRDROP
+        </button>
+
+        <button id="airdrop2Btn" class="btn-retro mono" style="padding: 1rem; font-size: 1rem; width: 100%; display: none;" disabled>
+          REQUEST 2 SOL AIRDROP
+        </button>
+
+        <button id="refreshBalBtn" class="btn-retro mono" style="padding: 0.75rem; font-size: 0.85rem; width: 100%; display: none;">
+          REFRESH BALANCE
+        </button>
+
+        <!-- Web faucet link (most reliable) -->
+        <div id="webFaucetLink" style="display: none; text-align: center; padding: 1rem; background: #0b0f17; border: 1px solid #00ff9c44; margin-top: 0.5rem;">
+          <p class="mono" style="font-size: 0.8rem; color: #888; margin-bottom: 0.75rem;">
+            If RPC airdrop fails, use the web faucet (sign in with GitHub for higher limits):
+          </p>
+          <a href="https://faucet.solana.com/" target="_blank" class="btn-retro-neon mono" style="display: inline-block; padding: 0.75rem 1.5rem; text-decoration: none;">
+            OPEN FAUCET.SOLANA.COM
+          </a>
+          <p id="addressCopy" class="mono" style="font-size: 0.7rem; color: #555; margin-top: 0.75rem; cursor: pointer; word-break: break-all;" title="Click to copy">
+          </p>
+        </div>
+
+        <!-- Transfer to CLI keypair -->
+        <div id="transferSection" style="display: none; margin-top: 1rem; border-top: 1px solid #333; padding-top: 1rem;">
+          <label class="mono" style="font-size: 0.85rem; color: #888; display: block; margin-bottom: 0.5rem;">
+            TRANSFER TO MINTING AUTHORITY:
+          </label>
+          <input id="targetAddress" type="text" class="mono"
+            value="899V7bpo8vbtAT39nD1TmdZNfDXwph6vYiQiujwLeJBs"
+            style="width: 100%; padding: 0.75rem; background: #0b0f17; border: 1px solid #444; color: #fff; font-size: 0.75rem; margin-bottom: 0.75rem;"
+          />
+          <div style="display: flex; gap: 0.5rem;">
+            <input id="transferAmount" type="number" step="0.1" value="1" min="0.01"
+              class="mono" style="flex: 1; padding: 0.75rem; background: #0b0f17; border: 1px solid #444; color: #fff;"
+            />
+            <button id="transferBtn" class="btn-retro-neon mono" style="padding: 0.75rem 1.5rem;">
+              SEND SOL
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log -->
+      <div id="logOutput" class="mono" style="margin-top: 1.5rem; padding: 1rem; background: #050708; border: 1px solid #222; font-size: 0.75rem; max-height: 300px; overflow-y: auto; white-space: pre-wrap; color: #888;">
+> Devnet Faucet ready. Connect Phantom to begin.
+</div>
+
+    </div>
+
+    <nav style="margin-top: 2rem; text-align: center;">
+      <a href="/settings" class="btn-retro mono">SETTINGS</a>
+      <a href="/nft-gallery" class="btn-retro-neon mono" style="margin-left: 1rem;">NFT GALLERY</a>
+    </nav>
+  </div>
+</div>
+
+</BaseLayout>
+
+<script is:inline>
+  const DEVNET_RPC = 'https://api.devnet.solana.com';
+  let connection = null;
+  let walletPubkey = null;
+  let phantomProvider = null;
+
+  const logEl = document.getElementById('logOutput');
+  function log(msg) {
+    const time = new Date().toLocaleTimeString();
+    logEl.textContent += `\n[${time}] ${msg}`;
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  // Detect Phantom across browsers
+  // Firefox: window.phantom.solana, Chrome: window.solana
+  // Phantom may also inject late, so we poll + listen for events
+  function getPhantom() {
+    if (phantomProvider) return phantomProvider;
+
+    // Check all known injection points
+    const candidates = [
+      window.phantom?.solana,
+      window.solana,
+      window.phantom?.ethereum,  // some versions
+    ];
+
+    for (const c of candidates) {
+      if (c && c.isPhantom) {
+        phantomProvider = c;
+        return phantomProvider;
+      }
+    }
+
+    return null;
+  }
+
+  // Wait for Phantom to inject (it may load after our script)
+  function waitForPhantom(timeoutMs) {
+    return new Promise((resolve) => {
+      // Already available?
+      const found = getPhantom();
+      if (found) return resolve(found);
+
+      // Listen for Phantom's custom event
+      const handler = () => {
+        const p = getPhantom();
+        if (p) {
+          window.removeEventListener('phantom#initialized', handler);
+          resolve(p);
+        }
+      };
+      window.addEventListener('phantom#initialized', handler);
+
+      // Also poll every 200ms as fallback
+      let elapsed = 0;
+      const interval = setInterval(() => {
+        elapsed += 200;
+        const p = getPhantom();
+        if (p) {
+          clearInterval(interval);
+          window.removeEventListener('phantom#initialized', handler);
+          resolve(p);
+        } else if (elapsed >= timeoutMs) {
+          clearInterval(interval);
+          window.removeEventListener('phantom#initialized', handler);
+          resolve(null);
+        }
+      }, 200);
+    });
+  }
+
+  async function getConnection() {
+    if (!connection && window.solanaWeb3) {
+      connection = new window.solanaWeb3.Connection(DEVNET_RPC, 'confirmed');
+    }
+    return connection;
+  }
+
+  async function updateBalance() {
+    if (!walletPubkey) return;
+    try {
+      const resp = await fetch(DEVNET_RPC, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 1,
+          method: 'getBalance',
+          params: [walletPubkey]
+        })
+      });
+      const data = await resp.json();
+      if (data.result) {
+        const sol = (data.result.value / 1e9).toFixed(4);
+        document.getElementById('balanceValue').textContent = sol;
+        document.getElementById('balanceDisplay').style.display = 'block';
+        return parseFloat(sol);
+      }
+    } catch (e) {
+      log('Balance check failed: ' + e.message);
+    }
+    return 0;
+  }
+
+  // Connect Phantom
+  document.getElementById('connectBtn').addEventListener('click', async () => {
+    log('Searching for Phantom provider...');
+
+    // Debug: log what wallet objects exist
+    log('  window.solana: ' + (typeof window.solana) + (window.solana?.isPhantom ? ' (isPhantom)' : ''));
+    log('  window.phantom: ' + (typeof window.phantom));
+    log('  window.phantom?.solana: ' + (typeof window.phantom?.solana) + (window.phantom?.solana?.isPhantom ? ' (isPhantom)' : ''));
+
+    // Wait up to 3 seconds for Phantom to inject
+    const provider = await waitForPhantom(3000);
+
+    if (!provider) {
+      log('ERROR: Phantom provider not detected after 3s.');
+      log('Troubleshooting:');
+      log('  1. Is the Phantom extension installed and enabled?');
+      log('  2. Refresh the page and try again');
+      log('  3. Check Phantom Settings > Connected Apps > ensure this site is not blocked');
+      log('  4. Try disabling other wallet extensions that might conflict');
+      return;
+    }
+
+    try {
+      log('Found Phantom! Requesting connection...');
+      const resp = await provider.connect();
+      walletPubkey = resp.publicKey.toString();
+
+      document.getElementById('walletStatus').innerHTML =
+        '<span style="color:#00ff9c">Connected: ' + walletPubkey.slice(0, 8) + '...' + walletPubkey.slice(-6) + '</span>' +
+        '<br><span style="color:#888;font-size:0.75rem">Network: Devnet</span>';
+
+      document.getElementById('connectBtn').style.display = 'none';
+      document.getElementById('airdropBtn').style.display = 'block';
+      document.getElementById('airdrop2Btn').style.display = 'block';
+      document.getElementById('refreshBalBtn').style.display = 'block';
+      document.getElementById('airdropBtn').disabled = false;
+      document.getElementById('airdrop2Btn').disabled = false;
+      document.getElementById('transferSection').style.display = 'block';
+      document.getElementById('webFaucetLink').style.display = 'block';
+      document.getElementById('addressCopy').textContent = walletPubkey + ' (click to copy)';
+
+      log('Connected: ' + walletPubkey);
+      log('Try RPC airdrop below, or use faucet.solana.com with your address.');
+      await updateBalance();
+
+    } catch (e) {
+      log('Connection failed: ' + e.message);
+    }
+  });
+
+  // Multiple RPC endpoints to try (public faucets have different availability)
+  const RPC_ENDPOINTS = [
+    { name: 'Devnet (primary)', url: 'https://api.devnet.solana.com' },
+    { name: 'Testnet', url: 'https://api.testnet.solana.com' },
+  ];
+
+  // Airdrop function — tries multiple RPC endpoints
+  async function requestAirdrop(amountSOL) {
+    if (!walletPubkey) return;
+
+    const btn = amountSOL === 1 ? document.getElementById('airdropBtn') : document.getElementById('airdrop2Btn');
+    btn.disabled = true;
+    btn.textContent = 'REQUESTING...';
+
+    log('Requesting ' + amountSOL + ' SOL airdrop...');
+
+    // Try each RPC endpoint
+    for (const ep of RPC_ENDPOINTS) {
+      log('  Trying ' + ep.name + '...');
+      try {
+        const resp = await fetch(ep.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0', id: 1,
+            method: 'requestAirdrop',
+            params: [walletPubkey, amountSOL * 1e9]
+          })
+        });
+
+        const data = await resp.json();
+
+        if (data.result) {
+          log('SUCCESS on ' + ep.name + '! Sig: ' + data.result.slice(0, 20) + '...');
+          log('Waiting for confirmation...');
+
+          // Poll for confirmation
+          let confirmed = false;
+          for (let i = 0; i < 20; i++) {
+            await new Promise(r => setTimeout(r, 2000));
+            try {
+              const statusResp = await fetch(ep.url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0', id: 1,
+                  method: 'getSignatureStatuses',
+                  params: [[data.result]]
+                })
+              });
+              const statusData = await statusResp.json();
+              const status = statusData.result?.value?.[0];
+              if (status && (status.confirmationStatus === 'confirmed' || status.confirmationStatus === 'finalized')) {
+                confirmed = true;
+                break;
+              }
+            } catch (e) { /* retry */ }
+          }
+
+          log(confirmed ? 'CONFIRMED! Airdrop received.' : 'Sent but confirmation timed out. Check balance.');
+          await updateBalance();
+          btn.disabled = false;
+          btn.textContent = amountSOL === 1 ? 'REQUEST 1 SOL AIRDROP' : 'REQUEST 2 SOL AIRDROP';
+          return; // Success — stop trying other endpoints
+        } else if (data.error) {
+          log('  ' + ep.name + ': ' + data.error.message);
+        }
+      } catch (e) {
+        log('  ' + ep.name + ' error: ' + e.message);
+      }
+    }
+
+    // All endpoints failed
+    log('All RPC faucets are currently down/rate-limited.');
+    log('ALTERNATIVE: Open faucet.solana.com in your browser, sign in with GitHub, and paste your address:');
+    log('  ' + walletPubkey);
+    log('Or check Phantom wallet UI for a built-in devnet faucet button.');
+
+    btn.disabled = false;
+    btn.textContent = amountSOL === 1 ? 'REQUEST 1 SOL AIRDROP' : 'REQUEST 2 SOL AIRDROP';
+  }
+
+  document.getElementById('airdropBtn').addEventListener('click', () => requestAirdrop(1));
+  document.getElementById('airdrop2Btn').addEventListener('click', () => requestAirdrop(2));
+
+  // Transfer SOL to minting authority
+  document.getElementById('transferBtn').addEventListener('click', async () => {
+    const provider = getPhantom();
+    if (!provider || !walletPubkey) {
+      log('Connect wallet first');
+      return;
+    }
+
+    const target = document.getElementById('targetAddress').value.trim();
+    const amount = parseFloat(document.getElementById('transferAmount').value);
+
+    if (!target || target.length < 32) {
+      log('Invalid target address');
+      return;
+    }
+    if (!amount || amount <= 0) {
+      log('Invalid amount');
+      return;
+    }
+
+    const btn = document.getElementById('transferBtn');
+    btn.disabled = true;
+    btn.textContent = 'SENDING...';
+    log('Transferring ' + amount + ' SOL to ' + target.slice(0, 12) + '...');
+
+    try {
+      // Build transfer transaction
+      const { Transaction, SystemProgram, PublicKey, Connection } = window.solanaWeb3 || {};
+
+      if (!Transaction) {
+        // Fallback: use Phantom's built-in transfer
+        log('Building transaction via Phantom...');
+
+        // We need solana web3 loaded. Try dynamic load.
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js';
+        script.onload = async () => {
+          const sw3 = window.solanaWeb3;
+          const conn = new sw3.Connection(DEVNET_RPC, 'confirmed');
+          const fromPubkey = new sw3.PublicKey(walletPubkey);
+          const toPubkey = new sw3.PublicKey(target);
+          const lamports = Math.floor(amount * sw3.LAMPORTS_PER_SOL);
+
+          const tx = new sw3.Transaction().add(
+            sw3.SystemProgram.transfer({ fromPubkey, toPubkey, lamports })
+          );
+
+          const { blockhash } = await conn.getLatestBlockhash();
+          tx.recentBlockhash = blockhash;
+          tx.feePayer = fromPubkey;
+
+          const signed = await provider.signTransaction(tx);
+          const sig = await conn.sendRawTransaction(signed.serialize());
+          await conn.confirmTransaction(sig);
+
+          log('Transfer SUCCESS! Sig: ' + sig);
+          await updateBalance();
+          btn.disabled = false;
+          btn.textContent = 'SEND SOL';
+        };
+        document.head.appendChild(script);
+        return;
+      }
+
+      const conn = new Connection(DEVNET_RPC, 'confirmed');
+      const fromPubkey = new PublicKey(walletPubkey);
+      const toPubkey = new PublicKey(target);
+      const lamports = Math.floor(amount * 1e9);
+
+      const tx = new Transaction().add(
+        SystemProgram.transfer({ fromPubkey, toPubkey, lamports })
+      );
+
+      const { blockhash } = await conn.getLatestBlockhash();
+      tx.recentBlockhash = blockhash;
+      tx.feePayer = fromPubkey;
+
+      const signed = await provider.signTransaction(tx);
+      const sig = await conn.sendRawTransaction(signed.serialize());
+      await conn.confirmTransaction(sig);
+
+      log('Transfer SUCCESS! Sig: ' + sig);
+      await updateBalance();
+
+    } catch (e) {
+      log('Transfer failed: ' + e.message);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'SEND SOL';
+  });
+
+  // Refresh balance button
+  document.getElementById('refreshBalBtn')?.addEventListener('click', async () => {
+    log('Refreshing balance...');
+    const bal = await updateBalance();
+    log('Balance: ' + (bal || 0) + ' SOL');
+  });
+
+  // Copy address on click
+  document.getElementById('addressCopy')?.addEventListener('click', () => {
+    if (walletPubkey) {
+      navigator.clipboard.writeText(walletPubkey).then(() => {
+        log('Address copied to clipboard!');
+        document.getElementById('addressCopy').textContent = walletPubkey + ' (COPIED!)';
+        setTimeout(() => {
+          document.getElementById('addressCopy').textContent = walletPubkey + ' (click to copy)';
+        }, 2000);
+      });
+    }
+  });
+</script>
+
+<style>
+  .faucet-page {
+    min-height: 100vh;
+    background: var(--bg-dark, #05070a);
+    padding: 3rem 2rem;
+  }
+</style>

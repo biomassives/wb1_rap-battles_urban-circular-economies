@@ -1,5 +1,5 @@
 /**
- * AutoMoog DSP Engine v2.0
+ * WorldBridger Moog DSP Engine v2.0
  *
  * DSP-focused analog-style generative music engine inspired by Moog modular synthesis.
  *
@@ -848,7 +848,7 @@ class SoftSaturation {
 }
 
 // ============================================================================
-// AUTOMOOG VOICE - Complete synth voice with all components
+// WORLDBRIDGER MOOG VOICE - Complete synth voice with all components
 // ============================================================================
 
 class AutoMoogVoice {
@@ -1047,7 +1047,7 @@ class AutoMoogVoice {
   }
 
   start() {
-    console.log('AutoMoogVoice.start() called');
+    console.log('WorldBridger Moog Voice.start() called');
     this._running = true;
 
     console.log('Starting oscillators...');
@@ -1068,7 +1068,7 @@ class AutoMoogVoice {
     this.lfo1.start();
     this.lfo2.start();
     this.lfo3.start();
-    console.log('AutoMoogVoice fully started');
+    console.log('WorldBridger Moog Voice fully started');
   }
 
   stop() {

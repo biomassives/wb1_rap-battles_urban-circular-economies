@@ -13,8 +13,7 @@
  * - featured: boolean (optional - only featured)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function GET({ request }) {
@@ -28,9 +27,6 @@ export async function GET({ request }) {
     const walletAddress = url.searchParams.get('walletAddress');
     const search = url.searchParams.get('search');
     const featured = url.searchParams.get('featured') === 'true';
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     const challenges = await sql`
       SELECT
         c.id,

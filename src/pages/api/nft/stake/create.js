@@ -1,8 +1,7 @@
 // /api/nft/stake/create.js
 // Stake an NFT for project support, user sponsorship, or governance
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 const STAKE_REWARDS = {
   project_boost: {
     xpMultiplier: 1.5, // 50% bonus XP from project activities
@@ -64,9 +63,6 @@ export async function POST({ request }) {
         error: 'Duration must be between 7 and 365 days'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check if NFT exists and belongs to user (simplified - in production would verify on-chain)
     const existingStake = await sql`
       SELECT id FROM nft_stakes
@@ -220,8 +216,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     const stakes = await sql`
       SELECT
         s.id,

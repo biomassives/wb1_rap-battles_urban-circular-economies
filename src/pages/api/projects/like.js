@@ -1,8 +1,7 @@
 // /api/projects/like.js
 // Like or unlike a project
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function POST({ request }) {
   try {
     const body = await request.json();
@@ -27,9 +26,6 @@ export async function POST({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get project
     const projectQuery = projectId
       ? sql`SELECT id, like_count FROM user_projects WHERE id = ${projectId}`

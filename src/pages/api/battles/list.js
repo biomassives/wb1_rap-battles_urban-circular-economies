@@ -9,8 +9,7 @@
  * - walletAddress: string (optional, to check user's votes)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function GET({ request }) {
@@ -20,9 +19,6 @@ export async function GET({ request }) {
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
     const offset = parseInt(url.searchParams.get('offset') || '0');
     const walletAddress = url.searchParams.get('walletAddress');
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     // Build status filter
     let statusFilter = '';
     if (status !== 'all') {

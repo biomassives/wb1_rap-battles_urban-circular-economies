@@ -376,7 +376,7 @@ window.finalizeWalletSetup = async function(mnemonic, pin) {
     // Update WalletManager
     if (window.walletManager) {
       window.walletManager.connectedWallet = wallet.publicKey;
-      window.walletManager.walletType = 'Purple Point Wallet';
+      window.walletManager.walletType = 'WorldBridger One Wallet';
       window.walletManager.isAnonymous = false;
       window.walletManager.updateUI();
 

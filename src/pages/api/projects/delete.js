@@ -1,8 +1,7 @@
 // /api/projects/delete.js
 // Delete a user project
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function DELETE({ request }) {
   try {
     const body = await request.json();
@@ -28,9 +27,6 @@ export async function DELETE({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Verify ownership
     const projectQuery = projectId
       ? sql`SELECT * FROM user_projects WHERE id = ${projectId}`

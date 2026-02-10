@@ -1,8 +1,7 @@
 // /api/data/health/log.js
 // Log health/biometric observations (privacy-first)
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 const XP_VALUES = {
   activity: 10,
   wellness: 15,
@@ -54,9 +53,6 @@ export async function POST({ request }) {
         error: 'Data payload is required'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Calculate XP
     let xpEarned = XP_VALUES[observationType] || 10;
 
@@ -159,8 +155,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get summary stats
     const stats = await sql`
       SELECT

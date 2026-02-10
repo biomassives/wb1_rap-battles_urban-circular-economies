@@ -8,8 +8,7 @@
  * Returns connection status, server version, and existing table list
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function POST({ request }) {
@@ -144,7 +143,6 @@ export async function POST({ request }) {
 export async function GET() {
   try {
     const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL;
-
     if (!dbUrl) {
       return new Response(JSON.stringify({
         success: false,
@@ -155,8 +153,6 @@ export async function GET() {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(dbUrl);
     const startTime = Date.now();
     const result = await sql`SELECT current_database() as db_name, current_user as db_user`;
     const latency = Date.now() - startTime;

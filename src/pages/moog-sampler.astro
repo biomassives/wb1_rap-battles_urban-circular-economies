@@ -2,11 +2,11 @@
 /**
  * moog-sampler.astro - Moog Sample Recorder
  *
- * Record samples from the AutoMoog synthesizer and save them to localStorage.
+ * Record samples from the WorldBridger Moog synthesizer and save them to localStorage.
  * Samples can be imported into the Rap Battle arena or played alongside other pages.
  *
  * Features:
- * - Live AutoMoog synthesis with full controls
+ * - Live WorldBridger Moog synthesis with full controls
  * - Record Moog output directly (not microphone)
  * - Save samples to localStorage library
  * - Export samples to rap battle backing tracks
@@ -18,7 +18,7 @@ import MoogLooper from '../components/MoogLooper.astro';
 
 <BaseLayout
   title="Moog Sample Recorder"
-  description="Record samples from AutoMoog synthesizer for use in battles and tracks"
+  description="Record samples from WorldBridger Moog synthesizer for use in battles and tracks"
   activeSection="music"
 >
 
@@ -484,13 +484,13 @@ import MoogLooper from '../components/MoogLooper.astro';
   <div class="sampler-container">
     <header class="sampler-header">
       <h1 class="sampler-title">Moog Sample Recorder</h1>
-      <p class="sampler-subtitle">Create and record samples from the AutoMoog synthesizer</p>
+      <p class="sampler-subtitle">Create and record samples from the WorldBridger Moog synthesizer</p>
     </header>
 
     <div class="sampler-layout">
       <!-- Left Column: Moog + Recording -->
       <div class="main-column">
-        <!-- AutoMoog Component -->
+        <!-- WorldBridger Moog Component -->
         <div class="panel">
           <MoogLooper />
         </div>
@@ -557,7 +557,7 @@ import MoogLooper from '../components/MoogLooper.astro';
           <div class="sample-list" id="sample-list">
             <div class="empty-library">
               <p>No samples yet</p>
-              <p>Record from AutoMoog to build your library</p>
+              <p>Record from WorldBridger Moog to build your library</p>
             </div>
           </div>
 
@@ -577,7 +577,7 @@ import MoogLooper from '../components/MoogLooper.astro';
 <script>
 /**
  * Moog Sample Recorder
- * Records audio from the AutoMoog synthesizer and saves to localStorage
+ * Records audio from the WorldBridger Moog synthesizer and saves to localStorage
  */
 
 class MoogSampleRecorder {
@@ -634,7 +634,7 @@ class MoogSampleRecorder {
     // Export button
     this.exportBtn.addEventListener('click', () => this.exportToRapBattle());
 
-    // Listen for mood changes from AutoMoog
+    // Listen for mood changes from WorldBridger Moog
     const moodSelector = document.getElementById('mood-selector');
     if (moodSelector) {
       moodSelector.addEventListener('change', (e) => {
@@ -654,17 +654,17 @@ class MoogSampleRecorder {
 
   async startRecording() {
     try {
-      // We need to capture the audio from the AutoMoog
+      // We need to capture the audio from the WorldBridger Moog
       // Since it uses Web Audio API, we'll use MediaStreamDestination
       const autoMoog = window.autoMoogController;
 
       if (!autoMoog || !autoMoog.audioContext) {
-        alert('Please start the AutoMoog engine first, then try recording.');
+        alert('Please start the WorldBridger Moog engine first, then try recording.');
         return;
       }
 
       if (!autoMoog.voice || !autoMoog.voice.masterGain) {
-        alert('AutoMoog voice not initialized. Click "Start Engine" first.');
+        alert('WorldBridger Moog voice not initialized. Click "Start Engine" first.');
         return;
       }
 
@@ -740,11 +740,11 @@ class MoogSampleRecorder {
       // Start timer
       this.startTimer();
 
-      console.log('Recording started - capturing from AutoMoog masterGain');
+      console.log('Recording started - capturing from WorldBridger Moog masterGain');
 
     } catch (error) {
       console.error('Failed to start recording:', error);
-      alert('Could not start recording. Make sure AutoMoog is playing.');
+      alert('Could not start recording. Make sure WorldBridger Moog is playing.');
     }
   }
 
@@ -825,7 +825,7 @@ class MoogSampleRecorder {
         timestamp: new Date().toISOString(),
         dataUrl: reader.result,
         type: 'moog_sample',
-        // Store current AutoMoog settings
+        // Store current WorldBridger Moog settings
         settings: this.captureSettings()
       };
 
@@ -888,7 +888,7 @@ class MoogSampleRecorder {
       this.sampleList.innerHTML = `
         <div class="empty-library">
           <p>No samples yet</p>
-          <p>Record from AutoMoog to build your library</p>
+          <p>Record from WorldBridger Moog to build your library</p>
         </div>
       `;
       this.exportBtn.disabled = true;

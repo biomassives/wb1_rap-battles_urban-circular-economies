@@ -154,6 +154,55 @@ body {
 .bg-primary { background-color: var(--color-primary); }
 .bg-gradient-farm {
   background: linear-gradient(180deg, var(--color-gray-50) 0%, white 100%);
+  color: #1f2937;
+}
+
+/* Hide dark-theme grid overlay on light pages */
+.bg-gradient-farm::after {
+  display: none !important;
+}
+
+/* Override dark-theme heading styles on light backgrounds */
+.bg-gradient-farm h1,
+.bg-gradient-farm h2,
+.bg-gradient-farm h3,
+.bg-gradient-farm h4,
+.bg-gradient-farm h5,
+.bg-gradient-farm h6 {
+  color: #1f2937;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Override dark-theme form styles on light backgrounds */
+.bg-gradient-farm input,
+.bg-gradient-farm textarea,
+.bg-gradient-farm select {
+  background: white;
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+
+/* Sections that explicitly use dark backgrounds keep white text */
+.bg-gradient-farm .progress-hero,
+.bg-gradient-farm .youth-hero,
+.bg-gradient-farm .event-hero,
+.bg-gradient-farm .cta-section,
+.bg-gradient-farm [style*="background: linear-gradient"] {
+  color: white;
+}
+
+.bg-gradient-farm .progress-hero h1,
+.bg-gradient-farm .progress-hero h2,
+.bg-gradient-farm .progress-hero h3,
+.bg-gradient-farm .youth-hero h1,
+.bg-gradient-farm .youth-hero h2,
+.bg-gradient-farm .youth-hero h3,
+.bg-gradient-farm .event-hero h1,
+.bg-gradient-farm .event-hero h2,
+.bg-gradient-farm .event-hero h3,
+.bg-gradient-farm .cta-section h2 {
+  color: white;
 }
 
 /* Text */
@@ -1161,4 +1210,12 @@ button {
     top: 1rem;
     right: 1rem;
   }
+}
+
+/* ============================================ */
+/* UTILITY: DARK TEXT HIGHLIGHT                 */
+/* ============================================ */
+
+.text-dark {
+  color: #1a1a24;
 }

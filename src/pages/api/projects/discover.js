@@ -1,8 +1,7 @@
 // /api/projects/discover.js
 // Discover public projects with filtering, sorting, and pagination
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function GET({ request }) {
   const url = new URL(request.url);
   const category = url.searchParams.get('category');
@@ -14,8 +13,6 @@ export async function GET({ request }) {
   const offset = (page - 1) * limit;
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Build the query with all public, published projects
     let baseQuery = sql`
       SELECT

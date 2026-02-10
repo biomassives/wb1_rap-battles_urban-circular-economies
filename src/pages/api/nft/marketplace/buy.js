@@ -1,8 +1,7 @@
 // /api/nft/marketplace/buy.js
 // Purchase an NFT or place a bid
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function POST({ request }) {
   try {
     const body = await request.json();
@@ -27,9 +26,6 @@ export async function POST({ request }) {
         error: 'Listing ID is required'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get listing
     const listing = await sql`
       SELECT * FROM nft_listings

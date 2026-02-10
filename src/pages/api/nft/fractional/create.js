@@ -1,8 +1,7 @@
 // /api/nft/fractional/create.js
 // Fractionalize an NFT into multiple shares
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function POST({ request }) {
   try {
     const body = await request.json();
@@ -49,9 +48,6 @@ export async function POST({ request }) {
         error: 'Royalty percentage must be between 0 and 15%'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check if NFT is already fractionalized, listed, or staked
     const existingFractional = await sql`
       SELECT id FROM fractional_nfts
@@ -203,8 +199,6 @@ export async function GET({ request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     if (fractionalId) {
       // Get specific fractional NFT details
       const fractional = await sql`

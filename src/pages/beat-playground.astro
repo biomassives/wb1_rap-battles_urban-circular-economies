@@ -3,7 +3,7 @@
  * beat-playground.astro - Beat Exploration & Mixing
  *
  * Standalone environment for:
- * - Exploring all beat sources (Sampler, Strudel, AutoMoog, Upload)
+ * - Exploring all beat sources (Sampler, Strudel, WorldBridger Moog, Upload)
  * - Mixing and layering beats
  * - Adjusting BPM and effects
  * - Saving presets for battles
@@ -2266,7 +2266,7 @@ console.log('🎵🎵🎵 BEAT PLAYGROUND - CORE AUDIO ENGINE 🎵🎵🎵');
       </div>
       <div class="source-option" data-source="moog" onclick="window.selectSource && window.selectSource('moog')">
         <div class="source-option-icon">🎹</div>
-        <div class="source-option-name">AutoMoog</div>
+        <div class="source-option-name">WorldBridger Moog</div>
         <div class="source-option-desc">AI synthesizer</div>
       </div>
       <div class="source-option" data-source="upload" onclick="window.selectSource && window.selectSource('upload')">
@@ -2671,7 +2671,7 @@ class AudioEngine {
     }
   }
 
-  // Create AutoMoog synthesizer sound
+  // Create WorldBridger Moog synthesizer sound
   createMoogSound(freq, time, params = {}) {
     const ctx = this.ctx;
     const {
@@ -2803,7 +2803,7 @@ const synthPatterns = {
   'synth2': { notes: [440, 0, 0, 0, 440, 0, 0, 0, 0, 0, 0, 0, 440, 0, 0, 0], type: 'lead' }
 };
 
-// AutoMoog patterns - synthesizer moods
+// WorldBridger Moog patterns - synthesizer moods
 const moogPatterns = {
   'aggressive': {
     type: 'aggressive',
@@ -2918,7 +2918,7 @@ class LayerPlayer {
         audioEngine.playFX('riser', time, vol * 0.5);
       }
     } else if (this.source === 'moog') {
-      // AutoMoog synthesizer
+      // WorldBridger Moog synthesizer
       const moogId = this.beat.id;
       const moog = moogPatterns[moogId];
 

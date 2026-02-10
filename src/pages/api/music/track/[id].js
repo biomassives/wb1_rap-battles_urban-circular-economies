@@ -11,8 +11,7 @@
  * - NFT data if minted
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function GET({ params }) {
   try {
     const { id } = params;
@@ -31,9 +30,6 @@ export async function GET({ params }) {
     }
 
     console.log(`🔍 Fetching track details for ID: ${id}`);
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get track with artist info
     const trackResult = await sql`
       SELECT

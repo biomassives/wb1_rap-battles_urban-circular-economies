@@ -2,8 +2,7 @@
 // Astro API endpoint to retrieve user profile
 // Updated for Nile DB
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function GET({ request }) {
   // Get wallet address from URL search params
   const url = new URL(request.url);
@@ -21,8 +20,6 @@ export async function GET({ request }) {
 
   try {
     // Connect to Nile DB using Neon serverless driver
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.lab_NILEDB_URL);
-
     // Query user profile from database
     const result = await sql`
       SELECT

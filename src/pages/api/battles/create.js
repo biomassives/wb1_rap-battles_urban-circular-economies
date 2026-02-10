@@ -17,8 +17,8 @@
  * - challengeId: number (optional - linked challenge ID)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
+import { notify } from '../../../lib/notify.js';
 export const prerender = false;
 
 export async function POST({ request }) {
@@ -88,9 +88,6 @@ export async function POST({ request }) {
     // Calculate expiry
     const timeLimitHours = parseInt(timeLimit) || 24;
     const expiresAt = new Date(Date.now() + timeLimitHours * 60 * 60 * 1000);
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     // Create battle
     const result = await sql`
       INSERT INTO battles (
@@ -161,6 +158,24 @@ export async function POST({ request }) {
       `;
     } catch (logError) {
       console.warn('Failed to log activity:', logError.message);
+    }
+
+    // Notify opponent about battle invite
+    if (opponentWallet) {
+      try {
+        await notify(opponentWallet, {
+          category: 'social',
+          type: 'battle_invite',
+          title: 'Battle Challenge!',
+          message: `${challenger.username} challenged you to a ${category} battle`,
+          icon: '⚔️',
+          actionUrl: `/rap-battle?id=${battleId}`,
+          actionLabel: 'Accept Battle',
+          priority: 'high'
+        });
+      } catch (notifError) {
+        console.warn('Notification failed:', notifError.message);
+      }
     }
 
     return new Response(JSON.stringify({

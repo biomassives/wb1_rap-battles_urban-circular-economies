@@ -1,8 +1,7 @@
 // /api/notifications/index.js
 // Get and manage user notifications
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 // GET - Fetch user notifications
 export async function GET({ request }) {
   const url = new URL(request.url);
@@ -20,8 +19,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get notifications
     const notifications = await sql`
       SELECT
@@ -109,9 +106,6 @@ export async function POST({ request }) {
         error: 'Wallet address is required'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     if (action === 'markRead') {
       // Mark specific notifications as read
       if (notificationIds && notificationIds.length > 0) {

@@ -1,8 +1,7 @@
 // /api/data/environmental/submit.js
 // Submit environmental observation data
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 // XP values for environmental observations
 const XP_VALUES = {
   basic: 25,
@@ -55,9 +54,6 @@ export async function POST({ request }) {
         error: 'Data payload is required'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Determine if this is a detailed submission (more XP)
     const isDetailed = mediaUrls.length > 0 && latitude && longitude && Object.keys(dataPayload).length >= 3;
     const isBiodiversity = observationType === 'biodiversity' || observationType === 'wildlife';

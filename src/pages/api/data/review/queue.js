@@ -1,8 +1,7 @@
 // /api/data/review/queue.js
 // Get pending reviews for qualified reviewers
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function GET({ request }) {
   const url = new URL(request.url);
   const reviewerWallet = url.searchParams.get('reviewerWallet');
@@ -18,8 +17,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check if user is a qualified reviewer
     const reviewer = await sql`
       SELECT * FROM data_reviewers
@@ -157,9 +154,6 @@ export async function POST({ request }) {
         error: 'Wallet address is required'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check user level
     const user = await sql`
       SELECT level, xp FROM user_profiles

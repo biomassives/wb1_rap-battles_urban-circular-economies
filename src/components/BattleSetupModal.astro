@@ -5,7 +5,7 @@
  * - Create or Join battle options
  * - Beat selection from sampler banks
  * - Strudel pattern integration
- * - AutoMoog synth connection
+ * - WorldBridger Moog synth connection
  */
 ---
 
@@ -134,7 +134,7 @@
         </button>
         <button class="source-tab" data-source="moog" onclick="switchBeatSource('moog')">
           <span class="tab-icon">🎹</span>
-          <span>AutoMoog</span>
+          <span>WorldBridger Moog</span>
         </button>
         <button class="source-tab" data-source="upload" onclick="switchBeatSource('upload')">
           <span class="tab-icon">📁</span>
@@ -215,11 +215,11 @@
         </div>
       </div>
 
-      <!-- AutoMoog Content -->
+      <!-- WorldBridger Moog Content -->
       <div class="beat-source-content" id="source-moog" style="display: none;">
         <div class="moog-panel">
           <div class="moog-header">
-            <h4>🎹 AutoMoog Synthesizer</h4>
+            <h4>🎹 WorldBridger Moog Synthesizer</h4>
             <p>Generate live accompaniment for your battle</p>
           </div>
           <div class="moog-moods">
@@ -252,7 +252,7 @@
             </div>
           </div>
           <button class="moog-launch-btn" onclick="launchMoogForBattle()">
-            🚀 Launch AutoMoog
+            🚀 Launch WorldBridger Moog
           </button>
         </div>
       </div>
@@ -341,7 +341,7 @@
         <button class="nav-btn back" onclick="goToStep(2)">← Back</button>
         <button class="launch-battle-btn" id="launch-battle-btn" onclick="launchBattle()">
           <span class="btn-icon">🚀</span>
-          <span class="btn-text">LAUNCH BATTLE</span>
+          <span class="btn-text text-dark">LAUNCH BATTLE</span>
           <span class="btn-glow"></span>
         </button>
       </div>
@@ -1731,7 +1731,7 @@ function selectMoogMood(mood) {
 function launchMoogForBattle() {
   battleSetupState.selectedBeat = {
     id: 'moog',
-    name: `AutoMoog (${battleSetupState.moogMood || 'ambient'})`,
+    name: `WorldBridger Moog (${battleSetupState.moogMood || 'ambient'})`,
     type: 'moog',
     mood: battleSetupState.moogMood
   };
@@ -1982,7 +1982,7 @@ const tourSteps = [
   {
     element: '.beat-source-tabs',
     title: 'Choose Your Beat',
-    text: 'Select from Sampler Bank (pre-made beats), Strudel (live-coded patterns), AutoMoog (AI synth), or upload your own.',
+    text: 'Select from Sampler Bank (pre-made beats), Strudel (live-coded patterns), WorldBridger Moog (AI synth), or upload your own.',
     position: 'bottom',
     step: 2
   },
@@ -2233,7 +2233,7 @@ const tooltipDefinitions = {
     content: 'Live-coded beat patterns using Strudel. Choose from presets or write your own code for unique sounds.'
   },
   'moog': {
-    title: 'AutoMoog Synthesizer',
+    title: 'WorldBridger Moog Synthesizer',
     content: 'AI-powered synthesizer that generates live accompaniment based on your selected mood. Experimental and unique!'
   },
   'upload': {

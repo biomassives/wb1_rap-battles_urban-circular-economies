@@ -18,8 +18,7 @@
  * - isPublic: boolean (default: true)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 function generateInviteCode() {
@@ -106,9 +105,6 @@ export async function POST({ request }) {
     const inviteCode = generateInviteCode();
     const expiresAt = new Date(Date.now() + durationHours * 60 * 60 * 1000);
     const minParticipants = mode === '1v1' ? 2 : 2;
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     // Insert challenge
     const result = await sql`
       INSERT INTO challenges (

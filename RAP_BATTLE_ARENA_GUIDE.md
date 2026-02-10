@@ -31,7 +31,7 @@ The Rap Battle Arena is an interactive platform where users can create, join, an
 │  Beat Selection     │
 │  - Sampler Bank     │
 │  - Strudel Patterns │
-│  - AutoMoog Synth   │
+│  - WorldBridger Moog Synth │
 │  - File Upload      │
 └────────┬────────┘
          │
@@ -109,7 +109,7 @@ Allow new users to explore the battle arena without commitment, understand the i
 |--------|-------------|----------|-------------|
 | **Sampler Bank** | Pre-loaded drum kits & loops | Quick setup, consistent quality | Beginner |
 | **Strudel Patterns** | Live-coded generative beats | Creative control, unique sounds | Intermediate |
-| **AutoMoog Synth** | AI-assisted synthesizer | Ambient/experimental backing | Advanced |
+| **WorldBridger Moog Synth** | AI-assisted synthesizer | Ambient/experimental backing | Advanced |
 | **File Upload** | Custom audio files | Personal beats, produced tracks | Any |
 
 ### Sampler Bank Categories
@@ -148,7 +148,7 @@ Allow new users to explore the battle arena without commitment, understand the i
 | Drill | `s("bd ~ ~ bd sd ~ bd ~").bank("RolandTR808").fast(1.2)` | UK/Chicago drill |
 | Afrobeat | `s("bd ~ sd bd ~ sd bd sd").bank("RolandTR808").swing(0.2)` | African rhythm |
 
-### AutoMoog Mood Settings
+### WorldBridger Moog Mood Settings
 
 | Mood | Energy | Warmth | Character |
 |------|--------|--------|-----------|
@@ -179,7 +179,7 @@ BEGINNER (0-100 XP)
 INTERMEDIATE (100-500 XP)
 ├── Create custom Strudel pattern
 ├── Win 3 battles
-├── Use AutoMoog in battle
+├── Use WorldBridger Moog in battle
 └── Invite opponent via code
 
 ADVANCED (500-1000 XP)
@@ -260,7 +260,7 @@ const tourSteps = [
   {
     element: '.beat-source-tabs',
     title: 'Choose Your Beat',
-    text: 'Pick from sampler, Strudel patterns, AutoMoog, or upload your own'
+    text: 'Pick from sampler, Strudel patterns, WorldBridger Moog, or upload your own'
   },
   {
     element: '.stakes-selector',
@@ -351,7 +351,7 @@ const practiceMode = {
 
 3. **Beat Playground Page** - `/beat-playground`
    - Layer-based beat mixing (up to 4 layers)
-   - All beat sources: Sampler, Strudel, AutoMoog, Upload
+   - All beat sources: Sampler, Strudel, WorldBridger Moog, Upload
    - BPM control (60-180)
    - Transport controls (play, stop, record)
    - Preset system (built-in + save custom)
@@ -385,7 +385,7 @@ const practiceMode = {
 | `src/pages/rap-battle.astro` | Main battle arena page |
 | `src/components/BattleSetupModal.astro` | Setup wizard modal |
 | `public/scripts/wb1-challenge-manager.js` | Challenge state management |
-| `public/scripts/automoog-moods.js` | AutoMoog synthesizer |
+| `public/scripts/automoog-moods.js` | WorldBridger Moog synthesizer |
 | `public/scripts/battle-strudel-player.js` | Strudel integration |
 
 ---

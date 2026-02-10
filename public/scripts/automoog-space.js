@@ -1,5 +1,5 @@
 /**
- * AutoMoog 3D Parameter Space v2.0
+ * WorldBridger Moog 3D Parameter Space v2.0
  *
  * Manages the synth's position in a 3D control space where:
  * - X axis = Timbre (oscillator mix, wave shape, drive)

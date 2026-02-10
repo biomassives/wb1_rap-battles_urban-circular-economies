@@ -2,8 +2,7 @@
 // Astro API endpoint to create or update user profile
 // Updated for Nile DB
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function POST({ request }) {
@@ -71,8 +70,7 @@ export async function POST({ request }) {
     }
 
     // Connect to Nile DB using Neon serverless driver
-    const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL || process.env.lab_POSTGRES_URL;
-
+    const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL;
     if (!dbUrl) {
       return new Response(JSON.stringify({
         success: false,
@@ -82,9 +80,6 @@ export async function POST({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(dbUrl);
-
     // Use PostgreSQL UPSERT (INSERT ... ON CONFLICT ... UPDATE)
     const result = await sql`
       INSERT INTO user_profiles (

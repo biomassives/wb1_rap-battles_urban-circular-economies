@@ -1,8 +1,7 @@
 // /api/notifications/preferences.js
 // Manage notification preferences
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 // GET - Get user's notification preferences
 export async function GET({ request }) {
   const url = new URL(request.url);
@@ -16,8 +15,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     const prefs = await sql`
       SELECT * FROM notification_preferences
       WHERE wallet_address = ${walletAddress}
@@ -96,9 +93,6 @@ export async function POST({ request }) {
         error: 'Wallet address is required'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     await sql`
       INSERT INTO notification_preferences (
         wallet_address,

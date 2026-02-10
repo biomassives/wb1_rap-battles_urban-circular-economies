@@ -1,8 +1,7 @@
 // /api/payout/gift-cards/redeem.js
 // Redeem XP for a gift card
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function POST({ request }) {
   try {
     const body = await request.json();
@@ -57,9 +56,6 @@ export async function POST({ request }) {
         error: `${deliveryMethod === 'email' ? 'Email' : 'Phone number'} is required for ${deliveryMethod} delivery`
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get gift card details
     const catalog = await sql`
       SELECT * FROM gift_card_catalog
@@ -265,8 +261,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     const redemptions = await sql`
       SELECT
         r.id,

@@ -10,8 +10,8 @@
  * - metadata: object (optional)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
+import { notifyFromTemplate } from '../../../lib/notify.js';
 export const prerender = false;
 
 export async function POST({ request }) {
@@ -74,8 +74,7 @@ export async function POST({ request }) {
     }
 
     // Try to connect to database
-    const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL || process.env.lab_POSTGRES_URL;
-
+    const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL;
     if (!dbUrl) {
       console.warn('No database URL configured');
       return new Response(JSON.stringify({
@@ -89,9 +88,6 @@ export async function POST({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(dbUrl);
-
     // Get current user stats (or create if not exists)
     let userResult;
     try {
@@ -242,6 +238,21 @@ export async function POST({ request }) {
         description: 'Reached Level 50',
         xp_bonus: 1000
       });
+    }
+
+    // Send notifications
+    try {
+      await notifyFromTemplate(walletAddress, 'xp_earned', {
+        amount: xpAmount,
+        description: description || activityType
+      });
+      if (leveledUp) {
+        await notifyFromTemplate(walletAddress, 'level_up', {
+          level: newLevel
+        });
+      }
+    } catch (notifError) {
+      console.warn('Notification failed:', notifError.message);
     }
 
     return new Response(JSON.stringify({

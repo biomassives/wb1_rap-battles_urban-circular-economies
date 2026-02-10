@@ -1,0 +1,829 @@
+---
+/**
+ * reports.astro — Status Report Portal
+ * Generate PDF reports for battles, healthcare, water systems, community impact
+ * Role-based access: admin sees all, moderator/mentor see subset
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+export const prerender = false;
+---
+
+<BaseLayout title="Status Reports" description="Generate operational PDF reports" activeSection="home">
+
+<div class="reports-page">
+
+  <header class="reports-header">
+    <h1>Status Report Portal</h1>
+    <p class="subtitle">Generate operational reports across all platform domains</p>
+  </header>
+
+  <!-- Auth Gate -->
+  <div id="auth-gate" class="auth-gate">
+    <div class="gate-card">
+      <div class="gate-icon">🔒</div>
+      <p>Connect your wallet to access reports.</p>
+      <p class="gate-hint">Reports are available to admin, moderator, and mentor roles.</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="report-content" class="report-content" style="display:none;">
+
+    <!-- Step 1: Template Selector -->
+    <section class="report-step" id="step-template">
+      <h2 class="step-label">1. Select Report Type</h2>
+      <div class="template-grid" id="template-grid"></div>
+      <div id="no-access" class="no-access" style="display:none;">
+        <p>Your role does not have access to any report types.</p>
+        <p class="gate-hint">Contact an admin for role assignment.</p>
+      </div>
+    </section>
+
+    <!-- Step 2: Configuration -->
+    <section class="report-step" id="step-config" style="display:none;">
+      <h2 class="step-label">2. Configure Report</h2>
+
+      <div class="config-card">
+        <label class="config-label">Date Range</label>
+        <div class="date-inputs">
+          <input type="date" id="date-from" />
+          <span class="date-sep">to</span>
+          <input type="date" id="date-to" />
+        </div>
+        <div class="quick-ranges">
+          <button class="range-btn" data-range="7d">7 Days</button>
+          <button class="range-btn active" data-range="30d">30 Days</button>
+          <button class="range-btn" data-range="90d">90 Days</button>
+          <button class="range-btn" data-range="ytd">Year to Date</button>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <label class="config-label">Include Sections</label>
+        <div id="section-checkboxes" class="section-checks"></div>
+      </div>
+
+      <button id="btn-generate" class="btn-generate">
+        <span id="btn-generate-text">Generate Report</span>
+        <span id="btn-generate-spinner" class="spinner" style="display:none;"></span>
+      </button>
+    </section>
+
+    <!-- Step 3: Preview + PDF -->
+    <section class="report-step" id="step-preview" style="display:none;">
+      <div class="preview-header">
+        <h2 class="step-label">3. Report Preview</h2>
+        <div class="preview-actions">
+          <button id="btn-download-pdf" class="btn-pdf">Download PDF</button>
+          <button id="btn-print" class="btn-secondary-sm" onclick="window.print()">Print</button>
+          <button id="btn-new-report" class="btn-secondary-sm">New Report</button>
+        </div>
+      </div>
+      <div id="report-preview" class="report-preview"></div>
+    </section>
+
+  </div>
+</div>
+
+<!-- jsPDF CDN -->
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+
+<script is:inline>
+(function() {
+  // State
+  let selectedTemplate = null;
+  let currentReport = null;
+  let userRole = 'member';
+  let templates = [];
+
+  const wallet = localStorage.getItem('connectedWallet') || localStorage.getItem('anonymousWallet');
+  if (!wallet) return;
+
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('report-content').style.display = 'block';
+  init();
+
+  async function init() {
+    try {
+      const res = await fetch('/api/reports/check-role?walletAddress=' + encodeURIComponent(wallet));
+      const data = await res.json();
+      userRole = data.role || 'member';
+      templates = data.accessibleTemplates || [];
+    } catch (e) {
+      templates = [];
+    }
+
+    if (templates.length === 0) {
+      document.getElementById('template-grid').style.display = 'none';
+      document.getElementById('no-access').style.display = 'block';
+      return;
+    }
+
+    renderTemplateGrid();
+    setDefaultDates('30d');
+    setupListeners();
+  }
+
+  function renderTemplateGrid() {
+    const grid = document.getElementById('template-grid');
+    grid.innerHTML = templates.map(t => `
+      <div class="template-card" data-id="${t.id}">
+        <div class="template-icon">${t.icon}</div>
+        <h3>${t.name}</h3>
+        <p>${t.description}</p>
+        <div class="template-meta">${t.sectionCount} sections</div>
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('.template-card').forEach(card => {
+      card.addEventListener('click', () => selectTemplate(card.dataset.id));
+    });
+  }
+
+  function selectTemplate(id) {
+    selectedTemplate = templates.find(t => t.id === id);
+    if (!selectedTemplate) return;
+
+    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector(`[data-id="${id}"]`).classList.add('selected');
+
+    // Show config
+    document.getElementById('step-config').style.display = 'block';
+    document.getElementById('step-preview').style.display = 'none';
+
+    // Render section checkboxes
+    const checksDiv = document.getElementById('section-checkboxes');
+    checksDiv.innerHTML = selectedTemplate.sections.map(s => `
+      <label class="section-check">
+        <input type="checkbox" value="${s.id}"
+          ${s.defaultEnabled ? 'checked' : ''}
+          ${!s.optional ? 'checked disabled' : ''}>
+        <span class="check-info">
+          <span class="check-title">${s.title}</span>
+          <span class="check-desc">${s.description}</span>
+        </span>
+      </label>
+    `).join('');
+
+    document.getElementById('step-config').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setDefaultDates(range) {
+    const now = new Date();
+    let from;
+    if (range === '7d') from = new Date(now - 7 * 86400000);
+    else if (range === '30d') from = new Date(now - 30 * 86400000);
+    else if (range === '90d') from = new Date(now - 90 * 86400000);
+    else if (range === 'ytd') from = new Date(now.getFullYear(), 0, 1);
+    else from = new Date(now - 30 * 86400000);
+
+    document.getElementById('date-from').value = from.toISOString().split('T')[0];
+    document.getElementById('date-to').value = now.toISOString().split('T')[0];
+  }
+
+  function setupListeners() {
+    // Quick range buttons
+    document.querySelectorAll('.range-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        setDefaultDates(btn.dataset.range);
+      });
+    });
+
+    // Generate
+    document.getElementById('btn-generate').addEventListener('click', generateReport);
+
+    // New Report
+    document.getElementById('btn-new-report').addEventListener('click', () => {
+      document.getElementById('step-preview').style.display = 'none';
+      document.getElementById('step-template').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // PDF Download
+    document.getElementById('btn-download-pdf').addEventListener('click', downloadPDF);
+  }
+
+  async function generateReport() {
+    if (!selectedTemplate) return;
+
+    const btn = document.getElementById('btn-generate');
+    const btnText = document.getElementById('btn-generate-text');
+    const spinner = document.getElementById('btn-generate-spinner');
+
+    btn.disabled = true;
+    btnText.textContent = 'Generating...';
+    spinner.style.display = 'inline-block';
+
+    const sections = [...document.querySelectorAll('#section-checkboxes input:checked')]
+      .map(cb => cb.value);
+
+    try {
+      const res = await fetch('/api/reports/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: wallet,
+          templateId: selectedTemplate.id,
+          dateFrom: document.getElementById('date-from').value,
+          dateTo: document.getElementById('date-to').value,
+          sections
+        })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        currentReport = data.report;
+        renderPreview(data.report);
+      } else {
+        alert('Error: ' + (data.error || 'Failed to generate report'));
+      }
+    } catch (err) {
+      alert('Network error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = 'Generate Report';
+      spinner.style.display = 'none';
+    }
+  }
+
+  // ── Preview Rendering ──────────────────────────────────────
+
+  function renderPreview(report) {
+    document.getElementById('step-preview').style.display = 'block';
+
+    let html = `
+      <div class="report-title-block">
+        <span class="report-icon">${report.templateIcon || '📊'}</span>
+        <div>
+          <h2>${report.templateName}</h2>
+          <div class="report-meta">
+            <span>Period: ${report.dateFrom} to ${report.dateTo}</span>
+            <span>Generated: ${new Date(report.generatedAt).toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    for (const [sectionId, section] of Object.entries(report.sections)) {
+      html += `<div class="report-section">`;
+      html += `<h3 class="section-title">${section.title}</h3>`;
+      if (section.note) {
+        html += `<p class="section-note">${section.note}</p>`;
+      } else if (section.data === null) {
+        html += `<p class="no-data">No data available for this section</p>`;
+      } else {
+        html += renderSectionData(section.data);
+      }
+      html += `</div>`;
+    }
+
+    document.getElementById('report-preview').innerHTML = html;
+    document.getElementById('step-preview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderSectionData(data) {
+    if (Array.isArray(data)) return renderTable(data);
+    if (data && typeof data === 'object') {
+      let html = '';
+      for (const [key, val] of Object.entries(data)) {
+        if (Array.isArray(val)) {
+          if (val.length > 0) {
+            html += '<h4 class="sub-heading">' + formatKey(key) + '</h4>';
+            html += renderTable(val);
+          }
+        } else if (typeof val === 'object' && val !== null) {
+          html += renderStatsCards(val);
+        } else {
+          html += `<div class="stat-inline"><span class="stat-key">${formatKey(key)}</span><span class="stat-val">${formatValue(val)}</span></div>`;
+        }
+      }
+      return html;
+    }
+    return `<p>${JSON.stringify(data)}</p>`;
+  }
+
+  function renderTable(rows) {
+    if (!rows || rows.length === 0) return '<p class="no-data">No records found</p>';
+    const keys = Object.keys(rows[0]);
+    return `
+      <div class="table-wrap">
+        <table class="report-table">
+          <thead><tr>${keys.map(k => `<th>${formatKey(k)}</th>`).join('')}</tr></thead>
+          <tbody>${rows.map(r =>
+            `<tr>${keys.map(k => `<td>${formatValue(r[k])}</td>`).join('')}</tr>`
+          ).join('')}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function renderStatsCards(obj) {
+    return `<div class="stats-grid">${
+      Object.entries(obj).map(([k, v]) => `
+        <div class="stat-card">
+          <div class="stat-value">${formatValue(v)}</div>
+          <div class="stat-label">${formatKey(k)}</div>
+        </div>
+      `).join('')
+    }</div>`;
+  }
+
+  function formatKey(key) {
+    return String(key).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function formatValue(val) {
+    if (val === null || val === undefined) return '-';
+    if (typeof val === 'number') return val.toLocaleString();
+    if (typeof val === 'object') return JSON.stringify(val);
+    if (typeof val === 'string' && val.match(/^\d{4}-\d{2}-\d{2}T/)) {
+      return new Date(val).toLocaleDateString();
+    }
+    if (typeof val === 'string' && val.length >= 32 && val.length <= 44 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(val)) {
+      return val.slice(0, 6) + '...' + val.slice(-4);
+    }
+    return String(val);
+  }
+
+  // ── PDF Generation ─────────────────────────────────────────
+
+  function downloadPDF() {
+    if (!currentReport || !window.jspdf) return;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const pw = doc.internal.pageSize.getWidth();
+    const m = 15;
+    let y = 20;
+
+    // Header
+    doc.setFontSize(18);
+    doc.setTextColor(0, 229, 255);
+    doc.text(currentReport.templateName, m, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setTextColor(120, 120, 120);
+    doc.text('Period: ' + currentReport.dateFrom + ' to ' + currentReport.dateTo, m, y);
+    y += 5;
+    doc.text('Generated: ' + new Date(currentReport.generatedAt).toLocaleString(), m, y);
+    y += 5;
+    doc.text('WorldBridger One Platform', m, y);
+    y += 8;
+
+    doc.setDrawColor(0, 255, 156);
+    doc.setLineWidth(0.5);
+    doc.line(m, y, pw - m, y);
+    y += 10;
+
+    // Sections
+    for (const [id, section] of Object.entries(currentReport.sections)) {
+      if (y > 260) { doc.addPage(); y = 20; }
+
+      doc.setFontSize(13);
+      doc.setTextColor(0, 255, 156);
+      doc.text(section.title, m, y);
+      y += 8;
+
+      if (!section.data) {
+        doc.setFontSize(9);
+        doc.setTextColor(150, 150, 150);
+        doc.text(section.note || 'No data available', m, y);
+        y += 8;
+        continue;
+      }
+
+      const data = section.data;
+
+      if (Array.isArray(data) && data.length > 0) {
+        y = pdfTable(doc, data, m, y, pw);
+      } else if (typeof data === 'object' && data !== null) {
+        for (const [key, val] of Object.entries(data)) {
+          if (y > 260) { doc.addPage(); y = 20; }
+          if (Array.isArray(val) && val.length > 0) {
+            doc.setFontSize(10);
+            doc.setTextColor(0, 180, 210);
+            doc.text(formatKey(key), m, y);
+            y += 6;
+            y = pdfTable(doc, val, m, y, pw);
+          } else if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+            y = pdfKeyValue(doc, val, m, y, pw);
+          }
+        }
+      }
+    }
+
+    // Footers
+    const pages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text('Page ' + i + ' of ' + pages, pw - m - 22, 290);
+      doc.text('WorldBridger One - Confidential', m, 290);
+    }
+
+    const fn = currentReport.templateId + '_' + currentReport.dateFrom + '_' + currentReport.dateTo + '.pdf';
+    doc.save(fn);
+  }
+
+  function pdfTable(doc, rows, m, y, pw) {
+    const cols = Object.keys(rows[0]);
+    doc.autoTable({
+      startY: y,
+      head: [cols.map(formatKey)],
+      body: rows.map(r => cols.map(c => formatValue(r[c]))),
+      margin: { left: m, right: m },
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [11, 15, 23], textColor: [0, 229, 255], fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      theme: 'grid'
+    });
+    return doc.lastAutoTable.finalY + 8;
+  }
+
+  function pdfKeyValue(doc, obj, m, y, pw) {
+    const entries = Object.entries(obj);
+    doc.autoTable({
+      startY: y,
+      head: [['Metric', 'Value']],
+      body: entries.map(([k, v]) => [formatKey(k), formatValue(v)]),
+      margin: { left: m, right: m },
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [11, 15, 23], textColor: [0, 229, 255] },
+      theme: 'grid',
+      columnStyles: { 0: { fontStyle: 'bold' } }
+    });
+    return doc.lastAutoTable.finalY + 8;
+  }
+
+})();
+</script>
+
+<style>
+  .reports-page {
+    min-height: 100vh;
+    background: #05070a;
+    color: #e0e0e0;
+    padding: 0 1rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .reports-header {
+    padding: 2rem 0 1rem;
+    text-align: center;
+  }
+  .reports-header h1 {
+    font-size: 1.8rem;
+    color: #fff;
+    margin: 0;
+    background: linear-gradient(135deg, #00e5ff, #00ff9c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    color: #666;
+    margin: 0.4rem 0 0;
+    font-size: 0.9rem;
+  }
+
+  /* Auth gate */
+  .auth-gate { text-align: center; padding: 3rem 0; }
+  .gate-card {
+    display: inline-block;
+    background: #0b0f17;
+    border: 1px solid #1a2035;
+    border-radius: 12px;
+    padding: 2rem 3rem;
+  }
+  .gate-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .gate-card p { color: #888; margin: 0.5rem 0; }
+  .gate-hint { font-size: 0.8rem; color: #555; }
+
+  /* Steps */
+  .report-step { margin-bottom: 2rem; }
+  .step-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #555;
+    margin: 0 0 0.75rem;
+  }
+
+  /* Template Grid */
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+  }
+  .template-card {
+    background: #0b0f17;
+    border: 1px solid #1a2035;
+    border-radius: 12px;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .template-card:hover {
+    border-color: rgba(0, 229, 255, 0.35);
+    transform: translateY(-1px);
+  }
+  .template-card.selected {
+    border-color: #00ff9c;
+    box-shadow: 0 0 15px rgba(0, 255, 156, 0.15);
+  }
+  .template-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
+  .template-card h3 { color: #fff; font-size: 0.95rem; margin: 0 0 0.3rem; }
+  .template-card p { color: #777; font-size: 0.78rem; margin: 0; line-height: 1.4; }
+  .template-meta { font-size: 0.7rem; color: #444; margin-top: 0.5rem; }
+
+  .no-access {
+    text-align: center;
+    padding: 2rem;
+    background: #0b0f17;
+    border: 1px solid #1a2035;
+    border-radius: 12px;
+  }
+  .no-access p { color: #666; }
+
+  /* Config */
+  .config-card {
+    background: #0b0f17;
+    border: 1px solid #1a2035;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .config-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  .date-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .date-inputs input {
+    background: #141a28;
+    border: 1px solid #1a2035;
+    color: #e0e0e0;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  .date-inputs input:focus { border-color: #00e5ff; outline: none; }
+  .date-sep { color: #555; }
+
+  .quick-ranges {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .range-btn {
+    background: #141a28;
+    border: 1px solid #1a2035;
+    color: #888;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .range-btn:hover { border-color: #00e5ff; color: #00e5ff; }
+  .range-btn.active {
+    background: rgba(0, 229, 255, 0.1);
+    border-color: #00e5ff;
+    color: #00e5ff;
+  }
+
+  /* Section Checks */
+  .section-checks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .section-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .section-check:hover { background: rgba(0, 229, 255, 0.04); }
+  .section-check input { margin-top: 2px; accent-color: #00ff9c; }
+  .check-info { display: flex; flex-direction: column; }
+  .check-title { color: #ccc; font-size: 0.85rem; }
+  .check-desc { color: #555; font-size: 0.72rem; margin-top: 2px; }
+
+  /* Generate Button */
+  .btn-generate {
+    width: 100%;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, #00e5ff, #00ff9c);
+    color: #05070a;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(5,7,10,0.3);
+    border-top-color: #05070a;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Preview Header */
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .preview-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .btn-pdf {
+    background: linear-gradient(135deg, #00ff9c, #00e5ff);
+    color: #05070a;
+    border: none;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  .btn-pdf:hover { opacity: 0.9; }
+  .btn-secondary-sm {
+    background: #141a28;
+    border: 1px solid #1a2035;
+    color: #888;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+  }
+  .btn-secondary-sm:hover { border-color: #00e5ff; color: #00e5ff; }
+
+  /* Report Preview */
+  .report-preview {
+    background: #0b0f17;
+    border: 1px solid #1a2035;
+    border-radius: 12px;
+    padding: 2rem;
+  }
+  .report-title-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #1a2035;
+  }
+  .report-icon { font-size: 2rem; }
+  .report-title-block h2 { color: #fff; margin: 0; font-size: 1.3rem; }
+  .report-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.78rem;
+    color: #666;
+    margin-top: 0.3rem;
+    flex-wrap: wrap;
+  }
+
+  .report-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #1a2035;
+  }
+  .report-section:last-child { border-bottom: none; }
+  .section-title {
+    color: #00ff9c;
+    font-size: 1rem;
+    margin: 0 0 0.75rem;
+    font-weight: 600;
+  }
+  .section-note { color: #555; font-size: 0.8rem; font-style: italic; }
+  .sub-heading {
+    color: #00e5ff;
+    font-size: 0.85rem;
+    margin: 1rem 0 0.5rem;
+    font-weight: 600;
+  }
+  .no-data { color: #555; font-size: 0.8rem; font-style: italic; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; margin-bottom: 0.75rem; }
+  .report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+  .report-table th {
+    background: #141a28;
+    color: #00e5ff;
+    padding: 0.5rem 0.6rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .report-table td {
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid #1a2035;
+    color: #bbb;
+  }
+  .report-table tr:hover td { background: rgba(0, 229, 255, 0.03); }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .stat-card {
+    background: #141a28;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .stat-card .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00ff9c;
+  }
+  .stat-card .stat-label {
+    font-size: 0.68rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+  }
+  .stat-inline {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #111827;
+  }
+  .stat-key { color: #888; font-size: 0.82rem; }
+  .stat-val { color: #00ff9c; font-weight: 600; font-size: 0.82rem; }
+
+  /* Print */
+  @media print {
+    .reports-header, #step-template, #step-config,
+    .preview-actions, nav, footer, .notif-bell { display: none !important; }
+    .report-preview { background: white; color: #222; border: none; padding: 0; }
+    .report-table th { background: #eee; color: #333; }
+    .report-table td { color: #333; border-color: #ddd; }
+    .section-title { color: #059669; }
+    .stat-card { background: #f5f5f5; }
+    .stat-card .stat-value { color: #111; }
+    .stat-card .stat-label { color: #555; }
+    .report-title-block { border-color: #ddd; }
+    .report-title-block h2 { color: #111; }
+    .report-section { border-color: #ddd; }
+  }
+
+  @media (max-width: 640px) {
+    .template-grid { grid-template-columns: 1fr; }
+    .date-inputs { flex-direction: column; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .preview-header { flex-direction: column; }
+  }
+</style>
+
+</BaseLayout>

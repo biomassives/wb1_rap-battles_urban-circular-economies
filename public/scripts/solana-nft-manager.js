@@ -230,8 +230,7 @@ class SolanaNFTManager {
   }
 
   /**
-   * Mint a new NFT
-   * Note: This is a simplified version. Production should use Metaplex SDK
+   * Mint an animal spirit NFT (1-55) via server-side Metaplex
    */
   async mintNFT(nftData) {
     try {
@@ -241,38 +240,85 @@ class SolanaNFTManager {
         throw new Error('Wallet not connected');
       }
 
-      const { name, symbol, uri, rarity } = nftData;
-
-      // Calculate price based on rarity
+      const { id, name, symbol, rarity } = nftData;
       const price = this.rarityPricing[rarity] || 0.25;
+      console.log(`💰 Mint price: ${price} SOL | NFT #${id}`);
 
-      console.log(`💰 Mint price: ${price} SOL`);
+      const response = await fetch('/api/nft/mint', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: this.wallet.publicKey.toString(),
+          nftId: id,
+          metadata: { name: name || `Rapper #${id}`, symbol: symbol || 'WBRAP', rarity: rarity || 'Common' }
+        })
+      });
 
-      // TODO: Implement full minting with Metaplex
-      // This requires:
-      // 1. Create mint account
-      // 2. Create token account
-      // 3. Mint token (amount = 1)
-      // 4. Create metadata account
-      // 5. Create master edition account
+      const data = await response.json();
 
-      // For now, return placeholder
-      console.log('⚠️ Full minting implementation requires Metaplex SDK');
-      console.log('📝 NFT Data:', { name, symbol, uri, rarity, price });
+      if (!response.ok || !data.success) {
+        return { success: false, message: data.error || 'Minting failed', mintAddress: null };
+      }
 
+      console.log(`✅ ${data.simulated ? '[SIM] ' : ''}Minted! ${data.mintAddress}`);
       return {
-        success: false,
-        message: 'Minting requires Metaplex SDK integration',
-        mintAddress: null
+        success: true,
+        message: data.message,
+        mintAddress: data.mintAddress,
+        signature: data.signature,
+        explorerUrl: data.explorerUrl,
+        xpEarned: data.xpEarned,
+        simulated: data.simulated || false
       };
 
     } catch (error) {
       console.error('❌ Mint failed:', error);
+      return { success: false, message: error.message, mintAddress: null };
+    }
+  }
+
+  /**
+   * Mint a custom PFP card via server-side Metaplex
+   */
+  async mintPFP(traits, name) {
+    try {
+      console.log('🎨 Starting PFP mint process...');
+
+      if (!this.wallet) {
+        throw new Error('Wallet not connected');
+      }
+
+      const response = await fetch('/api/nft/mint-pfp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: this.wallet.publicKey.toString(),
+          traits,
+          name
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        return { success: false, message: data.error || 'PFP minting failed', mintAddress: null };
+      }
+
+      console.log(`✅ ${data.simulated ? '[SIM] ' : ''}PFP Minted! ${data.mintAddress}`);
       return {
-        success: false,
-        message: error.message,
-        mintAddress: null
+        success: true,
+        message: data.message,
+        mintAddress: data.mintAddress,
+        signature: data.signature,
+        explorerUrl: data.explorerUrl,
+        rarity: data.rarity,
+        xpEarned: data.xpEarned,
+        simulated: data.simulated || false
       };
+
+    } catch (error) {
+      console.error('❌ PFP Mint failed:', error);
+      return { success: false, message: error.message, mintAddress: null };
     }
   }
 

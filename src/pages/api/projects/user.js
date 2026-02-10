@@ -1,8 +1,7 @@
 // /api/projects/user.js
 // Get projects by user wallet address
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function GET({ request }) {
   const url = new URL(request.url);
   const walletAddress = url.searchParams.get('walletAddress');
@@ -21,8 +20,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     const isOwner = walletAddress === viewerWallet;
 
     // Build query based on viewer permissions

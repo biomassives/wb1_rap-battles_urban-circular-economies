@@ -13,7 +13,7 @@
  * XP: 25 (checkin), 50 (full session >30min), 150 (become_mentor one-time)
  */
 
-import { neon } from '@neondatabase/serverless';
+import { sql } from '../../../lib/db.js';
 import { XP_ACTIVITIES } from '../../../lib/xp-config.js';
 
 export const prerender = false;
@@ -60,7 +60,6 @@ export async function POST({ request }) {
         error: `sessionType must be one of: ${validTypes.join(', ')}`
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
     const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL;
     if (!dbUrl) {
       return new Response(JSON.stringify({
@@ -70,9 +69,6 @@ export async function POST({ request }) {
         xpAwarded: XP_ACTIVITIES.mentoring_checkin
       }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(dbUrl);
-
     // Determine XP amount
     let xpAmount = XP_ACTIVITIES.mentoring_checkin; // 25
     let activityType = 'mentoring_checkin';

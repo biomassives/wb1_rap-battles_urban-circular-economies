@@ -7,8 +7,7 @@
  * - wallet: string (required)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export const prerender = false;
 
 export async function POST({ params, request }) {
@@ -36,8 +35,6 @@ export async function POST({ params, request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
     const inviteCode = code.toUpperCase();
 
     // Look up challenge by invite code
@@ -181,9 +178,6 @@ export async function GET({ params }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     const challenges = await sql`
       SELECT c.*,
         (SELECT COUNT(*)::int FROM challenge_participants WHERE challenge_id = c.id AND status = 'accepted') as participant_count,

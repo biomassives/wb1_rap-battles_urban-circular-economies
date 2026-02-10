@@ -1,8 +1,7 @@
 // /api/donations/create.js
 // Generic donation creation endpoint - works for Kakuma and other WorldBridge One initiatives
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function POST({ request }) {
   try {
     const body = await request.json();
@@ -40,8 +39,6 @@ export async function POST({ request }) {
 
     try {
       // Try database first
-      const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
       // Insert donation record
       const result = await sql`
         INSERT INTO donations (

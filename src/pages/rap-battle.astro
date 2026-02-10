@@ -4,7 +4,7 @@
  *
  * Complete workflow:
  * 1. Choose: Create Challenge OR Join Existing (via BattleSetupModal)
- * 2. Select beat (sampler bank, Strudel, AutoMoog, or upload)
+ * 2. Select beat (sampler bank, Strudel, WorldBridger Moog, or upload)
  * 3. Invite opponents (or accept invite)
  * 4. Battle lobby with messaging
  * 5. Record your verse with backing track
@@ -1290,7 +1290,7 @@ function updateBeatDisplay() {
   const sourceLabels = {
     'sampler': '🎛️ Sampler',
     'strudel': '🎵 Strudel',
-    'moog': '🎹 AutoMoog',
+    'moog': '🎹 WorldBridger Moog',
     'file': '📁 Upload'
   };
   document.getElementById('display-beat-source').textContent =
@@ -1320,7 +1320,7 @@ function startBeatPlayback() {
     // Play Strudel pattern
     playStrudelPattern(strudelPattern);
   } else if (currentBeat?.type === 'moog' && currentBeat?.mood) {
-    // Launch AutoMoog with mood
+    // Launch WorldBridger Moog with mood
     launchAutoMoog(currentBeat.mood);
   } else if (currentBeat?.type === 'file' && currentBeat?.file) {
     // Play uploaded file
@@ -1346,7 +1346,7 @@ function stopBeatPlayback() {
     beatAudio.currentTime = 0;
   }
 
-  // Close AutoMoog if open
+  // Close WorldBridger Moog if open
   if (typeof closeMoogModal === 'function') {
     // Don't close, just stop
   }
@@ -1430,7 +1430,7 @@ function playFallbackDrum() {
   }, beatDuration * 16 * 1000);
 }
 
-// Launch AutoMoog
+// Launch WorldBridger Moog
 function launchAutoMoog(mood) {
   if (typeof openMoogModal === 'function') {
     openMoogModal();

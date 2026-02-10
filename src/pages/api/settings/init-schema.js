@@ -5,13 +5,12 @@
  * Body:
  * - connectionString: string (required) - Neon/Postgres connection URL
  * - tables: string[] (optional) - specific table groups to create. Default: all
- *   Valid groups: 'core', 'music', 'battles', 'challenges'
+ *   Valid groups: 'core', 'music', 'battles', 'challenges', 'community', 'signups', 'nft', 'notifications', 'reports', 'projects'
  *
  * Creates tables in dependency order using IF NOT EXISTS (safe to re-run)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 // Schema statements grouped by feature
@@ -31,6 +30,8 @@ const SCHEMA_GROUPS = {
       )`,
       `CREATE INDEX IF NOT EXISTS idx_profiles_username ON user_profiles(username)`,
       `CREATE INDEX IF NOT EXISTS idx_profiles_level ON user_profiles(level DESC)`,
+      // Migration: add role column if table already exists without it
+      `ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'member'`,
 
       `CREATE TABLE IF NOT EXISTS activity_log (
         id SERIAL PRIMARY KEY,
@@ -69,6 +70,8 @@ const SCHEMA_GROUPS = {
         tags JSONB DEFAULT '[]',
         nft_mint_address VARCHAR(44),
         nft_metadata_uri TEXT,
+        is_featured BOOLEAN DEFAULT FALSE,
+        source VARCHAR(30) DEFAULT 'created',
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )`,
@@ -76,6 +79,10 @@ const SCHEMA_GROUPS = {
       `CREATE INDEX IF NOT EXISTS idx_tracks_genre ON tracks(genre)`,
       `CREATE INDEX IF NOT EXISTS idx_tracks_status ON tracks(status)`,
       `CREATE INDEX IF NOT EXISTS idx_tracks_created_at ON tracks(created_at DESC)`,
+      `CREATE INDEX IF NOT EXISTS idx_tracks_featured ON tracks(is_featured) WHERE is_featured = true`,
+      // Migration: add columns if table already exists without them
+      `ALTER TABLE tracks ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE tracks ADD COLUMN IF NOT EXISTS source VARCHAR(30) DEFAULT 'created'`,
 
       `CREATE TABLE IF NOT EXISTS track_collaborators (
         id SERIAL PRIMARY KEY,
@@ -306,6 +313,178 @@ const SCHEMA_GROUPS = {
       )`,
       `CREATE INDEX IF NOT EXISTS idx_xp_activities_wallet ON xp_activities(user_wallet)`,
       `CREATE INDEX IF NOT EXISTS idx_xp_activities_type ON xp_activities(activity_type)`
+    ]
+  },
+  signups: {
+    label: 'Signups (email_signups)',
+    statements: [
+      `CREATE TABLE IF NOT EXISTS email_signups (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        desired_role VARCHAR(100),
+        wallet_address VARCHAR(44),
+        created_at TIMESTAMP DEFAULT NOW()
+      )`,
+      `CREATE INDEX IF NOT EXISTS idx_email_signups_email ON email_signups(email)`
+    ]
+  },
+
+  nft: {
+    label: 'NFT (nft_transactions, pfp_mints)',
+    statements: [
+      `CREATE TABLE IF NOT EXISTS nft_transactions (
+        id SERIAL PRIMARY KEY,
+        nft_id INTEGER NOT NULL,
+        wallet_address VARCHAR(44) NOT NULL,
+        mint_address VARCHAR(88),
+        signature VARCHAR(88),
+        price_sol DECIMAL(10,4),
+        rarity VARCHAR(20),
+        status VARCHAR(20) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT NOW()
+      )`,
+      `CREATE INDEX IF NOT EXISTS idx_nft_tx_wallet ON nft_transactions(wallet_address)`,
+      `CREATE INDEX IF NOT EXISTS idx_nft_tx_nft_id ON nft_transactions(nft_id)`,
+      `CREATE UNIQUE INDEX IF NOT EXISTS idx_nft_tx_unique_mint ON nft_transactions(nft_id) WHERE status = 'confirmed'`,
+
+      `CREATE TABLE IF NOT EXISTS pfp_mints (
+        id SERIAL PRIMARY KEY,
+        wallet_address VARCHAR(44) NOT NULL,
+        mint_address VARCHAR(88),
+        traits JSONB NOT NULL,
+        pfp_name VARCHAR(100),
+        rarity VARCHAR(20),
+        metadata_uri TEXT,
+        signature VARCHAR(88),
+        status VARCHAR(20) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT NOW()
+      )`,
+      `CREATE INDEX IF NOT EXISTS idx_pfp_mints_wallet ON pfp_mints(wallet_address)`
+    ]
+  },
+
+  notifications: {
+    label: 'Notifications (user_notifications, preferences, templates, activity_feed)',
+    statements: [
+      `CREATE TABLE IF NOT EXISTS user_notifications (
+        id SERIAL PRIMARY KEY,
+        wallet_address VARCHAR(44) NOT NULL,
+        category VARCHAR(30) NOT NULL,
+        notification_type VARCHAR(50) NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        message TEXT,
+        icon VARCHAR(10) DEFAULT '📢',
+        action_url TEXT,
+        action_label VARCHAR(50),
+        action_data JSONB DEFAULT '{}',
+        priority VARCHAR(10) DEFAULT 'normal',
+        is_read BOOLEAN DEFAULT FALSE,
+        is_dismissed BOOLEAN DEFAULT FALSE,
+        group_key VARCHAR(100),
+        created_at TIMESTAMP DEFAULT NOW(),
+        read_at TIMESTAMP,
+        expires_at TIMESTAMP
+      )`,
+      `CREATE INDEX IF NOT EXISTS idx_notifications_wallet ON user_notifications(wallet_address)`,
+      `CREATE INDEX IF NOT EXISTS idx_notifications_unread ON user_notifications(wallet_address, is_read) WHERE is_read = FALSE`,
+      `CREATE INDEX IF NOT EXISTS idx_notifications_category ON user_notifications(wallet_address, category)`,
+      `CREATE INDEX IF NOT EXISTS idx_notifications_created ON user_notifications(created_at DESC)`,
+
+      `CREATE TABLE IF NOT EXISTS notification_preferences (
+        wallet_address VARCHAR(44) PRIMARY KEY,
+        notify_xp BOOLEAN DEFAULT TRUE,
+        notify_nft BOOLEAN DEFAULT TRUE,
+        notify_project BOOLEAN DEFAULT TRUE,
+        notify_governance BOOLEAN DEFAULT TRUE,
+        notify_payout BOOLEAN DEFAULT TRUE,
+        notify_social BOOLEAN DEFAULT TRUE,
+        notify_achievement BOOLEAN DEFAULT TRUE,
+        notify_system BOOLEAN DEFAULT TRUE,
+        show_in_app BOOLEAN DEFAULT TRUE,
+        group_similar BOOLEAN DEFAULT TRUE,
+        auto_dismiss_read_after_days INTEGER DEFAULT 7,
+        max_visible INTEGER DEFAULT 50,
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS notification_templates (
+        id VARCHAR(50) PRIMARY KEY,
+        category VARCHAR(30) NOT NULL,
+        title_template VARCHAR(255) NOT NULL,
+        message_template TEXT,
+        icon VARCHAR(10) DEFAULT '📢',
+        default_priority VARCHAR(10) DEFAULT 'normal',
+        action_url_template TEXT,
+        action_label VARCHAR(50),
+        is_active BOOLEAN DEFAULT TRUE
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS activity_feed (
+        id SERIAL PRIMARY KEY,
+        wallet_address VARCHAR(44) NOT NULL,
+        activity_type VARCHAR(50) NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        reference_type VARCHAR(30),
+        reference_id VARCHAR(100),
+        is_public BOOLEAN DEFAULT TRUE,
+        likes_count INTEGER DEFAULT 0,
+        comments_count INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW()
+      )`,
+      `CREATE INDEX IF NOT EXISTS idx_activity_feed_wallet ON activity_feed(wallet_address)`,
+      `CREATE INDEX IF NOT EXISTS idx_activity_feed_public ON activity_feed(is_public, created_at DESC) WHERE is_public = TRUE`
+    ]
+  },
+
+  reports: {
+    label: 'Reports (report_history)',
+    statements: [
+      `CREATE TABLE IF NOT EXISTS report_history (
+        id SERIAL PRIMARY KEY,
+        wallet_address VARCHAR(44) NOT NULL,
+        template_id VARCHAR(50) NOT NULL,
+        template_name VARCHAR(200) NOT NULL,
+        date_from DATE,
+        date_to DATE,
+        sections_included JSONB DEFAULT '[]',
+        generated_at TIMESTAMP DEFAULT NOW()
+      )`,
+      `CREATE INDEX IF NOT EXISTS idx_report_history_wallet ON report_history(wallet_address)`,
+      `CREATE INDEX IF NOT EXISTS idx_report_history_template ON report_history(template_id)`,
+      `CREATE INDEX IF NOT EXISTS idx_report_history_generated ON report_history(generated_at DESC)`
+    ]
+  },
+
+  projects: {
+    label: 'Projects (project_notes, project_members)',
+    statements: [
+      `CREATE TABLE IF NOT EXISTS project_notes (
+        id SERIAL PRIMARY KEY,
+        project_id INTEGER NOT NULL,
+        wallet_address VARCHAR(44) NOT NULL,
+        content TEXT NOT NULL,
+        note_type VARCHAR(30) DEFAULT 'general',
+        created_at TIMESTAMP DEFAULT NOW()
+      )`,
+      `CREATE INDEX IF NOT EXISTS idx_project_notes_project ON project_notes(project_id)`,
+      `CREATE INDEX IF NOT EXISTS idx_project_notes_wallet ON project_notes(wallet_address)`,
+
+      `CREATE TABLE IF NOT EXISTS project_members (
+        id SERIAL PRIMARY KEY,
+        project_id INTEGER NOT NULL,
+        wallet_address VARCHAR(44),
+        email VARCHAR(255),
+        role VARCHAR(30) DEFAULT 'member',
+        invite_token VARCHAR(64) UNIQUE,
+        invite_status VARCHAR(20) DEFAULT 'pending',
+        invited_by VARCHAR(44) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        accepted_at TIMESTAMP
+      )`,
+      `CREATE INDEX IF NOT EXISTS idx_project_members_project ON project_members(project_id)`,
+      `CREATE INDEX IF NOT EXISTS idx_project_members_wallet ON project_members(wallet_address)`,
+      `CREATE INDEX IF NOT EXISTS idx_project_members_token ON project_members(invite_token)`
     ]
   }
 };

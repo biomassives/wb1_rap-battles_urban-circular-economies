@@ -1,8 +1,7 @@
 // /api/data/environmental/list.js
 // List environmental observations with filtering
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function GET({ request }) {
   const url = new URL(request.url);
   const walletAddress = url.searchParams.get('walletAddress');
@@ -12,8 +11,6 @@ export async function GET({ request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     let observations;
 
     if (walletAddress) {

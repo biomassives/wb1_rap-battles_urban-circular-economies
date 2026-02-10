@@ -1,74 +1,222 @@
 ---
 /**
  * about.astro - About WorldBridger One
- * Comprehensive overview of the platform, roles, and integrated hubs
+ * Platform explainer with honest feature status, internal links, and testnet invite
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="About WorldBridger One" activeSection="about">
   <main class="about-page">
+
     <!-- Hero Section -->
     <section class="about-hero">
       <div class="container">
         <div class="hero-badge">
-          <span class="badge-icon">🎤</span>
-          <span class="badge-text">Built for Community</span>
+          <span class="badge-icon">&#x1F3A4;</span>
+          <span class="badge-text">Community Owned Music Platform</span>
         </div>
         <h1 class="hero-title">
-          <span class="title-line">FREE Forever.</span>
-          <span class="title-line accent">Open Source.</span>
-          <span class="title-line">Community Owned.</span>
+          <span class="title-line">Create. Battle.</span>
+          <span class="title-line accent">Earn. Own.</span>
         </h1>
         <p class="hero-description">
-          WorldBridger One is a decentralized platform built on <strong>MIT</strong> and <strong>GPL</strong> open source
-          infrastructure. We believe creativity, education, and community building should never have a paywall.
+          WorldBridger One is an <strong>open source</strong> music platform connecting
+          youth communities through hip-hop culture, blockchain rewards, and environmental action.
+          Built on Solana. Free forever. Currently inviting testnet participants.
         </p>
+        <div class="hero-ctas">
+          <a href="/#join-testnet" class="cta-primary">Join the Testnet</a>
+          <a href="/invest" class="cta-secondary">Invest & Donate</a>
+        </div>
         <div class="open-source-badges">
-          <div class="license-badge">
-            <span class="license-icon">📜</span>
-            <span class="license-name">MIT License</span>
+          <div class="license-badge"><span class="license-icon">&#x1F4DC;</span><span>MIT License</span></div>
+          <div class="license-badge"><span class="license-icon">&#x1F513;</span><span>GPL v3</span></div>
+          <div class="license-badge"><span class="license-icon">&#x1F310;</span><span>Solana Testnet</span></div>
+          <div class="license-badge"><span class="license-icon">&#x1F49A;</span><span>Forever Free</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What is WorldBridger One -->
+    <section class="explainer-section">
+      <div class="container">
+        <h2 class="section-title">What is WorldBridger One?</h2>
+        <div class="explainer-grid">
+          <div class="explainer-card">
+            <div class="explainer-icon">&#x1F3B5;</div>
+            <h3>Music Creation</h3>
+            <p>Built-in Moog synthesizer, 16-pad drum sampler, beat mixer, and recording tools. Create original tracks, enter rap battles, and produce beats — all in your browser.</p>
           </div>
-          <div class="license-badge">
-            <span class="license-icon">🔓</span>
-            <span class="license-name">GPL v3</span>
+          <div class="explainer-card">
+            <div class="explainer-icon">&#x2694;&#xFE0F;</div>
+            <h3>Battle & Challenge System</h3>
+            <p>1v1 rap battles, group challenges with invite codes, community voting, and XP rewards. Every win, vote, and submission counts toward your progression.</p>
           </div>
-          <div class="license-badge">
-            <span class="license-icon">🌐</span>
-            <span class="license-name">DeFi Native</span>
+          <div class="explainer-card">
+            <div class="explainer-icon">&#x1F48E;</div>
+            <h3>XP Economy & NFTs</h3>
+            <p>25+ activities earn XP. Six airdrop tiers from Bronze to Mythic determine your drop rarity and quantity. NFT collections include 55 animal spirits and custom rapper PFPs.</p>
           </div>
-          <div class="license-badge">
-            <span class="license-icon">💚</span>
-            <span class="license-name">Forever Free</span>
+          <div class="explainer-card">
+            <div class="explainer-icon">&#x1F30D;</div>
+            <h3>Community Impact</h3>
+            <p>Direct support for youth programs in Kakuma refugee camp and Nairobi. Citizen science data collection, mentoring sessions, and environmental action — all rewarded with XP.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Mission Section -->
-    <section class="mission-section">
+    <!-- What's Live Now -->
+    <section class="live-section">
       <div class="container">
-        <h2 class="section-title">Our Mission</h2>
-        <div class="mission-grid">
-          <div class="mission-card">
-            <div class="mission-icon">🎵</div>
-            <h3>Creative Expression</h3>
-            <p>Empower artists to create, battle, and earn through music without barriers or gatekeepers.</p>
+        <h2 class="section-title">
+          <span class="status-dot live"></span>
+          What's Live Now
+        </h2>
+        <p class="section-subtitle">These features are built, deployed, and usable today</p>
+
+        <div class="features-grid">
+          <a href="/rap-battle" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x2694;&#xFE0F;</span><h4>Rap Battles</h4><p>1v1 and group battles with XP rewards and community voting</p></div>
+          </a>
+          <a href="/challenge-arena" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F3AF;</span><h4>Challenge Arena</h4><p>Create & join challenges with 6-char invite codes</p></div>
+          </a>
+          <a href="/beat-playground" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F3B6;</span><h4>Beat Playground</h4><p>Multi-layer beat mixing with BPM controls and export</p></div>
+          </a>
+          <a href="/sampler" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F3B9;</span><h4>Drum Sampler</h4><p>16-pad drum machine with sound library</p></div>
+          </a>
+          <a href="/music-studio" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F3B5;</span><h4>Music Studio</h4><p>Moog synth + sampler + looper in one workspace</p></div>
+          </a>
+          <a href="/elixir" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F9EA;</span><h4>Elixir Lab</h4><p>8 elixirs for card transformation and education tiers</p></div>
+          </a>
+          <a href="/nft-gallery" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F3A8;</span><h4>NFT Gallery</h4><p>55 animal spirit rapper collection with generated sounds</p></div>
+          </a>
+          <a href="/rapper-template-builder" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F464;</span><h4>Rapper PFP Builder</h4><p>Design your own rapper card with custom traits</p></div>
+          </a>
+          <a href="/training-quiz" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F4DD;</span><h4>Training Quiz</h4><p>Learn hip-hop, sustainability, and culture — earn certs</p></div>
+          </a>
+          <a href="/airdrops" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F4E6;</span><h4>XP & Airdrops</h4><p>25+ XP activities, 6 tiers, scheduled reward drops</p></div>
+          </a>
+          <a href="/leaderboard" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F3C6;</span><h4>Leaderboard</h4><p>Global XP rankings and achievement tracking</p></div>
+          </a>
+          <a href="/profile" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F464;</span><h4>Profile Dashboard</h4><p>XP progress, rewards, wallet, and activity history</p></div>
+          </a>
+          <a href="/projects" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F680;</span><h4>Projects Hub</h4><p>Discover and fund community initiatives</p></div>
+          </a>
+          <a href="/invest" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F49A;</span><h4>Invest & Donate</h4><p>Fund projects or donate — both mint Donor NFTs</p></div>
+          </a>
+          <a href="/kakuma" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F3D5;&#xFE0F;</span><h4>Kakuma Impact</h4><p>Youth programs in Kakuma refugee camp</p></div>
+          </a>
+          <a href="/nairobi-youth" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F3D9;&#xFE0F;</span><h4>Nairobi Youth</h4><p>Urban youth programs and creative workshops</p></div>
+          </a>
+          <a href="/learn" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F4DA;</span><h4>Learning Hub</h4><p>Courses, tutorials, and skill development resources</p></div>
+          </a>
+          <a href="/progress" class="feature-link">
+            <div class="feature-card"><span class="feature-emoji">&#x1F4C8;</span><h4>Progress Tracker</h4><p>Track your growth across all platform activities</p></div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- In Testing -->
+    <section class="testing-section">
+      <div class="container">
+        <h2 class="section-title">
+          <span class="status-dot testing"></span>
+          In Active Testing
+        </h2>
+        <p class="section-subtitle">These features are built and being tested with our early community</p>
+
+        <div class="testing-grid">
+          <div class="testing-card">
+            <div class="testing-icon">&#x26D3;&#xFE0F;</div>
+            <h4>NFT Minting on Solana Testnet</h4>
+            <p>Metaplex integration in progress. On-chain minting for rapper PFPs, donor NFTs, and achievement badges being activated.</p>
+            <span class="testing-status">Metaplex Integration</span>
           </div>
-          <div class="mission-card">
-            <div class="mission-icon">🌍</div>
-            <h3>Global Community</h3>
-            <p>Connect urban and coastal youth across Kenya and beyond through hip-hop culture and Web3.</p>
+          <div class="testing-card">
+            <div class="testing-icon">&#x1F3EA;</div>
+            <h4>NFT Marketplace</h4>
+            <p>Buy, sell, and trade NFTs with other community members. Fixed price and auction formats supported.</p>
+            <span class="testing-status">Backend Ready</span>
           </div>
-          <div class="mission-card">
-            <div class="mission-icon">📚</div>
-            <h3>Education First</h3>
-            <p>Integrate learning through video, peace engineering, and sustainable solutions.</p>
+          <div class="testing-card">
+            <div class="testing-icon">&#x1F9EA;</div>
+            <h4>Elixir Transformation</h4>
+            <p>Apply elixirs to upgrade Rapper PFP card rarity and visual appearance. Education elixirs unlock service compensation tiers.</p>
+            <span class="testing-status">Showcase Mode</span>
           </div>
-          <div class="mission-card">
-            <div class="mission-icon">💎</div>
-            <h3>Fair Ownership</h3>
-            <p>Artists own their work. NFTs ensure provable ownership and royalties forever.</p>
+          <div class="testing-card">
+            <div class="testing-icon">&#x1F3DB;&#xFE0F;</div>
+            <h4>DAO Governance</h4>
+            <p>On-chain governance proposals and token-weighted voting. Community members direct platform development and treasury allocation.</p>
+            <span class="testing-status">API Built</span>
+          </div>
+          <div class="testing-card">
+            <div class="testing-icon">&#x1F4B3;</div>
+            <h4>Donor NFT Minting</h4>
+            <p>Every investment and donation mints a tiered Donor NFT (Bronze through Platinum) to the contributor's wallet.</p>
+            <span class="testing-status">Mock Minting Active</span>
+          </div>
+          <div class="testing-card">
+            <div class="testing-icon">&#x1F393;</div>
+            <h4>Education Service Tiers</h4>
+            <p>Complete learning modules to earn Apprentice, Scholar, and Sage elixirs — unlocking higher compensation rates for platform services.</p>
+            <span class="testing-status">System Designed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="roadmap-section">
+      <div class="container">
+        <h2 class="section-title">Roadmap</h2>
+        <div class="roadmap-timeline">
+          <div class="roadmap-item current">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-content">
+              <h4>Q1 2026 <span class="roadmap-badge current-badge">NOW</span></h4>
+              <p>Solana testnet minting live. Metaplex integration. Donor NFT system. Community testing with Kakuma & Nairobi youth.</p>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-content">
+              <h4>Q2 2026</h4>
+              <p>Mainnet launch. Elixir marketplace. Mentor/Teacher certification roles. NFT staking for project boosts.</p>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-content">
+              <h4>Q3 2026</h4>
+              <p>Exotopia virtual property NFTs. Peace Engineering hub. Cross-community exchange programs.</p>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-content">
+              <h4>Q4 2026</h4>
+              <p>EcoCity sustainable systems NFTs. Multi-chain expansion (Polygon, Near, Tezos, Celo). Revenue sharing for Platinum donors.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -78,80 +226,78 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <section class="roles-section">
       <div class="container">
         <h2 class="section-title">Available Roles</h2>
-        <p class="section-subtitle">Choose your path and start contributing to the community</p>
+        <p class="section-subtitle">Choose your path and start contributing</p>
 
         <div class="roles-grid">
-          <!-- Currently Active Roles -->
           <div class="role-category">
             <h3 class="category-title active">
-              <span class="status-dot active"></span>
-              Currently Active
+              <span class="status-dot live"></span>
+              Active Now
             </h3>
 
             <div class="role-card active">
-              <div class="role-icon">🎤</div>
+              <div class="role-icon">&#x1F3A4;</div>
               <div class="role-content">
                 <h4>Artist / Rapper</h4>
-                <p>Create beats, record battles, earn XP and NFTs. No experience needed to start.</p>
-                <a href="/rap-battle" class="role-cta">Start Battle →</a>
+                <p>Create beats, record battles, earn XP and NFTs.</p>
+                <a href="/rap-battle" class="role-cta">Start Battle &rarr;</a>
               </div>
             </div>
 
             <div class="role-card active">
-              <div class="role-icon">🎧</div>
+              <div class="role-icon">&#x1F3A7;</div>
               <div class="role-content">
                 <h4>Beat Producer</h4>
-                <p>Use our sampler and Moog synth to create original beats. Sell as NFTs.</p>
-                <a href="/sampler" class="role-cta">Open Sampler →</a>
+                <p>Use the sampler and Moog synth to create original beats.</p>
+                <a href="/sampler" class="role-cta">Open Sampler &rarr;</a>
               </div>
             </div>
 
             <div class="role-card active">
-              <div class="role-icon">⚖️</div>
+              <div class="role-icon">&#x2696;&#xFE0F;</div>
               <div class="role-content">
                 <h4>Judge / Voter</h4>
-                <p>Vote on battles, rate performances, help determine winners fairly.</p>
-                <a href="/rap-battle" class="role-cta">Vote Now →</a>
+                <p>Vote on battles, rate performances, help determine winners.</p>
+                <a href="/rap-battle" class="role-cta">Vote Now &rarr;</a>
               </div>
             </div>
 
             <div class="role-card active">
-              <div class="role-icon">🎨</div>
+              <div class="role-icon">&#x1F3A8;</div>
               <div class="role-content">
                 <h4>NFT Collector</h4>
-                <p>Collect rare PFP cards, trade with others, support artists directly.</p>
-                <a href="/#nft-collection" class="role-cta">Browse NFTs →</a>
+                <p>Collect PFP cards, support artists, invest in projects.</p>
+                <a href="/nft-gallery" class="role-cta">Browse NFTs &rarr;</a>
               </div>
             </div>
 
             <div class="role-card active">
-              <div class="role-icon">💚</div>
+              <div class="role-icon">&#x1F49A;</div>
               <div class="role-content">
                 <h4>Impact Supporter</h4>
-                <p>Support youth programs through donations, mentorship, or resources.</p>
-                <a href="/nairobi-youth" class="role-cta">Learn More →</a>
+                <p>Donate, invest, and support youth programs.</p>
+                <a href="/invest" class="role-cta">Invest & Donate &rarr;</a>
               </div>
             </div>
           </div>
 
-          <!-- Coming Soon Roles -->
           <div class="role-category">
             <h3 class="category-title coming">
-              <span class="status-dot coming"></span>
+              <span class="status-dot testing"></span>
               Coming Soon
             </h3>
 
             <div class="role-card coming">
-              <div class="role-icon">👨‍🏫</div>
+              <div class="role-icon">&#x1F468;&#x200D;&#x1F3EB;</div>
               <div class="role-content">
                 <h4>Mentor / Teacher</h4>
-                <p>Guide new artists, teach production skills, lead workshops via Approvideo.</p>
+                <p>Guide new artists, earn Sage elixir for higher compensation.</p>
                 <span class="coming-badge">Q2 2026</span>
               </div>
             </div>
 
             <div class="role-card coming">
-              <div class="role-icon">🛠️</div>
+              <div class="role-icon">&#x1F6E0;&#xFE0F;</div>
               <div class="role-content">
                 <h4>Solution Builder</h4>
                 <p>Contribute sustainable solutions to the SCD Hub database.</p>
@@ -160,28 +306,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             </div>
 
             <div class="role-card coming">
-              <div class="role-icon">☮️</div>
+              <div class="role-icon">&#x262E;&#xFE0F;</div>
               <div class="role-content">
                 <h4>Peace Engineer</h4>
-                <p>Design and implement community conflict resolution programs.</p>
+                <p>Design community conflict resolution programs.</p>
                 <span class="coming-badge">Q3 2026</span>
               </div>
             </div>
 
             <div class="role-card coming">
-              <div class="role-icon">📊</div>
+              <div class="role-icon">&#x1F4CA;</div>
               <div class="role-content">
                 <h4>Data Contributor</h4>
-                <p>Help map resources, document solutions, and maintain databases.</p>
+                <p>Map resources, document solutions, maintain databases.</p>
                 <span class="coming-badge">Q3 2026</span>
               </div>
             </div>
 
             <div class="role-card coming">
-              <div class="role-icon">🏛️</div>
+              <div class="role-icon">&#x1F3DB;&#xFE0F;</div>
               <div class="role-content">
                 <h4>DAO Governor</h4>
-                <p>Vote on platform decisions, allocate treasury funds, shape the future.</p>
+                <p>Vote on platform decisions and allocate treasury.</p>
                 <span class="coming-badge">Q4 2026</span>
               </div>
             </div>
@@ -190,180 +336,106 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
     </section>
 
-    <!-- Integrated Hubs Section -->
+    <!-- Integrated Hubs -->
     <section class="hubs-section">
       <div class="container">
         <h2 class="section-title">Integrated Hubs</h2>
-        <p class="section-subtitle">WorldBridger One connects with powerful learning and solution platforms</p>
+        <p class="section-subtitle">Connected platforms for learning, impact, and sustainable development</p>
 
         <div class="hubs-grid">
-          <!-- Approvideo Learning Hub -->
           <div class="hub-card approvideo">
             <div class="hub-header">
-              <div class="hub-icon">📺</div>
-              <div class="hub-status">Integrated</div>
+              <div class="hub-icon">&#x1F4FA;</div>
+              <div class="hub-status integrated">Integrated</div>
             </div>
             <h3 class="hub-title">Approvideo Learning Hub</h3>
-            <p class="hub-description">
-              Video-based learning platform for skill development. Watch tutorials, complete courses,
-              and earn certificates. From beat production to business basics.
-            </p>
-            <ul class="hub-features">
-              <li>🎬 Video tutorials from community mentors</li>
-              <li>📜 Earn verifiable certificates</li>
-              <li>🎵 Music production courses</li>
-              <li>💼 Entrepreneurship training</li>
-              <li>🌱 Environmental education</li>
-            </ul>
-            <div class="hub-actions">
-              <a href="/learn" class="hub-cta primary">Start Learning</a>
-              <a href="/docs#approvideo" class="hub-cta secondary">Documentation</a>
-            </div>
+            <p class="hub-description">Video-based learning for skill development. Tutorials, courses, and certificates from community mentors.</p>
+            <a href="/learn" class="hub-cta">Start Learning &rarr;</a>
           </div>
 
-          <!-- Peace Engineering -->
           <div class="hub-card peace">
             <div class="hub-header">
-              <div class="hub-icon">☮️</div>
-              <div class="hub-status">Building</div>
+              <div class="hub-icon">&#x262E;&#xFE0F;</div>
+              <div class="hub-status building">Building</div>
             </div>
             <h3 class="hub-title">Peace Engineering</h3>
-            <p class="hub-description">
-              Systems and frameworks for community conflict resolution, restorative justice,
-              and building bridges between communities through creative expression.
-            </p>
-            <ul class="hub-features">
-              <li>🤝 Conflict resolution frameworks</li>
-              <li>🎤 Music as peace-building tool</li>
-              <li>👥 Community mediation training</li>
-              <li>📊 Impact measurement tools</li>
-              <li>🌍 Cross-cultural exchange programs</li>
-            </ul>
-            <div class="hub-actions">
-              <a href="/peace" class="hub-cta primary">Explore Peace Hub</a>
-              <a href="/nairobi-youth#mentorship" class="hub-cta secondary">Join as Mentor</a>
-            </div>
+            <p class="hub-description">Conflict resolution frameworks, community mediation, and creative expression as a peace-building tool.</p>
+            <a href="/impact" class="hub-cta">Learn More &rarr;</a>
           </div>
 
-          <!-- SCD Hub Solutions Database -->
           <div class="hub-card scd">
             <div class="hub-header">
-              <div class="hub-icon">🗃️</div>
-              <div class="hub-status">Building</div>
+              <div class="hub-icon">&#x1F5C3;&#xFE0F;</div>
+              <div class="hub-status building">Building</div>
             </div>
             <h3 class="hub-title">SCD Hub Solutions Database</h3>
-            <p class="hub-description">
-              Sustainable Community Development database cataloging proven solutions for
-              water, energy, agriculture, and infrastructure challenges in underserved communities.
-            </p>
-            <ul class="hub-features">
-              <li>💧 Water & sanitation solutions</li>
-              <li>⚡ Renewable energy systems</li>
-              <li>🌾 Regenerative agriculture</li>
-              <li>🏗️ Low-cost building techniques</li>
-              <li>📍 Geo-tagged implementation maps</li>
-            </ul>
-            <div class="hub-actions">
-              <a href="/solutions" class="hub-cta primary">Browse Solutions</a>
-              <a href="/contribute" class="hub-cta secondary">Contribute Data</a>
-            </div>
+            <p class="hub-description">Sustainable community development database cataloging proven solutions for water, energy, agriculture, and infrastructure.</p>
+            <a href="/solutions" class="hub-cta">Browse Solutions &rarr;</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Get Started Section -->
-    <section class="get-started-section">
+    <!-- Tech Stack -->
+    <section class="tech-section">
       <div class="container">
-        <h2 class="section-title">Get Started Today</h2>
-        <p class="section-subtitle">Jump in anywhere - no signup required to explore</p>
+        <h2 class="section-title">Built in the Open</h2>
+        <p class="section-subtitle">Open source tools, permissive licenses. Fork it, improve it, deploy your own.</p>
 
-        <div class="start-grid">
-          <a href="/rap-battle" class="start-card battle">
-            <div class="start-icon">⚔️</div>
-            <h3>Start a Battle</h3>
-            <p>Record your first rap and challenge the community</p>
-            <span class="start-tag">Most Popular</span>
-          </a>
-
-          <a href="/sampler" class="start-card create">
-            <div class="start-icon">🎹</div>
-            <h3>Create a Beat</h3>
-            <p>Use our sampler pads to make your first beat</p>
-          </a>
-
-          <a href="/learn" class="start-card learn">
-            <div class="start-icon">📚</div>
-            <h3>Learn Skills</h3>
-            <p>Watch tutorials and earn certificates</p>
-          </a>
-
-          <a href="/nairobi-youth" class="start-card impact">
-            <div class="start-icon">💚</div>
-            <h3>Make Impact</h3>
-            <p>Support youth programs and see real results</p>
-          </a>
-
-          <a href="/projects" class="start-card projects">
-            <div class="start-icon">🚀</div>
-            <h3>Browse Projects</h3>
-            <p>Discover community initiatives you can join</p>
-          </a>
-
-          <a href="/docs" class="start-card docs">
-            <div class="start-icon">📖</div>
-            <h3>Read Docs</h3>
-            <p>Deep dive into how everything works</p>
-          </a>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <h4>Astro 5.x</h4>
+            <p>SSR framework with Vercel adapter</p>
+          </div>
+          <div class="tech-item">
+            <h4>Solana Web3.js</h4>
+            <p>Wallet integration & blockchain interactions</p>
+          </div>
+          <div class="tech-item">
+            <h4>Neon PostgreSQL</h4>
+            <p>Serverless database for all platform data</p>
+          </div>
+          <div class="tech-item">
+            <h4>Web Audio API</h4>
+            <p>Browser-native music creation and recording</p>
+          </div>
+          <div class="tech-item">
+            <h4>Three.js</h4>
+            <p>3D visualizations and interactive elements</p>
+          </div>
+          <div class="tech-item highlight">
+            <h4>Metaplex</h4>
+            <p>NFT minting & metadata — in integration</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Open Source Section -->
-    <section class="opensource-section">
+    <!-- Join CTA -->
+    <section class="join-section">
       <div class="container">
-        <div class="opensource-content">
-          <div class="opensource-text">
-            <h2>Built in the Open</h2>
-            <p>
-              WorldBridger One is built entirely with
-              open source tools and released under permissive licenses. Fork it, improve it, deploy your own.
-            </p>
-            <div class="tech-stack">
-              <span class="tech-badge">Astro</span>
-              <span class="tech-badge">Solana</span>
-              <span class="tech-badge">Metaplex</span>
-              <span class="tech-badge">Arweave</span>
-              <span class="tech-badge">Web Audio API</span>
-            </div>
-          </div>
-          <div class="opensource-cta">
-            <a href="https://github.com/worldbridgerone/purple-point" class="github-btn" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-              View on GitHub
-            </a>
-            <a href="/docs" class="docs-btn">
-              Read Documentation
-            </a>
+        <div class="join-banner">
+          <h2>Ready to join?</h2>
+          <p>Sign up for testnet notifications, create a wallet, or start making music right now.</p>
+          <div class="join-actions">
+            <a href="/#join-testnet" class="cta-primary">Join the Testnet</a>
+            <a href="/rap-battle" class="cta-secondary">Start a Battle</a>
+            <a href="/invest" class="cta-secondary">Invest & Donate</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SparkHope Connection -->
+    <!-- SparkHope -->
     <section class="sparkhope-section">
       <div class="container">
         <div class="sparkhope-banner">
-          <div class="sparkhope-icon">🍄</div>
+          <div class="sparkhope-icon">&#x1F344;</div>
           <div class="sparkhope-text">
             <h3>Part of SparkHope.space</h3>
-            <p>WorldBridger One is integrated with the SparkHope mycological innovation platform, connecting creative expression with regenerative agriculture and sustainable community development.</p>
+            <p>Integrated with the SparkHope mycological innovation platform, connecting creative expression with regenerative agriculture and sustainable community development.</p>
           </div>
-          <a href="https://sparkhope.space" class="sparkhope-link" target="_blank" rel="noopener">
-            Visit SparkHope →
-          </a>
+          <a href="https://sparkhope.space" class="sparkhope-link" target="_blank" rel="noopener">Visit SparkHope &rarr;</a>
         </div>
       </div>
     </section>
@@ -383,7 +455,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     padding: 0 2rem;
   }
 
-  /* Hero Section */
+  /* Hero */
   .about-hero {
     padding: 6rem 0 4rem;
     text-align: center;
@@ -412,26 +484,55 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     font-family: 'Courier New', monospace;
   }
 
-  .title-line {
-    display: block;
-  }
-
-  .title-line.accent {
-    color: #00ff00;
-    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-  }
+  .title-line { display: block; }
+  .title-line.accent { color: #00ff00; text-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
 
   .hero-description {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     color: #aaa;
     max-width: 700px;
     margin: 0 auto 2rem;
     line-height: 1.7;
   }
 
-  .hero-description strong {
-    color: #00ff00;
+  .hero-description strong { color: #00ff00; }
+
+  .hero-ctas {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
   }
+
+  .cta-primary {
+    background: #00ff00;
+    color: #000;
+    padding: 12px 28px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 2px solid #00ff00;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .cta-primary:hover { box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
+
+  .cta-secondary {
+    background: transparent;
+    color: #aaa;
+    padding: 12px 28px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 2px solid #444;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .cta-secondary:hover { border-color: #888; color: #fff; }
 
   .open-source-badges {
     display: flex;
@@ -451,39 +552,49 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     font-size: 0.8rem;
   }
 
-  .license-icon {
-    font-size: 1.2rem;
-  }
-
-  /* Section Styles */
+  /* Section styles */
   .section-title {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     font-weight: 900;
     margin-bottom: 1rem;
     font-family: 'Courier New', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
   }
 
   .section-subtitle {
     text-align: center;
     color: #888;
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-bottom: 3rem;
   }
 
-  /* Mission Section */
-  .mission-section {
+  .status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .status-dot.live { background: #00ff00; box-shadow: 0 0 10px #00ff00; }
+  .status-dot.testing { background: #ff00ff; box-shadow: 0 0 10px #ff00ff; }
+
+  /* Explainer / Mission */
+  .explainer-section {
     padding: 5rem 0;
     background: #111;
   }
 
-  .mission-grid {
+  .explainer-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
   }
 
-  .mission-card {
+  .explainer-card {
     background: #1a1a1a;
     border: 2px solid #333;
     padding: 2rem;
@@ -491,31 +602,157 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     transition: all 0.3s;
   }
 
-  .mission-card:hover {
-    border-color: #00ff00;
-    transform: translateY(-5px);
-  }
+  .explainer-card:hover { border-color: #00ff00; transform: translateY(-5px); }
+  .explainer-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .explainer-card h3 { font-size: 1.15rem; margin-bottom: 0.75rem; color: #00ff00; }
+  .explainer-card p { color: #888; line-height: 1.6; font-size: 0.9rem; }
 
-  .mission-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-  }
-
-  .mission-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.75rem;
-    color: #00ff00;
-  }
-
-  .mission-card p {
-    color: #888;
-    line-height: 1.6;
-  }
-
-  /* Roles Section */
-  .roles-section {
+  /* Live Features Grid */
+  .live-section {
     padding: 5rem 0;
     background: #0a0a0a;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .feature-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .feature-card {
+    background: #1a1a1a;
+    border: 2px solid #222;
+    padding: 1.25rem;
+    text-align: center;
+    transition: all 0.3s;
+    height: 100%;
+  }
+
+  .feature-card:hover { border-color: #00ff00; transform: translateY(-3px); }
+  .feature-emoji { font-size: 1.75rem; display: block; margin-bottom: 0.5rem; }
+  .feature-card h4 { font-size: 0.85rem; font-weight: 900; margin-bottom: 0.35rem; color: #fff; font-family: 'Courier New', monospace; letter-spacing: 1px; }
+  .feature-card p { font-size: 0.75rem; color: #888; line-height: 1.5; }
+
+  /* Testing Section */
+  .testing-section {
+    padding: 5rem 0;
+    background: #111;
+  }
+
+  .testing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .testing-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-left: 4px solid #ff00ff;
+    padding: 1.75rem;
+    transition: all 0.3s;
+  }
+
+  .testing-card:hover { border-color: #ff00ff; }
+  .testing-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+  .testing-card h4 { font-size: 1rem; margin-bottom: 0.5rem; color: #fff; }
+  .testing-card p { font-size: 0.85rem; color: #888; line-height: 1.6; margin-bottom: 0.75rem; }
+
+  .testing-status {
+    display: inline-block;
+    background: rgba(255, 0, 255, 0.15);
+    border: 1px solid #ff00ff;
+    color: #ff00ff;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+  }
+
+  /* Roadmap */
+  .roadmap-section {
+    padding: 5rem 0;
+    background: #0a0a0a;
+  }
+
+  .roadmap-timeline {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .roadmap-timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #333;
+  }
+
+  .roadmap-item {
+    position: relative;
+    margin-bottom: 2.5rem;
+  }
+
+  .roadmap-marker {
+    position: absolute;
+    left: -33px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #333;
+    border: 2px solid #555;
+  }
+
+  .roadmap-item.current .roadmap-marker {
+    background: #00ff00;
+    border-color: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+  }
+
+  .roadmap-content h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+  }
+
+  .roadmap-content p {
+    color: #888;
+    line-height: 1.6;
+    font-size: 0.9rem;
+  }
+
+  .roadmap-badge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    font-weight: 900;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+  }
+
+  .current-badge {
+    background: #00ff00;
+    color: #000;
+  }
+
+  /* Roles */
+  .roles-section {
+    padding: 5rem 0;
+    background: #111;
   }
 
   .roles-grid {
@@ -525,7 +762,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   .category-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 1.5rem;
@@ -535,104 +772,57 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     font-family: 'Courier New', monospace;
   }
 
-  .status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-
-  .status-dot.active {
-    background: #00ff00;
-    box-shadow: 0 0 10px #00ff00;
-  }
-
-  .status-dot.coming {
-    background: #ff00ff;
-    box-shadow: 0 0 10px #ff00ff;
-  }
-
-  .category-title.active {
-    color: #00ff00;
-  }
-
-  .category-title.coming {
-    color: #ff00ff;
-  }
+  .category-title.active { color: #00ff00; }
+  .category-title.coming { color: #ff00ff; }
 
   .role-card {
     display: flex;
     gap: 1rem;
-    padding: 1.5rem;
+    padding: 1.25rem;
     background: #1a1a1a;
     border: 2px solid #333;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     transition: all 0.3s;
   }
 
-  .role-card.active:hover {
-    border-color: #00ff00;
-  }
+  .role-card.active:hover { border-color: #00ff00; }
+  .role-card.coming { opacity: 0.7; }
+  .role-card.coming:hover { border-color: #ff00ff; opacity: 1; }
 
-  .role-card.coming {
-    opacity: 0.7;
-  }
-
-  .role-card.coming:hover {
-    border-color: #ff00ff;
-    opacity: 1;
-  }
-
-  .role-icon {
-    font-size: 2rem;
-    min-width: 50px;
-    text-align: center;
-  }
-
-  .role-content h4 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: #fff;
-  }
-
-  .role-content p {
-    color: #888;
-    font-size: 0.9rem;
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
-  }
+  .role-icon { font-size: 1.75rem; min-width: 40px; text-align: center; }
+  .role-content h4 { font-size: 1rem; margin-bottom: 0.35rem; }
+  .role-content p { color: #888; font-size: 0.85rem; margin-bottom: 0.5rem; line-height: 1.5; }
 
   .role-cta {
     color: #00ff00;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: bold;
     text-decoration: none;
     font-family: 'Courier New', monospace;
   }
 
-  .role-cta:hover {
-    text-decoration: underline;
-  }
+  .role-cta:hover { text-decoration: underline; }
 
   .coming-badge {
     display: inline-block;
     background: #ff00ff;
     color: #fff;
-    font-size: 0.7rem;
-    padding: 3px 10px;
+    font-size: 0.65rem;
+    padding: 2px 8px;
     font-weight: bold;
     font-family: 'Courier New', monospace;
   }
 
-  /* Hubs Section */
+  /* Hubs */
   .hubs-section {
     padding: 5rem 0;
-    background: #111;
+    background: #0a0a0a;
   }
 
   .hubs-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
   }
 
   .hub-card {
@@ -642,17 +832,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     transition: all 0.3s;
   }
 
-  .hub-card.approvideo:hover {
-    border-color: #00ffff;
-  }
-
-  .hub-card.peace:hover {
-    border-color: #ffff00;
-  }
-
-  .hub-card.scd:hover {
-    border-color: #00ff00;
-  }
+  .hub-card.approvideo:hover { border-color: #00ffff; }
+  .hub-card.peace:hover { border-color: #ffff00; }
+  .hub-card.scd:hover { border-color: #00ff00; }
 
   .hub-header {
     display: flex;
@@ -661,225 +843,116 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     margin-bottom: 1rem;
   }
 
-  .hub-icon {
-    font-size: 2.5rem;
-  }
+  .hub-icon { font-size: 2rem; }
 
   .hub-status {
-    font-size: 0.75rem;
-    padding: 4px 12px;
-    background: #333;
-    color: #888;
+    font-size: 0.7rem;
+    padding: 4px 10px;
     font-family: 'Courier New', monospace;
     text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
   }
 
-  .hub-title {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #fff;
-  }
+  .hub-status.integrated { background: #00ff00; color: #000; }
+  .hub-status.building { background: #333; color: #888; }
 
-  .hub-description {
-    color: #888;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-  }
-
-  .hub-features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1.5rem;
-  }
-
-  .hub-features li {
-    padding: 8px 0;
-    border-bottom: 1px solid #333;
-    font-size: 0.9rem;
-    color: #aaa;
-  }
-
-  .hub-features li:last-child {
-    border-bottom: none;
-  }
-
-  .hub-actions {
-    display: flex;
-    gap: 1rem;
-  }
+  .hub-title { font-size: 1.25rem; margin-bottom: 0.75rem; }
+  .hub-description { color: #888; line-height: 1.6; font-size: 0.9rem; margin-bottom: 1rem; }
 
   .hub-cta {
-    padding: 10px 20px;
+    color: #00ff00;
     font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
     font-weight: bold;
+    font-size: 0.85rem;
     text-decoration: none;
-    transition: all 0.2s;
   }
 
-  .hub-cta.primary {
-    background: #00ff00;
-    color: #000;
-    border: 2px solid #00ff00;
+  .hub-cta:hover { text-decoration: underline; }
+
+  /* Tech Stack */
+  .tech-section {
+    padding: 5rem 0;
+    background: #111;
   }
 
-  .hub-cta.primary:hover {
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
   }
 
-  .hub-cta.secondary {
-    background: transparent;
-    color: #888;
-    border: 2px solid #333;
+  .tech-item {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 1.25rem;
+    text-align: center;
   }
 
-  .hub-cta.secondary:hover {
-    border-color: #888;
+  .tech-item h4 {
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 0.35rem;
     color: #fff;
   }
 
-  /* Get Started Section */
-  .get-started-section {
+  .tech-item p { font-size: 0.75rem; color: #888; }
+
+  .tech-item.highlight {
+    border-color: #ff00ff;
+    position: relative;
+  }
+
+  .tech-item.highlight::after {
+    content: 'IN PROGRESS';
+    position: absolute;
+    top: -8px;
+    right: 8px;
+    font-size: 0.55rem;
+    padding: 2px 6px;
+    background: #ff00ff;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  /* Join CTA */
+  .join-section {
     padding: 5rem 0;
     background: #0a0a0a;
   }
 
-  .start-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .start-card {
-    display: block;
-    background: #1a1a1a;
-    border: 2px solid #333;
-    padding: 2rem 1.5rem;
+  .join-banner {
     text-align: center;
-    text-decoration: none;
-    transition: all 0.3s;
-    position: relative;
+    background: linear-gradient(135deg, #1a1a2e, #0a0a0a);
+    border: 2px solid #00ff00;
+    padding: 3rem 2rem;
   }
 
-  .start-card:hover {
-    transform: translateY(-5px);
-    border-color: #00ff00;
-  }
-
-  .start-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .start-card h3 {
-    color: #fff;
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .start-card p {
-    color: #888;
-    font-size: 0.85rem;
-    line-height: 1.5;
-  }
-
-  .start-tag {
-    position: absolute;
-    top: -10px;
-    right: 10px;
-    background: #ff00ff;
-    color: #fff;
-    font-size: 0.65rem;
-    padding: 4px 10px;
-    font-weight: bold;
-    font-family: 'Courier New', monospace;
-  }
-
-  /* Open Source Section */
-  .opensource-section {
-    padding: 5rem 0;
-    background: linear-gradient(180deg, #111 0%, #1a1a2e 100%);
-    border-top: 2px solid #333;
-  }
-
-  .opensource-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 3rem;
-  }
-
-  .opensource-text h2 {
+  .join-banner h2 {
     font-size: 2rem;
+    font-family: 'Courier New', monospace;
     margin-bottom: 1rem;
-  }
-
-  .opensource-text p {
-    color: #888;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-    max-width: 500px;
-  }
-
-  .opensource-text strong {
     color: #00ff00;
   }
 
-  .tech-stack {
+  .join-banner p {
+    color: #aaa;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+
+  .join-actions {
     display: flex;
-    gap: 0.75rem;
+    justify-content: center;
+    gap: 1rem;
     flex-wrap: wrap;
   }
 
-  .tech-badge {
-    background: #333;
-    padding: 6px 14px;
-    font-size: 0.8rem;
-    font-family: 'Courier New', monospace;
-    color: #aaa;
-  }
-
-  .opensource-cta {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .github-btn, .docs-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 14px 28px;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    text-decoration: none;
-    transition: all 0.2s;
-  }
-
-  .github-btn {
-    background: #fff;
-    color: #000;
-    border: 2px solid #fff;
-  }
-
-  .github-btn:hover {
-    background: #00ff00;
-    border-color: #00ff00;
-  }
-
-  .docs-btn {
-    background: transparent;
-    color: #888;
-    border: 2px solid #333;
-  }
-
-  .docs-btn:hover {
-    border-color: #888;
-    color: #fff;
-  }
-
-  /* SparkHope Section */
+  /* SparkHope */
   .sparkhope-section {
     padding: 3rem 0;
     background: #0a0a0a;
@@ -894,24 +967,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     padding: 2rem;
   }
 
-  .sparkhope-icon {
-    font-size: 3rem;
-  }
-
-  .sparkhope-text {
-    flex: 1;
-  }
-
-  .sparkhope-text h3 {
-    color: #ff00ff;
-    margin-bottom: 0.5rem;
-  }
-
-  .sparkhope-text p {
-    color: #888;
-    font-size: 0.9rem;
-    line-height: 1.6;
-  }
+  .sparkhope-icon { font-size: 3rem; }
+  .sparkhope-text { flex: 1; }
+  .sparkhope-text h3 { color: #ff00ff; margin-bottom: 0.5rem; }
+  .sparkhope-text p { color: #888; font-size: 0.9rem; line-height: 1.6; }
 
   .sparkhope-link {
     color: #ff00ff;
@@ -921,40 +980,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     white-space: nowrap;
   }
 
-  .sparkhope-link:hover {
-    text-decoration: underline;
-  }
+  .sparkhope-link:hover { text-decoration: underline; }
 
   /* Responsive */
   @media (max-width: 768px) {
-    .hero-title {
-      font-size: 2.25rem;
-    }
-
-    .roles-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .hubs-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .opensource-content {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .opensource-text p {
-      max-width: 100%;
-    }
-
-    .tech-stack {
-      justify-content: center;
-    }
-
-    .sparkhope-banner {
-      flex-direction: column;
-      text-align: center;
-    }
+    .hero-title { font-size: 2.25rem; }
+    .hero-ctas { flex-direction: column; align-items: center; }
+    .roles-grid { grid-template-columns: 1fr; }
+    .hubs-grid { grid-template-columns: 1fr; }
+    .join-actions { flex-direction: column; align-items: center; }
+    .sparkhope-banner { flex-direction: column; text-align: center; }
+    .section-title { font-size: 1.75rem; }
   }
 </style>

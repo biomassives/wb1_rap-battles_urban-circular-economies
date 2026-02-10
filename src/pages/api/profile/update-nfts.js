@@ -2,8 +2,7 @@
 // Astro API endpoint to update user's owned NFTs
 // Updated for Nile DB
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function POST({ request }) {
   try {
     // Parse request body
@@ -30,8 +29,6 @@ export async function POST({ request }) {
     }
 
     // Connect to Nile DB using Neon serverless driver
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.lab_NILEDB_URL);
-
     // Update owned NFTs for the user
     const result = await sql`
       UPDATE user_profiles

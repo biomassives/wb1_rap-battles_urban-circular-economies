@@ -1,8 +1,7 @@
 // /api/contributions/submit.js
 // Submit contribution to a project (donation, volunteer, data, resource)
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 const XP_VALUES = {
   donation_per_dollar: 10,
   volunteer_per_hour: 50,
@@ -69,9 +68,6 @@ export async function POST({ request }) {
         error: 'Hours are required for volunteer/mentorship contributions'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Verify project exists
     const project = await sql`
       SELECT id, title, status, proposer_wallet, funding_goal, funding_raised
@@ -266,8 +262,6 @@ export async function GET({ request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     let contributions;
 
     if (projectId) {

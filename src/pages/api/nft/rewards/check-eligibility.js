@@ -1,8 +1,7 @@
 // /api/nft/rewards/check-eligibility.js
 // Check what NFT rewards a user is eligible to claim
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function GET({ request }) {
   const url = new URL(request.url);
   const walletAddress = url.searchParams.get('walletAddress');
@@ -15,8 +14,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get user profile and stats
     const user = await sql`
       SELECT

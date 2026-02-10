@@ -9,14 +9,11 @@
  * - Total submissions
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function GET({ request }) {
   try {
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     // Get battle counts
     const battleStats = await sql`
       SELECT

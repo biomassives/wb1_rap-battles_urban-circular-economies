@@ -1,8 +1,7 @@
 // /api/projects/[id]/impact-report.js
 // Submit and view impact reports for a project
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 const XP_VALUES = {
   report_submitted: 75,
   verified_report_bonus: 150,
@@ -62,9 +61,6 @@ export async function POST({ params, request }) {
         error: `Report type must be one of: ${validTypes.join(', ')}`
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Verify project exists and user has permission
     const project = await sql`
       SELECT id, title, proposer_wallet, status, team_members
@@ -205,8 +201,6 @@ export async function GET({ params, request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Verify project exists
     const project = await sql`
       SELECT id, title, status FROM project_proposals

@@ -85,7 +85,7 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
           <span class="synth-knob"></span>
         </div>
         <div class="moog-banner-text">
-          <span class="moog-banner-title">AutoMoog Synthesizer</span>
+          <span class="moog-banner-title">WorldBridger Moog Synthesizer</span>
           <span class="moog-banner-subtitle">Create generative sounds instantly</span>
         </div>
         <div class="moog-banner-action">
@@ -102,7 +102,7 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
       <div class="moog-modal-header">
         <h2 class="moog-modal-title">
           <span class="modal-icon">◈</span>
-          AutoMoog Synthesizer
+          WorldBridger Moog Synthesizer
         </h2>
         <button class="moog-modal-close" id="close-moog-modal" type="button" aria-label="Close">
           <span>✕</span>
@@ -141,6 +141,63 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
       <div class="cta-center">
         <a href="/rap-battle" class="btn-primary-large">
           Start Earning XP Now 🔥
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- JOIN THE TESTNET - SIGNUP + INVEST/DONATE    -->
+  <!-- ============================================ -->
+  <section class="testnet-signup-section" id="join-testnet">
+    <div class="container mx-auto">
+      <div class="signup-panel card-retro-neon">
+        <h2 class="signup-title mono neon-text">[ JOIN THE TESTNET ]</h2>
+        <p class="signup-subtitle mono">Get notified when Solana testnet minting goes live. Choose your role and start earning.</p>
+
+        <form id="testnet-signup-form" class="signup-form" autocomplete="off">
+          <div class="signup-fields">
+            <div class="field-group">
+              <label for="signup-email" class="field-label mono">EMAIL *</label>
+              <input type="email" id="signup-email" name="email" required placeholder="you@example.com" class="field-input mono" />
+            </div>
+            <div class="field-group">
+              <label for="signup-role" class="field-label mono">YOUR ROLE</label>
+              <select id="signup-role" name="role" class="field-input field-select mono">
+                <option value="">Select a role...</option>
+                <option value="Artist/Rapper">Artist / Rapper</option>
+                <option value="Beat Producer">Beat Producer</option>
+                <option value="Judge/Voter">Judge / Voter</option>
+                <option value="Mentor/Teacher">Mentor / Teacher</option>
+                <option value="NFT Collector">NFT Collector</option>
+                <option value="Impact Supporter">Impact Supporter</option>
+                <option value="Data Contributor">Data Contributor</option>
+                <option value="DAO Governor">DAO Governor</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="signup-wallet" class="field-label mono">WALLET <span class="field-optional">(optional)</span></label>
+              <input type="text" id="signup-wallet" name="walletAddress" placeholder="Solana address..." class="field-input mono" />
+            </div>
+          </div>
+          <button type="submit" id="signup-submit" class="btn-retro-neon signup-btn pulse-glow">JOIN TESTNET</button>
+          <div id="signup-message" class="signup-message mono" style="display:none;"></div>
+        </form>
+      </div>
+
+      <!-- Invest / Donate Teasers -->
+      <div class="invest-teasers">
+        <a href="/invest" class="invest-teaser card-retro">
+          <div class="teaser-icon-lg">&#x1F680;</div>
+          <h3 class="mono">INVEST IN YOUR PROJECT</h3>
+          <p>Purchase a Donor NFT that funds your community project. Earn equity, XP, and recognition.</p>
+          <span class="teaser-cta mono neon-text">Mint Donor NFT &rarr;</span>
+        </a>
+        <a href="/invest#donate" class="invest-teaser card-retro">
+          <div class="teaser-icon-lg">&#x1F49A;</div>
+          <h3 class="mono">DONATE TO A CAUSE</h3>
+          <p>Support Kakuma & Nairobi youth programs. Every donation mints a Donor NFT to your wallet.</p>
+          <span class="teaser-cta mono neon-text">Donate & Earn NFT &rarr;</span>
         </a>
       </div>
     </div>
@@ -2420,6 +2477,186 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
         max-height: calc(95vh - 60px);
       }
     }
+
+    /* ── TESTNET SIGNUP SECTION ── */
+    .testnet-signup-section {
+      padding: 4rem 2rem;
+      background: linear-gradient(180deg, #050710 0%, #0a0f1a 50%, #050710 100%);
+    }
+
+    .signup-panel {
+      max-width: 700px;
+      margin: 0 auto 2.5rem;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .signup-title {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      margin-bottom: 0.75rem;
+    }
+
+    .signup-subtitle {
+      font-size: 0.9rem;
+      color: var(--color-light-gray, #aaa);
+      margin-bottom: 2rem;
+    }
+
+    .signup-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .signup-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .field-label {
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: var(--color-light-gray, #888);
+      margin-bottom: 0.4rem;
+    }
+
+    .field-optional {
+      color: var(--color-mid-gray, #555);
+      font-weight: 400;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 0.7rem 0.75rem;
+      background: var(--color-near-black, #0a0a0a);
+      border: 2px solid var(--color-mid-gray, #333);
+      color: #fff;
+      font-size: 0.85rem;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .field-input:focus {
+      outline: none;
+      border-color: var(--color-neon-green, #00ff00);
+      box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
+    }
+
+    .field-input::placeholder {
+      color: var(--color-mid-gray, #444);
+    }
+
+    .field-select {
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+
+    .signup-btn {
+      padding: 0.85rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      margin-top: 0.5rem;
+      cursor: pointer;
+    }
+
+    .signup-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .signup-message {
+      font-size: 0.85rem;
+      padding: 0.75rem 1.25rem;
+      margin-top: 0.5rem;
+      border: 1px solid;
+    }
+
+    .signup-message.success {
+      color: var(--color-neon-green, #00ff00);
+      border-color: var(--color-neon-green, #00ff00);
+      background: rgba(0, 255, 0, 0.05);
+    }
+
+    .signup-message.error {
+      color: #ff4444;
+      border-color: #ff4444;
+      background: rgba(255, 68, 68, 0.05);
+    }
+
+    /* ── Invest / Donate Teasers ── */
+    .invest-teasers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .invest-teaser {
+      padding: 2rem 1.5rem;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .invest-teaser:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-neon-green, #00ff00);
+    }
+
+    .teaser-icon-lg {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .invest-teaser h3 {
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .invest-teaser p {
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: var(--color-light-gray, #aaa);
+      margin-bottom: 1rem;
+    }
+
+    .teaser-cta {
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 768px) {
+      .signup-fields {
+        grid-template-columns: 1fr;
+      }
+      .invest-teasers {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 
   <script>
@@ -2507,6 +2744,64 @@ import QuickRecordButton from '../components/QuickRecordButton.astro';
         }
       });
     });
+  </script>
+
+  <script is:inline>
+  (function() {
+    var form = document.getElementById('testnet-signup-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var btn = document.getElementById('signup-submit');
+      var msg = document.getElementById('signup-message');
+      var email = document.getElementById('signup-email').value.trim();
+      var role = document.getElementById('signup-role').value;
+      var wallet = document.getElementById('signup-wallet').value.trim();
+
+      if (!email) { showMsg(msg, 'Email is required', 'error'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'JOINING...';
+
+      fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, role: role || undefined, walletAddress: wallet || undefined })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          showMsg(msg, data.message, 'success');
+          form.reset();
+        } else {
+          showMsg(msg, data.error || 'Something went wrong', 'error');
+        }
+      })
+      .catch(function() {
+        showMsg(msg, 'Network error. Please try again.', 'error');
+      })
+      .finally(function() {
+        btn.disabled = false;
+        btn.textContent = 'JOIN TESTNET';
+      });
+    });
+
+    // Auto-fill wallet if connected
+    try {
+      var stored = localStorage.getItem('walletAddress');
+      if (stored) {
+        var walletInput = document.getElementById('signup-wallet');
+        if (walletInput && !walletInput.value) walletInput.value = stored;
+      }
+    } catch(e) {}
+
+    function showMsg(el, text, type) {
+      el.textContent = text;
+      el.className = 'signup-message mono ' + type;
+      el.style.display = 'block';
+    }
+  })();
   </script>
 
 </BaseLayout>

@@ -1,8 +1,7 @@
 // /api/data/community/submit.js
 // Submit community research (surveys, local knowledge, stories)
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 const XP_VALUES = {
   survey: 50,
   local_knowledge: 100,
@@ -64,9 +63,6 @@ export async function POST({ request }) {
         error: 'Content is required (minimum 50 characters)'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Calculate base XP
     const baseXP = XP_VALUES[researchType] || 50;
 
@@ -173,8 +169,6 @@ export async function GET({ request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     let research;
 
     if (walletAddress) {

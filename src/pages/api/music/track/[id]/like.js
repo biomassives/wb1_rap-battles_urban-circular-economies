@@ -9,8 +9,8 @@
  * - Prevent self-liking
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../../lib/db.js';
+import { notify } from '../../../../../lib/notify.js';
 export async function POST({ params, request }) {
   try {
     const { id } = params;
@@ -49,9 +49,6 @@ export async function POST({ params, request }) {
     }
 
     console.log(`❤️ Like action for track ${id} by ${walletAddress}`);
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check if track exists
     const trackResult = await sql`
       SELECT id, user_wallet, title, likes
@@ -150,6 +147,23 @@ export async function POST({ params, request }) {
       liked = true;
 
       console.log(`❤️ Track liked. New count: ${newLikeCount}`);
+
+      // Notify track artist about the like
+      try {
+        await notify(track.user_wallet, {
+          category: 'social',
+          type: 'track_liked',
+          title: 'Track Liked!',
+          message: `Someone liked your track "${track.title}"`,
+          icon: '❤️',
+          actionUrl: '/music',
+          actionLabel: 'View Track',
+          priority: 'low',
+          groupKey: `track_likes_${id}`
+        });
+      } catch (notifError) {
+        console.warn('Notification failed:', notifError.message);
+      }
 
       // Award XP to artist on milestones (10, 25, 50, 100, etc.)
       const milestones = [10, 25, 50, 100, 250, 500, 1000];

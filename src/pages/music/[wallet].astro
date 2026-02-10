@@ -1,0 +1,293 @@
+---
+/**
+ * /music/[wallet] - Public Music Page
+ * Shows an artist's featured and published tracks.
+ * No wallet needed to view; liking requires connected wallet.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { sql } from '../../lib/db.js';
+export const prerender = false;
+
+const { wallet } = Astro.params;
+
+// Validate wallet address format
+if (!wallet || wallet.length < 32 || wallet.length > 44) {
+  return Astro.redirect('/music');
+}
+
+// Get artist profile
+let artist = null;
+let featuredTracks = [];
+let allTracks = [];
+let stats = { totalTracks: 0, totalPlays: 0, totalLikes: 0 };
+
+try {
+  const profileRows = await sql`
+    SELECT wallet_address, username, avatar_url, bio, level, xp
+    FROM user_profiles WHERE wallet_address = ${wallet}
+  `;
+  artist = profileRows[0] || { wallet_address: wallet, username: null, level: 1, xp: 0 };
+
+  featuredTracks = await sql`
+    SELECT id, title, genre, audio_url, cover_art_url, description, duration, plays, likes, source, created_at
+    FROM tracks
+    WHERE user_wallet = ${wallet} AND status = 'published' AND is_featured = true
+    ORDER BY created_at DESC
+    LIMIT 6
+  `;
+
+  allTracks = await sql`
+    SELECT id, title, genre, audio_url, cover_art_url, duration, plays, likes, source, created_at
+    FROM tracks
+    WHERE user_wallet = ${wallet} AND status = 'published'
+    ORDER BY created_at DESC
+    LIMIT 50
+  `;
+
+  const statsResult = await sql`
+    SELECT COUNT(*) as total, COALESCE(SUM(plays), 0) as plays, COALESCE(SUM(likes), 0) as likes
+    FROM tracks WHERE user_wallet = ${wallet} AND status = 'published'
+  `;
+  if (statsResult[0]) {
+    stats = { totalTracks: parseInt(statsResult[0].total), totalPlays: parseInt(statsResult[0].plays), totalLikes: parseInt(statsResult[0].likes) };
+  }
+} catch (err) {
+  console.error('Error loading public music page:', err);
+}
+
+const displayName = artist?.username || `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+const tierName = artist?.xp >= 50000 ? 'Mythic' : artist?.xp >= 15000 ? 'Diamond' : artist?.xp >= 5000 ? 'Platinum' : artist?.xp >= 2000 ? 'Gold' : artist?.xp >= 500 ? 'Silver' : 'Bronze';
+---
+
+<BaseLayout title={`${displayName} — Music`} description={`Listen to music by ${displayName} on WorldBridger One`} activeSection="music">
+
+  <section class="artist-hero">
+    <div class="container mx-auto">
+      <div class="artist-header">
+        <div class="artist-avatar">
+          {artist?.avatar_url ? <img src={artist.avatar_url} alt="" /> : <div class="avatar-placeholder">🎤</div>}
+        </div>
+        <div class="artist-info">
+          <h1>{displayName}</h1>
+          <div class="artist-badges">
+            <span class="badge badge-level">Level {artist?.level || 1}</span>
+            <span class={`badge badge-tier badge-${tierName.toLowerCase()}`}>{tierName}</span>
+          </div>
+          {artist?.bio && <p class="artist-bio">{artist.bio}</p>}
+        </div>
+      </div>
+      <div class="artist-stats">
+        <div class="artist-stat"><span class="stat-val">{stats.totalTracks}</span><span class="stat-lbl">Tracks</span></div>
+        <div class="artist-stat"><span class="stat-val">{stats.totalPlays}</span><span class="stat-lbl">Plays</span></div>
+        <div class="artist-stat"><span class="stat-val">{stats.totalLikes}</span><span class="stat-lbl">Likes</span></div>
+      </div>
+    </div>
+  </section>
+
+  {featuredTracks.length > 0 && (
+    <section class="featured-section">
+      <div class="container mx-auto">
+        <h2>Featured</h2>
+        <div class="featured-grid">
+          {featuredTracks.map(track => (
+            <div class="featured-card" data-track-id={track.id}>
+              <div class="featured-cover">
+                {track.cover_art_url ? <img src={track.cover_art_url} alt="" /> : <div class="cover-placeholder-lg">🎵</div>}
+                <button class="play-overlay" data-audio={track.audio_url} data-id={track.id}>▶</button>
+              </div>
+              <div class="featured-info">
+                <div class="featured-title">{track.title}</div>
+                <div class="featured-meta">{track.genre} &middot; {track.plays || 0} plays</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="tracks-section">
+    <div class="container mx-auto">
+      <h2>All Tracks</h2>
+      {allTracks.length === 0 ? (
+        <div class="no-tracks">No published tracks yet.</div>
+      ) : (
+        <div class="public-track-list">
+          {allTracks.map(track => (
+            <div class="public-track-row" data-track-id={track.id}>
+              <button class="pub-play-btn" data-audio={track.audio_url} data-id={track.id}>▶</button>
+              <div class="pub-track-cover">
+                {track.cover_art_url ? <img src={track.cover_art_url} alt="" /> : <div class="cover-placeholder-sm">🎵</div>}
+              </div>
+              <div class="pub-track-info">
+                <div class="pub-track-title">{track.title}</div>
+                <div class="pub-track-meta">{track.genre} &middot; {new Date(track.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</div>
+              </div>
+              <div class="pub-track-stats">
+                <span>{track.plays || 0} plays</span>
+                <span>{track.likes || 0} likes</span>
+              </div>
+              <div class="pub-track-actions">
+                <button class="like-btn" data-id={track.id} title="Like">♡</button>
+                <button class="share-btn" data-id={track.id} title="Share">🔗</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <audio id="public-audio" preload="none"></audio>
+
+</BaseLayout>
+
+<script is:inline>
+(function() {
+  const audio = document.getElementById('public-audio');
+  let playingId = null;
+
+  function updateButtons() {
+    document.querySelectorAll('.play-overlay, .pub-play-btn').forEach(btn => {
+      btn.textContent = parseInt(btn.dataset.id) === playingId && !audio.paused ? '⏸' : '▶';
+    });
+  }
+
+  document.querySelectorAll('.play-overlay, .pub-play-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.id);
+      const url = btn.dataset.audio;
+      if (!url) return;
+      if (playingId === id && !audio.paused) {
+        audio.pause();
+      } else {
+        audio.src = url;
+        audio.play().catch(() => {});
+        playingId = id;
+      }
+      updateButtons();
+    });
+  });
+
+  audio.addEventListener('ended', () => { playingId = null; updateButtons(); });
+  audio.addEventListener('pause', updateButtons);
+
+  // Like
+  document.querySelectorAll('.like-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const wallet = localStorage.getItem('wallet_publicKey') || localStorage.getItem('connectedWallet');
+      if (!wallet) { alert('Connect your wallet to like tracks.'); return; }
+      const trackId = btn.dataset.id;
+      try {
+        const res = await fetch(`/api/music/track/${trackId}/like`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ walletAddress: wallet })
+        });
+        const data = await res.json();
+        if (data.success) btn.textContent = data.liked ? '♥' : '♡';
+      } catch (e) { console.error(e); }
+    });
+  });
+
+  // Share
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const url = window.location.href.split('#')[0] + '#track-' + btn.dataset.id;
+      if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => alert('Link copied!'));
+      else prompt('Copy this link:', url);
+    });
+  });
+})();
+</script>
+
+<style>
+  .artist-hero {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 3rem 0 2rem;
+  }
+  .artist-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .artist-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    overflow: hidden; border: 3px solid rgba(255,255,255,0.5);
+    flex-shrink: 0;
+  }
+  .artist-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; background: rgba(255,255,255,0.2);
+  }
+  .artist-info h1 { font-size: 1.75rem; margin: 0; color: white; }
+  .artist-badges { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+  .badge { padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; }
+  .badge-level { background: rgba(255,255,255,0.25); }
+  .badge-bronze { background: #cd7f32; } .badge-silver { background: #c0c0c0; color: #333; }
+  .badge-gold { background: #ffd700; color: #333; } .badge-platinum { background: #e5e4e2; color: #333; }
+  .badge-diamond { background: #b9f2ff; color: #333; } .badge-mythic { background: #ff6ec7; }
+  .artist-bio { margin-top: 0.5rem; opacity: 0.9; font-size: 0.9rem; }
+  .artist-stats { display: flex; gap: 2rem; }
+  .artist-stat { text-align: center; }
+  .stat-val { display: block; font-size: 1.25rem; font-weight: 700; }
+  .stat-lbl { font-size: 0.8rem; opacity: 0.8; }
+
+  .featured-section, .tracks-section { padding: 2rem 0; }
+  .featured-section h2, .tracks-section h2 { font-size: 1.25rem; color: #1f2937; margin-bottom: 1rem; }
+
+  .featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+  .featured-card { background: white; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+  .featured-cover { position: relative; aspect-ratio: 1; background: #f3f4f6; }
+  .featured-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .cover-placeholder-lg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+  .play-overlay {
+    position: absolute; bottom: 0.5rem; right: 0.5rem;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #f5576c; color: white; border: none;
+    font-size: 1rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .featured-card:hover .play-overlay { opacity: 1; }
+  .featured-info { padding: 0.75rem; }
+  .featured-title { font-weight: 600; color: #1f2937; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .featured-meta { font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem; }
+
+  .public-track-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.75rem 1rem; background: white;
+    border-radius: 0.5rem; margin-bottom: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .pub-play-btn {
+    width: 32px; height: 32px; border-radius: 50%; border: none;
+    background: #f5576c; color: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 0.9rem;
+  }
+  .pub-track-cover { width: 40px; height: 40px; border-radius: 0.375rem; overflow: hidden; flex-shrink: 0; background: #f3f4f6; }
+  .pub-track-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .cover-placeholder-sm { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+  .pub-track-info { flex: 1; min-width: 0; }
+  .pub-track-title { font-weight: 600; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pub-track-meta { font-size: 0.8rem; color: #9ca3af; }
+  .pub-track-stats { display: flex; gap: 0.75rem; font-size: 0.8rem; color: #6b7280; flex-shrink: 0; }
+  .pub-track-actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
+  .pub-track-actions button { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0.25rem; }
+  .like-btn:hover { color: #f5576c; }
+  .no-tracks { text-align: center; padding: 3rem; color: #6b7280; }
+
+  @media (max-width: 640px) {
+    .artist-header { flex-direction: column; text-align: center; }
+    .artist-badges { justify-content: center; }
+    .artist-stats { justify-content: center; }
+    .featured-grid { grid-template-columns: repeat(2, 1fr); }
+    .public-track-row { flex-wrap: wrap; }
+    .pub-track-stats, .pub-track-actions { width: 100%; justify-content: flex-end; }
+  }
+</style>

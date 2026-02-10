@@ -9,8 +9,7 @@
  * - Rate limiting per user (1 play count per track per hour)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../../lib/db.js';
 export async function POST({ params, request }) {
   try {
     const { id } = params;
@@ -49,9 +48,6 @@ export async function POST({ params, request }) {
     }
 
     console.log(`▶️ Play count for track ${id}`);
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check if track exists
     const trackResult = await sql`
       SELECT id, user_wallet, title, plays

@@ -8,8 +8,7 @@
  * - vote: 'A' | 'B' (required) - A = challenger, B = opponent
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function POST({ request }) {
@@ -49,9 +48,6 @@ export async function POST({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     // Get battle to verify it exists and is in voting status
     const battles = await sql`
       SELECT id, challenger_wallet, opponent_wallet, status

@@ -1,8 +1,7 @@
 // /api/projects/create.js
 // Create a new user project
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 // Generate URL-friendly slug from title
 function generateSlug(title) {
   return title
@@ -53,9 +52,6 @@ export async function POST({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Generate unique slug
     let baseSlug = generateSlug(title);
     let slug = baseSlug;

@@ -235,10 +235,17 @@ const collection = Array.from({ length: 55 }, (_, i) => {
               <span class="play-icon">▶</span>
               <span class="play-text">PLAY</span>
             </button>
-            <a href={`/nft-gallery/${card.id}`} class="card-detail-btn btn-retro-neon mono">
-              VIEW DETAILS
-            </a>
+            <button
+              class="card-mint-btn btn-retro-neon mono"
+              data-nft-id={card.id}
+              data-nft-name={card.name}
+              data-nft-rarity={card.rarity.name}
+              style={`border-color: ${card.rarity.color};`}
+            >
+              MINT
+            </button>
           </div>
+          <div class="mint-status mono" data-mint-status-id={card.id} style="display: none;"></div>
 
         </article>
       ))}
@@ -284,7 +291,7 @@ const collection = Array.from({ length: 55 }, (_, i) => {
     <nav class="gallery-nav">
       <a href="/" class="btn-retro">← BACK TO HOME</a>
       <a href="/rapper-template-builder" class="btn-retro-neon">CUSTOMIZE RAPPER</a>
-      <a href="/music" class="btn-retro">CREATE BEATS →</a>
+      <a href="/music-studio" class="btn-retro">CREATE BEATS →</a>
     </nav>
 
   </div>
@@ -463,6 +470,84 @@ const collection = Array.from({ length: 55 }, (_, i) => {
     if (audioContext) {
       audioContext.close();
     }
+  });
+
+  // --- Minting ---
+  async function handleMint(button: HTMLElement) {
+    const nftId = parseInt(button.dataset.nftId || '0');
+    const nftName = button.dataset.nftName || `Rapper #${nftId}`;
+    const nftRarity = button.dataset.nftRarity || 'Common';
+    const statusEl = document.querySelector(`[data-mint-status-id="${nftId}"]`) as HTMLElement;
+
+    // Check wallet
+    const walletAddress = localStorage.getItem('walletAddress');
+    if (!walletAddress) {
+      if (statusEl) {
+        statusEl.style.display = 'block';
+        statusEl.innerHTML = '<span style="color:#ff6b6b">Connect wallet first</span>';
+      }
+      return;
+    }
+
+    // Confirm
+    const pricing: Record<string, number> = { Common: 0.25, Uncommon: 0.50, Rare: 0.75, Legendary: 1.50 };
+    const price = pricing[nftRarity] || 0.25;
+    if (!confirm(`Mint ${nftName} (${nftRarity}) for ~${price} SOL on testnet?`)) return;
+
+    // Update UI
+    button.setAttribute('disabled', 'true');
+    button.textContent = 'MINTING...';
+    if (statusEl) {
+      statusEl.style.display = 'block';
+      statusEl.innerHTML = '<span style="color:#00e5ff">Minting on Solana testnet...</span>';
+    }
+
+    try {
+      const res = await fetch('/api/nft/mint', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress,
+          nftId,
+          metadata: { name: nftName, symbol: 'WBRAP', rarity: nftRarity }
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        button.textContent = data.simulated ? 'SIMULATED ✓' : 'MINTED ✓';
+        button.classList.add('minted');
+        if (statusEl) {
+          const label = data.simulated ? 'Simulated' : 'Minted';
+          const simBadge = data.simulated ? '<span style="color:#ffff00;font-size:0.65rem"> [SIM MODE]</span>' : '';
+          statusEl.innerHTML = `<span style="color:#00ff9c">${label}! +${data.xpEarned} XP${simBadge}</span><br>` +
+            `<span style="color:#888;font-size:0.65rem">Mint: ${data.mintAddress.slice(0, 12)}...</span>`;
+        }
+      } else {
+        button.removeAttribute('disabled');
+        button.textContent = 'MINT';
+        if (statusEl) {
+          statusEl.innerHTML = `<span style="color:#ff6b6b">${data.error}</span>`;
+        }
+      }
+    } catch (err: any) {
+      button.removeAttribute('disabled');
+      button.textContent = 'MINT';
+      if (statusEl) {
+        statusEl.innerHTML = `<span style="color:#ff6b6b">${err.message || 'Mint failed'}</span>`;
+      }
+    }
+  }
+
+  // Attach mint button listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.card-mint-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleMint(btn as HTMLElement);
+      });
+    });
   });
 </script>
 
@@ -761,12 +846,42 @@ const collection = Array.from({ length: 55 }, (_, i) => {
     animation: pulse 1s ease-in-out infinite;
   }
 
-  .card-detail-btn {
+  .card-mint-btn {
     padding: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+  }
+
+  .card-mint-btn:hover:not([disabled]) {
+    transform: scale(1.02);
+    filter: brightness(1.3);
+  }
+
+  .card-mint-btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .card-mint-btn.minted {
+    background: var(--color-neon-green) !important;
+    color: #000 !important;
+    border-color: var(--color-neon-green) !important;
+  }
+
+  .mint-status {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .mint-status a {
+    text-decoration: underline;
   }
 
   /* Stats Panel */

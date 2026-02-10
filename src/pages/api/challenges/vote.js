@@ -8,8 +8,7 @@
  * - voterWallet: string (required)
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export const prerender = false;
 
 export async function POST({ request }) {
@@ -37,9 +36,6 @@ export async function POST({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
-    const sql = neon(process.env.DATABASE_URL || process.env.NILE_DATABASE_URL);
-
     // Verify challenge is in voting state
     const challenges = await sql`
       SELECT id, status FROM challenges WHERE id = ${challengeId}

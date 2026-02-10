@@ -1,8 +1,7 @@
 // /api/projects/[slug].js
 // Get a single user project by slug
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function GET({ params, request }) {
   const { slug } = params;
   const url = new URL(request.url);
@@ -19,8 +18,6 @@ export async function GET({ params, request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get project with owner info
     const projects = await sql`
       SELECT

@@ -1,8 +1,7 @@
 // /api/governance/voting-power.js
 // Calculate and retrieve user's voting power
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 // Voting power weights
 const WEIGHTS = {
   nft: {
@@ -29,8 +28,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get user profile
     const profile = await sql`
       SELECT xp, level FROM user_profiles
@@ -275,9 +272,6 @@ export async function POST({ request }) {
         error: 'Delegation percentage must be between 1 and 100'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     if (revoke) {
       // Revoke all delegations
       await sql`

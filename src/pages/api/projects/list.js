@@ -1,8 +1,7 @@
 // /api/projects/list.js
 // Generic projects endpoint - works for Kakuma and other WorldBridge One initiatives
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function GET({ request }) {
   const url = new URL(request.url);
   const initiative = url.searchParams.get('initiative'); // 'kakuma', 'general', etc.
@@ -11,8 +10,6 @@ export async function GET({ request }) {
 
   try {
     // Try database first
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     let query = sql`
       SELECT
         id,

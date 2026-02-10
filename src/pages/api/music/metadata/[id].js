@@ -6,8 +6,7 @@
  * Used when minting track as NFT
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function GET({ params }) {
   try {
     const { id } = params;
@@ -26,9 +25,6 @@ export async function GET({ params }) {
     }
 
     console.log(`📋 Fetching NFT metadata for track ${id}`);
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get track details
     const trackResult = await sql`
       SELECT

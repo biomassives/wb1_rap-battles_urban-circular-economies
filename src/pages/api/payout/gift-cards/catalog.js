@@ -1,8 +1,7 @@
 // /api/payout/gift-cards/catalog.js
 // Browse available gift cards
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 export async function GET({ request }) {
   const url = new URL(request.url);
   const category = url.searchParams.get('category');
@@ -11,8 +10,6 @@ export async function GET({ request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Get gift cards
     let giftCards = await sql`
       SELECT

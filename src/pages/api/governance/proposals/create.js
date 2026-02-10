@@ -1,8 +1,7 @@
 // /api/governance/proposals/create.js
 // Create a new governance proposal
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../../lib/db.js';
 const MIN_VOTING_POWER_TO_PROPOSE = 100;
 const DEFAULT_VOTING_DAYS = 7;
 const EXECUTION_DELAY_HOURS = 48;
@@ -65,9 +64,6 @@ export async function POST({ request }) {
         error: 'Funding amount is required for funding proposals'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check user's voting power
     const govTokens = await sql`
       SELECT effective_voting_power, proposals_created, last_proposal_at
@@ -254,8 +250,6 @@ export async function GET({ request }) {
   const offset = parseInt(url.searchParams.get('offset') || '0');
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     const proposals = await sql`
       SELECT
         p.id,

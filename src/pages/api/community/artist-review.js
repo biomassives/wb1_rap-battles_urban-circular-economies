@@ -13,7 +13,7 @@
  * Rate limit: 10 reviews per day per wallet
  */
 
-import { neon } from '@neondatabase/serverless';
+import { sql } from '../../../lib/db.js';
 import { XP_ACTIVITIES } from '../../../lib/xp-config.js';
 
 export const prerender = false;
@@ -66,7 +66,6 @@ export async function POST({ request }) {
         error: 'Cannot review yourself'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
     const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL;
     if (!dbUrl) {
       return new Response(JSON.stringify({
@@ -76,9 +75,6 @@ export async function POST({ request }) {
         xpAwarded: XP_ACTIVITIES.artist_review
       }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(dbUrl);
-
     // Rate limit: max 10 reviews per day
     const todayCount = await sql`
       SELECT COUNT(*)::int as count FROM artist_reviews

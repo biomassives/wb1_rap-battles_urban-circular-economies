@@ -10,8 +10,7 @@
  * - Activity logging
  */
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function POST({ request }) {
   try {
     // Parse request body (use text() then JSON.parse for better error handling)
@@ -98,8 +97,6 @@ export async function POST({ request }) {
     console.log(`🎵 Creating track "${title}" for ${walletAddress}`);
 
     try {
-      const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
       // Calculate status based on release option
       let status = 'published';
       if (releaseOption === 'draft') {

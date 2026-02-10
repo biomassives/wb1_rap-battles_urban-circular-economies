@@ -1,8 +1,7 @@
 // /api/nft/transfer.js
 // Transfer/gift an NFT to another user
 
-import { neon } from '@neondatabase/serverless';
-
+import { sql } from '../../../lib/db.js';
 export async function POST({ request }) {
   try {
     const body = await request.json();
@@ -63,9 +62,6 @@ export async function POST({ request }) {
     }
 
     console.log(`📤 Transfer request: ${mint} from ${from} to ${to}`);
-
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     // Check if NFT is staked or listed
     const existingStake = await sql`
       SELECT id FROM nft_stakes
@@ -220,8 +216,6 @@ export async function GET({ request }) {
   }
 
   try {
-    const sql = neon(process.env.lab_POSTGRES_URL || process.env.DATABASE_URL);
-
     let transfers;
 
     if (direction === 'sent') {

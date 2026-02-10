@@ -14,7 +14,7 @@
  * XP: 40 (submission) or 75 (verified by peer)
  */
 
-import { neon } from '@neondatabase/serverless';
+import { sql } from '../../../lib/db.js';
 import { XP_ACTIVITIES } from '../../../lib/xp-config.js';
 
 export const prerender = false;
@@ -71,7 +71,6 @@ export async function POST({ request }) {
         error: 'measurements must be a non-empty object of key/value data'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
     const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL;
     if (!dbUrl) {
       return new Response(JSON.stringify({
@@ -81,9 +80,6 @@ export async function POST({ request }) {
         xpAwarded: XP_ACTIVITIES.citizen_science_submission
       }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(dbUrl);
-
     const xpAmount = XP_ACTIVITIES.citizen_science_submission; // 40
 
     // Insert data
@@ -164,7 +160,6 @@ export async function PUT({ request }) {
         error: 'verifierWallet and dataId are required'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
-
     const dbUrl = process.env.DATABASE_URL || process.env.NILE_DATABASE_URL;
     if (!dbUrl) {
       return new Response(JSON.stringify({
@@ -172,9 +167,6 @@ export async function PUT({ request }) {
         error: 'Database not configured'
       }), { status: 503, headers: { 'Content-Type': 'application/json' } });
     }
-
-    const sql = neon(dbUrl);
-
     // Get the submission
     const data = await sql`
       SELECT id, wallet_address, verified, data_type FROM citizen_science_data WHERE id = ${dataId}

@@ -1,0 +1,903 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+export const prerender = false;
+
+const { id } = Astro.params;
+
+const ELIXIRS = {
+  rarity: {
+    name: 'RARITY ELIXIR',
+    icon: '\u{1F9EA}',
+    color: '#c850ff',
+    colorAlt: '#9b30d9',
+    rarity: 'Common',
+    badgeClass: 'common-badge',
+    dropRate: 40,
+    tierBoost: '+1 Rarity Tier',
+    xpBoost: '+0.25x',
+    votingPower: '+1',
+    description: 'The fundamental transmutation reagent. Distilled from the collective ambition of a thousand aspiring MCs, this elixir resonates at the frequency of raw potential. When applied to a Rapper PFP card, it catalyzes a rarity upgrade — shifting the molecular structure of the NFT into its next evolutionary form.',
+    lore: 'First discovered in the underground rap labs of Nairobi, the Rarity Elixir was synthesized from crystallized beat frequencies and compressed lyrical energy. Ancient MCs believed that every bar spit with conviction leaves a residue — and this elixir is that residue, refined.',
+    visualEffect: 'Enhanced border glow matching new rarity color. Subtle pulse animation added to the card frame.',
+    horizonType: 'dusk',
+    horizonColors: ['#1a0033', '#2d0066', '#c850ff', '#e8a0ff', '#0a0015'],
+    starDensity: 80,
+    dotMatrixChar: '\u25CF',
+  },
+  chrono: {
+    name: 'CHRONO ELIXIR',
+    icon: '\u231B',
+    color: '#00e5ff',
+    colorAlt: '#0099aa',
+    rarity: 'Uncommon',
+    badgeClass: 'uncommon-badge',
+    dropRate: 25,
+    tierBoost: '+1 Tier + Shimmer',
+    xpBoost: '+0.25x',
+    votingPower: '+1',
+    description: 'Distilled from temporal fragments found at the intersection of beat drops and silence. The Chrono Elixir bends the perception of time around your card — win counters animate, stats shimmer with temporal distortion, and the card itself seems to exist in multiple moments simultaneously.',
+    lore: 'Time runs differently in the cipher. When an MC enters a flow state, microseconds stretch into eternities. The Chrono Elixir captures these stretched moments — bottling the space between bars where lyrics crystallize before they hit air.',
+    visualEffect: 'Time-distortion shimmer overlay. Animated stat counter with temporal echo. Card edges ripple with chronometric energy.',
+    horizonType: 'twilight',
+    horizonColors: ['#001a2e', '#003355', '#00e5ff', '#80f0ff', '#000d1a'],
+    starDensity: 120,
+    dotMatrixChar: '\u25D2',
+  },
+  phoenix: {
+    name: 'PHOENIX ELIXIR',
+    icon: '\u{1F525}',
+    color: '#ff4500',
+    colorAlt: '#cc3700',
+    rarity: 'Rare',
+    badgeClass: 'rare-badge',
+    dropRate: 15,
+    tierBoost: '+1 Tier + Loss Reset',
+    xpBoost: '+0.50x',
+    votingPower: '+2',
+    description: 'Born from ashes of defeated rivals, the Phoenix Elixir is forged in the crucible of comeback. It does not merely upgrade — it incinerates the old and resurrects something fiercer. Your loss record burns away. Your card rises wrapped in living flame.',
+    lore: 'Every great MC has a defeat that defines them. The Phoenix Elixir was first brewed by an anonymous battler who lost 50 consecutive rounds, then won 100. They bottled their transformation — the exact moment shame became fuel. That fire never dies.',
+    visualEffect: 'Flame particle border with ember glow animation. Card corners ignite with persistent fire. Loss counter resets to zero with an ash-scatter animation.',
+    horizonType: 'inferno',
+    horizonColors: ['#1a0500', '#4d0f00', '#ff4500', '#ff8c00', '#ffd700'],
+    starDensity: 40,
+    dotMatrixChar: '\u2740',
+  },
+  prismatic: {
+    name: 'PRISMATIC ELIXIR',
+    icon: '\u{1F48E}',
+    color: '#a855f7',
+    colorAlt: '#7c3aed',
+    rarity: 'Legendary',
+    badgeClass: 'legendary-badge',
+    dropRate: 8,
+    tierBoost: '+2 Tiers (skip one)',
+    xpBoost: '+1.0x',
+    votingPower: '+3',
+    description: 'Crystallized light itself, refracted through the prism of pure creative genius. The Prismatic Elixir does not climb — it leaps. Skipping an entire rarity tier, it wraps your card in holographic spectral light that shifts through every color in the visible spectrum and several that aren\'t.',
+    lore: 'Legend says the first Prismatic Elixir formed when sunlight passed through a diamond mic held by an MC who achieved perfect rhyme density. The light shattered into impossible colors. Each bottle contains a fragment of that moment — a spectrum that shouldn\'t exist.',
+    visualEffect: 'Rainbow holographic border with shifting gradient background. Prismatic light refracts from card edges. Viewing angle affects color display.',
+    horizonType: 'aurora',
+    horizonColors: ['#0a001a', '#1a0033', '#a855f7', '#ec4899', '#06b6d4', '#10b981', '#0a001a'],
+    starDensity: 150,
+    dotMatrixChar: '\u2726',
+  },
+  mythic: {
+    name: 'MYTHIC ELIXIR',
+    icon: '\u{1F451}',
+    color: '#ff0080',
+    colorAlt: '#cc0066',
+    rarity: 'Mythic',
+    badgeClass: 'mythic-badge',
+    dropRate: 2,
+    tierBoost: 'Instant Mythic',
+    xpBoost: '+2.0x',
+    votingPower: '+5',
+    description: 'The rarest substance in existence. Only 2% of all elixir drops yield the Mythic. It does not transform — it transcends. Any card touched by this elixir is immediately elevated to Mythic rarity with a complete visual overhaul: animated borders, permanent aura, crown badge, gold particle effects. You don\'t use a Mythic Elixir. It uses you.',
+    lore: 'No one knows who brewed the first Mythic Elixir. Some say it predates the blockchain itself — a primordial essence that existed before the first block was mined. Others say it forms spontaneously when a community reaches critical mass of genuine creative energy. All agree: holding one changes everything.',
+    visualEffect: 'Complete card transformation. Animated border with eternal flame. Permanent golden aura. Crown badge materializes. Gold particle system orbits the card.',
+    horizonType: 'cosmos',
+    horizonColors: ['#0a0008', '#1a0010', '#ff0080', '#ffd700', '#ff0080', '#0a0008'],
+    starDensity: 200,
+    dotMatrixChar: '\u2738',
+  },
+  apprentice: {
+    name: 'APPRENTICE ELIXIR',
+    icon: '\u{1F4D6}',
+    color: '#2ecc71',
+    colorAlt: '#1a9a54',
+    rarity: 'Apprentice',
+    badgeClass: 'apprentice-badge',
+    dropRate: 20,
+    tierBoost: 'Service Tier I',
+    xpBoost: '+0.25x',
+    votingPower: '+1',
+    description: 'The first step on the path of mastery. The Apprentice Elixir is earned by completing foundational education modules — core skills that establish competence in your discipline. Upon absorption, it certifies the holder for Service Tier I, unlocking a 25% increase in compensation rates for all platform services. Mentoring, reviews, production assistance — your time becomes more valuable the moment this elixir activates.',
+    lore: 'In the early days of WorldBridger One, builders noticed that contributors who completed structured learning produced measurably better work. The community voted to crystallize this insight into an elixir — a tangible reward for investing in yourself. The first Apprentice Elixir was awarded to a 16-year-old beatmaker in Kakuma who completed every module in a single weekend.',
+    visualEffect: 'Verdant green aura with leaf-particle border. Knowledge runes orbit the card edges. A subtle scroll-unfurl animation plays on first display.',
+    horizonType: 'verdant',
+    horizonColors: ['#021a0a', '#053d1a', '#2ecc71', '#7defa0', '#010d05'],
+    starDensity: 90,
+    dotMatrixChar: '\u25C6',
+  },
+  scholar: {
+    name: 'SCHOLAR ELIXIR',
+    icon: '\u{1F393}',
+    color: '#4169e1',
+    colorAlt: '#2a4fc7',
+    rarity: 'Scholar',
+    badgeClass: 'scholar-badge',
+    dropRate: 12,
+    tierBoost: 'Service Tier II',
+    xpBoost: '+0.50x',
+    votingPower: '+2',
+    description: 'The intermediate stage of specialized expertise. The Scholar Elixir is forged through completion of advanced modules and demonstrated proficiency in a chosen discipline. It elevates the holder to Service Tier II — a 50% compensation rate increase — and unlocks access to advanced service roles: lead reviewer, session facilitator, curriculum contributor. The Scholar does not just learn. The Scholar begins to teach.',
+    lore: 'Scholar Elixirs first appeared when the platform recognized that depth of knowledge matters as much as breadth. A producer in Nairobi who had mastered both Afrobeat theory and smart contract architecture was the catalyst — their dual expertise created work so valuable that standard rates could not contain it. The Scholar tier was born.',
+    visualEffect: 'Deep indigo aura with constellation-mapped border. Floating equation fragments orbit the card. A library-dust particle system activates on hover.',
+    horizonType: 'midnight',
+    horizonColors: ['#000820', '#0a1a4a', '#4169e1', '#8ca8ff', '#000410'],
+    starDensity: 160,
+    dotMatrixChar: '\u25C8',
+  },
+  sage: {
+    name: 'SAGE ELIXIR',
+    icon: '\u{1F52E}',
+    color: '#f59e0b',
+    colorAlt: '#d97706',
+    rarity: 'Sage',
+    badgeClass: 'sage-badge',
+    dropRate: 5,
+    tierBoost: 'Service Tier III',
+    xpBoost: '+1.0x',
+    votingPower: '+4',
+    description: 'The final stage of mastery. The Sage Elixir represents full certification — deep expertise validated through peer review, portfolio assessment, and demonstrated impact. Holders operate at Service Tier III with doubled compensation rates and gain mentorship authority: the ability to certify other users for Apprentice and Scholar tiers. A Sage does not merely contribute. A Sage shapes the ecosystem.',
+    lore: 'The first Sage was never formally appointed. The community simply began deferring to a contributor in Mombasa whose guidance had directly led to 40 other members leveling up. When the governance DAO codified the Sage tier, they modeled it on her: someone whose knowledge compounds through others. The amber glow of the Sage Elixir is said to carry the warmth of every person it has helped.',
+    visualEffect: 'Warm golden aura with solar-flare border animation. Wisdom sigils rotate around the card. Crown-light particle cascade from the top edge. Card background shifts to a warm parchment undertone.',
+    horizonType: 'golden',
+    horizonColors: ['#1a0f00', '#3d2400', '#f59e0b', '#ffd700', '#fffbe6', '#0d0800'],
+    starDensity: 60,
+    dotMatrixChar: '\u2742',
+  }
+};
+
+const elixir = ELIXIRS[id];
+if (!elixir) return Astro.redirect('/elixir');
+
+const title = `${elixir.name} - Elixir Lab`;
+const description = elixir.description.substring(0, 160);
+---
+
+<BaseLayout title={title} description={description} activeSection="gallery">
+
+  <!-- ════════════════════════════════════════════
+       PARALLAX SKY / HORIZON BACKDROP
+       ════════════════════════════════════════════ -->
+  <div class="elixir-sky" id="elixir-sky"
+       style={`--sky-1:${elixir.horizonColors[0]}; --sky-2:${elixir.horizonColors[1]}; --sky-3:${elixir.horizonColors[2]}; --sky-4:${elixir.horizonColors[3]}; --sky-5:${elixir.horizonColors[4] || elixir.horizonColors[0]}; --elixir-color:${elixir.color}; --elixir-alt:${elixir.colorAlt};`}>
+
+    <!-- Star field (parallax layer 1 - far) -->
+    <div class="parallax-layer stars-far" id="stars-far" data-speed="0.02"></div>
+
+    <!-- Star field (parallax layer 2 - mid) -->
+    <div class="parallax-layer stars-mid" id="stars-mid" data-speed="0.05"></div>
+
+    <!-- Dot matrix rain (parallax layer 3) -->
+    <div class="parallax-layer dot-matrix-rain" id="dot-rain" data-speed="0.08"></div>
+
+    <!-- Horizon glow -->
+    <div class="parallax-layer horizon-glow" data-speed="0.03"></div>
+
+    <!-- Ground horizon line -->
+    <div class="parallax-layer horizon-line" data-speed="0.01"></div>
+
+    <!-- ════════════════════════════════════════
+         THE MEDALLION
+         ════════════════════════════════════════ -->
+    <div class="medallion-container" id="medallion-container" data-speed="0.12">
+      <!-- Projection shadow layers -->
+      <div class="medallion-shadow s1"></div>
+      <div class="medallion-shadow s2"></div>
+      <div class="medallion-shadow s3"></div>
+
+      <!-- Outer ring -->
+      <div class="medallion-ring ring-outer">
+        <div class="ring-dots" id="ring-dots-outer"></div>
+      </div>
+
+      <!-- Inner ring -->
+      <div class="medallion-ring ring-inner"></div>
+
+      <!-- Medallion face -->
+      <div class="medallion-face">
+        <!-- Dot matrix burst behind icon -->
+        <div class="dot-matrix-burst" id="dot-burst"></div>
+
+        <!-- The glitch icon -->
+        <div class="medallion-icon" id="medallion-icon">
+          <span class="icon-layer icon-main">{elixir.icon}</span>
+          <span class="icon-layer icon-glitch-1">{elixir.icon}</span>
+          <span class="icon-layer icon-glitch-2">{elixir.icon}</span>
+          <span class="icon-layer icon-glitch-3">{elixir.icon}</span>
+        </div>
+
+        <!-- Name arc -->
+        <div class="medallion-name mono">{elixir.name}</div>
+      </div>
+    </div>
+
+    <!-- Floating dot-matrix text fragments -->
+    <div class="dm-fragments" id="dm-fragments"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       CONTENT BODY
+       ════════════════════════════════════════════ -->
+  <main class="elixir-detail-body">
+    <div class="container mx-auto">
+
+      <!-- Breadcrumb -->
+      <nav class="elixir-breadcrumb mono">
+        <a href="/elixir">ELIXIR LAB</a>
+        <span class="bc-sep">/</span>
+        <span class="bc-current">{elixir.name}</span>
+      </nav>
+
+      <!-- Stats ribbon -->
+      <div class="stats-ribbon">
+        <div class="ribbon-stat">
+          <span class="rs-label mono">Rarity</span>
+          <span class={`rs-value ${elixir.badgeClass}`}>{elixir.rarity}</span>
+        </div>
+        <div class="ribbon-stat">
+          <span class="rs-label mono">Drop Rate</span>
+          <span class="rs-value mono">{elixir.dropRate}%</span>
+        </div>
+        <div class="ribbon-stat">
+          <span class="rs-label mono">Tier Boost</span>
+          <span class="rs-value mono neon-text">{elixir.tierBoost}</span>
+        </div>
+        <div class="ribbon-stat">
+          <span class="rs-label mono">XP Boost</span>
+          <span class="rs-value mono neon-text">{elixir.xpBoost}</span>
+        </div>
+        <div class="ribbon-stat">
+          <span class="rs-label mono">Vote Power</span>
+          <span class="rs-value mono neon-text">{elixir.votingPower}</span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <section class="detail-section">
+        <h2 class="detail-heading mono neon-text">DESCRIPTION</h2>
+        <p class="detail-text">{elixir.description}</p>
+      </section>
+
+      <!-- Visual Effect -->
+      <section class="detail-section">
+        <h2 class="detail-heading mono neon-text">VISUAL TRANSFORMATION</h2>
+        <p class="detail-text">{elixir.visualEffect}</p>
+      </section>
+
+      <!-- Lore -->
+      <section class="detail-section lore-section">
+        <h2 class="detail-heading mono" style={`color:${elixir.color}`}>LORE</h2>
+        <blockquote class="lore-quote">
+          <p>{elixir.lore}</p>
+        </blockquote>
+      </section>
+
+      <!-- Back nav -->
+      <nav class="detail-nav">
+        <a href="/elixir" class="btn-retro">&larr; ALL ELIXIRS</a>
+        <a href="/rapper-template-builder" class="btn-retro-neon">BUILD RAPPER CARD</a>
+      </nav>
+    </div>
+  </main>
+
+  <style define:vars={{
+    elixirColor: elixir.color,
+    elixirAlt: elixir.colorAlt,
+    sky1: elixir.horizonColors[0],
+    sky2: elixir.horizonColors[1],
+    sky3: elixir.horizonColors[2],
+    sky4: elixir.horizonColors[3],
+    sky5: elixir.horizonColors[4] || elixir.horizonColors[0],
+  }}>
+    /* ═══════════════════════════════════════
+       SKY / PARALLAX BACKDROP
+       ═══════════════════════════════════════ */
+    .elixir-sky {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(
+        180deg,
+        var(--sky1) 0%,
+        var(--sky2) 30%,
+        var(--sky3) 55%,
+        var(--sky4) 75%,
+        var(--sky5) 100%
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .parallax-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    /* ── Stars ── */
+    .stars-far, .stars-mid {
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 50% 15%, rgba(255,255,255,0.9) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 75%, rgba(255,255,255,0.7) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 20% 80%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(2px 2px at 45% 50%, var(--elixirColor) 0%, transparent 100%);
+      animation: starTwinkle 8s ease-in-out infinite alternate;
+    }
+
+    .stars-mid {
+      opacity: 0.5;
+      animation-duration: 12s;
+      background-size: 200% 200%;
+    }
+
+    @keyframes starTwinkle {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    /* ── Horizon glow ── */
+    .horizon-glow {
+      background: radial-gradient(
+        ellipse 120% 40% at 50% 75%,
+        var(--elixirColor) 0%,
+        transparent 70%
+      );
+      opacity: 0.25;
+      animation: horizonPulse 6s ease-in-out infinite;
+    }
+
+    @keyframes horizonPulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.35; }
+    }
+
+    /* ── Horizon line ── */
+    .horizon-line {
+      top: auto;
+      bottom: 0;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        transparent 5%,
+        var(--elixirColor) 30%,
+        var(--elixirAlt) 50%,
+        var(--elixirColor) 70%,
+        transparent 95%
+      );
+      opacity: 0.6;
+      box-shadow:
+        0 0 20px var(--elixirColor),
+        0 0 60px var(--elixirColor);
+    }
+
+    /* ── Dot matrix rain ── */
+    .dot-matrix-rain {
+      opacity: 0.12;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      line-height: 12px;
+      color: var(--elixirColor);
+      overflow: hidden;
+      white-space: pre;
+      letter-spacing: 6px;
+    }
+
+    /* ═══════════════════════════════════════
+       THE MEDALLION
+       ═══════════════════════════════════════ */
+    .medallion-container {
+      position: relative;
+      width: 340px;
+      height: 340px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Projection shadow layers */
+    .medallion-shadow {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+
+    .medallion-shadow.s1 {
+      background: var(--elixirColor);
+      opacity: 0.06;
+      transform: translate(8px, 12px) scale(1.08);
+      filter: blur(30px);
+      animation: shadowDrift 8s ease-in-out infinite alternate;
+    }
+
+    .medallion-shadow.s2 {
+      background: var(--elixirAlt);
+      opacity: 0.04;
+      transform: translate(-6px, 18px) scale(1.15);
+      filter: blur(50px);
+      animation: shadowDrift 12s ease-in-out infinite alternate-reverse;
+    }
+
+    .medallion-shadow.s3 {
+      background: #000;
+      opacity: 0.3;
+      transform: translate(4px, 25px) scale(1.05);
+      filter: blur(40px);
+    }
+
+    @keyframes shadowDrift {
+      0% { transform: translate(8px, 12px) scale(1.08); }
+      100% { transform: translate(-4px, 16px) scale(1.12); }
+    }
+
+    /* Outer ring */
+    .medallion-ring {
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .ring-outer {
+      width: 320px;
+      height: 320px;
+      border: 3px solid var(--elixirColor);
+      box-shadow:
+        0 0 15px var(--elixirColor),
+        inset 0 0 15px rgba(0,0,0,0.5);
+      animation: ringRotate 30s linear infinite;
+      overflow: hidden;
+    }
+
+    /* Dot pattern on outer ring */
+    .ring-dots {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+
+    .ring-inner {
+      width: 280px;
+      height: 280px;
+      border: 2px solid var(--elixirAlt);
+      opacity: 0.5;
+      animation: ringRotate 45s linear infinite reverse;
+    }
+
+    @keyframes ringRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Medallion face */
+    .medallion-face {
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 40% 35%,
+        rgba(255,255,255,0.06) 0%,
+        rgba(0,0,0,0.7) 70%
+      );
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Dot matrix burst behind icon */
+    .dot-matrix-burst {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      font-family: 'Courier New', monospace;
+      font-size: 8px;
+      line-height: 10px;
+      color: var(--elixirColor);
+      opacity: 0.15;
+      overflow: hidden;
+      text-align: center;
+      pointer-events: none;
+      animation: burstPrint 4s steps(20) infinite;
+    }
+
+    @keyframes burstPrint {
+      0% { opacity: 0.08; letter-spacing: 2px; }
+      50% { opacity: 0.2; letter-spacing: 4px; }
+      100% { opacity: 0.08; letter-spacing: 2px; }
+    }
+
+    /* ── Glitch icon ── */
+    .medallion-icon {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .icon-layer {
+      position: absolute;
+      font-size: 5rem;
+      filter: drop-shadow(0 0 20px var(--elixirColor));
+    }
+
+    .icon-main {
+      z-index: 4;
+      animation: iconFloat 4s ease-in-out infinite;
+    }
+
+    .icon-glitch-1 {
+      z-index: 3;
+      color: var(--elixirColor);
+      opacity: 0;
+      animation: iconGlitch1 6s ease-in-out infinite;
+    }
+
+    .icon-glitch-2 {
+      z-index: 2;
+      color: var(--elixirAlt);
+      opacity: 0;
+      animation: iconGlitch2 8s ease-in-out infinite;
+    }
+
+    .icon-glitch-3 {
+      z-index: 1;
+      opacity: 0;
+      filter: blur(3px) drop-shadow(0 0 30px var(--elixirColor));
+      animation: iconGlitch3 5s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes iconGlitch1 {
+      0%, 88%, 100% { opacity: 0; transform: translate(0); }
+      89% { opacity: 0.7; transform: translate(-4px, 3px) skewX(-5deg); }
+      91% { opacity: 0.9; transform: translate(3px, -2px) skewX(3deg); }
+      93% { opacity: 0; transform: translate(0); }
+    }
+
+    @keyframes iconGlitch2 {
+      0%, 82%, 100% { opacity: 0; transform: translate(0); }
+      83% { opacity: 0.5; transform: translate(5px, -4px) skewX(8deg); }
+      85% { opacity: 0.8; transform: translate(-3px, 5px) skewX(-4deg); }
+      87% { opacity: 0; transform: translate(0); }
+    }
+
+    @keyframes iconGlitch3 {
+      0%, 75%, 100% { opacity: 0; transform: translate(0) scale(1); }
+      76% { opacity: 0.3; transform: translate(2px, 2px) scale(1.05); }
+      78% { opacity: 0.6; transform: translate(-3px, -1px) scale(0.98); }
+      80% { opacity: 0; transform: translate(0) scale(1); }
+    }
+
+    /* Medallion name */
+    .medallion-name {
+      position: absolute;
+      bottom: 30px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: var(--elixirColor);
+      text-shadow: 0 0 10px var(--elixirColor);
+      z-index: 3;
+    }
+
+    /* ── Floating dot-matrix text fragments ── */
+    .dm-fragments {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .dm-frag {
+      position: absolute;
+      font-family: 'Courier New', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--elixirColor);
+      opacity: 0;
+      white-space: nowrap;
+      animation: fragDrift 12s linear infinite;
+    }
+
+    @keyframes fragDrift {
+      0% { opacity: 0; transform: translateY(20px); }
+      5% { opacity: 0.25; }
+      50% { opacity: 0.12; }
+      95% { opacity: 0.08; }
+      100% { opacity: 0; transform: translateY(-100vh); }
+    }
+
+    /* ═══════════════════════════════════════
+       CONTENT BODY
+       ═══════════════════════════════════════ */
+    .elixir-detail-body {
+      background: linear-gradient(180deg, var(--sky5) 0%, #050710 8%, #0b0f17 100%);
+      padding: 3rem 2rem 5rem;
+      position: relative;
+      z-index: 3;
+    }
+
+    .container { max-width: 800px; }
+
+    /* Breadcrumb */
+    .elixir-breadcrumb {
+      margin-bottom: 2.5rem;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+    }
+
+    .elixir-breadcrumb a {
+      color: var(--elixirColor);
+      text-decoration: none;
+    }
+
+    .elixir-breadcrumb a:hover { text-decoration: underline; }
+    .bc-sep { color: #444; margin: 0 0.5rem; }
+    .bc-current { color: #888; }
+
+    /* Stats ribbon */
+    .stats-ribbon {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 4px;
+      margin-bottom: 3rem;
+    }
+
+    .ribbon-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      min-width: 100px;
+    }
+
+    .rs-label { font-size: 0.7rem; color: #666; letter-spacing: 1px; text-transform: uppercase; }
+
+    .rs-value {
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .common-badge { color: #cd7f32 !important; }
+    .uncommon-badge { color: #00ffff !important; }
+    .rare-badge { color: #ffff00 !important; }
+    .legendary-badge { color: #a855f7 !important; }
+    .mythic-badge { color: #ff0080 !important; }
+    .apprentice-badge { color: #2ecc71 !important; }
+    .scholar-badge { color: #4169e1 !important; }
+    .sage-badge { color: #f59e0b !important; }
+    .neon-text { color: var(--elixirColor); text-shadow: 0 0 8px var(--elixirColor); }
+
+    /* Detail sections */
+    .detail-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .detail-heading {
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      margin-bottom: 1rem;
+    }
+
+    .detail-text {
+      font-size: 1rem;
+      line-height: 1.85;
+      color: #ccc;
+    }
+
+    .lore-section { margin-top: 3rem; }
+
+    .lore-quote {
+      margin: 0;
+      padding: 1.5rem 2rem;
+      border-left: 3px solid var(--elixirColor);
+      background: rgba(255,255,255,0.02);
+      font-style: italic;
+      line-height: 1.85;
+      color: #aaa;
+    }
+
+    /* Nav */
+    .detail-nav {
+      display: flex;
+      gap: 1rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .detail-nav a {
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.85rem;
+    }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .medallion-container { width: 240px; height: 240px; }
+      .ring-outer { width: 230px; height: 230px; }
+      .ring-inner { width: 200px; height: 200px; }
+      .medallion-face { width: 185px; height: 185px; }
+      .icon-layer { font-size: 3.5rem; }
+      .medallion-name { font-size: 0.6rem; bottom: 22px; letter-spacing: 3px; }
+      .dot-matrix-burst { width: 140px; height: 140px; font-size: 6px; }
+
+      .elixir-sky { min-height: 80vh; }
+      .elixir-detail-body { padding: 2rem 1.25rem 4rem; }
+
+      .stats-ribbon { gap: 0.75rem; padding: 1rem; }
+      .ribbon-stat { min-width: 80px; }
+      .rs-value { font-size: 0.75rem; }
+
+      .detail-nav { flex-direction: column; }
+      .detail-nav a { text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .medallion-container { width: 200px; height: 200px; }
+      .ring-outer { width: 190px; height: 190px; }
+      .ring-inner { width: 165px; height: 165px; }
+      .medallion-face { width: 150px; height: 150px; }
+      .icon-layer { font-size: 2.8rem; }
+    }
+  </style>
+
+  <script is:inline define:vars={{ elixirId: id, dotChar: elixir.dotMatrixChar, elixirColor: elixir.color, starDensity: elixir.starDensity }}>
+  (function() {
+
+    /* ── Generate dot-matrix burst text ── */
+    function fillDotBurst() {
+      var el = document.getElementById('dot-burst');
+      if (!el) return;
+      var chars = '';
+      for (var i = 0; i < 600; i++) {
+        chars += Math.random() > 0.3 ? dotChar : ' ';
+        if (i % 25 === 24) chars += '\n';
+      }
+      el.textContent = chars;
+
+      // Re-scramble periodically
+      setInterval(function() {
+        var c = '';
+        for (var j = 0; j < 600; j++) {
+          c += Math.random() > 0.25 ? dotChar : ' ';
+          if (j % 25 === 24) c += '\n';
+        }
+        el.textContent = c;
+      }, 2000);
+    }
+
+    /* ── Generate dot-matrix rain columns ── */
+    function fillDotRain() {
+      var el = document.getElementById('dot-rain');
+      if (!el) return;
+      var cols = Math.floor(window.innerWidth / 14);
+      var rows = Math.floor(window.innerHeight / 12);
+      var text = '';
+      for (var r = 0; r < rows; r++) {
+        for (var c = 0; c < cols; c++) {
+          text += Math.random() > 0.7 ? dotChar : ' ';
+        }
+        text += '\n';
+      }
+      el.textContent = text;
+    }
+
+    /* ── Generate floating text fragments ── */
+    function spawnFragments() {
+      var container = document.getElementById('dm-fragments');
+      if (!container) return;
+      var phrases = [
+        'TRANSMUTATION ACTIVE',
+        'RARITY SHIFT DETECTED',
+        'XP RESONANCE LOCKED',
+        'TIER BREACH IMMINENT',
+        'MOLECULAR RECONFIGURATION',
+        'ELIXIR SATURATION 100%',
+        'NFT CATALYST PRIMED',
+        'QUANTUM UPGRADE READY',
+        'PFP EVOLUTION SEQUENCE',
+        'CHAIN VERIFICATION OK'
+      ];
+
+      for (var i = 0; i < 8; i++) {
+        var frag = document.createElement('div');
+        frag.className = 'dm-frag';
+        frag.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+        frag.style.left = (Math.random() * 90 + 5) + '%';
+        frag.style.animationDelay = (Math.random() * 12) + 's';
+        frag.style.animationDuration = (10 + Math.random() * 8) + 's';
+        container.appendChild(frag);
+      }
+    }
+
+    /* ── Generate ring dots (dot matrix around outer ring) ── */
+    function fillRingDots() {
+      var el = document.getElementById('ring-dots-outer');
+      if (!el) return;
+      // Place dots around the circumference
+      var count = 60;
+      for (var i = 0; i < count; i++) {
+        var dot = document.createElement('span');
+        var angle = (i / count) * 360;
+        var rad = angle * Math.PI / 180;
+        var r = 156; // half of ring-outer width minus a few px
+        var x = 156 + Math.cos(rad) * r;
+        var y = 156 + Math.sin(rad) * r;
+        dot.style.cssText = 'position:absolute;width:3px;height:3px;border-radius:50%;background:' + elixirColor + ';opacity:' + (0.3 + Math.random() * 0.5) + ';left:' + x + 'px;top:' + y + 'px;';
+        el.appendChild(dot);
+      }
+    }
+
+    /* ── Parallax on scroll ── */
+    function setupParallax() {
+      var layers = document.querySelectorAll('.parallax-layer, .medallion-container');
+      window.addEventListener('scroll', function() {
+        var scrollY = window.pageYOffset;
+        for (var i = 0; i < layers.length; i++) {
+          var speed = parseFloat(layers[i].getAttribute('data-speed') || '0');
+          if (speed) {
+            layers[i].style.transform = 'translateY(' + (scrollY * speed) + 'px)';
+          }
+        }
+      }, { passive: true });
+    }
+
+    /* ── Init ── */
+    function init() {
+      fillDotBurst();
+      fillDotRain();
+      spawnFragments();
+      fillRingDots();
+      setupParallax();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+
+</BaseLayout>

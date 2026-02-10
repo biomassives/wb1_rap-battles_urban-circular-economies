@@ -1,0 +1,689 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+export const prerender = false;
+---
+
+<BaseLayout title="Invest & Donate - Mint Donor NFTs" description="Purchase an NFT to fund your community project or donate to youth programs. Both paths earn you a Donor NFT, XP, and impact recognition." activeSection="about">
+
+  <!-- ============================================ -->
+  <!-- HERO -->
+  <!-- ============================================ -->
+  <section class="invest-hero retro-ascii-section scanlines">
+    <div class="container mx-auto">
+      <div class="ascii-header-box">
+        <div class="section-header-retro">
+          <h1 class="section-title-glitch" data-text="OWN YOUR IMPACT">
+            <span class="glitch-layer">OWN YOUR IMPACT</span>
+            <span class="glitch-layer">OWN YOUR IMPACT</span>
+            <span class="glitch-layer">OWN YOUR IMPACT</span>
+          </h1>
+          <p class="hero-sub mono">
+            <span class="neon-text">Purchase a Donor NFT to fund your community project or support youth programs.</span><br/>
+            <span class="text-muted">Every contribution mints an NFT to your wallet and earns XP.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- PATH SELECTOR -->
+  <!-- ============================================ -->
+  <section class="path-section">
+    <div class="container mx-auto">
+      <div class="path-tabs" id="path-tabs">
+        <button class="path-tab active" data-path="invest" id="tab-invest">&#x1F680; INVEST IN PROJECT</button>
+        <button class="path-tab" data-path="donate" id="tab-donate">&#x1F49A; DONATE TO A CAUSE</button>
+      </div>
+
+      <div class="path-description mono" id="path-desc">
+        <p id="desc-invest">Fund <strong>your own community project</strong>. Your NFT represents project equity and investment. Earn XP and build your portfolio.</p>
+        <p id="desc-donate" style="display:none;">Support <strong>Kakuma & Nairobi youth programs</strong>. 100% goes to impact. Your NFT is proof of contribution.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- NFT TIER PREVIEW -->
+  <!-- ============================================ -->
+  <section class="tiers-section">
+    <div class="container mx-auto">
+      <h2 class="section-title mono neon-text">[ DONOR NFT TIERS ]</h2>
+      <p class="section-subtitle mono text-muted">Higher contributions mint rarer NFTs with greater perks</p>
+
+      <div class="tiers-grid">
+        <div class="tier-card card-retro" style="--tier-color: #cd7f32;">
+          <div class="tier-shield">&#x1F6E1;&#xFE0F;</div>
+          <h3 class="tier-name mono">BRONZE SHIELD</h3>
+          <div class="tier-price mono neon-text">0.25+ SOL / $25+</div>
+          <ul class="tier-perks mono">
+            <li>+250 XP</li>
+            <li>Bronze Donor Badge</li>
+            <li>Leaderboard listing</li>
+          </ul>
+        </div>
+
+        <div class="tier-card card-retro" style="--tier-color: #c0c0c0;">
+          <div class="tier-shield">&#x1F6E1;&#xFE0F;</div>
+          <h3 class="tier-name mono">SILVER SHIELD</h3>
+          <div class="tier-price mono neon-text">0.50+ SOL / $50+</div>
+          <ul class="tier-perks mono">
+            <li>+500 XP</li>
+            <li>Silver Donor Badge</li>
+            <li>+5% XP boost</li>
+          </ul>
+        </div>
+
+        <div class="tier-card card-retro" style="--tier-color: #ffd700;">
+          <div class="tier-shield">&#x1F3C6;</div>
+          <h3 class="tier-name mono">GOLD SHIELD</h3>
+          <div class="tier-price mono neon-text">0.75+ SOL / $100+</div>
+          <ul class="tier-perks mono">
+            <li>+1000 XP</li>
+            <li>Gold Donor Badge</li>
+            <li>+10% XP boost</li>
+            <li>Project equity share</li>
+          </ul>
+        </div>
+
+        <div class="tier-card card-retro" style="--tier-color: #e5e4e2;">
+          <div class="tier-shield">&#x1F451;</div>
+          <h3 class="tier-name mono">PLATINUM CROWN</h3>
+          <div class="tier-price mono neon-text">1.50+ SOL / $500+</div>
+          <ul class="tier-perks mono">
+            <li>+5000 XP</li>
+            <li>Platinum Crown Badge</li>
+            <li>+25% XP boost</li>
+            <li>Governance voting power</li>
+            <li>Revenue share access</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- DONATION / INVESTMENT FORM -->
+  <!-- ============================================ -->
+  <section class="form-section" id="donate">
+    <div class="container mx-auto">
+      <div class="invest-form-panel card-retro-neon">
+        <h2 class="form-title mono neon-text" id="form-heading">[ MINT YOUR DONOR NFT ]</h2>
+
+        <form id="invest-form" class="invest-form" autocomplete="off">
+          <input type="hidden" id="invest-path" value="invest" />
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="invest-wallet" class="form-label mono">WALLET ADDRESS *</label>
+              <input type="text" id="invest-wallet" name="wallet" required placeholder="Your Solana wallet address" class="form-input mono" />
+              <span class="form-hint mono">Connect your wallet on the homepage if you don't have one</span>
+            </div>
+
+            <div class="form-field">
+              <label for="invest-amount" class="form-label mono">AMOUNT *</label>
+              <div class="amount-row">
+                <input type="number" id="invest-amount" name="amount" required min="1" step="any" placeholder="25" class="form-input mono amount-input" />
+                <select id="invest-currency" name="currency" class="form-input form-select mono currency-select">
+                  <option value="USD">USD</option>
+                  <option value="SOL">SOL</option>
+                </select>
+              </div>
+              <div class="tier-preview mono" id="tier-preview">Tier: <span class="neon-text" id="tier-label">Enter amount to see tier</span></div>
+            </div>
+
+            <div class="form-field" id="project-field">
+              <label for="invest-project" class="form-label mono">PROJECT NAME</label>
+              <input type="text" id="invest-project" name="project" placeholder="My community project..." class="form-input mono" />
+            </div>
+
+            <div class="form-field">
+              <label for="invest-message" class="form-label mono">MESSAGE <span class="form-optional">(optional)</span></label>
+              <textarea id="invest-message" name="message" rows="2" placeholder="Why this matters to you..." class="form-input form-textarea mono"></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <label class="anon-check mono">
+              <input type="checkbox" id="invest-anon" name="anonymous" />
+              <span>Stay anonymous on leaderboard</span>
+            </label>
+            <button type="submit" id="invest-submit" class="btn-retro-neon invest-btn pulse-glow">MINT DONOR NFT</button>
+          </div>
+
+          <div id="invest-message-box" class="invest-msg mono" style="display:none;"></div>
+        </form>
+
+        <!-- Success state -->
+        <div id="invest-success" class="invest-success" style="display:none;">
+          <div class="success-icon">&#x2728;</div>
+          <h3 class="mono neon-text">NFT MINTED SUCCESSFULLY</h3>
+          <div class="success-details mono" id="success-details"></div>
+          <div class="success-actions">
+            <a href="/profile" class="btn-retro-neon">VIEW IN PROFILE</a>
+            <a href="/leaderboard" class="btn-retro">SEE LEADERBOARD</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- WHAT YOU GET -->
+  <!-- ============================================ -->
+  <section class="benefits-section">
+    <div class="container mx-auto">
+      <h2 class="section-title mono neon-text">[ WHAT YOU GET ]</h2>
+      <div class="benefits-grid">
+        <div class="benefit-card card-retro">
+          <div class="benefit-icon">&#x1F3C5;</div>
+          <h3 class="mono">DONOR NFT</h3>
+          <p>A unique NFT minted to your wallet. Tiered rarity based on contribution amount.</p>
+        </div>
+        <div class="benefit-card card-retro">
+          <div class="benefit-icon">&#x2B50;</div>
+          <h3 class="mono">XP REWARDS</h3>
+          <p>10 XP per dollar donated. Level up faster and unlock higher airdrop tiers.</p>
+        </div>
+        <div class="benefit-card card-retro">
+          <div class="benefit-icon">&#x1F4C8;</div>
+          <h3 class="mono">PROJECT EQUITY</h3>
+          <p>Investors earn equity share in the projects they fund. Track growth over time.</p>
+        </div>
+        <div class="benefit-card card-retro">
+          <div class="benefit-icon">&#x1F30D;</div>
+          <h3 class="mono">REAL IMPACT</h3>
+          <p>Donations directly support youth music programs in Kakuma and Nairobi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- IMPACT LINKS -->
+  <!-- ============================================ -->
+  <nav class="invest-nav">
+    <a href="/" class="btn-retro">HOME</a>
+    <a href="/about" class="btn-retro">ABOUT</a>
+    <a href="/kakuma" class="btn-retro">KAKUMA IMPACT</a>
+    <a href="/nairobi-youth" class="btn-retro">NAIROBI YOUTH</a>
+    <a href="/projects" class="btn-retro-neon">ALL PROJECTS</a>
+  </nav>
+
+<style>
+  .container { max-width: 1000px; padding: 0 1.5rem; }
+  .section-title { text-align: center; font-size: 2rem; font-weight: 900; letter-spacing: 3px; margin-bottom: 0.75rem; }
+  .section-subtitle { text-align: center; font-size: 0.9rem; margin-bottom: 2.5rem; }
+  .text-muted { color: var(--color-light-gray, #888); }
+
+  /* ── HERO ── */
+  .invest-hero {
+    padding: 4rem 2rem 3rem;
+    background: #000;
+    text-align: center;
+  }
+
+  .hero-sub {
+    max-width: 650px;
+    margin: 1.5rem auto 0;
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  /* ── PATH SELECTOR ── */
+  .path-section {
+    padding: 2.5rem 2rem 1rem;
+    background: linear-gradient(180deg, #000 0%, #050710 100%);
+  }
+
+  .path-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .path-tab {
+    padding: 0.85rem 2rem;
+    background: transparent;
+    border: 2px solid var(--color-mid-gray, #444);
+    color: var(--color-light-gray, #aaa);
+    font-family: var(--font-mono, 'Courier New', monospace);
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .path-tab:hover { border-color: var(--color-neon-cyan, #00ffff); color: #fff; }
+
+  .path-tab.active {
+    border-color: var(--color-neon-green, #00ff00);
+    color: var(--color-neon-green, #00ff00);
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.3);
+  }
+
+  .path-description {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--color-light-gray, #aaa);
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .path-description strong { color: #fff; }
+
+  /* ── NFT TIERS ── */
+  .tiers-section {
+    padding: 4rem 2rem;
+    background: linear-gradient(180deg, #050710 0%, #0b0f17 100%);
+  }
+
+  .tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+
+  .tier-card {
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    border-top: 3px solid var(--tier-color);
+    transition: transform 0.3s ease;
+  }
+
+  .tier-card:hover { transform: translateY(-5px); }
+
+  .tier-shield { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+  .tier-name {
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--tier-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .tier-price {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .tier-perks {
+    list-style: none;
+    padding: 0;
+    font-size: 0.75rem;
+    line-height: 2;
+    color: var(--color-light-gray, #aaa);
+    text-align: left;
+  }
+
+  .tier-perks li::before {
+    content: '+ ';
+    color: var(--tier-color);
+    font-weight: 900;
+  }
+
+  /* ── FORM ── */
+  .form-section {
+    padding: 4rem 2rem;
+    background: #000;
+  }
+
+  .invest-form-panel {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+  }
+
+  .form-title {
+    text-align: center;
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+    margin-bottom: 2rem;
+  }
+
+  .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .form-field { display: flex; flex-direction: column; }
+
+  .form-label {
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: var(--color-light-gray, #888);
+    margin-bottom: 0.4rem;
+  }
+
+  .form-optional { color: var(--color-mid-gray, #555); font-weight: 400; }
+
+  .form-input {
+    width: 100%;
+    padding: 0.7rem 0.75rem;
+    background: var(--color-near-black, #0a0a0a);
+    border: 2px solid var(--color-mid-gray, #333);
+    color: #fff;
+    font-size: 0.85rem;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-neon-green, #00ff00);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
+  }
+
+  .form-input::placeholder { color: var(--color-mid-gray, #444); }
+
+  .form-textarea { resize: vertical; min-height: 60px; }
+
+  .form-select {
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+
+  .form-hint {
+    font-size: 0.7rem;
+    color: var(--color-mid-gray, #555);
+    margin-top: 0.3rem;
+  }
+
+  .amount-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .amount-input { flex: 1; }
+  .currency-select { width: 80px; flex: none; }
+
+  .tier-preview {
+    font-size: 0.75rem;
+    color: var(--color-light-gray, #888);
+    margin-top: 0.4rem;
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    gap: 1rem;
+  }
+
+  .anon-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--color-light-gray, #888);
+    cursor: pointer;
+  }
+
+  .anon-check input { accent-color: var(--color-neon-green, #00ff00); }
+
+  .invest-btn {
+    padding: 0.85rem 2rem;
+    font-size: 0.95rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    cursor: pointer;
+  }
+
+  .invest-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .invest-msg {
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+    margin-top: 1rem;
+    border: 1px solid;
+  }
+
+  .invest-msg.success { color: var(--color-neon-green, #00ff00); border-color: var(--color-neon-green, #00ff00); background: rgba(0,255,0,0.05); }
+  .invest-msg.error { color: #ff4444; border-color: #ff4444; background: rgba(255,68,68,0.05); }
+
+  /* ── SUCCESS STATE ── */
+  .invest-success {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+  .invest-success h3 { font-size: 1.25rem; letter-spacing: 2px; margin-bottom: 1.5rem; }
+
+  .success-details {
+    font-size: 0.85rem;
+    line-height: 2;
+    color: var(--color-light-gray, #aaa);
+    margin-bottom: 2rem;
+  }
+
+  .success-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .success-actions a {
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  /* ── BENEFITS ── */
+  .benefits-section {
+    padding: 4rem 2rem;
+    background: linear-gradient(180deg, #0b0f17 0%, #050710 100%);
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+
+  .benefit-card {
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+  }
+
+  .benefit-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .benefit-card h3 { font-size: 0.9rem; font-weight: 900; letter-spacing: 2px; color: var(--color-neon-green, #00ff00); margin-bottom: 0.5rem; }
+  .benefit-card p { font-size: 0.8rem; line-height: 1.6; color: var(--color-light-gray, #aaa); }
+
+  /* ── NAV ── */
+  .invest-nav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem 2rem;
+    background: #050710;
+    flex-wrap: wrap;
+  }
+
+  .invest-nav a { text-decoration: none; font-size: 0.85rem; padding: 0.75rem 1.5rem; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .path-tabs { flex-direction: column; align-items: center; }
+    .path-tab { width: 80%; text-align: center; }
+    .tiers-grid { grid-template-columns: repeat(2, 1fr); }
+    .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-actions { flex-direction: column; align-items: stretch; text-align: center; }
+    .invest-nav { flex-direction: column; align-items: center; }
+    .invest-nav a { width: 80%; text-align: center; }
+  }
+
+  @media (max-width: 480px) {
+    .tiers-grid { grid-template-columns: 1fr; }
+    .benefits-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script is:inline>
+(function() {
+  // ── Path tab switching ──
+  var tabs = document.querySelectorAll('.path-tab');
+  var descInvest = document.getElementById('desc-invest');
+  var descDonate = document.getElementById('desc-donate');
+  var projectField = document.getElementById('project-field');
+  var pathInput = document.getElementById('invest-path');
+  var formHeading = document.getElementById('form-heading');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      var path = tab.dataset.path;
+      pathInput.value = path;
+
+      if (path === 'donate') {
+        descInvest.style.display = 'none';
+        descDonate.style.display = 'block';
+        projectField.style.display = 'none';
+        formHeading.textContent = '[ DONATE & MINT NFT ]';
+      } else {
+        descInvest.style.display = 'block';
+        descDonate.style.display = 'none';
+        projectField.style.display = 'flex';
+        formHeading.textContent = '[ MINT YOUR DONOR NFT ]';
+      }
+    });
+  });
+
+  // Check URL hash for #donate
+  if (window.location.hash === '#donate') {
+    var donateTab = document.getElementById('tab-donate');
+    if (donateTab) donateTab.click();
+  }
+
+  // ── Tier preview on amount change ──
+  var amountInput = document.getElementById('invest-amount');
+  var currencySelect = document.getElementById('invest-currency');
+  var tierLabel = document.getElementById('tier-label');
+
+  function updateTierPreview() {
+    var amount = parseFloat(amountInput.value) || 0;
+    var currency = currencySelect.value;
+    // Normalize to USD-equivalent for tier calc
+    var usd = currency === 'SOL' ? amount * 150 : amount; // rough SOL/USD
+
+    if (usd >= 500) tierLabel.textContent = 'PLATINUM CROWN (+5000 XP)';
+    else if (usd >= 100) tierLabel.textContent = 'GOLD SHIELD (+1000 XP)';
+    else if (usd >= 50) tierLabel.textContent = 'SILVER SHIELD (+500 XP)';
+    else if (usd >= 25) tierLabel.textContent = 'BRONZE SHIELD (+250 XP)';
+    else tierLabel.textContent = 'Min $25 / 0.25 SOL for Bronze tier';
+  }
+
+  amountInput.addEventListener('input', updateTierPreview);
+  currencySelect.addEventListener('change', updateTierPreview);
+
+  // ── Auto-fill wallet ──
+  try {
+    var stored = localStorage.getItem('walletAddress');
+    if (stored) {
+      var walletInput = document.getElementById('invest-wallet');
+      if (walletInput && !walletInput.value) walletInput.value = stored;
+    }
+  } catch(e) {}
+
+  // ── Form submission ──
+  var form = document.getElementById('invest-form');
+  var successPanel = document.getElementById('invest-success');
+  var successDetails = document.getElementById('success-details');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('invest-submit');
+    var msgBox = document.getElementById('invest-message-box');
+
+    var wallet = document.getElementById('invest-wallet').value.trim();
+    var amount = parseFloat(document.getElementById('invest-amount').value);
+    var currency = currencySelect.value;
+    var project = document.getElementById('invest-project').value.trim();
+    var message = document.getElementById('invest-message').value.trim();
+    var anonymous = document.getElementById('invest-anon').checked;
+    var path = pathInput.value;
+
+    // Validate
+    if (!wallet || !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(wallet)) {
+      showMsg(msgBox, 'Valid Solana wallet address required', 'error');
+      return;
+    }
+
+    var minUsd = currency === 'SOL' ? 0.25 : 25;
+    if (!amount || amount < minUsd) {
+      showMsg(msgBox, 'Minimum: ' + (currency === 'SOL' ? '0.25 SOL' : '$25 USD'), 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'MINTING...';
+    msgBox.style.display = 'none';
+
+    var projectId = path === 'donate' ? 'youth-programs' : (project || 'community-project');
+
+    fetch('/api/donations/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        projectId: projectId,
+        donorWallet: wallet,
+        amount: amount,
+        currency: currency,
+        message: message,
+        anonymous: anonymous,
+        mintNFT: true
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        form.style.display = 'none';
+        var tier = 'Bronze';
+        var usd = currency === 'SOL' ? amount * 150 : amount;
+        if (usd >= 500) tier = 'Platinum';
+        else if (usd >= 100) tier = 'Gold';
+        else if (usd >= 50) tier = 'Silver';
+
+        successDetails.innerHTML =
+          'Tier: <span class="neon-text">' + tier + ' Donor NFT</span><br/>' +
+          'Amount: ' + amount + ' ' + currency + '<br/>' +
+          'XP Earned: <span class="neon-text">+' + (data.xp_earned || Math.floor(usd * 10)) + ' XP</span><br/>' +
+          'Purpose: ' + (path === 'donate' ? 'Youth Programs Donation' : 'Project Investment');
+
+        successPanel.style.display = 'block';
+      } else {
+        showMsg(msgBox, data.error || 'Transaction failed. Please try again.', 'error');
+      }
+    })
+    .catch(function() {
+      showMsg(msgBox, 'Network error. Please try again.', 'error');
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = 'MINT DONOR NFT';
+    });
+  });
+
+  function showMsg(el, text, type) {
+    el.textContent = text;
+    el.className = 'invest-msg mono ' + type;
+    el.style.display = 'block';
+  }
+})();
+</script>
+
+</BaseLayout>

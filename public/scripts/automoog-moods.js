@@ -1,5 +1,5 @@
 /**
- * AutoMoog Mood System v2.0
+ * WorldBridger Moog Mood System v2.0
  *
  * A Mood defines:
  * - Bounds in 3D parameter space
